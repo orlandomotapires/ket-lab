@@ -152,8 +152,9 @@ class EngineServer:
             job.update(self.content.run_context(lesson_id))
             job["inputs"] = self.content.control_inputs(lesson_id, message.get("controls"))
             if kind == "export":
+                # Exportar reexecuta o código; um treino do laboratório precisa do tempo de treino.
                 job["format"] = message.get("format")
-                return await self.pool.submit(job, timeout=timeout)
+                return await self.pool.submit(job, timeout=max(timeout or 0, TRAIN_TIMEOUT_S))
             if kind == "run" and message.get("train"):
                 return await self._train(job, message, websocket, timeout)
             if kind == "shots":

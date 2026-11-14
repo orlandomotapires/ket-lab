@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { Comparison, Lesson, RunResult, Snapshot, VisualizerKind } from "../engine/types";
 import { t, useLocale } from "../i18n";
 import {
@@ -12,7 +12,7 @@ import {
   vectorLength,
 } from "../lib/quantum";
 import { stepForLine } from "../lib/steps";
-import { selectCurrentStep, useStore } from "../state/store";
+import { selectCurrentStep, useStore, type TrainingState } from "../state/store";
 import { MixedProbabilities, Probabilities, ShotsHistogram } from "./Probabilities";
 import { AmplitudesView, amplitudeScale, DialsView, HistogramView, ModularView } from "./views2d";
 import {
@@ -58,9 +58,18 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const code = useStore((s) => s.code);
   const current = useStore(selectCurrentStep);
   const hasError = useStore((s) => s.error !== null);
+  const training = useStore((s) => s.training);
 
-  const views = lesson ? lesson.available_visualizers : SANDBOX_VIEWS;
-  const [view, setView] = useState<VisualizerKind>(lesson?.default_visualizer ?? "bloch");
+  // No laboratório livre, um código com report(...) ganha a aba da curva de treino.
+  const sandboxTraining = !lesson && training !== null;
+  const views = lesson ? lesson.available_visualizers : sandboxTraining ? ["convergence" as const, ...SANDBOX_VIEWS] : SANDBOX_VIEWS;
+  const [chosen, setView] = useState<VisualizerKind>(lesson?.default_visualizer ?? "bloch");
+  // Ao começar um treino, a curva aparece sozinha; depois o aluno troca de aba à vontade.
+  const trainingActive = sandboxTraining && training.active;
+  useEffect(() => {
+    if (trainingActive) setView("convergence");
+  }, [trainingActive]);
+  const view: VisualizerKind = views.includes(chosen) ? chosen : views[0];
 
   const header = (
     <div className="panel-head">
@@ -77,6 +86,17 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
       )}
     </div>
   );
+
+  if (sandboxTraining && view === "convergence" && (!result || training.active)) {
+    return (
+      <aside className="panel visualizer" aria-label={t("viz.aria")}>
+        {header}
+        <div className="stage">
+          <TrainingStage training={training} />
+        </div>
+      </aside>
+    );
+  }
 
   if (!result) {
     return (
@@ -96,7 +116,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
       {header}
       {lesson?.controls?.length ? <Controls lesson={lesson} /> : null}
       <div className="stage">
-        <div className="stage-caption">
+        {!(sandboxTraining && view === "convergence") && <div className="stage-caption">
           <span>
             {current === 0 ? (
               <strong>{t("viz.initial")}</strong>
@@ -114,9 +134,13 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
           </span>
           <span className="grow" />
           {!resultIsCurrent && <span className="pill pill-warn">{t("viz.stale")}</span>}
-        </div>
+        </div>}
         <Suspense fallback={null}>
-          <Stage view={view} result={result} snapshot={snapshot} current={current} code={code} lesson={lesson} />
+          {sandboxTraining && view === "convergence" ? (
+            <TrainingStage training={training} />
+          ) : (
+            <Stage view={view} result={result} snapshot={snapshot} current={current} code={code} lesson={lesson} />
+          )}
         </Suspense>
       </div>
 
@@ -180,6 +204,36 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         )}
       </div>
     </aside>
+  );
+}
+
+/** Curva das métricas de report(...): ao vivo durante o treino, com troca de métrica. */
+function TrainingStage({ training }: { training: TrainingState }) {
+  const names = Object.keys(training.series);
+  const [picked, setPicked] = useState<string | null>(null);
+  const name = picked && names.includes(picked) ? picked : names[0];
+  if (!name) {
+    return <div className="stage-message">{training.active ? t("oracle.trainingStart") : t("viz.runToSee")}</div>;
+  }
+  return (
+    <div className="training-stage">
+      <div className="training-head">
+        {names.length > 1 ? (
+          <div className="segmented" role="tablist" aria-label={t("viz.metric")}>
+            {names.map((option) => (
+              <button key={option} role="tab" aria-selected={option === name} onClick={() => setPicked(option)}>
+                <span className="mono">{option}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="mono small">{name}</span>
+        )}
+        <span className="grow" />
+        {training.active && <span className="pill pill-live">{t("viz.live")}</span>}
+      </div>
+      <ConvergenceView data={{ values: training.series[name], y_label: name }} note={t("viz.trainingNote")} />
+    </div>
   );
 }
 

@@ -89,6 +89,9 @@ def test_every_lesson_has_theoretical_and_practical_references(library, lesson_i
     assert len(references) >= 2, f"{lesson_id}: pelo menos 2 referências"
     assert kinds & {"book", "paper"}, f"{lesson_id}: falta uma referência teórica (livro ou artigo)"
     assert kinds & {"course", "tutorial"}, f"{lesson_id}: falta uma referência prática (curso ou tutorial)"
+    assert all(ref["location"].strip() and "TODO" not in ref["location"] for ref in references), (
+        f"{lesson_id}: local de leitura ausente ou não verificado"
+    )
     urls = [ref["url"] for ref in references]
     assert len(set(urls)) == len(urls), f"{lesson_id}: links repetidos"
     assert all(url.startswith("https://") for url in urls)

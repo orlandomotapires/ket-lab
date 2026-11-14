@@ -25,17 +25,24 @@
     },
     {
       "kind": "course",
-      "title": "Quantum computing in practice: Transpilation",
-      "authors": "IBM Quantum Learning",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/qiskit-patterns"
+      "title": "Quantum circuit optimization",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Sections “2.1 Optimization level” and “3.1 Draw the entire Qiskit transpilation flow”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/quantum-circuit-optimization"
+    },
+    {
+      "kind": "course",
+      "title": "Hardware",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Subsection “2.2 Coupling map”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/hardware"
     },
     {
       "kind": "tutorial",
-      "title": "Transpile with pass managers",
+      "title": "Transpiler stages",
       "authors": "IBM Quantum Documentation",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/docs/en/guides/transpile"
+      "location": "Sections “Layout stage” and “Routing stage”",
+      "url": "https://quantum.cloud.ibm.com/docs/en/qiskit/transpiler-stages"
     }
   ]
 }

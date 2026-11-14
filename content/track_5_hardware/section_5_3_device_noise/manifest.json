@@ -35,21 +35,14 @@
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
       "url": "https://doi.org/10.1017/CBO9780511976667",
-      "location": "Section 8.3.3, “Bit flip and phase flip channels”, pp. 376–378 (dephasing errors); Section 8.3.5, “Amplitude damping”, pp. 380–383 (the channel behind T1 relaxation)"
+      "location": "Section 8.3.5, “Amplitude damping”, pp. 380–383; Section 8.3.6, “Phase damping”, pp. 383–386"
     },
     {
       "kind": "course",
-      "title": "Quantum computing in practice: Noise and error on real devices",
-      "authors": "IBM Quantum Learning",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-computing-in-practice"
-    },
-    {
-      "kind": "tutorial",
-      "title": "Noise models and device properties",
-      "authors": "IBM Quantum Documentation",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/docs/en/guides/noise-learning"
+      "title": "Hardware",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Section “3. Qubit properties” (median T1 and T2) and subsection “3.2 Gate and readout errors”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/hardware"
     }
   ]
 }

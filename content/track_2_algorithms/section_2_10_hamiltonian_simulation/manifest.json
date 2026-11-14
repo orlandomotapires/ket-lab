@@ -21,22 +21,22 @@
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
       "url": "https://doi.org/10.1017/CBO9780511976667",
-      "location": "TODO-VERIFY: Section 4.7, \u201cSimulation of quantum systems\u201d (Trotter formula and its error)"
+      "location": "Section 4.7, “Simulation of quantum systems”, pp. 204–216 (4.7.2 The quantum simulation algorithm, pp. 206–209)"
     },
     {
       "kind": "paper",
       "title": "Universal Quantum Simulators",
       "authors": "S. Lloyd",
       "year": 1996,
-      "url": "https://doi.org/10.1126/science.273.5278.1073",
-      "location": "TODO-VERIFY: Science 273, 1073\u20131078; the Trotter decomposition for local Hamiltonians"
+      "location": "Science 273, 1073–1078 (short article)",
+      "url": "https://doi.org/10.1126/science.273.5278.1073"
     },
     {
-      "kind": "tutorial",
-      "title": "SuzukiTrotter (product formulas for Hamiltonian simulation)",
-      "authors": "Qiskit documentation, IBM Quantum",
-      "location": "TODO-VERIFY: page qiskit.synthesis.SuzukiTrotter (first and second order product formulas)",
-      "url": "https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.synthesis.SuzukiTrotter"
+      "kind": "course",
+      "title": "Quantum simulation",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Sections “1. Introduction” (Trotterization), “2.1 Defining the transverse-field Ising Hamiltonian” and “3. Exercise 1” (second-order Suzuki–Trotter)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/quantum-simulation"
     }
   ]
 }

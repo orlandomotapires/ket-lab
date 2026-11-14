@@ -43,6 +43,10 @@ const STRINGS = {
   "hub.openLessonFailed": "Could not open the lesson.",
 
   "lab.code": "Code",
+  "lab.panes": "Lesson panels",
+  "lab.pane.theory": "Theory",
+  "lab.pane.code": "Code",
+  "lab.pane.state": "State",
   "lab.codeAria": "Code editor",
   "lab.followHint": "The visualization follows the cursor line",
   "lab.circuit": "Circuit",

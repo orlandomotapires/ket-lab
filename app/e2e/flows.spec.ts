@@ -78,3 +78,26 @@ test("os dois temas renderizam sem erros", async ({ page }) => {
   await expect(page.locator(".references li")).not.toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+for (const viewport of [{ width: 768, height: 1024 }, { width: 390, height: 844 }]) {
+  test(`tela estreita (${viewport.width}px): abas, lição resolvida, sem rolagem horizontal`, async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.setViewportSize(viewport);
+    await openHub(page);
+    await openLessonBySearch(page, "computational basis", "1.1");
+    const tabs = page.locator(".lab-tabs");
+    await expect(tabs).toBeVisible();
+    await expect(page.locator(".mission")).toBeVisible();
+    await tabs.getByRole("tab", { name: "Code" }).click();
+    await expect(page.locator(".mission")).toBeHidden();
+    await replaceCode(page, solutionOf("1.1"));
+    await expect(page.locator(".circuit .gate")).toHaveCount(1);
+    await tabs.getByRole("tab", { name: "State" }).click();
+    await expect(page.locator(".visualizer")).toBeVisible();
+    await pressButton(page, "Check");
+    await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    expect(errors).toEqual([]);
+  });
+}

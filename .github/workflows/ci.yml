@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: pip install -e "engine[dev]"
+      - run: pip install -e "engine[dev,hardware]"
       - name: Testes do motor e suíte de conteúdo
         run: python -m pytest -q
         working-directory: engine

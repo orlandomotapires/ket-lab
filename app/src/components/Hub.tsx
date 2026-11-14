@@ -103,7 +103,6 @@ export function Hub() {
         <div className="hub-tracks">
 
         {catalog.tracks.map((track) => {
-          const trackDone = track.sections.filter((section) => progress[section.id]?.completed).length;
           return (
             <section key={track.id} id={`track-${track.id}`} className="track" aria-labelledby={`track-title-${track.id}`}>
               <header className="track-head">
@@ -114,18 +113,15 @@ export function Hub() {
                   </div>
                   <h2 id={`track-title-${track.id}`}>{track.title}</h2>
                 </div>
-                <div className="track-progress">
-                  <Meter value={trackDone / track.sections.length} />
-                  {trackDone}/{track.sections.length}
-                </div>
               </header>
               <ol className="section-list">
                 {track.sections.map((section) => {
                   const status = statusOf(section, progress[section.id]);
+                  const isNext = section.id === next?.id;
                   return (
                     <li key={section.id}>
                       <button
-                        className="section-row"
+                        className={`section-row is-${status}${isNext ? " is-next" : ""}`}
                         disabled={status === "soon" || offline}
                         onClick={() => void openLesson(section.id)}
                       >

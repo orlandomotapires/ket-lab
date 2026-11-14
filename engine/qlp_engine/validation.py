@@ -92,6 +92,11 @@ def _structural_problem(circuit, rules: dict) -> dict | None:
     if missing:
         names = ", ".join(f"`{FRIENDLY_NAMES.get(name, 'qc.' + name)}`" for name in missing)
         return _result(False, "required_gate", t("val.required_gate", names=names))
+    for name, expected in (rules.get("gate_counts") or {}).items():
+        actual = sum(1 for i in circuit.data if i.operation.name == name)
+        if actual != expected:
+            friendly = FRIENDLY_NAMES.get(name, "qc." + name)
+            return _result(False, "gate_count", t("val.gate_count", name=friendly, expected=expected, actual=actual))
     pair = _forbidden_pair(circuit, rules.get("forbidden_pairs"))
     if pair:
         return _result(False, "forbidden_pair", t("val.forbidden_pair", a=pair[0], b=pair[1]))
@@ -160,9 +165,15 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
     rng = np.random.default_rng(VALIDATION_SEED)
     worst = 1.0
     branches_ok = branches_total = 0
-    for _ in range(int(rules.get("trials", REDUCED_STATE_TRIALS))):
-        # Ângulos longe dos polos: estados triviais (|0⟩, |1⟩) não testariam a fase.
-        inputs = {"_QLP_INPUT": (float(rng.uniform(0.4, np.pi - 0.4)), float(rng.uniform(0, 2 * np.pi)))}
+    # Entradas fixas primeiro (ex.: |0⟩ e |+⟩, onde cada correção do teletransporte
+    # fica invisível), depois sorteadas longe dos polos.
+    fixed = [tuple(map(float, pair)) for pair in rules.get("inputs") or []]
+    random_trials = [
+        (float(rng.uniform(0.4, np.pi - 0.4)), float(rng.uniform(0, 2 * np.pi)))
+        for _ in range(int(rules.get("trials", REDUCED_STATE_TRIALS)))
+    ]
+    for angles in fixed + random_trials:
+        inputs = {"_QLP_INPUT": angles}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
         target = _bloch(simulator.run_trajectory(reference, seed=0).states[-1], reference.num_qubits, qubit)
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit

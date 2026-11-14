@@ -71,7 +71,16 @@
       },
       {
         "kind": "and"
+      },
+      {
+        "kind": "majority"
+      },
+      {
+        "kind": "last"
       }
-    ]
+    ],
+    "gate_counts": {
+      "oracle": 1
+    }
   }
 }

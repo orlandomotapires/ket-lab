@@ -3,7 +3,7 @@
   "summary": "Constante ou balanceada com uma única consulta.",
   "mission": "Com uma única chamada a oracle(qc), deixe o registrador de entrada (qubits 0 a 2) em |000⟩ se a função secreta for constante, e sem nenhuma chance de |000⟩ se ela for balanceada.",
   "prediction": {
-    "question": "Com 3 bits de entrada, quantas consultas um algoritmo clássico precisa, no pior caso, para decidir com certeza se a função é constante ou balanceada?",
+    "question": "Com 3 bits de entrada, quantas consultas um algoritmo clássico determinístico (sem erro) precisa, no pior caso, para decidir se a função é constante ou balanceada?",
     "options": [
       "1",
       "5",

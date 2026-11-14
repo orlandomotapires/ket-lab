@@ -2,7 +2,9 @@
 
 Você recebe uma função $f:\{0,1\}^n \to \{0,1\}$ como caixa-preta, com uma promessa: ela é **constante** (a mesma saída para todas as entradas) ou **balanceada** (saída $0$ para metade das entradas e $1$ para a outra metade). Qual das duas?
 
-Um algoritmo clássico precisa, no pior caso, de $2^{n-1} + 1$ consultas: se as primeiras $2^{n-1}$ derem o mesmo valor, a função ainda pode ser balanceada. O algoritmo de Deutsch-Jozsa responde com **uma única consulta**.
+Um algoritmo clássico precisa, no pior caso, de $2^{n-1} + 1$ consultas: se as primeiras $2^{n-1}$ derem o mesmo valor, a função ainda pode ser balanceada. O algoritmo de Deutsch-Jozsa responde com **uma única consulta**, e sem erro.
+
+A separação é contra algoritmos clássicos *exatos*. Um algoritmo clássico **aleatorizado** consulta a função em poucas entradas sorteadas: se todas derem o mesmo valor, responde "constante". Ele erra só se a função for balanceada e as $k$ consultas coincidirem, com probabilidade de cerca de $2^{1-k}$; com algumas consultas o erro já é desprezível. A vantagem quântica aqui é real, mas é uma vantagem sobre o caso determinístico.
 
 ## O oráculo
 

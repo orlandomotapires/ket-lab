@@ -33,6 +33,8 @@ def test_deutsch_without_interference_gives_a_coin_flip(library):
         ({"kind": "balanced", "mask": [1, 0, 1], "flip": 0}, False),
         ({"kind": "balanced", "mask": [0, 1, 1], "flip": 1}, False),
         ({"kind": "and"}, False),
+        ({"kind": "majority"}, False),
+        ({"kind": "last"}, False),
     ],
 )
 def test_deutsch_jozsa_separates_constant_from_balanced(library, case, constant):

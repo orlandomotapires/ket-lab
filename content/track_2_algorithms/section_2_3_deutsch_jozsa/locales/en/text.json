@@ -3,7 +3,7 @@
   "summary": "Constant or balanced with a single query.",
   "mission": "With a single call to oracle(qc), leave the input register (qubits 0 to 2) in |000⟩ if the secret function is constant, and with no chance of |000⟩ if it is balanced.",
   "prediction": {
-    "question": "With 3 input bits, how many queries does a classical algorithm need, in the worst case, to decide with certainty whether the function is constant or balanced?",
+    "question": "With 3 input bits, how many queries does a deterministic (zero-error) classical algorithm need, in the worst case, to decide whether the function is constant or balanced?",
     "options": [
       "1",
       "5",

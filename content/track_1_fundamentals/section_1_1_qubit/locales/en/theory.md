@@ -28,6 +28,16 @@ $$
 
 It does to the qubit what `NOT` does to a bit.
 
+## Normalization
+
+Not every pair of numbers is a state. The amplitudes must satisfy $|\alpha|^2 + |\beta|^2 = 1$. For example, $(0.6,\ 0.8)$ is a valid state, since $0.36 + 0.64 = 1$. But $(0.6,\ 0.6)$ is not: the sum is $0.72$. To make it valid, divide the vector by its norm (here, $\sqrt{0.72}$). Quantum gates preserve this sum, so a circuit never produces a vector outside the sphere.
+
+## Global phase
+
+Multiplying the whole state by $e^{i\gamma}$ changes no probability and no outcome of any possible measurement: $|\psi\rangle$ and $e^{i\gamma}|\psi\rangle$ are physically the same state, and the Bloch sphere draws them at the same point. What matters is the **relative** phase between $\alpha$ and $\beta$, the subject of lesson 1.3.
+
+That is why $Y$ and $R_x(\pi)$ take $|0\rangle$ to the same physical state that $X$ does: the results differ only by a global phase ($Y|0\rangle = i|1\rangle$ and $R_x(\pi)|0\rangle = -i|1\rangle$).
+
 ## How to use the lab
 
 - The visualization follows the **line where the cursor is**: it shows the state of the qubit after everything that has run up to that point.

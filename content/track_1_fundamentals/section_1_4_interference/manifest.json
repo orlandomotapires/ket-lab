@@ -9,19 +9,52 @@
     "bloch"
   ],
   "validation": {
-    "type": "state_fidelity",
-    "tolerance": 0.999,
+    "type": "oracle_cases",
+    "register": [
+      0
+    ],
+    "tolerance": 0.05,
+    "required_gates": [
+      "measure"
+    ],
     "allowed_gates": [
-      "h",
+      "x",
+      "y",
       "z",
+      "h",
       "s",
       "sdg",
       "t",
       "tdg",
+      "rx",
+      "ry",
       "rz",
       "p",
-      "id"
+      "id",
+      "prepare_unknown",
+      "measure",
+      "barrier"
+    ],
+    "cases": [
+      "plus",
+      "minus"
     ]
   },
-  "prediction_answer": 1
+  "prediction_answer": 1,
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "1.3.3",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Inner products and projections",
+      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections"
+    }
+  ]
 }

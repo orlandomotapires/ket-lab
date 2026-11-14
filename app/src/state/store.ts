@@ -1,11 +1,14 @@
 import { create } from "zustand";
-import { EngineClient, resolveEndpoint, type ConnectionStatus } from "../engine/client";
+import { EngineClient, resolveEndpoint, type ConnectionStatus, type EngineResponse } from "../engine/client";
 import type {
   Catalog,
   EngineError,
+  ExportFormat,
+  ExportResult,
   Lesson,
   LessonProgress,
   RunResult,
+  SearchResult,
   ShotsResult,
   ValidationResult,
 } from "../engine/types";
@@ -25,6 +28,22 @@ qc = QuantumCircuit(2)
 qc.h(0)
 qc.cx(0, 1)
 `;
+}
+
+/** Curva do treino em andamento (ou do último), alimentada por report(...) no código. */
+export interface TrainingState {
+  series: Record<string, number[]>;
+  active: boolean;
+}
+
+/** O código chama report(...) fora de um comentário: é um treino, roda pelo botão. */
+export function usesReport(code: string): boolean {
+  return /^[^#\n]*\breport\s*\(/m.test(code);
+}
+
+/** Código que só roda pelo botão Executar: lições de treino e treinos no laboratório livre. */
+export function selectManual(state: Pick<State, "lesson" | "code">): boolean {
+  return state.lesson ? state.lesson.live === false : usesReport(state.code);
 }
 
 interface State {
@@ -47,8 +66,17 @@ interface State {
   validating: boolean;
   shots: ShotsResult | null;
   hintsShown: number;
+  /** Valores dos controles da lição (ex.: erro injetado). */
+  controls: Record<string, string | number | null>;
+  running: boolean;
+  training: TrainingState | null;
 
   init(): void;
+  runNow(): void;
+  stopRun(): void;
+  exportCircuit(format: ExportFormat): Promise<EngineResponse<ExportResult>>;
+  search(query: string): Promise<SearchResult[]>;
+  setControl(id: string, value: string | number | null): void;
   openLesson(id: string): Promise<void>;
   openSandbox(): void;
   backToHub(): void;
@@ -67,6 +95,7 @@ let client: EngineClient | null = null;
 let runTimer: number | undefined;
 let saveTimer: number | undefined;
 let runToken = 0;
+let trainRequest: number | null = null;
 
 function engine(): EngineClient {
   if (!client) throw new Error("Motor não inicializado.");
@@ -88,7 +117,12 @@ export const useStore = create<State>((set, get) => {
     const token = ++runToken;
     const { code, lesson, seed } = get();
     try {
-      const response = await engine().call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null });
+      set({ running: true });
+      const response = await engine()
+        .call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls })
+        .finally(() => {
+          if (token === runToken) set({ running: false });
+        });
       if (token !== runToken) return; // chegou uma edição mais nova
       if (response.ok) {
         set({ result: response, resultIsCurrent: true, error: null });
@@ -97,6 +131,51 @@ export const useStore = create<State>((set, get) => {
       }
     } catch {
       // Conexão caiu: mantém o último estado válido na tela.
+    }
+  }
+
+  /** Execução pelo botão: as métricas de report(...) chegam em lotes enquanto o código roda. */
+  async function train(): Promise<void> {
+    const token = ++runToken;
+    window.clearTimeout(runTimer);
+    const { code, lesson, seed } = get();
+    set({ running: true, training: { series: {}, active: true } });
+    try {
+      const request = await engine().start<RunResult>(
+        "run",
+        { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls, train: true },
+        (event) => {
+          if (token !== runToken) return;
+          const series = { ...(get().training?.series ?? {}) };
+          for (const [name, values] of Object.entries(event.series as Record<string, number[]>)) {
+            series[name] = [...(series[name] ?? []), ...values];
+          }
+          set({ training: { series, active: true } });
+        },
+      );
+      trainRequest = request.id;
+      const response = await request.done;
+      if (token !== runToken) return;
+      if (response.ok) {
+        set({
+          result: response,
+          resultIsCurrent: true,
+          error: null,
+          training: response.training ? { series: response.training.series, active: false } : null,
+        });
+      } else if (!response.stale) {
+        const partial = get().training;
+        set({
+          error: response.error ?? null,
+          resultIsCurrent: false,
+          training: partial && Object.keys(partial.series).length ? { ...partial, active: false } : null,
+        });
+      }
+    } catch {
+      // Conexão caiu: mantém o último estado válido na tela.
+    } finally {
+      trainRequest = null;
+      if (token === runToken) set({ running: false });
     }
   }
 
@@ -127,6 +206,8 @@ export const useStore = create<State>((set, get) => {
 
   function scheduleRun(delay = RUN_DEBOUNCE_MS): void {
     window.clearTimeout(runTimer);
+    // Um treino no laboratório livre pode levar minutos: só roda pelo botão.
+    if (!get().lesson && usesReport(get().code)) return;
     runTimer = window.setTimeout(() => void run(), delay);
   }
 
@@ -138,6 +219,15 @@ export const useStore = create<State>((set, get) => {
         .call("progress.save", { lesson_id: lessonId, code: get().code, hints_used: get().hintsShown })
         .catch(() => undefined);
     }, SAVE_DEBOUNCE_MS);
+  }
+
+  function defaultControls(lesson: Lesson | null): Record<string, string | number | null> {
+    return Object.fromEntries((lesson?.controls ?? []).map((control) => [control.id, control.default]));
+  }
+
+  /** Treinos rodam só pelo botão; o resto, a cada pausa na digitação. */
+  function isLive(): boolean {
+    return !selectManual(get());
   }
 
   function enterLab(lesson: Lesson | null, code: string, hintsShown: number): void {
@@ -155,6 +245,9 @@ export const useStore = create<State>((set, get) => {
       validation: null,
       shots: null,
       hintsShown,
+      controls: defaultControls(lesson),
+      running: false,
+      training: null,
     });
     scheduleRun(0);
   }
@@ -178,6 +271,9 @@ export const useStore = create<State>((set, get) => {
     validating: false,
     shots: null,
     hintsShown: 0,
+    controls: {},
+    running: false,
+    training: null,
 
     init() {
       if (client) return;
@@ -220,7 +316,9 @@ export const useStore = create<State>((set, get) => {
     setCode(code) {
       if (code === get().code) return;
       set({ code, resultIsCurrent: false, validation: null, shots: null });
-      scheduleRun();
+      // Laboratório livre: sem report(...) no código, a curva do treino anterior sai de cena.
+      if (!get().lesson && get().training && !get().training!.active && !usesReport(code)) set({ training: null });
+      if (isLive()) scheduleRun();
       scheduleSave();
     },
 
@@ -240,6 +338,38 @@ export const useStore = create<State>((set, get) => {
 
     setFollowCursor(follow) {
       set({ followCursor: follow, manualStep: selectCurrentStep(get()) });
+    },
+
+    runNow() {
+      if (selectManual(get())) {
+        // Uma execução ao vivo (de antes de o código virar treino) pode estar em andamento: o treino a substitui.
+        if (!get().training?.active) void train();
+      }
+      else scheduleRun(0);
+    },
+
+    stopRun() {
+      if (trainRequest !== null) void engine().call("cancel", { target: trainRequest }).catch(() => undefined);
+    },
+
+    exportCircuit(format) {
+      const { code, lesson, controls } = get();
+      return engine().call<ExportResult>("export", { code, format, lesson_id: lesson?.id ?? null, controls });
+    },
+
+    async search(query) {
+      if (get().connection !== "open" || !query.trim()) return [];
+      try {
+        const response = await engine().call<{ results: SearchResult[] }>("search", { query });
+        return response.ok ? response.results : [];
+      } catch {
+        return [];
+      }
+    },
+
+    setControl(id, value) {
+      set({ controls: { ...get().controls, [id]: value }, shots: null, validation: null });
+      scheduleRun(0);
     },
 
     reseed() {
@@ -276,6 +406,7 @@ export const useStore = create<State>((set, get) => {
           shots: 1024,
           seed: seed + Math.floor(Math.random() * 1e6),
           lesson_id: lesson?.id ?? null,
+          controls: get().controls,
         });
         if (response.ok) set({ shots: response });
         else if (response.error) set({ error: response.error });

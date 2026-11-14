@@ -1,0 +1,19 @@
+{
+  "title": "Deutsch-Algorithmus",
+  "summary": "Eine Abfrage entscheidet, ob eine Ein-Bit-Funktion konstant oder balanciert ist.",
+  "mission": "Mit einem einzigen Aufruf von oracle(qc) soll Qubit 0 in |0⟩ enden, wenn die geheime Ein-Bit-Funktion f konstant ist, und in |1⟩, wenn sie balanciert ist.",
+  "prediction": {
+    "question": "Angenommen, das Hilfsqubit steht vor dem Orakel in |0⟩ (nicht in |−⟩) und die Eingabe in |+⟩. Was erhältst du, wenn du die Eingabe misst?",
+    "options": [
+      "Immer 0, wenn f konstant ist, immer 1, wenn sie balanciert ist",
+      "0 oder 1 mit je 50 %, egal wie f aussieht",
+      "Immer den Wert von f(0)"
+    ],
+    "explanation": "Das Orakel erzeugt (|0⟩|f(0)⟩ + |1⟩|f(1)⟩)/√2. Die Eingabe ist mit dem Hilfsqubit verschränkt, und die Messung liefert für jedes f 0 oder 1 mit je 50 %. Parallelität ohne Phase Kickback und abschließende Interferenz liefert keine Information."
+  },
+  "hints": [
+    "Bereite das Hilfsqubit mit qc.x(1) und qc.h(1) in |−⟩ vor: Dann gibt das Orakel die Phase (−1)^f(x) an die Eingabe zurück.",
+    "Bringe Qubit 0 mit einem Hadamard vor dem Orakel in |+⟩ und wende danach erneut ein Hadamard darauf an.",
+    "Reihenfolge: qc.x(1), qc.h(1), qc.h(0), oracle(qc), qc.h(0)."
+  ]
+}

@@ -84,3 +84,8 @@ export const LastIcon = () => (
     <path d="M12 3.5v9M4 3.5 9 8l-5 4.5" />
   </Icon>
 );
+export const ExportIcon = () => (
+  <Icon>
+    <path d="M8 2v8M5 7l3 3 3-3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />
+  </Icon>
+);

@@ -1,19 +1,19 @@
 {
   "title": "Fase Relativa e Rotações",
   "summary": "Estados com as mesmas probabilidades podem ser diferentes: a fase relativa e as portas Z, S, T e Rz.",
-  "mission": "O circuito já prepara |+⟩. Gire o vetor um quarto de volta em torno do eixo Z, até o ponto +Y do equador: o estado (|0⟩ + i|1⟩)/√2.",
+  "mission": "O qubit 0 recebeu um estado de entrada desconhecido e depois uma sequência de portas (X, H, S, T, H). Acrescente portas que desfaçam a sequência, de modo que o qubit volte ao estado de entrada, qualquer que seja ele.",
   "hints": [
-    "Rotações em torno de Z movem o vetor ao longo do equador sem alterar as probabilidades. Experimente qc.z(0) e veja onde o vetor vai parar.",
-    "Z é meia volta (180°). Você precisa de um quarto de volta (90°): a porta S, ou qc.rz(theta, 0) com o ângulo certo.",
-    "Acrescente qc.s(0) depois da Hadamard. Com rz, importe math e use qc.rz(math.pi / 2, 0)."
+    "Para desfazer uma sequência, desfaz-se o último passo primeiro. Não adianta repetir as portas na mesma ordem: é preciso inverter cada uma e percorrer a lista de trás para a frente.",
+    "H e X são o inverso de si mesmas. O inverso de S é S† (qc.sdg(0)) e o inverso de T é T† (qc.tdg(0)).",
+    "Depois de qc.h(0) (a última da sequência), escreva qc.h(0), qc.tdg(0), qc.sdg(0), qc.h(0) e qc.x(0), nessa ordem."
   ],
   "prediction": {
-    "question": "O qubit está em |+⟩, com 50% de chance para cada resultado. Você aplica a porta Z. O que acontece com as probabilidades de medir 0 e 1?",
+    "question": "O qubit está em |+⟩, com fase φ = 0. Você aplica T e depois Z. Onde termina a fase φ?",
     "options": [
-      "Passam a ser 100% e 0%",
-      "Continuam 50% e 50%",
-      "Passam a ser 0% e 100%"
+      "π/4",
+      "5π/4",
+      "π"
     ],
-    "explanation": "A porta Z só troca o sinal da amplitude de |1⟩. Os módulos não mudam, então as probabilidades também não. O que muda é a fase relativa: o vetor vai para o lado oposto do equador."
+    "explanation": "T soma π/4 à fase e Z soma π. As rotações em torno de Z se acumulam: φ = π/4 + π = 5π/4. A ordem não importa, pois todas giram em torno do mesmo eixo."
   }
 }

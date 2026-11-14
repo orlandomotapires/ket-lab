@@ -1,0 +1,81 @@
+{
+  "id": "2.4",
+  "track": 2,
+  "estimated_minutes": 15,
+  "num_qubits": 5,
+  "max_qubits": 5,
+  "default_visualizer": "amplitudes",
+  "available_visualizers": [
+    "amplitudes",
+    "bloch"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "oracle_cases",
+    "register": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tolerance": 0.02,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "oracle"
+    ],
+    "cases": [
+      "0110",
+      "1101",
+      "0001",
+      "1011",
+      {
+        "s": "0110",
+        "b": 1
+      },
+      {
+        "s": "1011",
+        "b": 1
+      },
+      "0000",
+      "1000"
+    ],
+    "gate_counts": {
+      "oracle": 1
+    }
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Quantum complexity theory",
+      "authors": "E. Bernstein, U. Vazirani",
+      "year": 1997,
+      "url": "https://doi.org/10.1137/S0097539796300921"
+    },
+    {
+      "kind": "course",
+      "title": "The Deutsch–Jozsa algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "title": "VQE for Quantum Chemistry",
+  "summary": "Ground-state energy of the H₂ molecule.",
+  "mission": "Find the ground-state energy of H₂ to chemical accuracy: an ansatz that starts from the Hartree-Fock state and applies a double excitation with angle theta, optimized by gradient descent. Click Run to train.",
+  "prediction": {
+    "question": "By the variational principle, the energy measured in any state the circuit prepares is…",
+    "options": [
+      "less than or equal to the ground-state energy",
+      "greater than or equal to the ground-state energy",
+      "always equal to the ground-state energy"
+    ],
+    "explanation": "The ground state has, by definition, the lowest possible energy. Any other state has an energy greater than or equal to it, so minimizing ⟨H⟩ approaches the ground state from above."
+  },
+  "hints": [
+    "The circuit starts with qml.BasisState(hf_state, wires=[0, 1, 2, 3]), the Hartree-Fock state, and applies qml.DoubleExcitation(theta, wires=[0, 1, 2, 3]). It returns qml.expval(H).",
+    "Start with theta = np.array(0.0, requires_grad=True) and create optimizer = qml.GradientDescentOptimizer(stepsize=0.4).",
+    "In a loop of about 40 steps, do theta = optimizer.step(circuit, theta) and store the energy with energies.append(float(circuit(theta)))."
+  ],
+  "messages": {
+    "ok": "Energy of {energy} Ha, {error} Ha from the exact value ({exact} Ha): within chemical accuracy.",
+    "no_circuit": "Define the QNode circuit(theta), which returns qml.expval(H).",
+    "no_theta": "Store the optimized angle in the variable theta.",
+    "wrong_qubits": "H₂ in this basis uses 4 qubits, but the circuit has {count}.",
+    "not_converged": "The prepared state has energy {energy} Ha, {error} Ha from the exact value. Chemical accuracy requires at most 0.0016 Ha: keep optimizing.",
+    "forbidden_op": "Use only the chemistry ansatz (qml.BasisState and excitations). Found: {names}.",
+    "stuck_hf": "The energy is the Hartree–Fock energy ({energy} Ha): theta did not move. Check the optimization loop and the optimizer step size.",
+    "above_hf": "The energy ({energy} Ha) is above even the Hartree–Fock energy: the starting state is probably not hf_state.",
+    "energies_inconsistent": "The energy is right, but the last entry of energies is not the final state's. Store float(circuit(theta)) after each step."
+  }
+}

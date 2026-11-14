@@ -5,7 +5,7 @@
   "hints": [
     "The circuit is already created in the variable qc. Gates are its methods: qc.gate_name(qubit_index).",
     "The gate that swaps |0⟩ and |1⟩ is the Pauli-X, the quantum equivalent of NOT.",
-    "Write qc.x(0) on a new line, after the circuit is created."
+    "Write qc.x(0) on a new line, after the circuit is created. Note: qc.y(0) and qc.rx(pi, 0) also pass, because they differ from X only by a global phase, which cannot be observed."
   ],
   "prediction": {
     "question": "Before writing any code: the X gate rotates the state vector by 180° around the sphere's X axis. Starting at the north pole (|0⟩), where does the vector end up?",

@@ -1,6 +1,6 @@
 from qiskit import QuantumCircuit
 
-# 1 Qubit und 1 klassisches Bit (zum Speichern des Messergebnisses).
-qc = QuantumCircuit(1, 1)
+# 3 Qubits und 3 klassische Bits (zum Speichern der Messergebnisse).
+qc = QuantumCircuit(3, 3)
 
-# Deine Aufgabe: gleichmäßige Superposition auf Qubit 0, dann in Bit 0 messen.
+# Deine Aufgabe: gleichmäßige Superposition auf allen drei Qubits, dann jedes Qubit in das Bit mit demselben Index messen.

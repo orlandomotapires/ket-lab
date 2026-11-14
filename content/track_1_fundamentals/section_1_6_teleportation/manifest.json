@@ -18,7 +18,21 @@
   "validation": {
     "type": "reduced_state",
     "qubit": 2,
-    "trials": 4,
+    "trials": 3,
+    "inputs": [
+      [
+        0,
+        0
+      ],
+      [
+        1.5707963267948966,
+        0
+      ],
+      [
+        1.5707963267948966,
+        1.5707963267948966
+      ]
+    ],
     "tolerance": 0.999,
     "allowed_gates": [
       "psi",
@@ -38,5 +52,27 @@
       ]
     ]
   },
-  "prediction_answer": 1
+  "prediction_answer": 1,
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "1.3.7",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum teleportation",
+      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/quantum-teleportation"
+    },
+    {
+      "kind": "course",
+      "title": "Limitations on quantum information",
+      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/limitations-on-quantum-information"
+    }
+  ]
 }

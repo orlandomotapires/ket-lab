@@ -1,0 +1,66 @@
+{
+  "id": "3.6",
+  "track": 3,
+  "estimated_minutes": 35,
+  "framework": "pennylane",
+  "timeout": 10,
+  "num_qubits": 5,
+  "max_qubits": 5,
+  "qnode": {
+    "name": "circuit",
+    "args": []
+  },
+  "register": {
+    "qubits": [
+      4,
+      3
+    ]
+  },
+  "controls": [
+    {
+      "id": "error",
+      "options": [
+        "none",
+        "x0",
+        "x1",
+        "x2",
+        "x0x1",
+        "z0",
+        "bitflip"
+      ],
+      "default": "x1"
+    }
+  ],
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "histogram",
+    "threshold"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "10.1.1",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Repetition codes",
+      "authors": "IBM Quantum Learning — Foundations of quantum error correction",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Stabilizer codes for quantum error correction",
+      "authors": "PennyLane Demos",
+      "url": "https://pennylane.ai/demos/tutorial_stabilizer_codes/"
+    }
+  ]
+}

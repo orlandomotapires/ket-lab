@@ -21,6 +21,33 @@ export function isDesktop(): boolean {
   return window.__TAURI__ !== undefined;
 }
 
+/**
+ * Abre um link externo no navegador do sistema. Na janela desktop, um link comum
+ * não sai do app; o plugin opener do Tauri faz isso.
+ */
+export function openExternal(url: string): void {
+  if (window.__TAURI__) {
+    void window.__TAURI__.core.invoke("plugin:opener|open_url", { url }).catch(() => undefined);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+/**
+ * Salva um arquivo de texto. No desktop, o shell abre a janela "Salvar como" do
+ * sistema (devolve false se o aluno cancelar); no navegador, vira um download.
+ */
+export async function saveTextFile(contents: string, fileName: string): Promise<boolean> {
+  if (window.__TAURI__) return window.__TAURI__.core.invoke<boolean>("save_text_file", { contents, fileName });
+  const url = URL.createObjectURL(new Blob([contents], { type: "text/plain;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return true;
+}
+
 /** No desktop, envia uma linha de diagnóstico ao terminal do shell. */
 export function reportToShell(message: string): void {
   void window.__TAURI__?.core.invoke("client_log", { message }).catch(() => undefined);
@@ -47,6 +74,13 @@ export type EngineResponse<T> =
 interface Pending {
   resolve: (value: unknown) => void;
   reject: (reason: Error) => void;
+  onEvent?: (event: Record<string, unknown>) => void;
+}
+
+/** Uma requisição em andamento: o id serve para cancelá-la. */
+export interface Request<T> {
+  id: number;
+  done: Promise<EngineResponse<T>>;
 }
 
 const RECONNECT_DELAY_MS = 1500;
@@ -122,13 +156,23 @@ export class EngineClient {
   }
 
   async call<T>(type: string, payload: Record<string, unknown> = {}): Promise<EngineResponse<T>> {
+    return (await this.start<T>(type, payload)).done;
+  }
+
+  /** Como `call`, mas devolve o id e repassa eventos intermediários (progresso de treino). */
+  async start<T>(
+    type: string,
+    payload: Record<string, unknown> = {},
+    onEvent?: (event: Record<string, unknown>) => void,
+  ): Promise<Request<T>> {
     await this.connect();
     const id = this.nextId++;
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve: resolve as (value: unknown) => void, reject });
+    const done = new Promise<EngineResponse<T>>((resolve, reject) => {
+      this.pending.set(id, { resolve: resolve as (value: unknown) => void, reject, onEvent });
       // O idioma vai em toda requisição: o motor responde mensagens e conteúdo nele.
       this.socket!.send(JSON.stringify({ id, type, lang: getLocale(), ...payload }));
     });
+    return { id, done };
   }
 
   dispose(): void {
@@ -137,9 +181,13 @@ export class EngineClient {
   }
 
   private handleMessage(raw: string): void {
-    const message = JSON.parse(raw) as { id: number };
+    const message = JSON.parse(raw) as { id: number; event?: string };
     const entry = this.pending.get(message.id);
     if (!entry) return;
+    if (message.event) {
+      entry.onEvent?.(message);
+      return;
+    }
     this.pending.delete(message.id);
     entry.resolve(message);
   }

@@ -8,7 +8,7 @@
 // valor original antes de o aplicativo ser iniciado.
 import { spawn } from "node:child_process";
 import { createConnection } from "node:net";
-import { existsSync } from "node:fs";
+import { existsSync, rmSync, utimesSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -76,6 +76,17 @@ async function main() {
         "Encerre-o antes de rodar `npm run desktop:dev`.",
     );
     process.exit(1);
+  }
+  if (name === "build") {
+    // O Tauri copia o motor para target/release sem apagar o que já estava lá: lições
+    // renomeadas deixariam pastas antigas (e ids duplicados) dentro do instalador.
+    // A pasta é apagada, e a data do build.rs é atualizada para o cargo rodar o
+    // script de build de novo, que refaz a cópia. Não copiamos por conta própria:
+    // o cpSync do Node transforma os links relativos do PyInstaller em links
+    // absolutos para engine/dist, e o Tauri, ao escrever por cima, truncava os originais.
+    rmSync(join(root, "src-tauri", "target", "release", "qlp-engine"), { recursive: true, force: true });
+    const now = new Date();
+    utimesSync(join(root, "src-tauri", "build.rs"), now, now);
   }
   const child = spawn(selected[0], selected[1], { cwd: root, env: cleanEnvironment(), stdio: "inherit" });
   child.on("exit", (code, signal) => process.exit(code ?? (signal ? 1 : 0)));

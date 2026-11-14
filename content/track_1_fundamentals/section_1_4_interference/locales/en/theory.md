@@ -22,6 +22,14 @@ This is why the phase from the previous lesson matters: on its own it is invisib
 
 The standard measurement distinguishes $|0\rangle$ from $|1\rangle$ (the **Z basis**) and does not distinguish $|+\rangle$ from $|-\rangle$. To tell them apart, apply a Hadamard before measuring: it takes $|+\rangle$ to $|0\rangle$ and $|-\rangle$ to $|1\rangle$. This is equivalent to measuring in the **X basis**.
 
+## Measuring in the middle
+
+In $HH = I$, the cancellation of the two $|1\rangle$ terms only happens because both amplitudes reach the second Hadamard **together**. If you measure the qubit between the two Hadamards, the measurement has already drawn $0$ or $1$ and the state has collapsed to a pole. The second Hadamard then receives $|0\rangle$ or $|1\rangle$ and returns $|+\rangle$ or $|-\rangle$, with a $50\%$ chance for each outcome: the interference is gone. Observing the path destroys the interference.
+
+## Gate order matters
+
+In general $AB \neq BA$. Applying $H$ and then $S$ to $|0\rangle$ gives $|{+i}\rangle$, but applying $S$ and then $H$ gives $|+\rangle$. That is why circuit code reads top to bottom, in the order the gates act, while the matrix product is written the other way around.
+
 ## In the lab
 
 Step through the circuit with the timeline and follow the amplitude table: look at the sign of each amplitude before the last Hadamard and at what remains after it.

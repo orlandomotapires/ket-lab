@@ -1,0 +1,69 @@
+{
+  "id": "2.6",
+  "track": 2,
+  "estimated_minutes": 25,
+  "num_qubits": 3,
+  "max_qubits": 3,
+  "default_visualizer": "dials",
+  "available_visualizers": [
+    "dials",
+    "bloch",
+    "qsphere"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2
+    ]
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "state_cases",
+    "tolerance": 0.999,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "prepare_input",
+      "cp",
+      "crz",
+      "swap",
+      "cx",
+      "cz"
+    ],
+    "cases": [
+      5,
+      1,
+      6,
+      "plus",
+      "mixed"
+    ]
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "5.1",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Phase estimation procedure",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
+    }
+  ]
+}

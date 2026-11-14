@@ -18,6 +18,7 @@ from .i18n import t
 ALLOWED_IMPORTS = frozenset(
     {
         "qiskit",
+        "pennylane",
         "numpy",
         "math",
         "cmath",

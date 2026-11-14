@@ -1,6 +1,6 @@
 from qiskit import QuantumCircuit
 
-# 1 qubit e 1 bit clássico (para guardar o resultado da medição).
-qc = QuantumCircuit(1, 1)
+# 3 qubits e 3 bits clássicos (para guardar os resultados das medições).
+qc = QuantumCircuit(3, 3)
 
-# Sua missão: superposição uniforme no qubit 0, depois medir no bit 0.
+# Sua missão: superposição uniforme nos três qubits, depois medir cada qubit no bit de mesmo índice.

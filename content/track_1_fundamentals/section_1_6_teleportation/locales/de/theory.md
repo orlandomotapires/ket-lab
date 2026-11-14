@@ -35,6 +35,14 @@ with qc.if_test((qc.clbits[1], 1)):
 
 Ohne die beiden Bits hat Bob mit je 25 % Wahrscheinlichkeit einen der vier Zustände, und diese Mischung enthält keinerlei Information über $|\psi\rangle$. Die Teleportation hängt von der klassischen Nachricht ab, die sich höchstens mit Lichtgeschwindigkeit ausbreitet.
 
+## Aufgeschobene Messung
+
+Auf die klassische Nachricht kann man verzichten, wenn Alice und Bob **nicht** getrennt sind, wenn man also auf beide Qubits einwirken darf. Die Messungen und bedingten Korrekturen lassen sich durch kontrollierte Gatter ersetzen: `qc.cx(1, 2)` statt des vom Bit des Qubits 1 abhängigen $X$ und `qc.cz(0, 2)` statt des vom Bit des Qubits 0 abhängigen $Z$, angewendet vor jeder Messung. Das Ergebnis für Bob ist dasselbe. Diese Äquivalenz heißt **Prinzip der aufgeschobenen Messung**. In dieser Lektion ist die Trennung gerade der Kern des Protokolls, deshalb müssen die Korrekturen die klassischen Bits verwenden.
+
+## Was Bob ohne die Bits sieht
+
+Bevor Bob die beiden Bits erhält, weiß er nicht, welcher der vier Fälle der Tabelle eingetreten ist. Für ihn liefert die Messung seines Qubits, egal welches $|\psi\rangle$ vorliegt, mit je $50\%$ eine $0$ oder eine $1$: Der mittlere Zustand ist für jedes $|\psi\rangle$ derselbe und trägt keine Information. Erst nach der klassischen Nachricht weiß er, welche Korrektur anzuwenden ist.
+
 ## Im Labor
 
 Der Tab **Alice × Bob** vergleicht den ursprünglichen Zustand von Alice mit dem aktuellen Zustand von Bob. Verfolge das Protokoll mit der Zeitleiste Schritt für Schritt und nutze „Erneut würfeln“, um andere Messergebnisse zu sehen: Mit den richtigen Korrekturen endet Bob in allen Fällen gleich wie Alice.

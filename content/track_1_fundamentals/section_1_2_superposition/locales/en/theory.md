@@ -18,8 +18,16 @@ Measuring does not reveal a value that was already there. The measurement **draw
 
 That is why a qubit in $|+\rangle$ followed by a measurement is a random bit generator. The randomness does not come from our ignorance of some detail of the system: it is part of the theory.
 
+## Statistical fluctuation
+
+With probability $p$ for an outcome and $N$ repetitions, the expected count is $N p$, but the actual count fluctuates around it with standard deviation $\sigma = \sqrt{N p (1-p)}$. For $N = 100$ and $p = \tfrac{1}{2}$, $\sigma = 5$: seeing $56$ zeros instead of $50$ is normal. The relative fraction fluctuates like $1/\sqrt{N}$, so with more measurements the proportion gets closer to $50\%$. With three qubits, each of the $8$ outcomes has probability $\tfrac{1}{8}$, and the counts also vary from run to run.
+
+## A different input, a different phase
+
+The Hadamard applied to $|1\rangle$ gives $|-\rangle$, with the same $50/50$ probabilities as $|+\rangle$. The difference is only the sign of the $|1\rangle$ amplitude, which a direct measurement does not see. Lesson 1.3 deals with this phase.
+
 ## In the lab
 
-- `QuantumCircuit(1, 1)` creates 1 qubit and 1 classical bit, where the measurement result is stored.
+- `QuantumCircuit(3, 3)` creates 3 qubits and 3 classical bits, where the measurement results are stored.
 - With the cursor on the measurement line, the sphere shows **one** drawn outcome. Use "Draw again" to see another.
 - "Simulate 1024 measurements" repeats the whole circuit 1024 times and shows the count of each outcome.

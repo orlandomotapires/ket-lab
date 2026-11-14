@@ -90,6 +90,19 @@
             "en": "Bell pair, mid-circuit measurement and conditional corrections.",
             "de": "Bell-Paar, Messung mitten im Schaltkreis und bedingte Korrekturen."
           }
+        },
+        {
+          "id": "1.7",
+          "title": {
+            "pt": "Portas Controladas e Identidades",
+            "en": "Controlled Gates and Identities",
+            "de": "Kontrollierte Gatter und Identitäten"
+          },
+          "summary": {
+            "pt": "Construa a porta CS com CNOT e T, e conheça identidades entre portas.",
+            "en": "Build the CS gate from CNOT and T, and learn identities between gates.",
+            "de": "Baue das CS-Gatter aus CNOT und T und lerne Identitäten zwischen Gattern."
+          }
         }
       ]
     },

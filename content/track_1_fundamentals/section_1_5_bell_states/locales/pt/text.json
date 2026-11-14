@@ -8,12 +8,12 @@
     "A solução é qc.h(0) seguida de qc.cx(0, 1). Com o cursor na linha do CNOT, os vetores de Bloch encolhem até o centro."
   ],
   "prediction": {
-    "question": "Os dois qubits estão em |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. Você mede o qubit 0 e obtém 1. O que vai sair ao medir o qubit 1?",
+    "question": "O estado (|00⟩ + |01⟩ − |10⟩ − |11⟩)/2 tem quatro amplitudes diferentes de zero. Ele é emaranhado?",
     "options": [
-      "0 ou 1, com 50% de chance cada",
-      "Sempre 1",
-      "Sempre 0"
+      "Sim: com as quatro amplitudes não nulas, os qubits estão misturados",
+      "Não: é um estado separável, pois a₀₀a₁₁ = a₀₁a₁₀",
+      "Não dá para saber sem medir os dois qubits"
     ],
-    "explanation": "No estado |Φ⁺⟩ só existem as parcelas |00⟩ e |11⟩. Se o qubit 0 deu 1, sobra apenas |11⟩: o qubit 1 dá 1 com certeza. Os resultados são aleatórios, mas sempre iguais."
+    "explanation": "Aqui a₀₀a₁₁ = (1/2)(−1/2) = −1/4 e a₀₁a₁₀ = (1/2)(−1/2) = −1/4: o teste do produto passa. De fato, o estado é |−⟩ no qubit 1 e |+⟩ no qubit 0. Ter várias amplitudes não nulas não significa emaranhamento."
   }
 }

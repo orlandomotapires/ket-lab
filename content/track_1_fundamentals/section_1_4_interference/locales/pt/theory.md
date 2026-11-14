@@ -22,6 +22,14 @@ Essa é a razão de a fase da lição anterior importar: sozinha ela é invisív
 
 A medição padrão distingue $|0\rangle$ de $|1\rangle$ (a **base Z**) e não distingue $|+\rangle$ de $|-\rangle$. Para distingui-los, aplica-se uma Hadamard antes de medir: ela leva $|+\rangle$ a $|0\rangle$ e $|-\rangle$ a $|1\rangle$. Isso equivale a medir na **base X**.
 
+## Medir no meio do caminho
+
+Em $HH = I$, o cancelamento das duas parcelas de $|1\rangle$ só acontece porque as duas amplitudes chegam **juntas** à segunda Hadamard. Se você medir o qubit entre as duas Hadamard, a medição já sorteou $0$ ou $1$ e o estado colapsou para um polo. A segunda Hadamard recebe então $|0\rangle$ ou $|1\rangle$ e devolve $|+\rangle$ ou $|-\rangle$, com $50\%$ de chance para cada resultado: a interferência desapareceu. Observar o caminho destrói a interferência.
+
+## A ordem das portas importa
+
+Em geral $AB \neq BA$. Aplicar $H$ e depois $S$ a $|0\rangle$ dá $|{+i}\rangle$, mas aplicar $S$ e depois $H$ dá $|+\rangle$. Por isso o código do circuito se lê de cima para baixo, na ordem em que as portas agem, e o produto de matrizes se escreve ao contrário.
+
 ## No laboratório
 
 Percorra o circuito com a linha do tempo e acompanhe a tabela de amplitudes: observe o sinal de cada amplitude antes da última Hadamard e o que sobra depois dela.

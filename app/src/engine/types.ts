@@ -88,6 +88,13 @@ export interface Prediction {
   explanation: string;
 }
 
+export interface SearchResult {
+  id: string;
+  track: number;
+  title: string;
+  snippet: string;
+}
+
 export interface Reference {
   kind: "book" | "paper" | "course" | "tutorial";
   title: string;

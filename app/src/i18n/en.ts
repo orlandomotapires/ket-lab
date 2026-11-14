@@ -18,6 +18,10 @@ export const en: Record<MessageKey, string> = {
   "topbar.dark": "Dark theme",
   "topbar.language": "Language",
 
+  "search.label": "Search lessons",
+  "search.placeholder": "Search lessons (e.g. Grover, entanglement)",
+  "search.empty": "No lesson found for “{query}”.",
+
   "hub.loading": "Loading the tracks…",
   "hub.title": "Learning tracks",
   "hub.subtitle": "From the algebra of a single qubit to quantum algorithms, writing code and watching the state change.",

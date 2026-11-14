@@ -18,6 +18,10 @@ export const de: Record<MessageKey, string> = {
   "topbar.dark": "Dunkles Design",
   "topbar.language": "Sprache",
 
+  "search.label": "Lektionen durchsuchen",
+  "search.placeholder": "Lektionen suchen (z. B. Grover, Verschränkung)",
+  "search.empty": "Keine Lektion für „{query}“ gefunden.",
+
   "hub.loading": "Lernpfade werden geladen…",
   "hub.title": "Lernpfade",
   "hub.subtitle": "Von der Algebra eines Qubits bis zu Quantenalgorithmen: Code schreiben und zusehen, wie sich der Zustand ändert.",

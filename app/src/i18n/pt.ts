@@ -149,6 +149,8 @@ export const pt = {
   "viz.graphTop": "Divisões mais prováveis",
   "viz.graphCut": "corte {cut}",
   "viz.graphNote": "Círculos e quadrados são os dois grupos da divisão mais provável; linhas cheias são arestas cortadas.",
+  "viz.trainAccuracy": "Acurácia no treino",
+  "viz.boundaryNote": "Cor = saída ⟨Z⟩ do circuito (azul: classe +1, laranja: −1; mais claro perto da fronteira). Círculos e quadrados são os pontos de treino.",
   "probs.state": "Estado",
   "probs.probability": "Probabilidade",
   "probs.amplitude": "Amplitude",

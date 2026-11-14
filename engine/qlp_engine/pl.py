@@ -169,7 +169,8 @@ def _convert(op, index: dict) -> Op:
     except KeyError as exc:
         raise UserCodeError(t("pl.unknown_wire", wire=exc.args[0]), kind="runtime") from None
     name, num_ctrl, base = NAMES.get(op.name, (op.name, 0, None))
-    params = tuple(_scalar(p) for p in op.parameters if np.ndim(p) == 0)
+    # Com broadcasting (lote de 1 exemplo), parâmetros chegam como arrays de tamanho 1.
+    params = tuple(_scalar(p) for p in op.parameters if np.size(p) == 1)
     k = len(qubits)
     if isinstance(op, qml.operation.Channel):
         kraus = [_little_endian(np.asarray(m, dtype=complex), k) for m in op.kraus_matrices()]
@@ -178,6 +179,8 @@ def _convert(op, index: dict) -> Op:
         matrix = np.asarray(qml.matrix(op), dtype=complex)
     except Exception:  # noqa: BLE001
         raise UserCodeError(t("pl.unsupported", name=op.name), kind="runtime") from None
+    if matrix.ndim == 3:  # broadcasting: desenha o primeiro exemplo do lote
+        matrix = matrix[0]
     return Op("gate", name, qubits, matrix=_little_endian(matrix, k), params=params, num_ctrl=num_ctrl, base=base)
 
 
@@ -193,6 +196,6 @@ def _little_endian(matrix: np.ndarray, k: int) -> np.ndarray:
 
 def _scalar(value) -> float:
     try:
-        return float(np.real(value))
+        return float(np.real(np.asarray(value).reshape(-1)[0]))
     except (TypeError, ValueError):
         return 0.0

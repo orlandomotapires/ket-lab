@@ -150,6 +150,8 @@ export const en: Record<MessageKey, string> = {
   "viz.graphTop": "Most likely splits",
   "viz.graphCut": "cut {cut}",
   "viz.graphNote": "Circles and squares are the two groups of the most likely split; solid lines are cut edges.",
+  "viz.trainAccuracy": "Training accuracy",
+  "viz.boundaryNote": "Color = circuit output ⟨Z⟩ (blue: class +1, orange: −1; lighter near the boundary). Circles and squares are the training points.",
   "probs.state": "State",
   "probs.probability": "Probability",
   "probs.amplitude": "Amplitude",

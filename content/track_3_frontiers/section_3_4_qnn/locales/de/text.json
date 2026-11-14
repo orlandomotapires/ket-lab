@@ -1,0 +1,23 @@
+{
+  "title": "Quanten-neuronale Netze",
+  "summary": "Variationeller Klassifikator mit Data Re-Uploading.",
+  "mission": "Trainiere einen Quantenklassifikator, der die beiden konzentrischen Kreise trennt: Das Vorzeichen von ⟨Z⟩ auf Qubit 0 ist die vorhergesagte Klasse. Er muss mindestens 92 % eines Testdatensatzes richtig erkennen, den du nicht siehst.",
+  "prediction": {
+    "question": "Wenn die Daten nur einmal in den Schaltkreis geladen werden (LAYERS = 1), kann der Klassifikator die Kreise trennen?",
+    "options": ["Ja, über 95 %", "Kaum: Er bleibt bei etwa 70 %", "Nicht über 50 %, reiner Zufall"],
+    "explanation": "Bei nur einem Laden der Daten ist die Ausgabe eine einfache trigonometrische Funktion der Koordinaten und kann einen Kreis in einem anderen nicht gut zeichnen: Das Ergebnis bleibt bei etwa 70 %. Das erneute Laden der Daten in mehreren Schichten (Data Re-Uploading) macht die Funktion reichhaltiger, und mit 3 Schichten übersteigt die Genauigkeit 95 %."
+  },
+  "hints": [
+    "Der Start-Schaltkreis lädt die Daten nur einmal. Erhöhe LAYERS auf 3: Jede Schicht wendet trainierbare Rotationen an und lädt danach x erneut.",
+    "Trainiere mit optimizer = qml.AdamOptimizer(0.1) und weights = optimizer.step(loss, weights) in einer Schleife von etwa 40 Epochen.",
+    "Speichere in jeder Epoche float(loss(weights)) in history. Ist die Genauigkeit im Training hoch und im Test niedrig, hat das Modell die Punkte auswendig gelernt: Trainiere weniger oder verwende weniger Schichten."
+  ],
+  "messages": {
+    "ok": "Genauigkeit von {test} % auf dem Testdatensatz (Schwelle {threshold} %) und {train} % auf dem Trainingsdatensatz.",
+    "no_circuit": "Definiere den QNode circuit(weights, x), der qml.expval(qml.PauliZ(0)) zurückgibt.",
+    "no_weights": "Speichere die trainierten Gewichte in der Variablen weights.",
+    "overfit": "Genauigkeit von {train} % auf dem Trainingsdatensatz, aber nur {test} % auf dem Testdatensatz: Das Modell hat die Trainingspunkte auswendig gelernt, statt die Form zu lernen. Verwende weniger Schichten oder weniger Epochen.",
+    "no_reupload": "Genauigkeit von {test} % auf dem Testdatensatz (Schwelle {threshold} %). Der Schaltkreis lädt die Daten nur {uploads}-mal: Lade x in mehreren Schichten erneut (Data Re-Uploading).",
+    "low_accuracy": "Genauigkeit von {test} % auf dem Testdatensatz (Schwelle {threshold} %). Trainiere mehr Epochen oder passe die Lernrate an."
+  }
+}

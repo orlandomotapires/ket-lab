@@ -292,3 +292,62 @@ export function GraphView({ data }: { data: GraphData }) {
     </>
   );
 }
+
+// --------------------------------------------------------------------------- //
+// Fronteira de decisão (classificador)
+// --------------------------------------------------------------------------- //
+
+export interface BoundaryData {
+  x: number[];
+  y: number[];
+  z: number[][];
+  points: [number, number, number][];
+  train_accuracy: number;
+}
+
+/** Divergente: azul (classe +1) ↔ laranja (classe −1), mais claro perto da fronteira. */
+function divergingColor(value: number): string {
+  const v = Math.max(-1, Math.min(1, value));
+  const [r, g, b] = v >= 0 ? [47, 91, 211] : [214, 120, 30];
+  const strength = 0.15 + 0.7 * Math.abs(v);
+  return `rgba(${r}, ${g}, ${b}, ${strength.toFixed(3)})`;
+}
+
+export function BoundaryView({ data }: { data: BoundaryData }) {
+  const { x, y, z } = data;
+  const size = H - 30;
+  const left = (W - size) / 2 - 40;
+  const top = 6;
+  const cellW = size / x.length;
+  const cellH = size / y.length;
+  const toX = (v: number) => left + ((v - x[0]) / (x[x.length - 1] - x[0])) * size;
+  const toY = (v: number) => top + size - ((v - y[0]) / (y[y.length - 1] - y[0])) * size;
+  const infoX = left + size + 20;
+
+  return (
+    <>
+      <svg className="view2d" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={t("viz.view.boundary")}>
+        {z.map((row, j) =>
+          row.map((value, i) => (
+            <rect key={`${i}-${j}`} x={left + i * cellW} y={top + size - (j + 1) * cellH} width={cellW + 0.5} height={cellH + 0.5} fill={divergingColor(value)} />
+          )),
+        )}
+        <rect className="chart-frame" x={left} y={top} width={size} height={size} />
+        {data.points.map(([px, py, label], k) =>
+          label > 0 ? (
+            <circle key={k} className="boundary-point is-plus" cx={toX(px)} cy={toY(py)} r={3.6} />
+          ) : (
+            <rect key={k} className="boundary-point is-minus" x={toX(px) - 3.2} y={toY(py) - 3.2} width={6.4} height={6.4} />
+          ),
+        )}
+        <circle className="boundary-point is-plus" cx={infoX + 6} cy={top + 14} r={4} />
+        <text className="graph-text" x={infoX + 18} y={top + 18}>+1</text>
+        <rect className="boundary-point is-minus" x={infoX + 2} y={top + 30} width={8} height={8} />
+        <text className="graph-text" x={infoX + 18} y={top + 38}>−1</text>
+        <text className="graph-text" x={infoX} y={top + 68}>{t("viz.trainAccuracy")}</text>
+        <text className="graph-title" x={infoX} y={top + 88}>{formatNumber(data.train_accuracy * 100, 1)}%</text>
+      </svg>
+      <div className="stage-footer">{t("viz.boundaryNote")}</div>
+    </>
+  );
+}

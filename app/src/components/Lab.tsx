@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
@@ -14,9 +15,26 @@ export function Lab() {
   const key = lesson?.id ?? "sandbox";
   // Lições sem circuito (kit de matemática) não têm painel de circuito.
   const hasCircuit = lesson?.framework !== "python";
+  // Telas estreitas: um painel por vez, escolhido nas abas (em telas largas as abas somem).
+  const panes: Pane[] = lesson ? ["theory", "code", "state"] : ["code", "state"];
+  const [chosen, setPane] = useState<Pane>(lesson ? "theory" : "code");
+  const pane = panes.includes(chosen) ? chosen : panes[0];
+  const paneClass = (name: Pane) => `pane${pane === name ? " is-active" : ""}`;
   return (
     <div className={`lab${lesson ? "" : " is-sandbox"}`}>
-      <TheoryPanel />
+      <div className="lab-tabs segmented" role="tablist" aria-label={t("lab.panes")}>
+        {panes.map((name) => (
+          <button key={name} role="tab" aria-selected={pane === name} onClick={() => setPane(name)}>
+            {t(`lab.pane.${name}`)}
+          </button>
+        ))}
+      </div>
+      {lesson && (
+        <div className={paneClass("theory")}>
+          <TheoryPanel />
+        </div>
+      )}
+      <div className={paneClass("code")}>
       <div className="column">
         <section className="panel editor-panel" aria-label={t("lab.codeAria")}>
           <div className="panel-head">
@@ -37,11 +55,16 @@ export function Lab() {
           <Timeline />
         </section>}
       </div>
-      <Visualizer key={key} lesson={lesson} />
+      </div>
+      <div className={paneClass("state")}>
+        <Visualizer key={key} lesson={lesson} />
+      </div>
       <OracleBar />
     </div>
   );
 }
+
+type Pane = "theory" | "code" | "state";
 
 /** Laboratório livre: troca o código por um exemplo pronto (circuito ou treino). */
 function ExamplePicker() {

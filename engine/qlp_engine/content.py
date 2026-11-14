@@ -109,7 +109,10 @@ class ContentLibrary:
         weights = {"title": 8, "summary": 4, "mission": 3, "hints": 2, "theory": 1}
         results = []
         for lesson_id in self._lessons:
-            lesson = self.lesson(lesson_id)
+            try:
+                lesson = self.lesson(lesson_id)
+            except (ContentError, KeyError):  # lição incompleta não derruba a busca das outras
+                continue
             fields = {
                 "title": lesson["title"],
                 "summary": lesson["summary"],

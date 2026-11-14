@@ -38,7 +38,7 @@ export async function openLessonBySearch(page: Page, query: string, lessonId: st
   const result = page.locator(".search-result", { has: page.locator(".search-result-id", { hasText: lessonId }) });
   await result.first().click();
   await expect(page.locator(".crumb-id")).toHaveText(lessonId);
-  await expect(page.locator(".editor .view-lines")).toBeVisible();
+  await expect(page.locator(".editor .view-lines")).toBeAttached();
 }
 
 /** Troca todo o código do editor. Cola pela área de transferência: digitar faria o

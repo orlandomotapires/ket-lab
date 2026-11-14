@@ -18,8 +18,16 @@ Medir não revela um valor que já estava lá. A medição **sorteia** um result
 
 Por isso um qubit em $|+\rangle$ seguido de uma medição é um gerador de bits aleatórios. A aleatoriedade não vem de desconhecermos algum detalhe do sistema: ela faz parte da teoria.
 
+## Flutuação estatística
+
+Com probabilidade $p$ para um resultado e $N$ repetições, a contagem esperada é $N p$, mas a contagem real oscila em torno dela com desvio-padrão $\sigma = \sqrt{N p (1-p)}$. Para $N = 100$ e $p = \tfrac{1}{2}$, $\sigma = 5$: ver $56$ zeros em vez de $50$ é normal. Já a fração relativa oscila como $1/\sqrt{N}$, então com mais medições a proporção chega mais perto de $50\%$. Com três qubits, cada um dos $8$ resultados tem probabilidade $\tfrac{1}{8}$, e as contagens também variam de uma execução para outra.
+
+## Outra entrada, outra fase
+
+A Hadamard aplicada a $|1\rangle$ dá $|-\rangle$, com as mesmas probabilidades $50/50$ de $|+\rangle$. A diferença está só no sinal da amplitude de $|1\rangle$, que a medição direta não vê. A lição 1.3 trata dessa fase.
+
 ## No laboratório
 
-- `QuantumCircuit(1, 1)` cria 1 qubit e 1 bit clássico, onde o resultado da medição é guardado.
+- `QuantumCircuit(3, 3)` cria 3 qubits e 3 bits clássicos, onde os resultados das medições são guardados.
 - Com o cursor na linha da medição, a esfera mostra **um** resultado sorteado. Use "Sortear de novo" para ver outro.
 - "Simular 1024 medições" repete o circuito inteiro 1024 vezes e mostra a contagem de cada resultado.

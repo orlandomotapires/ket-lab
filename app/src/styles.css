@@ -656,7 +656,7 @@ button {
 /* teoria */
 
 .theory .panel-scroll {
-  padding: 24px 24px 28px;
+  padding: 20px 24px 28px;
 }
 .lesson-eyebrow {
   font-size: 12.5px;
@@ -674,6 +674,9 @@ button {
   font-size: 14.5px;
   line-height: 1.7;
   color: var(--text-2);
+}
+.prose > :first-child {
+  margin-top: 0;
 }
 .prose h2 {
   font-size: 15px;
@@ -812,20 +815,40 @@ button {
   border-color: var(--error);
 }
 
-.mission {
+.lesson-head {
   flex: none;
-  max-height: 46%;
+  max-height: 55%;
   overflow: auto;
-  padding: 14px 20px 16px;
-  border-top: 1px solid var(--line);
-  background: var(--surface-2);
+  padding: 20px 24px 18px;
+  border-bottom: 1px solid var(--line);
 }
-.mission .card-title {
+.lesson-head .lesson-title {
+  margin-bottom: 14px;
+}
+.mission {
+  padding: 12px 14px 14px;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+.mission-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--accent-text);
 }
 .mission p {
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.mission.is-done {
+  background: var(--success-soft);
+}
+.mission.is-done .mission-title {
+  color: var(--success);
 }
 .hints {
   margin: 10px 0 0;

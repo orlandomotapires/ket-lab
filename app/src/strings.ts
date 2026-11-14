@@ -80,6 +80,7 @@ const STRINGS = {
   "theory.correct": "Exactly.",
   "theory.wrong": "Not quite.",
   "theory.mission": "Mission",
+  "theory.missionDone": "Mission complete",
   "theory.hint": "Show hint {n} of {total}",
 
   "theory.references": "Further reading",

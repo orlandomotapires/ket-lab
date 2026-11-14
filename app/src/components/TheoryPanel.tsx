@@ -3,7 +3,7 @@ import { openExternal } from "../engine/client";
 import type { Prediction, Reference } from "../engine/types";
 import { t } from "../strings";
 import { useStore } from "../state/store";
-import { TargetIcon } from "./icons";
+import { CheckIcon, TargetIcon } from "./icons";
 import { Markdown } from "./Markdown";
 
 function PredictionCard({ prediction }: { prediction: Prediction }) {
@@ -75,39 +75,42 @@ export function TheoryPanel() {
   const lesson = useStore((s) => s.lesson);
   const hintsShown = useStore((s) => s.hintsShown);
   const showNextHint = useStore((s) => s.showNextHint);
+  const completed = useStore((s) => Boolean(s.lesson && (s.validation?.passed || s.progress[s.lesson.id]?.completed)));
   if (!lesson) return null;
 
   return (
     <aside className="panel theory" aria-label={t("theory.aria")}>
-      <div className="panel-scroll">
+      {/* Título e missão ficam fixos no topo: o objetivo da tela vem antes da teoria. */}
+      <header className="lesson-head">
         <p className="lesson-eyebrow">
           {t("theory.section", { id: lesson.id })}
-          {lesson.estimated_minutes ? ` · ${t("theory.minutes", { minutes: lesson.estimated_minutes })}` : ""}
+          {lesson.estimated_minutes ? `, ${t("theory.minutes", { minutes: lesson.estimated_minutes })}` : ""}
         </p>
         <h1 className="lesson-title">{lesson.title}</h1>
+        <section className={`mission${completed ? " is-done" : ""}`} aria-labelledby="mission-title">
+          <h2 className="mission-title" id="mission-title">
+            {completed ? <CheckIcon size={14} /> : <TargetIcon />}
+            {completed ? t("theory.missionDone") : t("theory.mission")}
+          </h2>
+          <p>{lesson.mission}</p>
+          {hintsShown > 0 && (
+            <ol className="hints">
+              {lesson.hints.slice(0, hintsShown).map((hint, index) => (
+                <li key={index}>{hint}</li>
+              ))}
+            </ol>
+          )}
+          {hintsShown < lesson.hints.length && (
+            <button className="btn btn-sm" onClick={showNextHint}>
+              {t("theory.hint", { n: hintsShown + 1, total: lesson.hints.length })}
+            </button>
+          )}
+        </section>
+      </header>
+      <div className="panel-scroll">
         <Markdown>{lesson.theory}</Markdown>
         {lesson.prediction && <PredictionCard key={lesson.id} prediction={lesson.prediction} />}
         {lesson.references?.length ? <References items={lesson.references} /> : null}
-      </div>
-
-      {/* A missão fica fixa no rodapé do painel: sempre visível, mesmo com a teoria rolada. */}
-      <div className="mission">
-        <h3 className="card-title">
-          <TargetIcon /> {t("theory.mission")}
-        </h3>
-        <p>{lesson.mission}</p>
-        {hintsShown > 0 && (
-          <ol className="hints">
-            {lesson.hints.slice(0, hintsShown).map((hint, index) => (
-              <li key={index}>{hint}</li>
-            ))}
-          </ol>
-        )}
-        {hintsShown < lesson.hints.length && (
-          <button className="btn btn-sm" onClick={showNextHint}>
-            {t("theory.hint", { n: hintsShown + 1, total: lesson.hints.length })}
-          </button>
-        )}
       </div>
     </aside>
   );

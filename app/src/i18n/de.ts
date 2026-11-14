@@ -150,6 +150,8 @@ export const de: Record<MessageKey, string> = {
   "viz.graphTop": "Wahrscheinlichste Aufteilungen",
   "viz.graphCut": "Schnitt {cut}",
   "viz.graphNote": "Kreise und Quadrate sind die beiden Gruppen der wahrscheinlichsten Aufteilung; durchgezogene Linien sind geschnittene Kanten.",
+  "viz.trainAccuracy": "Trainingsgenauigkeit",
+  "viz.boundaryNote": "Farbe = Ausgabe ⟨Z⟩ des Schaltkreises (blau: Klasse +1, orange: −1; heller nahe der Grenze). Kreise und Quadrate sind die Trainingspunkte.",
   "probs.state": "Zustand",
   "probs.probability": "Wahrscheinlichkeit",
   "probs.amplitude": "Amplitude",

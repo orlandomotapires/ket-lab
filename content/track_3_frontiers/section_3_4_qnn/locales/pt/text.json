@@ -1,0 +1,23 @@
+{
+  "title": "Redes Neurais Quânticas",
+  "summary": "Classificador variacional com data re-uploading.",
+  "mission": "Treine um classificador quântico que separe os dois círculos concêntricos: o sinal de ⟨Z⟩ no qubit 0 é a classe prevista. Ele precisa acertar pelo menos 92% de um conjunto de teste que você não vê.",
+  "prediction": {
+    "question": "Com os dados carregados uma única vez no circuito (LAYERS = 1), o classificador consegue separar os círculos?",
+    "options": ["Sim, acima de 95%", "Mal: fica perto de 70%", "Não passa de 50%, o acaso"],
+    "explanation": "Com uma única carga dos dados, a saída é uma função trigonométrica simples das coordenadas e não desenha bem um círculo dentro do outro: o resultado fica perto de 70%. Recarregar os dados em várias camadas (data re-uploading) torna a função mais rica, e com 3 camadas a acurácia passa de 95%."
+  },
+  "hints": [
+    "O circuito inicial carrega os dados uma vez só. Aumente LAYERS para 3: cada camada aplica rotações treináveis e depois carrega x de novo.",
+    "Treine com optimizer = qml.AdamOptimizer(0.1) e weights = optimizer.step(loss, weights) num laço de cerca de 40 épocas.",
+    "Guarde float(loss(weights)) em history a cada época. Se a acurácia de treino for alta e a de teste baixa, o modelo decorou os pontos: treine menos ou use menos camadas."
+  ],
+  "messages": {
+    "ok": "Acurácia de {test}% no conjunto de teste (limiar {threshold}%), e {train}% no treino.",
+    "no_circuit": "Defina o QNode circuit(weights, x), que devolve qml.expval(qml.PauliZ(0)).",
+    "no_weights": "Guarde os pesos treinados na variável weights.",
+    "overfit": "Acurácia de {train}% no treino, mas só {test}% no teste: o modelo decorou os pontos de treino em vez de aprender a forma. Use menos camadas ou menos épocas.",
+    "no_reupload": "Acurácia de {test}% no teste (limiar {threshold}%). O circuito carrega os dados só {uploads} vezes: recarregue x em várias camadas (data re-uploading).",
+    "low_accuracy": "Acurácia de {test}% no teste (limiar {threshold}%). Treine por mais épocas ou ajuste a taxa de aprendizado."
+  }
+}

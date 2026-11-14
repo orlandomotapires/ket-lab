@@ -35,3 +35,7 @@ Für jedes Bit $s_i = 1$ wendet das Orakel ein CNOT von Qubit $i$ auf das Hilfsq
 ## Im Labor
 
 Im Tab **Amplituden** ist nach dem Orakel die Hälfte der Vorzeichen negativ, in einem Muster, das $s$ codiert. Nach den Hadamards konzentriert sich die gesamte Amplitude auf einen einzigen Zustand. Lies $s$ mit Qubit 0 rechts ab. Bei der Validierung wird der Schaltkreis mit mehreren geheimen Bitfolgen getestet.
+
+## Hinweis zur Notation
+
+Viele Lehrbücher schreiben Qubit 0 **links** in die Bezeichnung, etwa $|x_0 x_1 x_2\rangle$. Qiskit, und damit dieses Labor, schreibt Qubit 0 **rechts**: $|q_2 q_1 q_0\rangle$. Beim Vergleich mit einem Lehrbuch können die Bezeichnungen daher vertauscht erscheinen.

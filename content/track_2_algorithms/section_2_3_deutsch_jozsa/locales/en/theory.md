@@ -36,3 +36,7 @@ If $f$ is constant, this average is $\pm 1$ and the input ends in $|000\rangle$ 
 ## In the lab
 
 The **Amplitudes** tab shows the state of the input register, with sign. Before the last layer of Hadamards, look at the signs the oracle imprinted; after it, watch interference concentrate all the amplitude in $|000\rangle$ or wipe it out. The oracle in this lab is balanced. During validation, your circuit is tested against several secret oracles, constant and balanced.
+
+## A note on notation
+
+Many textbooks write qubit 0 on the **left** of the label, as in $|x_0 x_1 x_2\rangle$. Qiskit, and therefore this lab, writes qubit 0 on the **right**: $|q_2 q_1 q_0\rangle$. When comparing with a textbook, labels may appear reversed.

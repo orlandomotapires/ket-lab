@@ -35,3 +35,7 @@ For each bit $s_i = 1$, the oracle applies a CNOT from qubit $i$ to the auxiliar
 ## In the lab
 
 In the **Amplitudes** tab, after the oracle half of the signs are negative, in a pattern that encodes $s$. After the Hadamards, all the amplitude concentrates in a single state. Read $s$ with qubit 0 on the right. During validation, the circuit is tested with several secret strings.
+
+## A note on notation
+
+Many textbooks write qubit 0 on the **left** of the label, as in $|x_0 x_1 x_2\rangle$. Qiskit, and therefore this lab, writes qubit 0 on the **right**: $|q_2 q_1 q_0\rangle$. When comparing with a textbook, labels may appear reversed.

@@ -36,3 +36,7 @@ Se $f$ é constante, essa média vale $\pm 1$ e a entrada termina em $|000\rangl
 ## No laboratório
 
 A aba **Amplitudes** mostra o estado do registrador de entrada, com sinal. Antes da última camada de Hadamards, veja os sinais que o oráculo imprimiu; depois dela, veja a interferência concentrar toda a amplitude em $|000\rangle$ ou zerá-la. O oráculo deste laboratório é balanceado. Na validação, o seu circuito é testado contra vários oráculos secretos, constantes e balanceados.
+
+## Nota sobre a notação
+
+Muitos livros escrevem o qubit 0 à **esquerda** do rótulo, como em $|x_0 x_1 x_2\rangle$. O Qiskit, e portanto este laboratório, escreve o qubit 0 à **direita**: $|q_2 q_1 q_0\rangle$. Ao comparar com um livro, os rótulos podem aparecer invertidos.

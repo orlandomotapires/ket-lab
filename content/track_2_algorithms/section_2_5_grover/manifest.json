@@ -67,5 +67,28 @@
         "1111"
       ]
     ]
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "6.1",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "paper",
+      "title": "A fast quantum mechanical algorithm for database search",
+      "authors": "L. K. Grover",
+      "year": 1996,
+      "url": "https://arxiv.org/abs/quant-ph/9605043"
+    },
+    {
+      "kind": "course",
+      "title": "Description of Grover's algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/grover-algorithm-description"
+    }
+  ]
 }

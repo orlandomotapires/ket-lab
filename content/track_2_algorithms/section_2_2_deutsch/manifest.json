@@ -41,10 +41,45 @@
       "oracle": 1
     },
     "cases": [
-      [0, 0],
-      [1, 1],
-      [0, 1],
-      [1, 0]
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ]
     ]
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "1.4.3",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "paper",
+      "title": "Quantum theory, the Church–Turing principle and the universal quantum computer",
+      "authors": "D. Deutsch",
+      "year": 1985,
+      "url": "https://doi.org/10.1098/rspa.1985.0070"
+    },
+    {
+      "kind": "course",
+      "title": "Deutsch's algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-algorithm"
+    }
+  ]
 }

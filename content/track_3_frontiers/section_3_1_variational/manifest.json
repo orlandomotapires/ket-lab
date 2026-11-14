@@ -1,0 +1,15 @@
+{
+  "id": "3.1",
+  "track": 3,
+  "estimated_minutes": 25,
+  "framework": "pennylane",
+  "live": false,
+  "timeout": 15,
+  "num_qubits": 1,
+  "max_qubits": 4,
+  "qnode": { "name": "circuit", "args": ["params"] },
+  "default_visualizer": "landscape",
+  "available_visualizers": ["landscape", "convergence", "bloch"],
+  "prediction_answer": 2,
+  "validation": { "type": "custom" }
+}

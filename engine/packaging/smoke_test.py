@@ -18,6 +18,7 @@ from websockets.asyncio.client import connect
 ENGINE = Path(__file__).resolve().parents[1]
 DEFAULT = ENGINE / "dist" / "qlp-engine" / ("qlp-engine.exe" if sys.platform == "win32" else "qlp-engine")
 CODE = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)\n"
+NOISY_SOLUTION = (ENGINE.parent / "content" / "track_3_frontiers" / "section_3_5_density" / "solution.py").read_text(encoding="utf-8")
 
 
 async def exercise(port: int, token: str) -> None:
@@ -37,6 +38,12 @@ async def exercise(port: int, token: str) -> None:
 
         validation = await call(id=3, type="validate", code=CODE, lesson_id="1.1")
         assert validation["passed"], validation
+
+        # Trilha 3: PennyLane com ruído (default.mixed) e análise.
+        started = time.perf_counter()
+        noisy = await call(id=4, type="validate", code=NOISY_SOLUTION, lesson_id="3.5")
+        assert noisy["passed"], noisy
+        print(f"lição PennyLane com ruído validada em {time.perf_counter() - started:.2f} s")
         print(f"primeira execução: {first:.2f} s | execução aquecida: {warm * 1000:.1f} ms")
 
 

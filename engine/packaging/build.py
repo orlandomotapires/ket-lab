@@ -32,6 +32,12 @@ def main() -> None:
             "--collect-submodules", "qlp_engine",
             # O Qiskit carrega partes de si mesmo dinamicamente.
             "--collect-all", "qiskit",
+            # O PennyLane descobre dispositivos (default.qubit, default.mixed) por entry
+            # points: os metadados dos pacotes precisam ir junto.
+            "--collect-all", "pennylane",
+            "--copy-metadata", "pennylane",
+            "--collect-all", "autoray",
+            "--collect-submodules", "autograd",
             "--exclude-module", "tkinter",
             "--exclude-module", "matplotlib",
             "--exclude-module", "IPython",

@@ -8,7 +8,7 @@
 // valor original antes de o aplicativo ser iniciado.
 import { spawn } from "node:child_process";
 import { createConnection } from "node:net";
-import { existsSync } from "node:fs";
+import { cpSync, existsSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -76,6 +76,15 @@ async function main() {
         "Encerre-o antes de rodar `npm run desktop:dev`.",
     );
     process.exit(1);
+  }
+  if (name === "build") {
+    // O Tauri copia o motor para target/release sem apagar o que já estava lá: lições
+    // renomeadas deixariam pastas antigas (e ids duplicados) dentro do instalador.
+    // Por isso a cópia é refeita aqui, a partir do motor recém-empacotado.
+    const target = join(root, "src-tauri", "target", "release", "qlp-engine");
+    rmSync(target, { recursive: true, force: true });
+    const packaged = join(root, "engine", "dist", "qlp-engine");
+    if (existsSync(packaged)) cpSync(packaged, target, { recursive: true });
   }
   const child = spawn(selected[0], selected[1], { cwd: root, env: cleanEnvironment(), stdio: "inherit" });
   child.on("exit", (code, signal) => process.exit(code ?? (signal ? 1 : 0)));

@@ -151,7 +151,7 @@ def test_counts_with_mid_circuit_measurement():
 
 
 def test_qubit_cap():
-    with pytest.raises(simulator.SimulationError, match="limite"):
+    with pytest.raises(simulator.SimulationError, match="limit"):
         simulator.run_trajectory(QuantumCircuit(11))
     with pytest.raises(simulator.SimulationError):
         simulator.run_trajectory(QuantumCircuit(4), max_qubits=3)

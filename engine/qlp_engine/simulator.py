@@ -18,7 +18,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import ClassicalRegister, Clbit, Gate
 from qiskit.quantum_info import Operator
 
-from .i18n import t
+from .messages import t
 
 DEFAULT_MAX_QUBITS = 10
 MAX_INSTRUCTIONS = 2000

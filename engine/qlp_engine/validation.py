@@ -17,8 +17,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import simulator, tracer
-from .i18n import current as current_lang
-from .i18n import percent, t
+from .messages import percent, t
 
 DEFAULT_TOLERANCE = 0.999
 DEFAULT_DISTRIBUTION_TOLERANCE = 0.05
@@ -249,7 +248,7 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
     `ns` é o namespace do aluno; `run_case(entrada)` executa o código de novo com
     `_QLP_INPUT = entrada` e devolve o namespace. check() devolve
     {"passed", "key", "params"}; a mensagem vem de `messages[key]` no text.json
-    do idioma atual.
+    da lição.
     """
     pennylane = lesson.get("framework") == "pennylane"
 
@@ -275,13 +274,11 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
 
 
 def _format_param(value):
-    """Números com o separador decimal do idioma; o resto como texto."""
+    """Números com até 4 casas; o resto como texto."""
     if isinstance(value, float):
-        if 0 < abs(value) < 1e-4:  # erros desprezíveis: "< 0,0001" em vez de notação científica
-            text = "< 0.0001"
-            return text if current_lang() == "en" else text.replace(".", ",")
-        text = f"{value:.4f}".rstrip("0").rstrip(".")
-        return text if current_lang() == "en" else text.replace(".", ",")
+        if 0 < abs(value) < 1e-4:  # erros desprezíveis: "< 0.0001" em vez de notação científica
+            return "< 0.0001"
+        return f"{value:.4f}".rstrip("0").rstrip(".")
     return value
 
 

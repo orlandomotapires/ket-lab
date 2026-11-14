@@ -20,7 +20,7 @@ from urllib.parse import parse_qs, urlparse
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosed
 
-from . import i18n
+from . import messages
 from .content import ContentError, ContentLibrary
 from .pool import WorkerPool
 from .progress import ProgressStore
@@ -90,13 +90,11 @@ class EngineServer:
         try:
             message = json.loads(raw)
             request_id = message.get("id")
-            # Vale para esta tarefa e para a thread do pool que ela usar.
-            i18n.set_lang(message.get("lang"))
             response = await self._dispatch(message, latest_run, websocket)
         except ContentError as exc:
             response = _error(str(exc), "content")
         except (json.JSONDecodeError, KeyError, TypeError, ValueError, AttributeError) as exc:
-            response = _error(i18n.t("server.bad_request", detail=exc), "protocol")
+            response = _error(messages.t("server.bad_request", detail=exc), "protocol")
         response["id"] = request_id
         try:
             await websocket.send(json.dumps(response, ensure_ascii=False))
@@ -108,15 +106,15 @@ class EngineServer:
         _log(f"{kind} {message.get('lesson_id') or ''}".rstrip())
 
         if kind == "catalog":
-            catalog = self.content.catalog(i18n.current())
+            catalog = self.content.catalog()
             return {"ok": True, "catalog": catalog, "progress": self.progress.all()}
 
         if kind == "lesson":
-            return {"ok": True, "lesson": self.content.lesson(message["lesson_id"], i18n.current())}
+            return {"ok": True, "lesson": self.content.lesson(message["lesson_id"])}
 
         if kind == "search":
             query = str(message.get("query", ""))[:100]
-            return {"ok": True, "results": self.content.search(query, i18n.current())}
+            return {"ok": True, "results": self.content.search(query)}
 
         if kind == "progress.save":
             self.progress.save(
@@ -134,13 +132,13 @@ class EngineServer:
         if kind in ("run", "shots", "validate", "export"):
             code = message["code"]
             if not isinstance(code, str) or len(code) > MAX_CODE_CHARS:
-                return _error(i18n.t("server.bad_code"), "protocol")
+                return _error(messages.t("server.bad_code"), "protocol")
             lesson_id = message.get("lesson_id")
-            job = {"type": kind, "code": code, "seed": message.get("seed", 0), "lang": i18n.current()}
+            job = {"type": kind, "code": code, "seed": message.get("seed", 0)}
 
             timeout = self.content.timeout(lesson_id)
             if kind == "validate":
-                job["lesson"] = self.content.validation_bundle(lesson_id, i18n.current())
+                job["lesson"] = self.content.validation_bundle(lesson_id)
                 # Validar pode reexecutar o código várias vezes (casos secretos, treinos).
                 result = await self.pool.submit(job, timeout=timeout * 3 if timeout else None)
                 if result.get("passed"):
@@ -164,7 +162,7 @@ class EngineServer:
             seq = latest_run["seq"]
             return await self.pool.submit(job, timeout=timeout, is_stale=lambda: seq != latest_run["seq"])
 
-        return _error(i18n.t("server.unknown_type", kind=kind), "protocol")
+        return _error(messages.t("server.unknown_type", kind=kind), "protocol")
 
     async def _train(self, job: dict, message: dict, websocket, timeout: float | None) -> dict:
         """Execução longa pelo botão: envia as métricas de `report(...)` enquanto roda."""

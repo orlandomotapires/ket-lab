@@ -1,13 +1,12 @@
-"""Carrega o catálogo e as lições da pasta /content, no idioma pedido.
+"""Carrega o catálogo e as lições da pasta /content.
 
 Estrutura de uma lição:
-    manifest.json            estrutura (visualizações, validação); sem texto
-    solution.py              solução de referência (define o alvo)
-    hidden_setup.py          opcional: preparação oculta, oráculos
-    locales/<idioma>/
-        text.json            título, resumo, missão, previsão, dicas
-        theory.md            teoria
-        starter_code.py      código inicial (com comentários no idioma)
+    manifest.json        estrutura (visualizações, validação); sem texto
+    text.json            título, resumo, missão, previsão, dicas
+    theory.md            teoria
+    starter_code.py      código inicial
+    solution.py          solução de referência (define o alvo)
+    hidden_setup.py      opcional: preparação oculta, oráculos
 
 Este módulo não importa o Qiskit: roda no processo do servidor, que precisa
 iniciar rápido. Tudo que exige simulação acontece no worker.
@@ -20,10 +19,9 @@ import re
 import unicodedata
 from pathlib import Path
 
-from . import i18n
+from .messages import t
 
 REQUIRED_MANIFEST_KEYS = ("id", "track", "num_qubits", "validation")
-LOCALIZED_FILES = ("text.json", "theory.md", "starter_code.py")
 
 
 class ContentError(Exception):
@@ -49,21 +47,20 @@ class ContentLibrary:
     def lesson_ids(self) -> list[str]:
         return list(self._lessons)
 
-    def catalog(self, lang: str | None = None) -> dict:
-        """Currículo completo no idioma pedido; cada seção indica se já tem conteúdo."""
-        lang = i18n.normalize(lang)
+    def catalog(self) -> dict:
+        """Currículo completo; cada seção indica se já tem conteúdo."""
         raw = _read_json(self.root / "catalog.json")
         return {
             "tracks": [
                 {
                     "id": track["id"],
-                    "title": _pick(track["title"], lang),
-                    "level": _pick(track["level"], lang),
+                    "title": track["title"],
+                    "level": track["level"],
                     "sections": [
                         {
                             "id": section["id"],
-                            "title": _pick(section["title"], lang),
-                            "summary": _pick(section["summary"], lang),
+                            "title": section["title"],
+                            "summary": section["summary"],
                             "available": section["id"] in self._lessons,
                         }
                         for section in track["sections"]
@@ -73,12 +70,11 @@ class ContentLibrary:
             ]
         }
 
-    def lesson(self, lesson_id: str, lang: str | None = None) -> dict:
+    def lesson(self, lesson_id: str) -> dict:
         """Tudo que o frontend precisa para abrir a lição (sem a solução)."""
         folder = self._folder(lesson_id)
         manifest = _read_json(folder / "manifest.json")
-        locale = self._locale_dir(folder, i18n.normalize(lang))
-        text = _read_json(locale / "text.json")
+        text = _read_json(folder / "text.json")
 
         lesson = {k: v for k, v in manifest.items() if k not in ("validation", "prediction_answer")}
         lesson.update({k: text[k] for k in ("title", "summary", "mission", "hints")})
@@ -95,13 +91,12 @@ class ContentLibrary:
                  "option_labels": labels.get(control["id"], {}).get("options", {})}
                 for control in manifest["controls"]
             ]
-        lesson["theory"] = _read_text(locale / "theory.md")
-        lesson["starter_code"] = _read_text(locale / "starter_code.py")
-        lesson["lang"] = locale.name
+        lesson["theory"] = _read_text(folder / "theory.md")
+        lesson["starter_code"] = _read_text(folder / "starter_code.py")
         return lesson
 
-    def search(self, query: str, lang: str | None = None, limit: int = 8) -> list[dict]:
-        """Busca nas lições do idioma pedido: título, resumo, missão, dicas e teoria.
+    def search(self, query: str, limit: int = 8) -> list[dict]:
+        """Busca nas lições: título, resumo, missão, dicas e teoria.
 
         Ignora acentos e maiúsculas; todas as palavras da busca precisam aparecer.
         Ordena por relevância (título pesa mais que o corpo da teoria) e devolve um
@@ -113,7 +108,7 @@ class ContentLibrary:
         weights = {"title": 8, "summary": 4, "mission": 3, "hints": 2, "theory": 1}
         results = []
         for lesson_id in self._lessons:
-            lesson = self.lesson(lesson_id, lang)
+            lesson = self.lesson(lesson_id)
             fields = {
                 "title": lesson["title"],
                 "summary": lesson["summary"],
@@ -137,14 +132,10 @@ class ContentLibrary:
         results.sort(key=lambda r: (-r["score"], r["id"]))
         return results[:limit]
 
-    def starter_code(self, lesson_id: str, lang: str) -> str:
-        return _read_text(self._locale_dir(self._folder(lesson_id), lang) / "starter_code.py")
+    def starter_code(self, lesson_id: str) -> str:
+        return _read_text(self._folder(lesson_id) / "starter_code.py")
 
-    def locales(self, lesson_id: str) -> list[str]:
-        folder = self._folder(lesson_id) / "locales"
-        return sorted(p.name for p in folder.iterdir() if p.is_dir()) if folder.is_dir() else []
-
-    def validation_bundle(self, lesson_id: str, lang: str | None = None) -> dict:
+    def validation_bundle(self, lesson_id: str) -> dict:
         """Dados que o worker precisa para validar (inclui a solução de referência)."""
         folder = self._folder(lesson_id)
         manifest = _read_json(folder / "manifest.json")
@@ -158,7 +149,7 @@ class ContentLibrary:
         }
         if manifest["validation"]["type"] == "custom":
             bundle["check"] = _read_text(folder / "check.py")
-            text = _read_json(self._locale_dir(folder, i18n.normalize(lang)) / "text.json")
+            text = _read_json(folder / "text.json")
             bundle["messages"] = text.get("messages", {})
         return bundle
 
@@ -201,19 +192,11 @@ class ContentLibrary:
         path = folder / "hidden_setup.py"
         return _read_text(path) if path.exists() else None
 
-    def _locale_dir(self, folder: Path, lang: str) -> Path:
-        """O idioma pedido; na falta dele, inglês e depois português."""
-        for candidate in (lang, i18n.DEFAULT_LANG, "pt"):
-            path = folder / "locales" / candidate
-            if path.is_dir():
-                return path
-        raise ContentError(f"{folder}: nenhuma pasta de idioma encontrada")
-
     def _folder(self, lesson_id: str) -> Path:
         try:
             return self._lessons[lesson_id]
         except KeyError:
-            raise ContentError(i18n.t("content.unknown_lesson", lesson_id=lesson_id)) from None
+            raise ContentError(t("content.unknown_lesson", lesson_id=lesson_id)) from None
 
 
 def _fold(text: str) -> str:
@@ -234,8 +217,8 @@ def _plain(markdown: str) -> str:
 def _snippet(text: str, folded: str, term: str, width: int = 120) -> str:
     """Trecho de até `width` caracteres em volta da primeira ocorrência do termo.
 
-    Remover acentos não muda o comprimento do texto em português, inglês ou alemão
-    (letras compostas viram uma letra), então as posições batem com o original.
+    Remover acentos não muda o comprimento do texto (letras compostas viram uma
+    letra), então as posições batem com o original.
     """
     position = folded.find(term)
     if position < 0 or len(folded) != len(text):
@@ -244,13 +227,6 @@ def _snippet(text: str, folded: str, term: str, width: int = 120) -> str:
     end = min(len(text), start + width)
     snippet = text[start:end].strip()
     return ("…" if start > 0 else "") + snippet + ("…" if end < len(text) else "")
-
-
-def _pick(value, lang: str) -> str:
-    """Texto do catálogo no idioma pedido (com a mesma ordem de fallback das lições)."""
-    if isinstance(value, str):
-        return value
-    return value.get(lang) or value.get(i18n.DEFAULT_LANG) or value.get("pt") or next(iter(value.values()))
 
 
 def _read_json(path: Path) -> dict:

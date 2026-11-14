@@ -224,7 +224,7 @@ def test_export_to_openqasm(library):
             from_pl = await client.call(type="export", code=pennylane, format="qasm3")
             assert from_pl["ok"], from_pl
             assert "ry(0.5) q[0];" in from_pl["text"]
-            refused = await client.call(type="export", code=noisy, format="qasm2", lang="en")
+            refused = await client.call(type="export", code=noisy, format="qasm2")
             assert refused["ok"] is False and "Noise channels" in refused["error"]["message"]
 
     with_server(test, library=library)

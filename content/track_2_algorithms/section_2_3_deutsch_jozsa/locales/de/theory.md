@@ -36,3 +36,7 @@ Wenn $f$ konstant ist, beträgt dieser Mittelwert $\pm 1$, und die Eingabe endet
 ## Im Labor
 
 Der Tab **Amplituden** zeigt den Zustand des Eingaberegisters, mit Vorzeichen. Sieh dir vor der letzten Hadamard-Schicht die Vorzeichen an, die das Orakel aufgeprägt hat; danach sieh, wie die Interferenz die gesamte Amplitude in $|000\rangle$ konzentriert oder auf null bringt. Das Orakel in diesem Labor ist balanciert. Bei der Validierung wird dein Schaltkreis gegen mehrere geheime Orakel getestet, konstante und balancierte.
+
+## Hinweis zur Notation
+
+Viele Lehrbücher schreiben Qubit 0 **links** in die Bezeichnung, etwa $|x_0 x_1 x_2\rangle$. Qiskit, und damit dieses Labor, schreibt Qubit 0 **rechts**: $|q_2 q_1 q_0\rangle$. Beim Vergleich mit einem Lehrbuch können die Bezeichnungen daher vertauscht erscheinen.

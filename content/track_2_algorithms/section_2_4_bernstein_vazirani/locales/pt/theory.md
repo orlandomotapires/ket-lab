@@ -35,3 +35,7 @@ Para cada bit $s_i = 1$, o oráculo aplica uma CNOT do qubit $i$ para o auxiliar
 ## No laboratório
 
 Na aba **Amplitudes**, depois do oráculo metade dos sinais é negativa, num padrão que codifica $s$. Depois das Hadamards, toda a amplitude se concentra num único estado. Leia $s$ com o qubit 0 à direita. Na validação, o circuito é testado com várias strings secretas.
+
+## Nota sobre a notação
+
+Muitos livros escrevem o qubit 0 à **esquerda** do rótulo, como em $|x_0 x_1 x_2\rangle$. O Qiskit, e portanto este laboratório, escreve o qubit 0 à **direita**: $|q_2 q_1 q_0\rangle$. Ao comparar com um livro, os rótulos podem aparecer invertidos.

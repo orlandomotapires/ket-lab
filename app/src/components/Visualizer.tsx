@@ -72,7 +72,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
 
   const header = (
     <div className="panel-head">
-      <h2>{t("viz.title")}</h2>
+      <h2>{lesson?.framework === "python" ? t("viz.view.variables") : t("viz.title")}</h2>
       <span className="grow" />
       {views.length > 1 && (
         <div className="segmented" role="tablist" aria-label={t("viz.views")}>

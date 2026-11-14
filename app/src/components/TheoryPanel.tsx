@@ -6,13 +6,25 @@ import { useStore } from "../state/store";
 import { CheckIcon, TargetIcon } from "./icons";
 import { Markdown } from "./Markdown";
 
+/** Texto curto com `código` entre crases (missões, dicas, objetivos, previsões). */
+function InlineText({ text }: { text: string }) {
+  const parts = text.split(/(`[^`]+`)/g);
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.startsWith("`") && part.endsWith("`") && part.length > 2 ? <code key={index}>{part.slice(1, -1)}</code> : part,
+      )}
+    </>
+  );
+}
+
 function PredictionCard({ prediction }: { prediction: Prediction }) {
   const [choice, setChoice] = useState<number | null>(null);
   const answered = choice !== null;
   return (
     <section className="card">
       <h3 className="card-title">{t("theory.predict")}</h3>
-      <p>{prediction.question}</p>
+      <p><InlineText text={prediction.question} /></p>
       <div className="options" role="radiogroup" aria-label={t("theory.options")}>
         {prediction.options.map((option, index) => {
           const state = !answered ? "" : index === prediction.answer ? " is-correct" : index === choice ? " is-wrong" : "";
@@ -25,14 +37,14 @@ function PredictionCard({ prediction }: { prediction: Prediction }) {
               disabled={answered}
               onClick={() => setChoice(index)}
             >
-              {option}
+              <InlineText text={option} />
             </button>
           );
         })}
       </div>
       {answered && (
         <p className="card-note">
-          <strong>{choice === prediction.answer ? t("theory.correct") : t("theory.wrong")}</strong> {prediction.explanation}
+          <strong>{choice === prediction.answer ? t("theory.correct") : t("theory.wrong")}</strong> <InlineText text={prediction.explanation} />
         </p>
       )}
     </section>
@@ -92,7 +104,7 @@ export function TheoryPanel() {
             <h2 className="objectives-title">{t("theory.objectives")}</h2>
             <ul>
               {lesson.objectives.map((objective) => (
-                <li key={objective}>{objective}</li>
+                <li key={objective}><InlineText text={objective} /></li>
               ))}
             </ul>
           </div>
@@ -102,11 +114,11 @@ export function TheoryPanel() {
             {completed ? <CheckIcon size={14} /> : <TargetIcon />}
             {completed ? t("theory.missionDone") : t("theory.mission")}
           </h2>
-          <p>{lesson.mission}</p>
+          <p><InlineText text={lesson.mission} /></p>
           {hintsShown > 0 && (
             <ol className="hints">
               {lesson.hints.slice(0, hintsShown).map((hint, index) => (
-                <li key={index}>{hint}</li>
+                <li key={index}><InlineText text={hint} /></li>
               ))}
             </ol>
           )}

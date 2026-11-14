@@ -33,10 +33,10 @@
       "default": "y4"
     }
   ],
-  "default_visualizer": "bloch",
+  "default_visualizer": "histogram",
   "available_visualizers": [
-    "bloch",
-    "histogram"
+    "histogram",
+    "bloch"
   ],
   "prediction_answer": 1,
   "validation": {

@@ -49,7 +49,10 @@ export async function replaceCode(page: Page, code: string): Promise<void> {
   await page.locator(".editor .view-lines").click();
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.press("ControlOrMeta+V");
-  await expect(page.locator(".editor .view-lines")).toContainText(code.trim().split("\n")[0].slice(0, 20));
+  // O Monaco desenha espaços como espaços não separáveis: confere um trecho sem espaços da última linha.
+  const lastLine = code.trim().split("\n").pop() ?? "";
+  const marker = lastLine.split(/\s+/).sort((x, y) => y.length - x.length)[0] ?? "";
+  await expect(page.locator(".editor .view-lines")).toContainText(marker);
 }
 
 export async function pressButton(page: Page, name: string): Promise<void> {

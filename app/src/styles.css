@@ -2075,3 +2075,13 @@ tr.is-zero {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
+
+.mission code,
+.hints code,
+.objectives code,
+.card code {
+  font: 0.92em var(--font-mono);
+  padding: 0 3px;
+  border-radius: 4px;
+  background: var(--surface-3);
+}

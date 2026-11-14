@@ -57,7 +57,7 @@ export function OracleBar() {
           >
             {running ? t("oracle.running") : t("oracle.run")}
           </button>
-        ) : (
+        ) : lesson?.framework === "python" ? null : (
           <button className="btn" onClick={() => void runShots()} disabled={offline}>{t("oracle.shots")}</button>
         )}
         {lesson && !validation?.passed && (

@@ -86,6 +86,15 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
     </div>
   );
 
+  if (lesson?.framework === "python") {
+    return (
+      <aside className="panel visualizer" aria-label={t("viz.aria")}>
+        {header}
+        <VariablesTable result={result} stale={!resultIsCurrent} />
+      </aside>
+    );
+  }
+
   if (sandboxTraining && view === "convergence" && (!result || training.active)) {
     return (
       <aside className="panel visualizer" aria-label={t("viz.aria")}>
@@ -203,6 +212,46 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         )}
       </div>
     </aside>
+  );
+}
+
+/** Lições sem circuito: tabela com as variáveis numéricas do aluno. */
+function VariablesTable({ result, stale }: { result: RunResult | null; stale: boolean }) {
+  const rows = result?.variables ?? [];
+  return (
+    <div className={`panel-scroll variables${stale ? " is-stale" : ""}`}>
+      {rows.length === 0 ? (
+        <p className="muted">{t("viz.variablesEmpty")}</p>
+      ) : (
+        <>
+          <table className="readout variables-table">
+            <thead>
+              <tr>
+                <th scope="col">{t("viz.variableName")}</th>
+                <th scope="col">{t("viz.variableType")}</th>
+                <th scope="col">{t("viz.variableValue")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.name}>
+                  <th scope="row" className="mono">{row.name}</th>
+                  <td className="muted small">{row.type}</td>
+                  <td><pre className="variable-value">{row.value}</pre></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="footnote">{t("viz.variablesNote")}</p>
+        </>
+      )}
+      {result?.stdout && (
+        <>
+          <h3 className="section-label">{t("viz.stdout")}</h3>
+          <pre className="stdout">{result.stdout}</pre>
+        </>
+      )}
+    </div>
   );
 }
 

@@ -32,6 +32,8 @@ def handle(job: dict, emit=None) -> dict:
 
     kind = job.get("type")
     try:
+        if kind == "run" and job.get("framework") == "python":
+            return {"ok": True, **_run_python(job)}
         if kind == "run":
             reporter = tracer.Reporter(emit if job.get("stream") else None)
             trajectory, execution = _simulate(job, reporter)
@@ -66,6 +68,65 @@ def handle(job: dict, emit=None) -> dict:
         return _error(messages.t("run.memory"), kind="memory")
     except Exception as exc:  # noqa: BLE001 - o worker nunca deve morrer por um job
         return _error(messages.t("run.internal", detail=f"{type(exc).__name__}: {exc}"), kind="internal")
+
+
+def _run_python(job: dict) -> dict:
+    """Lição sem circuito (kit de matemática): executa e mostra as variáveis do aluno."""
+    from . import tracer
+
+    execution = tracer.execute(
+        job["code"], job.get("hidden_setup"), job.get("inputs"), trace=False, require_circuit=False
+    )
+    return {
+        "stdout": execution.stdout,
+        "num_qubits": 0,
+        "num_clbits": 0,
+        "steps": [],
+        "snapshots": [],
+        "clbits": [],
+        "has_measurement": False,
+        "variables": describe_variables(execution.namespace),
+    }
+
+
+HIDDEN_NAMES = {"run_shots", "report"}
+MAX_VARIABLES = 40
+
+
+def describe_variables(namespace: dict) -> list[dict]:
+    """Variáveis numéricas do aluno, na ordem em que foram criadas, prontas para exibir."""
+    import numpy as np
+
+    rows = []
+    for name, value in namespace.items():
+        if name.startswith("_") or name in HIDDEN_NAMES or callable(value) or type(value).__name__ == "module":
+            continue
+        text = _format_value(value, np)
+        if text is not None:
+            rows.append({"name": name, "type": _type_name(value, np), "value": text})
+        if len(rows) >= MAX_VARIABLES:
+            break
+    return rows
+
+
+def _type_name(value, np) -> str:
+    if isinstance(value, np.ndarray):
+        return f"array {'×'.join(map(str, value.shape))}"
+    return type(value).__name__
+
+
+def _format_value(value, np) -> str | None:
+    if isinstance(value, bool):
+        return str(value)
+    if isinstance(value, (int, float, complex, np.number)):
+        return np.array2string(np.asarray(value), precision=4, suppress_small=True)
+    if isinstance(value, (list, tuple)) and len(value) <= 32 and all(isinstance(v, (int, float, complex, np.number)) for v in value):
+        value = np.asarray(value)
+    if isinstance(value, np.ndarray) and value.ndim <= 2 and value.size <= 64 and np.issubdtype(value.dtype, np.number):
+        return np.array2string(value, precision=4, suppress_small=True, max_line_width=60)
+    if isinstance(value, str) and len(value) <= 80:
+        return repr(value)
+    return None
 
 
 def _max_qubits(job: dict) -> int:

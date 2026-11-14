@@ -499,9 +499,10 @@
     "framework": {
       "enum": [
         "qiskit",
-        "pennylane"
+        "pennylane",
+        "python"
       ],
-      "description": "pennylane: o circuito é um QNode"
+      "description": "pennylane: o circuito é um QNode; python: lição sem circuito (kit de matemática), mostra as variáveis"
     },
     "qnode": {
       "type": "object",
@@ -616,7 +617,8 @@
         "dissociation",
         "graph",
         "boundary",
-        "threshold"
+        "threshold",
+        "variables"
       ]
     }
   }

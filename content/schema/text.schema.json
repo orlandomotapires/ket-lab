@@ -105,6 +105,16 @@
           }
         }
       }
+    },
+    "objectives": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "description": "O que o aluno saberá fazer ao fim da lição; cada objetivo é exercitado pela missão, por uma dica ou pela previsão"
     }
   }
 }

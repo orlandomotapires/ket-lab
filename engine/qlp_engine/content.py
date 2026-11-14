@@ -78,6 +78,7 @@ class ContentLibrary:
 
         lesson = {k: v for k, v in manifest.items() if k not in ("validation", "prediction_answer")}
         lesson.update({k: text[k] for k in ("title", "summary", "mission", "hints")})
+        lesson["objectives"] = text.get("objectives", [])
         if "prediction" in text:
             lesson["prediction"] = {**text["prediction"], "answer": manifest["prediction_answer"]}
         if "comparison" in manifest:

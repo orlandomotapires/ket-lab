@@ -4,7 +4,11 @@
   "mission": "Implementiere parameter_shift(params, i), die Ableitung der Kostenfunktion nach der Parameter-Shift-Regel, und nutze sie in einer Gradientenabstieg-Schleife, die ⟨Z⟩ nahe an −1 bringt. Klicke auf Ausführen (oder Ctrl+Enter), um zu trainieren.",
   "prediction": {
     "question": "Die Kostenfunktion ist ⟨Z⟩ nach RX(θ₀) und RY(θ₁). Ausgehend von θ = (0,3; 0,2), nahe am Maximum: Wohin führt der Gradientenabstieg den Bloch-Vektor?",
-    "options": ["Zum Äquator", "Er bleibt stehen: Am Maximum ist der Gradient null", "Zum Südpol, wo ⟨Z⟩ = −1 ist"],
+    "options": [
+      "Zum Äquator",
+      "Er bleibt stehen: Am Maximum ist der Gradient null",
+      "Zum Südpol, wo ⟨Z⟩ = −1 ist"
+    ],
     "explanation": "Abseits des exakten Maximums ist der Gradient nicht null, und jeder Schritt führt die Landschaft hinab. Das Minimum von ⟨Z⟩ ist −1, am Südpol der Kugel, erreichbar zum Beispiel mit θ₀ = π oder θ₁ = π."
   },
   "hints": [
@@ -17,6 +21,9 @@
     "shift_missing": "Definiere die Funktion parameter_shift(params, i).",
     "shift_wrong": "parameter_shift liefert noch nicht die richtige Ableitung: Bei params = {point} und i = {i} ist der erwartete Wert {expected}, die Funktion gab aber {actual} zurück.",
     "no_params": "Speichere die endgültigen Parameter in der Variablen params.",
-    "not_converged": "Der Gradient stimmt, aber die endgültige Kostenfunktion ist {cost}, und das Minimum ist −1. Erhöhe die Anzahl der Schritte oder die Lernrate."
+    "not_converged": "Der Gradient stimmt, aber die endgültige Kostenfunktion ist {cost}, und das Minimum ist −1. Erhöhe die Anzahl der Schritte oder die Lernrate.",
+    "shift_executions": "parameter_shift muss den Schaltkreis pro Ableitung genau 2-mal ausführen (bei θ + π/2 und θ − π/2), hat ihn aber {count}-mal ausgeführt. Verwende hier weder qml.grad noch finite Differenzen.",
+    "history_missing": "Speichere in history eine Zeile [θ₀, θ₁, Kosten] pro Trainingsschritt.",
+    "history_inconsistent": "history passt nicht zum Schaltkreis: Jede Zeile muss [θ₀, θ₁, circuit([θ₀, θ₁])] sein und die letzte die finalen params."
   }
 }

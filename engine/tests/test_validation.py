@@ -167,7 +167,7 @@ def test_teleport_inputs_are_hidden_from_the_student():
 
 
 def test_gate_counts_enforce_a_single_oracle_query(library):
-    bundle = library.validation_bundle("2.2")
+    bundle = library.validation_bundle("2.3")
     rules = {**bundle["validation"], "gate_counts": {"oracle": 1}}
     twice = bundle["solution"].replace("oracle(qc)\n", "oracle(qc)\noracle(qc)\n")
     result = validation.validate(twice, {**bundle, "validation": rules})

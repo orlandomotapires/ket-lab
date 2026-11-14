@@ -1,0 +1,19 @@
+{
+  "title": "Oráculos e Deutsch-Jozsa",
+  "summary": "Constante ou balanceada com uma única consulta.",
+  "mission": "Com uma única chamada a oracle(qc), deixe o registrador de entrada (qubits 0 a 2) em |000⟩ se a função secreta for constante, e sem nenhuma chance de |000⟩ se ela for balanceada.",
+  "prediction": {
+    "question": "Com 3 bits de entrada, quantas consultas um algoritmo clássico determinístico (sem erro) precisa, no pior caso, para decidir se a função é constante ou balanceada?",
+    "options": [
+      "1",
+      "5",
+      "8"
+    ],
+    "explanation": "Se as 4 primeiras consultas derem o mesmo valor, a função ainda pode ser balanceada; só a quinta decide. Em geral são 2^(n−1) + 1 consultas. O algoritmo quântico usa uma."
+  },
+  "hints": [
+    "Prepare o auxiliar em |−⟩, como na lição de phase kickback: qc.x(3) e qc.h(3).",
+    "Coloque os qubits 0, 1 e 2 em superposição antes do oráculo e aplique Hadamard neles de novo depois.",
+    "Sequência: qc.x(3), qc.h(3), Hadamard nos qubits 0 a 2, oracle(qc), Hadamard nos qubits 0 a 2."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Busca de Grover",
+  "summary": "Amplificação de amplitude e inversão em torno da média.",
+  "mission": "Encontre os itens marcados entre 16 possibilidades. A variável num_marked guarda quantos itens o oráculo marca (M, que muda de um teste para outro): calcule o número de iterações de Grover (oráculo seguido do difusor) em vez de fixá-lo. Ao final, os itens marcados precisam concentrar a maior probabilidade possível.",
+  "prediction": {
+    "question": "Com 4 dos 16 itens marcados, quantas iterações de Grover são ideais?",
+    "options": [
+      "1",
+      "2",
+      "3"
+    ],
+    "explanation": "Com M itens marcados, sen θ = √(M/N) = 1/2, ou seja, θ = 30°. Cada iteração gira o estado em 2θ = 60°, e uma iteração leva (2·1+1)θ = 90°: probabilidade exatamente 100%. Fazer 3 iterações, como no caso de um item só, passaria do ponto. O número ideal é ⌊π/4·√(N/M)⌋."
+  },
+  "hints": [
+    "Escreva o difusor como função: Hadamard em todos os qubits, X em todos, Z multicontrolada (qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3)), X em todos e Hadamard em todos.",
+    "O circuito começa com Hadamard nos 4 qubits; depois vêm as iterações, cada uma com oracle(qc) seguido de diffuser(qc).",
+    "Calcule iterations = floor(pi / 4 * sqrt(N / num_marked)) (importe floor, pi e sqrt de math) e repita oracle(qc) e diffuser(qc) esse número de vezes."
+  ]
+}

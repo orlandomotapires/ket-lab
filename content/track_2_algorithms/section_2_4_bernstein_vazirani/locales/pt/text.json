@@ -1,0 +1,19 @@
+{
+  "title": "Bernstein-Vazirani",
+  "summary": "Recuperar uma string secreta inteira em uma consulta.",
+  "mission": "Descubra a string secreta s de 4 bits com uma única chamada a oracle(qc): ao final, o registrador de entrada (qubits 0 a 3) deve estar no estado |s⟩. Convenção: o qubit 0 corresponde ao último caractere de s, ou seja, s = s3 s2 s1 s0 e o rótulo do estado é |q3 q2 q1 q0⟩.",
+  "prediction": {
+    "question": "Um algoritmo clássico aleatorizado, que aceita errar em 1% dos casos, consegue descobrir uma string secreta de 4 bits com menos de 4 consultas?",
+    "options": [
+      "Sim, 1 consulta basta",
+      "Não, ainda precisa de 4",
+      "Sim, 2 consultas bastam"
+    ],
+    "explanation": "Cada consulta devolve um único bit, então com menos de 4 consultas há mais de uma string compatível com as respostas, e um palpite acerta no máximo com probabilidade 1/2: bem longe de 99%. A aleatoriedade não ajuda aqui, e o algoritmo quântico usa uma consulta, para qualquer tamanho de s."
+  },
+  "hints": [
+    "O circuito é o mesmo de Deutsch-Jozsa, agora com 4 qubits de entrada e o auxiliar no qubit 4.",
+    "Auxiliar em |−⟩ com qc.x(4) e qc.h(4); Hadamard nos qubits 0 a 3 antes e depois do oráculo.",
+    "Use um laço for qubit in range(4): qc.h(qubit). Ele aparece duas vezes, em volta de oracle(qc)."
+  ]
+}

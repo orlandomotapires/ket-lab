@@ -112,7 +112,7 @@
         {
           "id": "2.5",
           "title": "Simon's Algorithm",
-          "summary": "To be written."
+          "summary": "Recover a hidden XOR mask from outcomes that are orthogonal to it."
         },
         {
           "id": "2.6",
@@ -137,7 +137,7 @@
         {
           "id": "2.10",
           "title": "Hamiltonian Simulation",
-          "summary": "To be written."
+          "summary": "Approximate the evolution under a sum of terms with Trotter steps."
         }
       ]
     },

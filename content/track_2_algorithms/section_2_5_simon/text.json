@@ -1,0 +1,34 @@
+{
+  "title": "Simon's Algorithm",
+  "summary": "Recover a hidden XOR mask from outcomes that are orthogonal to it.",
+  "objectives": [
+    "Build Simon's circuit so that every measurement of the input register returns a string y with y·s = 0 (mod 2).",
+    "Collect several outcomes with run_shots and solve the linear system y·s = 0 modulo 2 to compute the hidden string s.",
+    "Explain why n − 1 independent equations determine s, and why s = 000 is recognized by the absence of a nonzero solution."
+  ],
+  "mission": "The function f takes 3 bits to 3 bits and satisfies f(x) = f(y) if and only if y = x or y = x ⊕ s, for a hidden string s (possibly 000, when f is one-to-one). Call oracle(qc) once (input register: qubits 0 to 2, output register: qubits 3 to 5), measure the input register into bits 0 to 2, and use run_shots to collect outcomes. Then compute, from the outcomes alone, the bit string s_found equal to s. Qubit 0 is the last character of every string, so s = s2 s1 s0 and an outcome is y2 y1 y0.",
+  "prediction": {
+    "question": "For n = 3, how many linearly independent equations y·s = 0 (mod 2) are needed to determine a nonzero secret s?",
+    "options": [
+      "1",
+      "2",
+      "3"
+    ],
+    "explanation": "The outcomes y lie in the subspace orthogonal to s, which has dimension n − 1 = 2. Two independent outcomes span it, and s is the only nonzero string orthogonal to both. One equation leaves 3 nonzero candidates. A third independent equation would force s = 000."
+  },
+  "hints": [
+    "Apply Hadamard gates to qubits 0 to 2 before and after oracle(qc), and leave qubits 3 to 5 in |0⟩. Finish with qc.measure([0, 1, 2], [0, 1, 2]) and counts = run_shots(qc).",
+    "Each key of counts is a string y2y1y0 with y·s = 0 (mod 2). Compute the inner product of two bit strings with bin(int(a, 2) & int(b, 2)).count(\"1\") % 2.",
+    "Loop over the nonzero candidates \"001\", \"010\", …, \"111\" and keep those whose inner product with every key of counts is 0. If exactly one remains, it is s. If none remains, the outcomes span all strings, f is one-to-one and s = \"000\"."
+  ],
+  "messages": {
+    "ok": "All {total} hidden strings were recovered, including 000. For each one, every outcome satisfied y·s = 0 and s_found equaled s.",
+    "no_circuit": "Define the circuit qc with 6 qubits and 3 classical bits.",
+    "wrong_qubits": "The circuit needs 3 input qubits and 3 output qubits (6 in total), but it has {count}.",
+    "queries": "Call oracle(qc) exactly once. The circuit calls it {count} times.",
+    "no_measurement": "Measure the input register into the classical bits, with qc.measure([0, 1, 2], [0, 1, 2]).",
+    "wrong_distribution": "With the hidden string {secret}, the input register gave outcomes that are not orthogonal to it (for example {bad}). The outcomes must be uniform over the strings y with y·s = 0. Check the Hadamard gates before and after the query.",
+    "variable_missing": "Store the result in the variable s_found, as a bit string such as \"110\".",
+    "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep the nonzero strings orthogonal to every outcome; if none remains, s is 000."
+  }
+}

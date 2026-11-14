@@ -1,8 +1,7 @@
-"""Ponto de entrada do sidecar: `python -m qlp_engine`.
+"""Ponto de entrada do motor: `python -m qlp_engine` (o `npm run dev` o inicia).
 
 Ao ficar pronto, imprime UMA linha JSON no stdout com a porta e o token:
     {"event": "ready", "port": 51234, "token": "..."}
-O shell desktop lê essa linha para saber onde conectar.
 """
 
 from __future__ import annotations
@@ -10,10 +9,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import multiprocessing
 import secrets
 import sys
-import threading
 from pathlib import Path
 
 from .content import ContentLibrary
@@ -23,8 +20,6 @@ from .server import EngineServer
 
 
 def _default_content_dir() -> Path:
-    if getattr(sys, "frozen", False):  # executável PyInstaller: conteúdo ao lado do binário
-        return Path(sys.executable).resolve().parent / "content"
     return Path(__file__).resolve().parents[2] / "content"
 
 
@@ -68,11 +63,6 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument("--content-dir", type=Path, default=None)
     parser.add_argument("--data-dir", type=Path, default=None)
     parser.add_argument("--job-timeout", type=float, default=5.0, help="segundos por execução")
-    parser.add_argument(
-        "--exit-on-stdin-close",
-        action="store_true",
-        help="encerra quando o stdin fechar (o shell desktop mantém o pipe aberto enquanto vive)",
-    )
     return parser.parse_args(argv)
 
 
@@ -88,8 +78,6 @@ async def serve_forever(args: argparse.Namespace) -> None:
     port = server.sockets[0].getsockname()[1]
     print(json.dumps({"event": "ready", "port": port, "token": token}), flush=True)
     stop = asyncio.Event()
-    if args.exit_on_stdin_close:
-        _watch_stdin(asyncio.get_running_loop(), stop)
     try:
         await stop.wait()
     finally:
@@ -98,22 +86,7 @@ async def serve_forever(args: argparse.Namespace) -> None:
         progress.close()
 
 
-def _watch_stdin(loop: asyncio.AbstractEventLoop, stop: asyncio.Event) -> None:
-    """Se o processo pai morrer (mesmo sem avisar), o pipe fecha e o motor sai junto."""
-
-    def wait_for_eof() -> None:
-        try:
-            while sys.stdin.buffer.read(4096):
-                pass
-        except (OSError, ValueError):
-            pass
-        loop.call_soon_threadsafe(stop.set)
-
-    threading.Thread(target=wait_for_eof, daemon=True).start()
-
-
 def main(argv=None) -> None:
-    multiprocessing.freeze_support()
     if sys.stdout is not None:
         sys.stdout = _TolerantStream(sys.stdout)
     if sys.stderr is not None:

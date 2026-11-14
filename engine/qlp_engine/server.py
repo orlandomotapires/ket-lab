@@ -34,8 +34,6 @@ TRAIN_TIMEOUT_S = 120.0
 # QLP_LOG=1 registra no stderr o tipo de cada requisição (diagnóstico).
 LOG_REQUESTS = os.environ.get("QLP_LOG") == "1"
 
-# Origens da janela Tauri (varia por plataforma).
-TAURI_ORIGINS = ("tauri://localhost", "http://tauri.localhost", "https://tauri.localhost")
 
 
 class EngineServer:
@@ -52,7 +50,7 @@ class EngineServer:
         self.pool = pool
         self.token = token
         # None permite clientes sem cabeçalho Origin (não são navegadores); o token continua exigido.
-        self.origins = [*TAURI_ORIGINS, *allowed_origins, None]
+        self.origins = [*allowed_origins, None]
 
     async def start(self, port: int = 0):
         return await serve(

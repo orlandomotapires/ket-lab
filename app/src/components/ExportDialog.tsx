@@ -78,7 +78,7 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
   async function save() {
     if (text === null) return;
     try {
-      if (await saveTextFile(text, fileName)) setStatus({ kind: "saved" });
+      if (saveTextFile(text, fileName)) setStatus({ kind: "saved" });
     } catch (error) {
       setStatus({ kind: "error", message: String(error instanceof Error ? error.message : error) });
     }

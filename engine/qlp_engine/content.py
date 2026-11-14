@@ -62,6 +62,7 @@ class ContentLibrary:
                             "title": section["title"],
                             "summary": section["summary"],
                             "available": section["id"] in self._lessons,
+                            **self._section_flags(section["id"]),
                         }
                         for section in track["sections"]
                     ],
@@ -69,6 +70,11 @@ class ContentLibrary:
                 for track in raw["tracks"]
             ]
         }
+
+    def glossary(self) -> list[dict]:
+        """Termos do glossário (content/glossary.json), se existir."""
+        path = self.root / "glossary.json"
+        return _read_json(path)["terms"] if path.exists() else []
 
     def lesson(self, lesson_id: str) -> dict:
         """Tudo que o frontend precisa para abrir a lição (sem a solução)."""
@@ -79,6 +85,9 @@ class ContentLibrary:
         lesson = {k: v for k, v in manifest.items() if k not in ("validation", "prediction_answer")}
         lesson.update({k: text[k] for k in ("title", "summary", "mission", "hints")})
         lesson["objectives"] = text.get("objectives", [])
+        if "challenge" in manifest and "challenge" in text:
+            # Desafio opcional, liberado depois da missão: só o texto vai para a interface.
+            lesson["challenge"] = {k: text["challenge"][k] for k in ("mission", "hints")}
         if "prediction" in text:
             lesson["prediction"] = {**text["prediction"], "answer": manifest["prediction_answer"]}
         if "comparison" in manifest:
@@ -139,22 +148,32 @@ class ContentLibrary:
     def starter_code(self, lesson_id: str) -> str:
         return _read_text(self._folder(lesson_id) / "starter_code.py")
 
-    def validation_bundle(self, lesson_id: str) -> dict:
-        """Dados que o worker precisa para validar (inclui a solução de referência)."""
+    def validation_bundle(self, lesson_id: str, challenge: bool = False) -> dict:
+        """Dados que o worker precisa para validar (inclui a solução de referência).
+
+        Com `challenge`, valida o desafio da lição: regras em manifest["challenge"],
+        challenge_solution.py e, se existirem, challenge_check.py e
+        challenge_hidden_setup.py (senão, o setup oculto da lição).
+        """
         folder = self._folder(lesson_id)
         manifest = _read_json(folder / "manifest.json")
+        if challenge and "challenge" not in manifest:
+            raise ContentError(t("content.no_challenge", lesson_id=lesson_id))
+        prefix = "challenge_" if challenge else ""
+        validation = manifest["challenge"]["validation"] if challenge else manifest["validation"]
         bundle = {
             "id": manifest["id"],
-            "validation": manifest["validation"],
+            "validation": validation,
             "max_qubits": manifest.get("max_qubits"),
             "framework": manifest.get("framework", "qiskit"),
-            "solution": _read_text(folder / "solution.py"),
-            "hidden_setup": self._hidden_setup(folder),
+            "solution": _read_text(folder / f"{prefix}solution.py"),
+            "hidden_setup": self._hidden_setup(folder, challenge),
         }
-        if manifest["validation"]["type"] == "custom":
-            bundle["check"] = _read_text(folder / "check.py")
+        if validation["type"] == "custom":
+            bundle["check"] = _read_text(folder / f"{prefix}check.py")
             text = _read_json(folder / "text.json")
-            bundle["messages"] = text.get("messages", {})
+            source = text.get("challenge", {}) if challenge else text
+            bundle["messages"] = source.get("messages", {})
         return bundle
 
     def timeout(self, lesson_id: str | None) -> float | None:
@@ -177,7 +196,7 @@ class ContentLibrary:
             values[control["id"]] = value if value in control["options"] else control["default"]
         return {"_QLP_INPUT": values}
 
-    def run_context(self, lesson_id: str | None) -> dict:
+    def run_context(self, lesson_id: str | None, challenge: bool = False) -> dict:
         """Contexto opcional de execução de uma lição (setup oculto, teto de qubits)."""
         if not lesson_id:
             return {}
@@ -186,13 +205,22 @@ class ContentLibrary:
         analysis = folder / "analysis.py"
         return {
             "max_qubits": manifest.get("max_qubits"),
-            "hidden_setup": self._hidden_setup(folder),
+            "hidden_setup": self._hidden_setup(folder, challenge and "challenge" in manifest),
             "framework": manifest.get("framework", "qiskit"),
             "qnode": manifest.get("qnode"),
             "analysis": _read_text(analysis) if analysis.exists() else None,
         }
 
-    def _hidden_setup(self, folder: Path) -> str | None:
+    def _section_flags(self, lesson_id: str) -> dict:
+        """Projeto de fim de trilha e existência de desafio, para o mapa de trilhas."""
+        if lesson_id not in self._lessons:
+            return {}
+        manifest = _read_json(self._lessons[lesson_id] / "manifest.json")
+        return {"project": bool(manifest.get("project")), "has_challenge": "challenge" in manifest}
+
+    def _hidden_setup(self, folder: Path, challenge: bool = False) -> str | None:
+        if challenge and (folder / "challenge_hidden_setup.py").exists():
+            return _read_text(folder / "challenge_hidden_setup.py")
         path = folder / "hidden_setup.py"
         return _read_text(path) if path.exists() else None
 

@@ -119,6 +119,10 @@ export function Hub() {
                     <span className="pill">{track.level}</span>
                   </div>
                   <h2 id={`track-title-${track.id}`}>{track.title}</h2>
+                  {track.sections.some((section) => section.available) &&
+                    track.sections.filter((section) => section.available).every((section) => progress[section.id]?.completed) && (
+                      <span className="pill pill-success">{t("hub.trackDone")}</span>
+                    )}
                 </div>
               </header>
               <ol className="section-list">
@@ -141,6 +145,16 @@ export function Hub() {
                             {section.title}
                           </span>
                           <span className="section-summary">{section.summary}</span>
+                          {(section.project || section.has_challenge) && (
+                            <span className="section-tags">
+                              {section.project && <span className="pill pill-accent">{t("hub.project")}</span>}
+                              {section.has_challenge && (
+                                <span className="pill">
+                                  {progress[`${section.id}:challenge`]?.completed ? t("hub.challengeDone") : t("hub.challenge")}
+                                </span>
+                              )}
+                            </span>
+                          )}
                         </span>
                         {status === "soon" ? (
                           <span className="pill">{t("hub.soon")}</span>

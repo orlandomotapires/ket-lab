@@ -83,11 +83,34 @@ function References({ items }: { items: Reference[] }) {
   );
 }
 
+function Hints({ hints, shown, onMore }: { hints: string[]; shown: number; onMore: () => void }) {
+  return (
+    <>
+      {shown > 0 && (
+        <ol className="hints">
+          {hints.slice(0, shown).map((hint, index) => (
+            <li key={index}><InlineText text={hint} /></li>
+          ))}
+        </ol>
+      )}
+      {shown < hints.length && (
+        <button className="btn btn-sm" onClick={onMore}>
+          {t("theory.hint", { n: shown + 1, total: hints.length })}
+        </button>
+      )}
+    </>
+  );
+}
+
 export function TheoryPanel() {
   const lesson = useStore((s) => s.lesson);
   const hintsShown = useStore((s) => s.hintsShown);
   const showNextHint = useStore((s) => s.showNextHint);
-  const completed = useStore((s) => Boolean(s.lesson && (s.validation?.passed || s.progress[s.lesson.id]?.completed)));
+  const challengeMode = useStore((s) => s.challengeMode);
+  const challengeHintsShown = useStore((s) => s.challengeHintsShown);
+  const { startChallenge, leaveChallenge } = useStore.getState();
+  const completed = useStore((s) => Boolean(s.lesson && ((!s.challengeMode && s.validation?.passed) || s.progress[s.lesson.id]?.completed)));
+  const challengeDone = useStore((s) => Boolean(s.lesson && ((s.challengeMode && s.validation?.passed) || s.progress[`${s.lesson.id}:challenge`]?.completed)));
   if (!lesson) return null;
 
   return (
@@ -109,25 +132,32 @@ export function TheoryPanel() {
             </ul>
           </div>
         )}
-        <section className={`mission${completed ? " is-done" : ""}`} aria-labelledby="mission-title">
-          <h2 className="mission-title" id="mission-title">
-            {completed ? <CheckIcon size={14} /> : <TargetIcon />}
-            {completed ? t("theory.missionDone") : t("theory.mission")}
-          </h2>
-          <p><InlineText text={lesson.mission} /></p>
-          {hintsShown > 0 && (
-            <ol className="hints">
-              {lesson.hints.slice(0, hintsShown).map((hint, index) => (
-                <li key={index}><InlineText text={hint} /></li>
-              ))}
-            </ol>
-          )}
-          {hintsShown < lesson.hints.length && (
-            <button className="btn btn-sm" onClick={showNextHint}>
-              {t("theory.hint", { n: hintsShown + 1, total: lesson.hints.length })}
-            </button>
-          )}
-        </section>
+        {challengeMode && lesson.challenge ? (
+          <section className={`mission is-challenge${challengeDone ? " is-done" : ""}`} aria-labelledby="mission-title">
+            <h2 className="mission-title" id="mission-title">
+              {challengeDone ? <CheckIcon size={14} /> : <TargetIcon />}
+              {challengeDone ? t("theory.challengeDone") : t("theory.challenge")}
+              <span className="grow" />
+              <button className="link small" onClick={leaveChallenge}>{t("theory.backToMission")}</button>
+            </h2>
+            <p><InlineText text={lesson.challenge.mission} /></p>
+            <Hints hints={lesson.challenge.hints} shown={challengeHintsShown} onMore={showNextHint} />
+          </section>
+        ) : (
+          <section className={`mission${completed ? " is-done" : ""}`} aria-labelledby="mission-title">
+            <h2 className="mission-title" id="mission-title">
+              {completed ? <CheckIcon size={14} /> : <TargetIcon />}
+              {completed ? t("theory.missionDone") : t("theory.mission")}
+            </h2>
+            <p><InlineText text={lesson.mission} /></p>
+            <Hints hints={lesson.hints} shown={hintsShown} onMore={showNextHint} />
+            {completed && lesson.challenge && (
+              <button className="btn btn-sm btn-challenge" onClick={startChallenge}>
+                {challengeDone ? t("theory.challengeAgain") : t("theory.tryChallenge")}
+              </button>
+            )}
+          </section>
+        )}
       </header>
       <div className="panel-scroll" tabIndex={0}>
         <Markdown>{lesson.theory}</Markdown>

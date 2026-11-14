@@ -2166,3 +2166,73 @@ tr.is-zero {
 .hw-job .dialog-actions {
   padding: 8px 0 16px;
 }
+
+.mission.is-challenge:not(.is-done) {
+  background: var(--warn-soft);
+}
+.mission.is-challenge:not(.is-done) .mission-title {
+  color: var(--warn);
+}
+.mission-title .grow {
+  flex: 1;
+}
+.mission-title .link {
+  font-weight: 500;
+}
+.btn-challenge {
+  margin-left: 6px;
+}
+
+.section-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+.pill-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.track-head h2 + .pill {
+  margin-top: 6px;
+}
+
+/* Glossário: termo sublinhado com definição em balão */
+.glossary-term {
+  position: relative;
+  text-decoration: underline dotted var(--muted);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.glossary-term:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+.glossary-tip {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  width: max-content;
+  max-width: 300px;
+  padding: 9px 11px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-2);
+  white-space: normal;
+}
+.glossary-tip.is-open {
+  display: block;
+}
+.glossary-source {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}

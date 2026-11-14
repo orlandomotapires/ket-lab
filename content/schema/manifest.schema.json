@@ -600,6 +600,407 @@
           }
         }
       }
+    },
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation"
+      ],
+      "description": "Desafio opcional, liberado depois da missão: regras próprias; arquivos challenge_solution.py e, se preciso, challenge_check.py e challenge_hidden_setup.py",
+      "properties": {
+        "validation": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "state_fidelity"
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "counts_distribution"
+                },
+                "shots": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 8192
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "qubit"
+              ],
+              "properties": {
+                "type": {
+                  "const": "reduced_state"
+                },
+                "qubit": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "trials": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "description": "Pares (θ, φ) testados sempre, antes dos sorteados"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "cases",
+                "register"
+              ],
+              "properties": {
+                "type": {
+                  "const": "oracle_cases"
+                },
+                "cases": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "register": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "cases"
+              ],
+              "properties": {
+                "type": {
+                  "const": "state_cases"
+                },
+                "cases": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "custom"
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "project": {
+      "type": "boolean",
+      "description": "Projeto de fim de trilha (tarefa maior, com rubrica no validador)"
     }
   },
   "$defs": {

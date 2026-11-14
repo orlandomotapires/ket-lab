@@ -86,4 +86,5 @@ MESSAGES: dict[str, str] = {
     "server.bad_request": "Invalid request: {detail}",
     "server.unknown_type": "Unknown message type: {kind}",
     "content.unknown_lesson": "Unknown lesson: {lesson_id}",
+    "content.no_challenge": "Lesson {lesson_id} has no challenge.",
 }

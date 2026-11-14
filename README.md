@@ -6,7 +6,9 @@ O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diret
 
 ## Estado atual
 
-- **Trilha 1 (Fundamentos)** e **Trilha 2 (Algoritmos)** completas: 13 lições, do qubit ao algoritmo de Shor.
+- **Três trilhas completas, 21 lições**: Fundamentos (7), Algoritmos (8, do algoritmo de Deutsch ao de Shor) e Fronteiras (6: circuitos variacionais, VQE, QAOA, redes neurais quânticas, ruído e correção de erros).
+- **Qiskit nas Trilhas 1 e 2, PennyLane na Trilha 3**, com simulação de ruído por matriz densidade.
+- **Exercícios revisados** a partir das aulas de Müller e de Jülich: missões, previsões e validações mais rigorosas.
 - **Aplicativo desktop** (Tauri) com o motor Python embutido; também roda no navegador para desenvolvimento.
 - **Visualizações**: esferas de Bloch, Q-Sphere, comparador Alice × Bob, medidor de emaranhamento, amplitudes com sinal e média, mostradores de fase, histograma de registrador e função periódica.
 - **Validação matemática**: fidelidade de estado, distribuição de medições, estado reduzido, oráculos secretos e entradas de teste.
@@ -64,7 +66,8 @@ npm run test:app
 A suíte do motor inclui:
 
 - **suíte de conteúdo**: em cada lição e em cada idioma, a solução passa no oráculo e o código inicial executa sem passar;
-- **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções.
+- **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções;
+- **testes do PennyLane**: o estado de cada QNode é comparado com o do próprio PennyLane, inclusive com ruído.
 
 ## Gerar o aplicativo
 
@@ -97,6 +100,14 @@ Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um f
 | `state_cases`: estado final para várias entradas | 2.6 |
 
 O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
+
+**Lições PennyLane** (Trilha 3) declaram `framework: "pennylane"` e qual QNode desenhar (`qnode`). Com `live: false`, o código roda pelo botão Executar. Elas podem trazer:
+
+- um `check.py`, com validação própria e mensagens em `messages` no `text.json`;
+- um `analysis.py`, que alimenta as visualizações de treino;
+- `controls`, botões que passam valores ao setup oculto, como o erro injetado na 3.6.
+
+A lição 3.6 é o exemplo mais completo.
 
 ## Como o shell e o motor conversam
 

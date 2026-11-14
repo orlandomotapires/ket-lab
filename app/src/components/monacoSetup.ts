@@ -23,7 +23,7 @@ function defineTheme(name: ThemeName, base: "vs" | "vs-dark", syntax: Record<str
     colors: {
       "editor.background": palette.surface,
       "editor.foreground": palette.text,
-      "editorLineNumber.foreground": palette.lineStrong,
+      "editorLineNumber.foreground": palette.muted,
       "editorLineNumber.activeForeground": palette.text,
       "editor.lineHighlightBackground": palette.editorLine,
       "editor.lineHighlightBorder": "#00000000",
@@ -36,7 +36,7 @@ function defineTheme(name: ThemeName, base: "vs" | "vs-dark", syntax: Record<str
 }
 
 defineTheme("light", "vs", {
-  comment: "8a909b", keyword: "9a3b6e", string: "2f7a52", number: "a15c00", identifier: "15171c",
+  comment: "6e7480", keyword: "9a3b6e", string: "2f7a52", number: "a15c00", identifier: "15171c",
 });
 defineTheme("dark", "vs-dark", {
   comment: "7d8491", keyword: "d79ccc", string: "8cc9a4", number: "e0b46c", identifier: "e6e8ec",

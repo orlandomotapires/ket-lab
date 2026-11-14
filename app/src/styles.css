@@ -9,10 +9,12 @@
   --text: #15171c;
   --text-2: #2c3039;
   --muted: #646a76;
-  --faint: #969ca7;
+  --faint: #6f7581;
   --line: #e4e6eb;
   --line-strong: #cdd1d8;
   --accent: #2f5bd3;
+  /* Fundo de botões e marcas com texto branco por cima (contraste AA). */
+  --accent-strong: #2f5bd3;
   --accent-contrast: #ffffff;
   --accent-soft: #edf1fc;
   --accent-text: #2a50ba;
@@ -41,10 +43,11 @@
   --text: #e6e8ec;
   --text-2: #cfd3da;
   --muted: #9aa1ad;
-  --faint: #6c737f;
+  --faint: #858c98;
   --line: #262b33;
   --line-strong: #39404a;
   --accent: #5b82ea;
+  --accent-strong: #3d64d0;
   --accent-contrast: #ffffff;
   --accent-soft: #1b2438;
   --accent-text: #8fadf7;
@@ -261,12 +264,12 @@ button {
   cursor: default;
 }
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
   color: var(--accent-contrast);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent);
+  background: var(--accent-strong);
   filter: brightness(1.07);
 }
 .btn-ghost {
@@ -936,8 +939,8 @@ button {
   stroke-width: 1;
 }
 .gate.is-current .gate-box {
-  fill: var(--accent);
-  stroke: var(--accent);
+  fill: var(--accent-strong);
+  stroke: var(--accent-strong);
 }
 .gate.is-current .gate-label {
   fill: var(--accent-contrast);

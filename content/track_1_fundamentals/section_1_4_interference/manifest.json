@@ -44,16 +44,17 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "1.3.3",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.3.3, “Measurements in bases other than the computational basis”, p. 22"
     },
     {
       "kind": "course",
-      "title": "Inner products and projections",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "title": "Quantum circuits: Inner products and projections",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Projections and projective measurements”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections"
     }
   ]

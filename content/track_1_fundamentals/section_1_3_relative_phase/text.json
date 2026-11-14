@@ -1,6 +1,6 @@
 {
   "title": "Relative Phase and Rotation Operators",
-  "summary": "Z, S, T and R_z gates: same probabilities, different states.",
+  "summary": "Z, S, T and Rz gates: same probabilities, different states.",
   "mission": "Qubit 0 receives an unknown input state and then the gates X, H, S, T, H. Append gates that undo this sequence, so that the qubit returns to its input state, whatever it is.",
   "hints": [
     "To undo a sequence, undo the last step first. Repeating the same gates in the same order does not work: invert each gate and apply them in reverse order.",

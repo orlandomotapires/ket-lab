@@ -44,23 +44,18 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "10.1.1",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 10.1.1, “The three qubit bit flip code”, pp. 427–430; the threshold theorem is the boxed statement in Section 10.6.1 (sub-heading “Concatenated codes and the threshold theorem”), p. 481"
     },
     {
       "kind": "course",
-      "title": "Repetition codes",
-      "authors": "IBM Quantum Learning — Foundations of quantum error correction",
+      "title": "Correcting quantum errors: Repetition codes",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "Section “Encoding qubits”, subsection “Bit-flip errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
-    },
-    {
-      "kind": "tutorial",
-      "title": "Stabilizer codes for quantum error correction",
-      "authors": "PennyLane Demos",
-      "url": "https://pennylane.ai/demos/tutorial_stabilizer_codes/"
     }
   ]
 }

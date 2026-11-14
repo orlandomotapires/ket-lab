@@ -69,6 +69,8 @@ A suíte do motor inclui:
    - `text.json`, `theory.md` e `starter_code.py`.
 
    Use uma lição existente como modelo.
+
+   O texto segue o [guia de escrita](docs/guia-de-escrita.md). As referências (`references` no manifest) indicam onde ler com precisão em `location`: seção, título e páginas de um livro (Nielsen & Chuang, 10ª edição de aniversário; Griffiths & Schroeter, 3ª edição) ou aula e seção de um curso da IBM.
 2. O `id` precisa existir em `content/catalog.json`, com título e resumo iguais aos de `text.json`.
 3. Rode `npm run test:engine`. O alvo é calculado a partir do `solution.py`; não é preciso digitá-lo.
 

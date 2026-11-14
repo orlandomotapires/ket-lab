@@ -18,7 +18,7 @@
         {
           "id": "1.3",
           "title": "Relative Phase and Rotation Operators",
-          "summary": "Z, S, T and R_z gates: same probabilities, different states."
+          "summary": "Z, S, T and Rz gates: same probabilities, different states."
         },
         {
           "id": "1.4",

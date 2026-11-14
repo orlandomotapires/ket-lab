@@ -44,16 +44,25 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "4.2",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 4.2, “Single qubit operations”, pp. 174–177 (rotation operators and the Z-Y decomposition)"
+    },
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 4.4.2, “Electron in a Magnetic Field”, pp. 172–176 (Larmor precession, a rotation about z)"
     },
     {
       "kind": "course",
-      "title": "Single systems: quantum information",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "title": "Single systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Unitary operations”, subsection “Examples of unitary operations on qubits”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
     }
   ]

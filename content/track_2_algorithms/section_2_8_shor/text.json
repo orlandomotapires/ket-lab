@@ -1,7 +1,7 @@
 {
   "title": "Shor's Algorithm",
-  "summary": "Factor 15 by reducing it to finding a period.",
-  "mission": "Factor 15: find the period of 7^x mod 15 with phase estimation (counting on qubits 0 to 3, measured into bits 0 to 3) and, from the measurements, store the prime factors in the variable factors.",
+  "summary": "Factor 15 by reducing the problem to order finding.",
+  "mission": "Factor 15. Find the period of 7^x mod 15 with phase estimation (counting qubits 0 to 3, measured into bits 0 to 3), then use the measurement results to store the prime factors in the variable factors.",
   "prediction": {
     "question": "What is the period of 7^x mod 15?",
     "options": [
@@ -9,11 +9,11 @@
       "4",
       "7"
     ],
-    "explanation": "7^x mod 15 runs through 1, 7, 4, 13 and returns to 1: the cycle has 4 values, so r = 4."
+    "explanation": "The values of 7^x mod 15 are 1, 7, 4, 13, and then 1 again. The cycle has 4 values, so r = 4."
   },
   "hints": [
-    "The circuit is the phase estimation one: Hadamard on qubits 0 to 3, the work register in |1⟩ with qc.x(4) and, in the loop for j in range(4), apply_controlled_mod_mult(qc, j, 2**j).",
-    "Finish with inverse_qft(qc, [0, 1, 2, 3]) and measure qubits 0 to 3 into bits 0 to 3. Then, counts = run_shots(qc).",
-    "For each result: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Only use r if pow(a, r, N) == 1 and r is even; then half = pow(a, r // 2, N). If half == N - 1, discard it; otherwise compute gcd(half - 1, N) and gcd(half + 1, N) and store in factors the values different from 1 and N, without repeats."
+    "This is the phase estimation circuit: Hadamard on qubits 0 to 3, the work register in |1⟩ with qc.x(4), and in a loop for j in range(4), apply_controlled_mod_mult(qc, j, 2**j).",
+    "Finish with inverse_qft(qc, [0, 1, 2, 3]) and measure qubits 0 to 3 into bits 0 to 3. Then counts = run_shots(qc).",
+    "For each result: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Use r only if pow(a, r, N) == 1 and r is even, and set half = pow(a, r // 2, N). If half == N - 1, discard the result. Otherwise compute gcd(half - 1, N) and gcd(half + 1, N), and store in factors the values other than 1 and N, without repeats."
   ]
 }

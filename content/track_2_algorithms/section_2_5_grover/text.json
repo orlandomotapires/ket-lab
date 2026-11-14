@@ -1,19 +1,19 @@
 {
-  "title": "Grover's Search",
-  "summary": "Amplitude amplification and inversion about the mean.",
-  "mission": "Find the marked items among 16 possibilities. The variable num_marked holds how many items the oracle marks (M, different in each test): compute the number of Grover iterations (oracle followed by the diffuser) instead of hard-coding it. At the end, the marked items must concentrate the highest possible probability.",
+  "title": "Grover's Algorithm",
+  "summary": "Amplitude amplification by an oracle and inversion about the mean.",
+  "mission": "Find the marked items among 16 possibilities. The variable num_marked holds the number M of items the oracle marks, which differs between tests. Compute the number of Grover iterations (oracle followed by the diffuser) from N and num_marked instead of fixing it. At the end, the marked items must have the highest probability this circuit can give.",
   "prediction": {
-    "question": "With 4 of the 16 items marked, how many Grover iterations are ideal?",
+    "question": "With 4 of the 16 items marked, how many Grover iterations give the highest success probability?",
     "options": [
       "1",
       "2",
       "3"
     ],
-    "explanation": "With M marked items, sin θ = √(M/N) = 1/2, so θ = 30°. Each iteration rotates the state by 2θ = 60°, and one iteration reaches (2·1+1)θ = 90°: exactly 100% probability. Doing 3 iterations, as in the single-item case, would overshoot. The ideal number is ⌊π/4·√(N/M)⌋."
+    "explanation": "Here sin θ = √(M/N) = 1/2, so θ = 30°. Each iteration rotates the state by 2θ = 60°, and after one iteration the angle is (2·1+1)θ = 90°, which gives probability 100%. Three iterations, as for a single marked item, would rotate past the target. In general k = ⌊π/4·√(N/M)⌋."
   },
   "hints": [
-    "Write the diffuser as a function: Hadamard on all qubits, X on all, multi-controlled Z (qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3)), X on all and Hadamard on all.",
-    "The circuit starts with Hadamard on the 4 qubits; then come the iterations, each with oracle(qc) followed by diffuser(qc).",
-    "Compute iterations = floor(pi / 4 * sqrt(N / num_marked)) (import floor, pi and sqrt from math) and repeat oracle(qc) and diffuser(qc) that many times."
+    "Write the diffuser as a function: Hadamard on all qubits, X on all qubits, a multi-controlled Z, X on all qubits, Hadamard on all qubits.",
+    "Build the multi-controlled Z as qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3). The circuit starts with a Hadamard on each of the 4 qubits, followed by the iterations: oracle(qc), then diffuser(qc).",
+    "iterations = floor(pi / 4 * sqrt(N / num_marked)), with floor, pi and sqrt imported from math. Repeat oracle(qc) and diffuser(qc) that many times."
   ]
 }

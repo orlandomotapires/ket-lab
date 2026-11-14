@@ -1,19 +1,19 @@
 {
-  "title": "Bernstein–Vazirani",
-  "summary": "Recover a whole secret string in one query.",
-  "mission": "Find the 4-bit secret string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in the state |s⟩. Convention: qubit 0 corresponds to the last character of s, that is, s = s3 s2 s1 s0 and the state label is |q3 q2 q1 q0⟩.",
+  "title": "The Bernstein–Vazirani Algorithm",
+  "summary": "Find a whole secret string with one query.",
+  "mission": "Find the hidden 4-bit string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in |s⟩. Qubit 0 is the last character of s, so s = s3 s2 s1 s0 and the state label is |q3 q2 q1 q0⟩.",
   "prediction": {
-    "question": "Can a randomized classical algorithm that accepts a 1% error find a 4-bit secret string with fewer than 4 queries?",
+    "question": "A randomized classical algorithm may err with probability 1%. Can it find a 4-bit secret string with fewer than 4 queries?",
     "options": [
       "Yes, 1 query is enough",
       "No, it still needs 4",
       "Yes, 2 queries are enough"
     ],
-    "explanation": "Each query returns a single bit, so with fewer than 4 queries more than one string is consistent with the answers, and a guess is right with probability at most 1/2: far from 99%. Randomness does not help here, while the quantum algorithm uses one query, for any length of s."
+    "explanation": "Each query returns one bit. With fewer than 4 queries, several strings remain consistent with the answers, and the best guess is correct with probability at most 1/2, far from 99%. Randomization does not help. The quantum algorithm uses one query for any length of s."
   },
   "hints": [
-    "The circuit is the same as Deutsch-Jozsa, now with 4 input qubits and the auxiliary on qubit 4.",
-    "Auxiliary in |−⟩ with qc.x(4) and qc.h(4); Hadamard on qubits 0 to 3 before and after the oracle.",
-    "Use a loop for qubit in range(4): qc.h(qubit). It appears twice, around oracle(qc)."
+    "The circuit is the Deutsch–Jozsa circuit with 4 input qubits and the auxiliary qubit on qubit 4.",
+    "Prepare the auxiliary qubit in |−⟩ with qc.x(4) and qc.h(4). Apply Hadamards to qubits 0 to 3 before and after the oracle.",
+    "Use for qubit in range(4): qc.h(qubit), once before and once after oracle(qc)."
   ]
 }

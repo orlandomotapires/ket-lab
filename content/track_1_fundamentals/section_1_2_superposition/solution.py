@@ -1,5 +1,7 @@
 from qiskit import QuantumCircuit
 
-qc = QuantumCircuit(1, 1)
-qc.h(0)
-qc.measure(0, 0)
+qc = QuantumCircuit(3, 3)
+for q in range(3):
+    qc.h(q)
+for q in range(3):
+    qc.measure(q, q)

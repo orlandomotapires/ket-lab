@@ -1,19 +1,19 @@
 {
   "title": "Superposition und das Hadamard-Gatter",
   "summary": "Die Zustände |+⟩ und |−⟩ und ein Quanten-Zufallszahlengenerator.",
-  "mission": "Baue einen Quanten-Zufallszahlengenerator: Bringe Qubit 0 in eine gleichmäßige Superposition und miss es in das klassische Bit 0.",
+  "mission": "Baue einen 3-Bit-Quanten-Zufallszahlengenerator: Bringe alle drei Qubits in eine gleichmäßige Superposition und miss jedes in das klassische Bit mit demselben Index. Die 8 Ergebnisse (000 bis 111) müssen gleich wahrscheinlich sein.",
   "hints": [
-    "Das Hadamard-Gatter bringt |0⟩ in den Zustand |+⟩ auf dem Äquator der Kugel: qc.h(0).",
-    "Um das Ergebnis zu lesen, miss das Qubit und speichere den Wert in einem klassischen Bit: qc.measure(qubit, bit).",
-    "Die Lösung hat zwei Zeilen: qc.h(0) und danach qc.measure(0, 0)."
+    "Das Hadamard-Gatter bringt |0⟩ in den Zustand |+⟩ auf dem Äquator der Kugel: qc.h(0). Jedes Qubit braucht sein eigenes Hadamard.",
+    "Um das Ergebnis zu lesen, miss jedes Qubit und speichere den Wert in einem klassischen Bit: qc.measure(qubit, bit). Das sind drei Qubits und drei Bits.",
+    "Die Lösung wendet qc.h(0), qc.h(1) und qc.h(2) an, danach qc.measure(0, 0), qc.measure(1, 1) und qc.measure(2, 2). Eine Schleife for q in range(3) spart die Wiederholung."
   ],
   "prediction": {
-    "question": "Du bereitest den Zustand |+⟩ vor und misst. Dann wiederholst du das Experiment 1000-mal von vorn. Was erwartest du zu sehen?",
+    "question": "Du bereitest |+⟩ vor und misst 100-mal: Es kommen 56 Nullen und 44 Einsen. Ist der Generator verzerrt?",
     "options": [
-      "Immer 0",
-      "Einen Zwischenwert, etwa 0,5, bei jeder Messung",
-      "Etwa 500-mal 0 und 500-mal 1"
+      "Ja: ein fairer Generator würde genau 50 Nullen liefern",
+      "Nein: das ist normale statistische Schwankung, 56 liegt etwa 1,2 Standardabweichungen von 50 entfernt",
+      "Er wäre nur verzerrt, wenn mehr als 60 Nullen auftreten"
     ],
-    "explanation": "Jede Messung liefert nur 0 oder 1, niemals einen Zwischenwert. Die Superposition zeigt sich in der Statistik: Jedes Ergebnis tritt etwa zur Hälfte auf."
+    "explanation": "Mit N = 100 und p = 1/2 ist die Standardabweichung σ = √(N p (1−p)) = 5. 56 Nullen liegen 6 über 50, also etwa 1,2σ: nichts Ungewöhnliches. Ein fairer Generator liefert fast nie genau 50, und die relative Abweichung schrumpft mit wachsendem N."
   }
 }

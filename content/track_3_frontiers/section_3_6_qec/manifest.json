@@ -1,0 +1,44 @@
+{
+  "id": "3.6",
+  "track": 3,
+  "estimated_minutes": 35,
+  "framework": "pennylane",
+  "timeout": 10,
+  "num_qubits": 5,
+  "max_qubits": 5,
+  "qnode": {
+    "name": "circuit",
+    "args": []
+  },
+  "register": {
+    "qubits": [
+      4,
+      3
+    ]
+  },
+  "controls": [
+    {
+      "id": "error",
+      "options": [
+        "none",
+        "x0",
+        "x1",
+        "x2",
+        "x0x1",
+        "z0",
+        "bitflip"
+      ],
+      "default": "x1"
+    }
+  ],
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "histogram",
+    "threshold"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  }
+}

@@ -1452,3 +1452,15 @@ tr.is-zero {
 .boundary-point.is-minus {
   fill: #c2660f;
 }
+
+.prose blockquote {
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-2);
+}
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}

@@ -196,17 +196,18 @@ function Stage({ view, result, snapshot, current, code, lesson }: {
     [view, result, n, register],
   );
 
-  if (view === "landscape" || view === "convergence" || view === "dissociation" || view === "graph" || view === "boundary") {
+  if (["landscape", "convergence", "dissociation", "graph", "boundary", "threshold"].includes(view)) {
     const analysis = result.analysis;
     if (!analysis) return <div className="stage-message">{t("viz.runToSee")}</div>;
     if (analysis.error) return <div className="stage-message">{t("viz.analysisError", { error: analysis.error })}</div>;
-    const data = analysis[view];
+    const data = analysis[view as string];
     if (!data) return <div className="stage-message">{t("viz.runToSee")}</div>;
     if (view === "landscape") return <LandscapeView data={data as LandscapeData} />;
     if (view === "convergence") return <ConvergenceView data={data as ConvergenceData} />;
     if (view === "dissociation") return <DissociationView data={data as DissociationData} />;
     if (view === "graph") return <GraphView data={data as GraphData} />;
     if (view === "boundary") return <BoundaryView data={data as BoundaryData} />;
+    if (view === "threshold") return <DissociationView data={data as DissociationData} label={t("viz.view.threshold")} />;
     return <div className="stage-message">{t("viz.runToSee")}</div>;
   }
   if (view === "modular" && lesson?.modular) {

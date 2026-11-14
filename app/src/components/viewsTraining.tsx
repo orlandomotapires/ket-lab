@@ -2,7 +2,7 @@
  * Visualizações de treino (Trilha 3). Os dados vêm do analysis.py da lição,
  * calculados no motor depois de executar o código do aluno.
  */
-import { formatNumber, t } from "../i18n";
+import { formatNumber, t, type MessageKey } from "../i18n";
 
 const W = 600;
 const H = 260;
@@ -171,9 +171,15 @@ export interface DissociationData {
   point?: [number, number] | null;
   x_label?: string;
   y_label?: string;
+  /** Chaves de tradução da legenda das duas curvas e da nota (padrão: exata e Hartree-Fock). */
+  legend?: [MessageKey, MessageKey];
+  note?: MessageKey;
+  point_label?: MessageKey;
 }
 
-export function DissociationView({ data }: { data: DissociationData }) {
+/** Duas curvas e um ponto destacado: curva de dissociação (3.2) e curva de limiar (3.6). */
+export function DissociationView({ data, label }: { data: DissociationData; label?: string }) {
+  const [firstLegend, secondLegend] = data.legend ? data.legend.map((key) => t(key)) : [t("viz.exact"), "Hartree-Fock"];
   const all = [...data.exact, ...(data.hartree_fock ?? []), ...(data.point ? [data.point[1]] : [])];
   const low = Math.min(...all) - 0.03;
   const high = Math.max(...all) + 0.03;
@@ -187,7 +193,7 @@ export function DissociationView({ data }: { data: DissociationData }) {
 
   return (
     <>
-      <svg className="view2d" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={t("viz.view.dissociation")}>
+      <svg className="view2d" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={label ?? t("viz.view.dissociation")}>
         <line className="chart-axis" x1={left} x2={right} y1={bottom} y2={bottom} />
         <line className="chart-axis" x1={left} x2={left} y1={top} y2={bottom} />
         {data.hartree_fock && <path className="chart-line is-dashed" d={curve(data.hartree_fock)} />}
@@ -196,7 +202,7 @@ export function DissociationView({ data }: { data: DissociationData }) {
           <>
             <circle className="chart-dot is-highlight" cx={x(data.point[0])} cy={y(data.point[1])} r={5} />
             <text className="chart-value" x={x(data.point[0]) + 9} y={y(data.point[1]) + 4}>
-              {t("viz.yourResult")}: {niceNumber(data.point[1])}
+              {t(data.point_label ?? "viz.yourResult")}: {niceNumber(data.point[1])}
             </text>
           </>
         )}
@@ -210,18 +216,18 @@ export function DissociationView({ data }: { data: DissociationData }) {
             {data.y_label}
           </text>
         )}
-        <g transform={`translate(${right - 150}, ${top + 6})`}>
+        <g transform={`translate(${right - 190}, ${top + 6})`}>
           <line className="chart-line is-accent" x1={0} x2={18} y1={0} y2={0} />
-          <text className="chart-tick" x={24} y={4}>{t("viz.exact")}</text>
+          <text className="chart-tick" x={24} y={4}>{firstLegend}</text>
           {data.hartree_fock && (
             <>
               <line className="chart-line is-dashed" x1={0} x2={18} y1={16} y2={16} />
-              <text className="chart-tick" x={24} y={20}>Hartree-Fock</text>
+              <text className="chart-tick" x={24} y={20}>{secondLegend}</text>
             </>
           )}
         </g>
       </svg>
-      <div className="stage-footer">{t("viz.dissociationNote")}</div>
+      <div className="stage-footer">{t(data.note ?? "viz.dissociationNote")}</div>
     </>
   );
 }

@@ -70,17 +70,17 @@
         {
           "id": "1.8",
           "title": "The No-Cloning Theorem",
-          "summary": "To be written."
+          "summary": "No unitary operation copies an unknown quantum state; the CNOT copier works only for basis states."
         },
         {
           "id": "1.9",
           "title": "Superdense Coding",
-          "summary": "To be written."
+          "summary": "Two classical bits travel in one qubit when sender and receiver share a Bell pair."
         },
         {
           "id": "1.10",
           "title": "The CHSH Game",
-          "summary": "To be written."
+          "summary": "A shared Bell pair wins the CHSH game with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4."
         }
       ]
     },

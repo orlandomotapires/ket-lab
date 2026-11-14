@@ -1,0 +1,32 @@
+{
+  "title": "Superdense Coding",
+  "summary": "Two classical bits travel in one qubit when sender and receiver share a Bell pair.",
+  "objectives": [
+    "Encode two classical bits on Alice's half of a Bell pair with Pauli gates.",
+    "Decode both bits by changing from the Bell basis to the computational basis.",
+    "Explain why Bob's half of the pair alone carries no information about the message."
+  ],
+  "mission": "Alice and Bob share a Bell pair: Alice holds qubit 1 and Bob holds qubit 0. Alice encodes the two-bit string `message` (the validator tries all four) by acting only on qubit 1, then sends that qubit to Bob, who decodes with gates that do not depend on the message. Reading |q1 q0⟩, the final state must be the message.",
+  "hints": [
+    "Create the pair with qc.h(0) and qc.cx(0, 1). The state is |Φ⁺⟩ = (|00⟩ + |11⟩)/√2.",
+    "Alice's four Bell states come from Pauli gates on her qubit: apply qc.z(1) if message[0] == \"1\" and qc.x(1) if message[1] == \"1\". Use ordinary Python if statements, since the message is known when the circuit is built.",
+    "Bob undoes the Bell pair: qc.cx(1, 0), then qc.h(1). This maps |Φ⁺⟩, |Ψ⁺⟩, |Φ⁻⟩ and |Ψ⁻⟩ to |00⟩, |01⟩, |10⟩ and |11⟩ in |q1 q0⟩."
+  ],
+  "prediction": {
+    "question": "Before Alice sends her qubit, Bob measures his own qubit in the computational basis. What is the probability that he gets 1?",
+    "options": [
+      "It depends on the message: 0 for 00, 1 for 11",
+      "1/2 for every message",
+      "0 for every message"
+    ],
+    "explanation": "Alice's gates act on qubit 1 only, so the reduced state of Bob's qubit does not change. Every Bell state has the maximally mixed state I/2 on each qubit, so Bob's outcome is 0 or 1 with probability 1/2 whatever the message. The two bits sit in the correlations between the qubits and appear only when Bob has both."
+  },
+  "messages": {
+    "ok": "All four messages are decoded correctly: two classical bits travelled in one qubit.",
+    "wrong_size": "Use a circuit with 2 qubits, named `qc`.",
+    "gate_count": "Expected exactly two two-qubit gates (the CNOT that creates the pair and the CNOT that starts Bob's decoding), found {count}.",
+    "alice_local": "Between the two CNOT gates only Alice acts, and Alice owns qubit 1. A gate on another qubit uses a qubit that Alice does not hold.",
+    "protocol_fixed": "For the message {message}, the pair creation or Bob's decoding differs from the other messages. Only Alice's gates may depend on the message.",
+    "wrong_message": "For the message {message}, Bob reads {observed}."
+  }
+}

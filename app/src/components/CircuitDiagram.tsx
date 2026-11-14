@@ -145,6 +145,7 @@ export function CircuitDiagram() {
           );
         })}
       </svg>
+      {steps.length === 0 && <p className="circuit-hint muted">{t("circuit.noGates")}</p>}
     </div>
   );
 }

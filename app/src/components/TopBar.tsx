@@ -47,10 +47,13 @@ export function TopBar() {
       </div>
       <SearchBox />
       <div className="topbar-right">
-      <span className={`status-chip is-${connection}`} role="status" title={t("topbar.engineTitle")}>
-        <span className="status-dot" aria-hidden="true" />
-        {t(`topbar.engine.${connection}`)}
-      </span>
+      {/* Só aparece quando há algo a resolver; com o motor ativo, não ocupa a barra. */}
+      {connection !== "open" && (
+        <span className={`status-chip is-${connection}`} role="status" title={t("topbar.engineTitle")}>
+          <span className="status-dot" aria-hidden="true" />
+          {t(`topbar.engine.${connection}`)}
+        </span>
+      )}
       <button
         className="btn btn-ghost btn-icon btn-sm"
         onClick={toggleTheme}

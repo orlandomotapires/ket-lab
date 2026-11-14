@@ -219,6 +219,17 @@ export function registerState(amplitudes: readonly Complex[], numQubits: number,
   return { amplitudes: rotated, probabilities };
 }
 
+/** Probabilidade de cada valor de um registrador, a partir das probabilidades da base inteira. */
+export function registerProbabilities(probabilities: readonly number[], register: readonly number[]): number[] {
+  const result = new Array<number>(2 ** register.length).fill(0);
+  probabilities.forEach((p, index) => {
+    let value = 0;
+    register.forEach((qubit, position) => (value |= ((index >> qubit) & 1) << position));
+    result[value] += p;
+  });
+  return result;
+}
+
 /** Valores de a^x mod N para x = 0 … count−1 e o período (ou null). */
 export function modularSequence(a: number, N: number, count: number): { values: number[]; period: number | null } {
   const values: number[] = [];

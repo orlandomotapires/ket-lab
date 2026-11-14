@@ -11,10 +11,13 @@ export function OracleBar() {
   const validating = useStore((s) => s.validating);
   const connection = useStore((s) => s.connection);
   const nextLessonId = useStore(selectNextLessonId);
-  const { validate, runShots, resetCode, openLesson, backToHub } = useStore.getState();
+  const running = useStore((s) => s.running);
+  const resultIsCurrentForManual = useStore((s) => s.resultIsCurrent);
+  const { validate, runShots, resetCode, openLesson, backToHub, runNow } = useStore.getState();
+  const manual = lesson?.live === false;
 
   let tone: "neutral" | "success" | "warn" | "error" = "neutral";
-  let message = lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
+  let message = manual ? t("oracle.idleManual") : lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
   if (error && !resultIsCurrent) {
     tone = "error";
     message = error.line != null ? t("oracle.atLine", { line: error.line, message: error.message }) : error.message;
@@ -35,7 +38,18 @@ export function OracleBar() {
       </p>
       <div className="oracle-actions">
         <button className="btn btn-ghost" onClick={resetCode}>{t("oracle.reset")}</button>
-        <button className="btn" onClick={() => void runShots()} disabled={offline}>{t("oracle.shots")}</button>
+        {manual ? (
+          <button
+            className={`btn${resultIsCurrentForManual ? "" : " btn-primary"}`}
+            onClick={runNow}
+            disabled={offline || running}
+            title={t("oracle.runTitle")}
+          >
+            {running ? t("oracle.running") : t("oracle.run")}
+          </button>
+        ) : (
+          <button className="btn" onClick={() => void runShots()} disabled={offline}>{t("oracle.shots")}</button>
+        )}
         {lesson && !validation?.passed && (
           <button className="btn btn-primary" onClick={() => void validate()} disabled={offline || validating}>
             {validating ? t("oracle.validating") : t("oracle.validate")}

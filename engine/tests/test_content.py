@@ -104,6 +104,7 @@ def test_every_lesson_has_theoretical_and_practical_references(library, lesson_i
         ("quantum fourier", "2.6"),  # duas palavras
         ("teleportation", "1.6"),
         ("max-cut", "3.3"),
+        ("deutsch-jozsa", "2.3"),  # hífen do teclado acha o título com traço (–)
     ],
 )
 def test_search_finds_the_right_lesson_first(library, query, expected):

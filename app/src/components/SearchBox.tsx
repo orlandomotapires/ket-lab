@@ -10,7 +10,8 @@ function fold(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\u2010-\u2014\u2212]/g, "-");
 }
 
 /** Destaca no trecho as palavras buscadas, ignorando acentos e maiúsculas. */

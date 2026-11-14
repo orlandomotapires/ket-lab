@@ -6,7 +6,6 @@ __pycache__/
 .pytest_cache/
 engine/build/
 engine/dist/
-src-tauri/target/
 .DS_Store
 
 # Material de referência de cursos (terceiros, grande): fica só no disco, fora do repositório.
@@ -15,3 +14,7 @@ src-tauri/target/
 
 # Worktrees e estado local do Claude Code
 /.claude/
+
+# Playwright
+test-results/
+playwright-report/

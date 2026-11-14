@@ -99,6 +99,21 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "No circuit found. Create one with `qc = QuantumCircuit(1)`.",
         "de": "Kein Schaltkreis gefunden. Erstelle einen mit `qc = QuantumCircuit(1)`.",
     },
+    "run.cancelled": {
+        "pt": "Execução interrompida.",
+        "en": "Execution stopped.",
+        "de": "Ausführung abgebrochen.",
+    },
+    "export.unsupported": {
+        "pt": "Este circuito não pode ser exportado para {format}: {detail}",
+        "en": "This circuit cannot be exported to {format}: {detail}",
+        "de": "Dieser Schaltkreis lässt sich nicht nach {format} exportieren: {detail}",
+    },
+    "export.noise": {
+        "pt": "Canais de ruído (matriz densidade) não existem em OpenQASM. Exporte o circuito sem ruído.",
+        "en": "Noise channels (density matrix) do not exist in OpenQASM. Export the circuit without noise.",
+        "de": "Rauschkanäle (Dichtematrix) gibt es in OpenQASM nicht. Exportiere den Schaltkreis ohne Rauschen.",
+    },
     "run.timeout": {
         "pt": "A execução passou de {seconds} s e foi interrompida. Há algum laço infinito no código?",
         "en": "Execution took longer than {seconds} s and was stopped. Is there an infinite loop in the code?",

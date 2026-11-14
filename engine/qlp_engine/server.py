@@ -28,6 +28,8 @@ from .progress import ProgressStore
 HOST = "127.0.0.1"
 MAX_MESSAGE_BYTES = 512 * 1024
 MAX_CODE_CHARS = 100_000
+# Treinos (botão Executar no laboratório livre) podem levar bem mais que uma edição ao vivo.
+TRAIN_TIMEOUT_S = 120.0
 
 # QLP_LOG=1 registra no stderr o tipo de cada requisição (diagnóstico).
 LOG_REQUESTS = os.environ.get("QLP_LOG") == "1"
@@ -92,7 +94,7 @@ class EngineServer:
             request_id = message.get("id")
             # Vale para esta tarefa e para a thread do pool que ela usar.
             i18n.set_lang(message.get("lang"))
-            response = await self._dispatch(message, latest_run)
+            response = await self._dispatch(message, latest_run, websocket)
         except ContentError as exc:
             response = _error(str(exc), "content")
         except (json.JSONDecodeError, KeyError, TypeError, ValueError, AttributeError) as exc:
@@ -103,7 +105,7 @@ class EngineServer:
         except ConnectionClosed:
             pass
 
-    async def _dispatch(self, message: dict, latest_run: dict) -> dict:
+    async def _dispatch(self, message: dict, latest_run: dict, websocket=None) -> dict:
         kind = message["type"]
         _log(f"{kind} {message.get('lesson_id') or ''}".rstrip())
 
@@ -127,7 +129,11 @@ class EngineServer:
             )
             return {"ok": True}
 
-        if kind in ("run", "shots", "validate"):
+        if kind == "cancel":
+            self.pool.cancel((id(websocket), message.get("target")))
+            return {"ok": True}
+
+        if kind in ("run", "shots", "validate", "export"):
             code = message["code"]
             if not isinstance(code, str) or len(code) > MAX_CODE_CHARS:
                 return _error(i18n.t("server.bad_code"), "protocol")
@@ -145,6 +151,11 @@ class EngineServer:
 
             job.update(self.content.run_context(lesson_id))
             job["inputs"] = self.content.control_inputs(lesson_id, message.get("controls"))
+            if kind == "export":
+                job["format"] = message.get("format")
+                return await self.pool.submit(job, timeout=timeout)
+            if kind == "run" and message.get("train"):
+                return await self._train(job, message, websocket, timeout)
             if kind == "shots":
                 job["shots"] = message.get("shots", 1024)
                 return await self.pool.submit(job, timeout=timeout)
@@ -155,6 +166,27 @@ class EngineServer:
             return await self.pool.submit(job, timeout=timeout, is_stale=lambda: seq != latest_run["seq"])
 
         return _error(i18n.t("server.unknown_type", kind=kind), "protocol")
+
+    async def _train(self, job: dict, message: dict, websocket, timeout: float | None) -> dict:
+        """Execução longa pelo botão: envia as métricas de `report(...)` enquanto roda."""
+        loop = asyncio.get_running_loop()
+        request_id = message.get("id")
+        job["stream"] = True
+
+        def on_event(event: dict) -> None:  # thread do pool
+            payload = json.dumps({"id": request_id, "event": "progress", "series": event.get("series", {})})
+            loop.call_soon_threadsafe(lambda: asyncio.ensure_future(_send(websocket, payload)))
+
+        return await self.pool.submit(
+            job, timeout=max(timeout or 0, TRAIN_TIMEOUT_S), on_event=on_event, tag=(id(websocket), request_id)
+        )
+
+
+async def _send(websocket, payload: str) -> None:
+    try:
+        await websocket.send(payload)
+    except ConnectionClosed:
+        pass
 
 
 def _log(text: str) -> None:

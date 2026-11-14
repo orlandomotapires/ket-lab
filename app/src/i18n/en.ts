@@ -25,6 +25,8 @@ export const en: Record<MessageKey, string> = {
   "hub.sandbox": "Free lab",
   "hub.start": "Start: {id} {title}",
   "hub.continue": "Continue: {id} {title}",
+  "hub.startShort": "Start",
+  "hub.continueShort": "Continue",
   "hub.track": "Track {id}",
   "hub.action.done": "Review",
   "hub.action.started": "Continue",

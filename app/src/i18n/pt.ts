@@ -24,6 +24,8 @@ export const pt = {
   "hub.sandbox": "Laboratório livre",
   "hub.start": "Começar: {id} {title}",
   "hub.continue": "Continuar: {id} {title}",
+  "hub.startShort": "Começar",
+  "hub.continueShort": "Continuar",
   "hub.track": "Trilha {id}",
   "hub.action.done": "Revisar",
   "hub.action.started": "Continuar",

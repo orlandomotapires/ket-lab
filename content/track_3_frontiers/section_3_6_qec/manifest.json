@@ -40,5 +40,27 @@
   "prediction_answer": 1,
   "validation": {
     "type": "custom"
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "10.1.1",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Repetition codes",
+      "authors": "IBM Quantum Learning — Foundations of quantum error correction",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Stabilizer codes for quantum error correction",
+      "authors": "PennyLane Demos",
+      "url": "https://pennylane.ai/demos/tutorial_stabilizer_codes/"
+    }
+  ]
 }

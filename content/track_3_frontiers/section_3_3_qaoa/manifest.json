@@ -7,10 +7,50 @@
   "timeout": 20,
   "num_qubits": 5,
   "max_qubits": 5,
-  "qnode": { "name": "circuit", "args": ["params"] },
-  "register": { "qubits": [0, 1, 2, 3, 4] },
+  "qnode": {
+    "name": "circuit",
+    "args": [
+      "params"
+    ]
+  },
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
   "default_visualizer": "graph",
-  "available_visualizers": ["graph", "convergence", "histogram"],
+  "available_visualizers": [
+    "graph",
+    "convergence",
+    "histogram"
+  ],
   "prediction_answer": 1,
-  "validation": { "type": "custom" }
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "A Quantum Approximate Optimization Algorithm",
+      "authors": "E. Farhi, J. Goldstone, S. Gutmann",
+      "year": 2014,
+      "url": "https://arxiv.org/abs/1411.4028"
+    },
+    {
+      "kind": "course",
+      "title": "Examples and applications",
+      "authors": "IBM Quantum Learning — Variational algorithm design",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/variational-algorithm-design/examples-and-applications"
+    },
+    {
+      "kind": "tutorial",
+      "title": "QAOA for MaxCut",
+      "authors": "PennyLane Demos",
+      "url": "https://pennylane.ai/demos/tutorial_qaoa_maxcut/"
+    }
+  ]
 }

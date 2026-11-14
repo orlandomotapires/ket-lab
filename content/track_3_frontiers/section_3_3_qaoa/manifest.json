@@ -1,0 +1,16 @@
+{
+  "id": "3.3",
+  "track": 3,
+  "estimated_minutes": 30,
+  "framework": "pennylane",
+  "live": false,
+  "timeout": 20,
+  "num_qubits": 5,
+  "max_qubits": 5,
+  "qnode": { "name": "circuit", "args": ["params"] },
+  "register": { "qubits": [0, 1, 2, 3, 4] },
+  "default_visualizer": "graph",
+  "available_visualizers": ["graph", "convergence", "histogram"],
+  "prediction_answer": 1,
+  "validation": { "type": "custom" }
+}

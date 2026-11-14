@@ -1,0 +1,25 @@
+{
+  "title": "QAOA and Max-Cut",
+  "summary": "Combinatorial optimization on a graph, with p = 2 layers.",
+  "mission": "Split the 5 vertices of the graph into two groups, cutting as many edges as possible: build the QAOA with cost layers (IsingZZ on the edges) and mixer layers (RX on every qubit) and optimize the angles until the approximation ratio exceeds 0.85.",
+  "prediction": {
+    "question": "With a single layer (p = 1) and the best possible angles, does the approximation ratio of this graph exceed 0.85?",
+    "options": ["Yes, one layer is always enough", "No, it stays at about 0.82", "Yes, it reaches 1"],
+    "explanation": "With p = 1, the best QAOA can achieve on this graph is about 0.82. Each extra layer adds two angles and brings the state closer to the solution; with p = 2 the ratio exceeds 0.9."
+  },
+  "hints": [
+    "In the function layer(gamma, beta): for each edge (i, j) in edges, qml.IsingZZ(gamma, wires=[i, j]); then, for each qubit, qml.RX(2 * beta, wires=qubit).",
+    "The circuit starts with a Hadamard on the 5 qubits and applies one layer for each pair (gamma, beta) in params. It returns qml.expval(cost_h), which the optimizer minimizes.",
+    "Use params of shape (2, 2), that is, p = 2 layers, and optimizer = qml.AdamOptimizer(0.1) for about 80 steps, storing circuit(params) in history."
+  ],
+  "messages": {
+    "ok": "Approximation ratio {ratio} (threshold {threshold}): the expected cut is close to the maximum, {best} edges.",
+    "no_circuit": "Define the QNode circuit(params), which returns qml.expval(cost_h).",
+    "no_params": "Store the optimized angles in the variable params.",
+    "wrong_qubits": "The graph has 5 vertices, so the circuit needs 5 qubits, but it has {count}.",
+    "forbidden_op": "Use only the QAOA gates (Hadamard, IsingZZ, RX). Found: {names}.",
+    "no_mixer": "The mixer layer is missing: without RX, the state stays stuck in the phases and the ratio is only {ratio}.",
+    "p_too_small": "Ratio {ratio}, below {threshold}. With a single layer QAOA does not exceed about 0.82 on this graph: use p = 2.",
+    "low_ratio": "Ratio {ratio}, below {threshold}. Train for more steps or restart from other initial angles."
+  }
+}

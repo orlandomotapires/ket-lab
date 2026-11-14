@@ -1,0 +1,25 @@
+{
+  "title": "QAOA und Max-Cut",
+  "summary": "Kombinatorische Optimierung auf einem Graphen mit p = 2 Schichten.",
+  "mission": "Teile die 5 Knoten des Graphen in zwei Gruppen und schneide dabei so viele Kanten wie möglich: Baue das QAOA mit Kostenschichten (IsingZZ auf den Kanten) und Mischschichten (RX auf allen Qubits) und optimiere die Winkel, bis das Approximationsverhältnis 0,85 übersteigt.",
+  "prediction": {
+    "question": "Übersteigt das Approximationsverhältnis dieses Graphen 0,85, wenn man eine einzige Schicht (p = 1) und die bestmöglichen Winkel verwendet?",
+    "options": ["Ja, eine Schicht genügt immer", "Nein, es bleibt bei etwa 0,82", "Ja, es erreicht 1"],
+    "explanation": "Mit p = 1 erreicht das QAOA auf diesem Graphen höchstens etwa 0,82. Jede weitere Schicht fügt zwei Winkel hinzu und bringt den Zustand näher an die Lösung; mit p = 2 übersteigt das Verhältnis 0,9."
+  },
+  "hints": [
+    "In der Funktion layer(gamma, beta): für jede Kante (i, j) in edges qml.IsingZZ(gamma, wires=[i, j]); danach für jedes Qubit qml.RX(2 * beta, wires=qubit).",
+    "Der Schaltkreis beginnt mit einem Hadamard auf den 5 Qubits und wendet für jedes Paar (gamma, beta) in params eine Schicht an. Er gibt qml.expval(cost_h) zurück, das der Optimierer minimiert.",
+    "Verwende params der Form (2, 2), also p = 2 Schichten, und optimizer = qml.AdamOptimizer(0.1) für etwa 80 Schritte und speichere circuit(params) in history."
+  ],
+  "messages": {
+    "ok": "Approximationsverhältnis {ratio} (Schwelle {threshold}): Der erwartete Schnitt liegt nahe am Maximum von {best} Kanten.",
+    "no_circuit": "Definiere den QNode circuit(params), der qml.expval(cost_h) zurückgibt.",
+    "no_params": "Speichere die optimierten Winkel in der Variablen params.",
+    "wrong_qubits": "Der Graph hat 5 Knoten, daher braucht der Schaltkreis 5 Qubits, hat aber {count}.",
+    "forbidden_op": "Verwende nur die Gatter des QAOA (Hadamard, IsingZZ, RX). Gefunden: {names}.",
+    "no_mixer": "Die Mischschicht fehlt: Ohne RX bleibt der Zustand in den Phasen stecken und das Verhältnis beträgt nur {ratio}.",
+    "p_too_small": "Verhältnis {ratio}, unter {threshold}. Mit nur einer Schicht kommt das QAOA auf diesem Graphen nicht über etwa 0,82: Verwende p = 2.",
+    "low_ratio": "Verhältnis {ratio}, unter {threshold}. Trainiere mehr Schritte oder starte mit anderen Anfangswinkeln neu."
+  }
+}

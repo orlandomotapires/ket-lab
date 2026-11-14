@@ -1,0 +1,37 @@
+{
+  "id": "1.5",
+  "track": 1,
+  "estimated_minutes": 18,
+  "num_qubits": 2,
+  "max_qubits": 4,
+  "default_visualizer": "qsphere",
+  "available_visualizers": [
+    "qsphere",
+    "bloch"
+  ],
+  "validation": {
+    "type": "state_fidelity",
+    "tolerance": 0.999,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "cx",
+      "cz",
+      "cy",
+      "ch",
+      "swap"
+    ]
+  },
+  "prediction_answer": 1
+}

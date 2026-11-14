@@ -1,0 +1,19 @@
+{
+  "title": "Bernstein-Vazirani",
+  "summary": "Eine ganze geheime Bitfolge mit einer Abfrage finden.",
+  "mission": "Finde die geheime 4-Bit-Folge s mit einem einzigen Aufruf von oracle(qc): Am Ende muss das Eingaberegister (Qubits 0 bis 3) im Zustand |s⟩ sein.",
+  "prediction": {
+    "question": "Wie viele Abfragen braucht ein klassischer Algorithmus, um eine geheime 4-Bit-Folge zu finden?",
+    "options": [
+      "1",
+      "4",
+      "16"
+    ],
+    "explanation": "Jede klassische Abfrage verrät genau ein Bit von s (durch Abfragen von 0001, 0010, 0100 und 1000), also sind es 4. Der Quantenalgorithmus braucht eine, unabhängig von der Länge von s."
+  },
+  "hints": [
+    "Der Schaltkreis ist derselbe wie bei Deutsch-Jozsa, jetzt mit 4 Eingabequbits und dem Hilfsqubit auf Qubit 4.",
+    "Hilfsqubit in |−⟩ mit qc.x(4) und qc.h(4); Hadamard auf die Qubits 0 bis 3 vor und nach dem Orakel.",
+    "Verwende eine Schleife for qubit in range(4): qc.h(qubit). Sie steht zweimal, um oracle(qc) herum."
+  ]
+}

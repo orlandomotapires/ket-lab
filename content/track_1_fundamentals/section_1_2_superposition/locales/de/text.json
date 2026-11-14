@@ -1,0 +1,19 @@
+{
+  "title": "Superposition und das Hadamard-Gatter",
+  "summary": "Die Zustände |+⟩ und |−⟩ und ein Quanten-Zufallszahlengenerator.",
+  "mission": "Baue einen Quanten-Zufallszahlengenerator: Bringe Qubit 0 in eine gleichmäßige Superposition und miss es in das klassische Bit 0.",
+  "hints": [
+    "Das Hadamard-Gatter bringt |0⟩ in den Zustand |+⟩ auf dem Äquator der Kugel: qc.h(0).",
+    "Um das Ergebnis zu lesen, miss das Qubit und speichere den Wert in einem klassischen Bit: qc.measure(qubit, bit).",
+    "Die Lösung hat zwei Zeilen: qc.h(0) und danach qc.measure(0, 0)."
+  ],
+  "prediction": {
+    "question": "Du bereitest den Zustand |+⟩ vor und misst. Dann wiederholst du das Experiment 1000-mal von vorn. Was erwartest du zu sehen?",
+    "options": [
+      "Immer 0",
+      "Einen Zwischenwert, etwa 0,5, bei jeder Messung",
+      "Etwa 500-mal 0 und 500-mal 1"
+    ],
+    "explanation": "Jede Messung liefert nur 0 oder 1, niemals einen Zwischenwert. Die Superposition zeigt sich in der Statistik: Jedes Ergebnis tritt etwa zur Hälfte auf."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "1.4",
+  "track": 1,
+  "estimated_minutes": 15,
+  "num_qubits": 1,
+  "max_qubits": 3,
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch"
+  ],
+  "validation": {
+    "type": "state_fidelity",
+    "tolerance": 0.999,
+    "allowed_gates": [
+      "h",
+      "z",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rz",
+      "p",
+      "id"
+    ]
+  },
+  "prediction_answer": 1
+}

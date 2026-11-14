@@ -1,0 +1,19 @@
+{
+  "title": "Interferência e Medição em Outras Bases",
+  "summary": "Amplitudes se somam e se cancelam: HH = I, HZH = X e o papel da fase.",
+  "mission": "Leve o qubit de |0⟩ a |1⟩ sem usar as portas X, Y ou rotações em torno de X e Y. Só estão liberadas a Hadamard e as portas de fase (Z, S, T, Rz).",
+  "hints": [
+    "Duas Hadamard seguidas se desfazem. O que precisa acontecer entre elas para o resultado mudar?",
+    "Uma porta de fase no meio do caminho troca qual resultado é cancelado. Aplique H, depois uma porta que inverta a fase, depois H de novo.",
+    "A sequência é qc.h(0), qc.z(0), qc.h(0). Isso mostra a identidade HZH = X."
+  ],
+  "prediction": {
+    "question": "Uma Hadamard em |0⟩ cria uma superposição 50/50. E se você aplicar uma segunda Hadamard logo em seguida, o que a medição mostra?",
+    "options": [
+      "Continua 50% e 50%",
+      "Sempre 0",
+      "Sempre 1"
+    ],
+    "explanation": "Os dois caminhos que levam a |1⟩ chegam com sinais opostos e se cancelam; os que levam a |0⟩ se reforçam. O qubit volta a |0⟩ com certeza: HH = I."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Busca de Grover",
+  "summary": "Amplificação de amplitude e inversão em torno da média.",
+  "mission": "Encontre o item marcado entre 16 possibilidades: depois do número ideal de iterações de Grover (oráculo seguido do difusor), o estado marcado precisa ter cerca de 96% de probabilidade.",
+  "prediction": {
+    "question": "Com 3 iterações, o item marcado chega a cerca de 96% de probabilidade. E com 4 iterações?",
+    "options": [
+      "Chega a 100%",
+      "Cai para cerca de 58%",
+      "Fica em 96%"
+    ],
+    "explanation": "Cada iteração é uma rotação de ângulo fixo em direção ao estado marcado. Depois de passar por ele, a rotação continua e se afasta: com 4 iterações a probabilidade cai para cerca de 58%."
+  },
+  "hints": [
+    "Escreva o difusor como função: Hadamard em todos os qubits, X em todos, Z multicontrolada (qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3)), X em todos e Hadamard em todos.",
+    "O circuito começa com Hadamard nos 4 qubits; depois vêm as iterações, cada uma com oracle(qc) seguido de diffuser(qc).",
+    "Com N = 16, são 3 iterações: for _ in range(3): oracle(qc) e diffuser(qc)."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Superposição e a Porta Hadamard",
+  "summary": "Crie uma superposição uniforme e use a medição para gerar um bit aleatório.",
+  "mission": "Construa um gerador quântico de números aleatórios: coloque o qubit 0 em superposição uniforme e meça-o no bit clássico 0.",
+  "hints": [
+    "A porta Hadamard leva |0⟩ ao estado |+⟩, no equador da esfera: qc.h(0).",
+    "Para ler o resultado, meça o qubit e guarde o valor em um bit clássico: qc.measure(qubit, bit).",
+    "A solução tem duas linhas: qc.h(0) e depois qc.measure(0, 0)."
+  ],
+  "prediction": {
+    "question": "Você prepara o estado |+⟩ e mede. Depois repete o experimento do zero, 1000 vezes. O que espera ver?",
+    "options": [
+      "Sempre 0",
+      "Um valor intermediário, como 0,5, em cada medição",
+      "Cerca de 500 vezes 0 e 500 vezes 1"
+    ],
+    "explanation": "Cada medição devolve só 0 ou 1, nunca um valor intermediário. A superposição aparece na estatística: metade das vezes cada resultado."
+  }
+}

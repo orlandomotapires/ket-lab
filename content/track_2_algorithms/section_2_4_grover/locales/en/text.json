@@ -1,0 +1,19 @@
+{
+  "title": "Grover's Search",
+  "summary": "Amplitude amplification and inversion about the mean.",
+  "mission": "Find the marked item among 16 possibilities: after the ideal number of Grover iterations (oracle followed by the diffuser), the marked state must have about 96% probability.",
+  "prediction": {
+    "question": "With 3 iterations, the marked item reaches about 96% probability. And with 4 iterations?",
+    "options": [
+      "It reaches 100%",
+      "It drops to about 58%",
+      "It stays at 96%"
+    ],
+    "explanation": "Each iteration is a rotation by a fixed angle toward the marked state. After passing it, the rotation continues and moves away: with 4 iterations the probability drops to about 58%."
+  },
+  "hints": [
+    "Write the diffuser as a function: Hadamard on all qubits, X on all, multi-controlled Z (qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3)), X on all and Hadamard on all.",
+    "The circuit starts with Hadamard on the 4 qubits; then come the iterations, each with oracle(qc) followed by diffuser(qc).",
+    "With N = 16, that is 3 iterations: for _ in range(3): oracle(qc) and diffuser(qc)."
+  ]
+}

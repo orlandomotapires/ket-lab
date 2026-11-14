@@ -1,0 +1,19 @@
+{
+  "title": "O Qubit e a Base Computacional",
+  "summary": "Do bit clássico ao vetor de estado: prepare |0⟩ e inverta-o para |1⟩ com a porta X.",
+  "mission": "Aplique uma porta ao qubit 0 para levá-lo do estado |0⟩ ao estado |1⟩.",
+  "hints": [
+    "O circuito já está criado na variável qc. Portas são métodos dela: qc.nome_da_porta(indice_do_qubit).",
+    "A porta que troca |0⟩ por |1⟩ é a Pauli-X, o equivalente quântico do NOT.",
+    "Escreva qc.x(0) em uma linha nova, depois da criação do circuito."
+  ],
+  "prediction": {
+    "question": "Antes de escrever código: a porta X gira o vetor de estado 180° em torno do eixo X da esfera. Partindo do polo norte (|0⟩), onde o vetor vai parar?",
+    "options": [
+      "No equador, apontando para +X",
+      "No polo sul, em |1⟩",
+      "Continua no polo norte, em |0⟩"
+    ],
+    "explanation": "Meia volta em torno de um eixo horizontal leva o polo norte ao polo sul. Por isso a X é o NOT quântico: troca |0⟩ por |1⟩."
+  }
+}

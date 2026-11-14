@@ -1,0 +1,42 @@
+{
+  "id": "1.6",
+  "track": 1,
+  "estimated_minutes": 25,
+  "num_qubits": 3,
+  "max_qubits": 3,
+  "default_visualizer": "compare",
+  "available_visualizers": [
+    "compare",
+    "bloch",
+    "qsphere"
+  ],
+  "comparison": {
+    "source_qubit": 0,
+    "source_marker": "prepare_alice_state(",
+    "target_qubit": 2
+  },
+  "validation": {
+    "type": "reduced_state",
+    "qubit": 2,
+    "trials": 4,
+    "tolerance": 0.999,
+    "allowed_gates": [
+      "psi",
+      "h",
+      "x",
+      "z",
+      "cx",
+      "cz",
+      "measure",
+      "if_else",
+      "barrier"
+    ],
+    "forbidden_pairs": [
+      [
+        0,
+        2
+      ]
+    ]
+  },
+  "prediction_answer": 1
+}

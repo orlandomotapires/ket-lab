@@ -1,0 +1,19 @@
+{
+  "title": "Interference and Measuring in Other Bases",
+  "summary": "HH = I, HZH = X and why the phase decides the outcome.",
+  "mission": "Take the qubit from |0⟩ to |1⟩ without using the X or Y gates or rotations around X and Y. Only the Hadamard and the phase gates (Z, S, T, Rz) are allowed.",
+  "hints": [
+    "Two Hadamards in a row undo each other. What has to happen between them for the result to change?",
+    "A phase gate in the middle changes which outcome is cancelled. Apply H, then a gate that flips the phase, then H again.",
+    "The sequence is qc.h(0), qc.z(0), qc.h(0). This shows the identity HZH = X."
+  ],
+  "prediction": {
+    "question": "A Hadamard on |0⟩ creates a 50/50 superposition. What if you apply a second Hadamard right after it: what does the measurement show?",
+    "options": [
+      "Still 50% and 50%",
+      "Always 0",
+      "Always 1"
+    ],
+    "explanation": "The two paths leading to |1⟩ arrive with opposite signs and cancel; those leading to |0⟩ reinforce each other. The qubit returns to |0⟩ with certainty: HH = I."
+  }
+}

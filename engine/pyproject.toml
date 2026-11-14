@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qlp-engine"
+version = "0.1.0"
+description = "Motor científico local (sidecar) da Quantum Learning Platform"
+requires-python = ">=3.11"
+# Versões fixadas de propósito: a API do Qiskit muda entre versões maiores e
+# as lições dependem dela. Atualize aqui e rode a suíte de conteúdo.
+dependencies = [
+    "qiskit==2.6.2",
+    "numpy>=2.2,<3",
+    "websockets==17.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "jsonschema>=4.20"]
+package = ["pyinstaller>=6.10"]
+
+[project.scripts]
+qlp-engine = "qlp_engine.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["qlp_engine*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,19 @@
+{
+  "title": "Interferenz und Messung in anderen Basen",
+  "summary": "HH = I, HZH = X und warum die Phase das Ergebnis bestimmt.",
+  "mission": "Bringe das Qubit von |0⟩ nach |1⟩, ohne die Gatter X, Y oder Rotationen um X und Y zu verwenden. Erlaubt sind nur das Hadamard-Gatter und die Phasengatter (Z, S, T, Rz).",
+  "hints": [
+    "Zwei Hadamard-Gatter hintereinander heben sich auf. Was muss zwischen ihnen passieren, damit sich das Ergebnis ändert?",
+    "Ein Phasengatter in der Mitte vertauscht, welches Ergebnis ausgelöscht wird. Wende H an, dann ein Gatter, das die Phase umkehrt, und danach wieder H.",
+    "Die Reihenfolge ist qc.h(0), qc.z(0), qc.h(0). Das zeigt die Identität HZH = X."
+  ],
+  "prediction": {
+    "question": "Ein Hadamard auf |0⟩ erzeugt eine 50/50-Superposition. Was zeigt die Messung, wenn du direkt danach ein zweites Hadamard anwendest?",
+    "options": [
+      "Weiterhin 50 % und 50 %",
+      "Immer 0",
+      "Immer 1"
+    ],
+    "explanation": "Die beiden Wege, die zu |1⟩ führen, kommen mit entgegengesetzten Vorzeichen an und löschen sich aus; die Wege zu |0⟩ verstärken sich. Das Qubit kehrt mit Sicherheit zu |0⟩ zurück: HH = I."
+  }
+}

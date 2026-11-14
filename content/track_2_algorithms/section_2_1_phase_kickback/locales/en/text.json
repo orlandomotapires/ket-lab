@@ -1,0 +1,19 @@
+{
+  "title": "Phase Kickback",
+  "summary": "How the target qubit kicks a phase back to the control.",
+  "mission": "Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, and apply a CNOT from qubit 0 to qubit 1. The target does not change: watch what happens to the control.",
+  "prediction": {
+    "question": "The target is in |−⟩, and X|−⟩ = −|−⟩. With the control in |+⟩, you apply a CNOT. Which qubit changes state?",
+    "options": [
+      "Only the target",
+      "Only the control",
+      "Neither of them"
+    ],
+    "explanation": "The target stays in |−⟩. The −1 sign that X produces only appears in the term where the control is 1, and it becomes a relative phase of the control: it goes from |+⟩ to |−⟩."
+  },
+  "hints": [
+    "The target must be in |−⟩: take it to |1⟩ with X and then apply a Hadamard.",
+    "The control in |+⟩ is just a Hadamard on qubit 0. The CNOT comes last.",
+    "Sequence: qc.x(1), qc.h(1), qc.h(0) and finally qc.cx(0, 1)."
+  ]
+}

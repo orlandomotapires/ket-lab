@@ -1,0 +1,19 @@
+{
+  "title": "Relative Phase and Rotations",
+  "summary": "Z, S, T and Rz gates: same probabilities, different states.",
+  "mission": "The circuit already prepares |+⟩. Rotate the vector a quarter turn around the Z axis, to the +Y point of the equator: the state (|0⟩ + i|1⟩)/√2.",
+  "hints": [
+    "Rotations around Z move the vector along the equator without changing the probabilities. Try qc.z(0) and see where the vector ends up.",
+    "Z is a half turn (180°). You need a quarter turn (90°): the S gate, or qc.rz(theta, 0) with the right angle.",
+    "Add qc.s(0) after the Hadamard. With rz, import math and use qc.rz(math.pi / 2, 0)."
+  ],
+  "prediction": {
+    "question": "The qubit is in |+⟩, with a 50% chance for each outcome. You apply the Z gate. What happens to the probabilities of measuring 0 and 1?",
+    "options": [
+      "They become 100% and 0%",
+      "They stay 50% and 50%",
+      "They become 0% and 100%"
+    ],
+    "explanation": "The Z gate only flips the sign of the |1⟩ amplitude. The magnitudes do not change, so the probabilities do not either. What changes is the relative phase: the vector goes to the opposite side of the equator."
+  }
+}

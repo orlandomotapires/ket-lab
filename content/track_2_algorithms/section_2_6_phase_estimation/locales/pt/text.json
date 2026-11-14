@@ -1,0 +1,19 @@
+{
+  "title": "Estimação de Fase Quântica",
+  "summary": "Ler um autovalor com potências controladas e QFT inversa.",
+  "mission": "Estime a fase θ do operador U com 3 qubits de contagem e guarde a estimativa na variável theta, um número entre 0 e 1.",
+  "prediction": {
+    "question": "Com 3 qubits de contagem, o registrador medido dá 101. Qual é a estimativa de θ?",
+    "options": [
+      "0,101",
+      "5/8 = 0,625",
+      "1/5 = 0,2"
+    ],
+    "explanation": "O registrador guarda θ·2³ em binário. 101 é 5, então θ ≈ 5/8 = 0,625."
+  },
+  "hints": [
+    "O autovetor de U é |1⟩: aplique qc.x(3). Os qubits de contagem (0 a 2) começam com Hadamard.",
+    "No laço for j in range(3), chame apply_controlled_u(qc, j, 2**j). Depois aplique inverse_qft(qc, [0, 1, 2]) e meça os qubits 0 a 2 nos bits 0 a 2.",
+    "counts = run_shots(qc) devolve um dicionário como {'101': 1024}. Converta o resultado mais frequente com int(bits, 2) / 8 e guarde em theta."
+  ]
+}

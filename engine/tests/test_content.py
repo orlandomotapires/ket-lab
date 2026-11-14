@@ -115,3 +115,29 @@ def test_every_lesson_has_theoretical_and_practical_references(library, lesson_i
     urls = [ref["url"] for ref in references]
     assert len(set(urls)) == len(urls), f"{lesson_id}: links repetidos"
     assert all(url.startswith("https://") for url in urls)
+
+
+@pytest.mark.parametrize(
+    "query, lang, expected",
+    [
+        ("grover", "pt", "2.5"),
+        ("Kraus", "en", "3.5"),
+        ("emaranhamento", "pt", "1.5"),
+        ("EMARANHAMENTO", "pt", "1.5"),
+        ("quantica fourier", "pt", "2.6"),  # sem acento e com duas palavras
+        ("Verschränkung", "de", "1.5"),
+        ("teleportation", "en", "1.6"),
+        ("max-cut", "en", "3.3"),
+    ],
+)
+def test_search_finds_the_right_lesson_first(library, query, lang, expected):
+    results = library.search(query, lang)
+    assert results and results[0]["id"] == expected, [(r["id"], r["title"]) for r in results[:3]]
+    assert results[0]["snippet"]
+
+
+def test_search_requires_every_word_and_ignores_empty_queries(library):
+    assert library.search("", "pt") == []
+    assert library.search("grover xyzzy", "pt") == []
+    snippet = library.search("Kraus", "en")[0]["snippet"]
+    assert "$" not in snippet and "Kraus" in snippet

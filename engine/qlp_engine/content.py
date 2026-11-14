@@ -16,6 +16,8 @@ iniciar rápido. Tudo que exige simulação acontece no worker.
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from pathlib import Path
 
 from . import i18n
@@ -98,6 +100,43 @@ class ContentLibrary:
         lesson["lang"] = locale.name
         return lesson
 
+    def search(self, query: str, lang: str | None = None, limit: int = 8) -> list[dict]:
+        """Busca nas lições do idioma pedido: título, resumo, missão, dicas e teoria.
+
+        Ignora acentos e maiúsculas; todas as palavras da busca precisam aparecer.
+        Ordena por relevância (título pesa mais que o corpo da teoria) e devolve um
+        trecho de texto em volta da primeira ocorrência.
+        """
+        terms = [t for t in _fold(query).split() if t]
+        if not terms:
+            return []
+        weights = {"title": 8, "summary": 4, "mission": 3, "hints": 2, "theory": 1}
+        results = []
+        for lesson_id in self._lessons:
+            lesson = self.lesson(lesson_id, lang)
+            fields = {
+                "title": lesson["title"],
+                "summary": lesson["summary"],
+                "mission": lesson["mission"],
+                "hints": " ".join(lesson["hints"]),
+                "theory": _plain(lesson["theory"]),
+            }
+            folded = {name: _fold(text) for name, text in fields.items()}
+            if not all(any(term in text for text in folded.values()) for term in terms):
+                continue
+            score = sum(weights[name] * text.count(term) for name, text in folded.items() for term in terms)
+            score += 20 * sum(term in folded["title"] for term in terms) + (5 if lesson_id.startswith(query.strip()) else 0)
+            source = next((name for name in ("summary", "mission", "theory", "hints") if terms[0] in folded[name]), "summary")
+            results.append({
+                "id": lesson_id,
+                "track": lesson["track"],
+                "title": lesson["title"],
+                "snippet": _snippet(fields[source], folded[source], terms[0]),
+                "score": score,
+            })
+        results.sort(key=lambda r: (-r["score"], r["id"]))
+        return results[:limit]
+
     def starter_code(self, lesson_id: str, lang: str) -> str:
         return _read_text(self._locale_dir(self._folder(lesson_id), lang) / "starter_code.py")
 
@@ -175,6 +214,36 @@ class ContentLibrary:
             return self._lessons[lesson_id]
         except KeyError:
             raise ContentError(i18n.t("content.unknown_lesson", lesson_id=lesson_id)) from None
+
+
+def _fold(text: str) -> str:
+    """Minúsculas e sem acentos: 'Emaranhamento' e 'emaranhamento', 'Quântica' e 'quantica'."""
+    decomposed = unicodedata.normalize("NFD", text.lower())
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+
+
+def _plain(markdown: str) -> str:
+    """Texto corrido da teoria: sem fórmulas LaTeX, código e marcação Markdown."""
+    text = re.sub(r"\$\$.*?\$\$", " ", markdown, flags=re.S)
+    text = re.sub(r"```.*?```", " ", text, flags=re.S)
+    text = re.sub(r"\$[^$]*\$", "…", text)
+    text = re.sub(r"[#*_`>|]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _snippet(text: str, folded: str, term: str, width: int = 120) -> str:
+    """Trecho de até `width` caracteres em volta da primeira ocorrência do termo.
+
+    Remover acentos não muda o comprimento do texto em português, inglês ou alemão
+    (letras compostas viram uma letra), então as posições batem com o original.
+    """
+    position = folded.find(term)
+    if position < 0 or len(folded) != len(text):
+        return text[:width].rstrip() + ("…" if len(text) > width else "")
+    start = max(0, position - width // 3)
+    end = min(len(text), start + width)
+    snippet = text[start:end].strip()
+    return ("…" if start > 0 else "") + snippet + ("…" if end < len(text) else "")
 
 
 def _pick(value, lang: str) -> str:

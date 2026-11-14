@@ -17,6 +17,10 @@ export const pt = {
   "topbar.dark": "Tema escuro",
   "topbar.language": "Idioma",
 
+  "search.label": "Buscar lições",
+  "search.placeholder": "Buscar lições (ex.: Grover, emaranhamento)",
+  "search.empty": "Nenhuma lição encontrada para “{query}”.",
+
   "hub.loading": "Carregando as trilhas…",
   "hub.title": "Trilhas de aprendizagem",
   "hub.subtitle": "Da álgebra de um qubit aos algoritmos quânticos, escrevendo código e vendo o estado mudar.",

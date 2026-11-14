@@ -6,6 +6,7 @@ import type {
   Lesson,
   LessonProgress,
   RunResult,
+  SearchResult,
   ShotsResult,
   ValidationResult,
 } from "../engine/types";
@@ -53,6 +54,7 @@ interface State {
 
   init(): void;
   runNow(): void;
+  search(query: string): Promise<SearchResult[]>;
   setControl(id: string, value: string | number | null): void;
   openLesson(id: string): Promise<void>;
   openSandbox(): void;
@@ -267,6 +269,16 @@ export const useStore = create<State>((set, get) => {
 
     runNow() {
       scheduleRun(0);
+    },
+
+    async search(query) {
+      if (get().connection !== "open" || !query.trim()) return [];
+      try {
+        const response = await engine().call<{ results: SearchResult[] }>("search", { query });
+        return response.ok ? response.results : [];
+      } catch {
+        return [];
+      }
     },
 
     setControl(id, value) {

@@ -2,6 +2,7 @@ import { LOCALES, setLocale, t, useLocale, type Locale } from "../i18n";
 import { useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
 import { ArrowLeftIcon, LogoMark, MoonIcon, SunIcon } from "./icons";
+import { SearchBox } from "./SearchBox";
 
 export function TopBar() {
   const theme = useTheme();
@@ -16,6 +17,7 @@ export function TopBar() {
 
   return (
     <header className="topbar">
+      <div className="topbar-left">
       {view === "lab" ? (
         <>
           <button className="btn btn-ghost btn-sm" onClick={backToHub}>
@@ -43,7 +45,9 @@ export function TopBar() {
           {t("app.name")}
         </div>
       )}
-      <div className="topbar-spacer" />
+      </div>
+      <SearchBox />
+      <div className="topbar-right">
       <span className={`status-chip is-${connection}`} role="status" title={t("topbar.engineTitle")}>
         <span className="status-dot" aria-hidden="true" />
         {t(`topbar.engine.${connection}`)}
@@ -71,6 +75,7 @@ export function TopBar() {
       >
         {theme === "dark" ? <SunIcon /> : <MoonIcon />}
       </button>
+      </div>
     </header>
   );
 }

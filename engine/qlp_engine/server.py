@@ -114,6 +114,10 @@ class EngineServer:
         if kind == "lesson":
             return {"ok": True, "lesson": self.content.lesson(message["lesson_id"], i18n.current())}
 
+        if kind == "search":
+            query = str(message.get("query", ""))[:100]
+            return {"ok": True, "results": self.content.search(query, i18n.current())}
+
         if kind == "progress.save":
             self.progress.save(
                 message["lesson_id"],

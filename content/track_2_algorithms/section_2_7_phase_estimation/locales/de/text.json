@@ -14,6 +14,7 @@
   "hints": [
     "Der Eigenvektor von U ist |1⟩: Wende qc.x(3) an. Die Zählqubits (0 bis 2) beginnen mit Hadamard.",
     "Rufe in der Schleife for j in range(3) apply_controlled_u(qc, j, 2**j) auf. Wende danach inverse_qft(qc, [0, 1, 2]) an und miss die Qubits 0 bis 2 in die Bits 0 bis 2.",
+    "In den Schlüsseln von run_shots ist Qubit 0 das Zeichen ganz rechts (Qiskit-Konvention): Der String \"101\" hat Qubit 0 = 1, Qubit 1 = 0 und Qubit 2 = 1. Deshalb liest int(bits, 2) den richtigen Wert.",
     "counts = run_shots(qc) liefert ein Dictionary wie {'101': 1024}. Wandle das häufigste Ergebnis mit int(bits, 2) / 8 um und speichere es in theta."
   ]
 }

@@ -93,6 +93,12 @@ def test_phase_estimation_reads_theta(library, theta):
     assert execution.namespace["theta"] == pytest.approx(theta)
 
 
+def test_phase_estimation_of_a_superposition_gives_zero_or_theta(library):
+    code = library.validation_bundle("2.7")["solution"].replace("qc.x(3)", "qc.h(3)")
+    distribution = simulator.register_distribution(run(library, "2.7", 0.625, code).circuit, [0, 1, 2])
+    assert distribution == pytest.approx({"000": 0.5, "101": 0.5})
+
+
 def test_modular_multiplication_is_multiplication_by_seven(library):
     hidden = library.validation_bundle("2.8")["hidden_setup"]
     for y in range(1, 15):

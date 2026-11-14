@@ -27,6 +27,10 @@ und das ist genau die QFT der Zahl $2^t\theta$. Die inverse QFT liefert diese Za
 
 Mit $t = 3$ beträgt die Genauigkeit $1/8$. Wenn $\theta$ kein Vielfaches von $1/8$ ist, verteilt sich das Ergebnis um den nächstgelegenen Wert; mehr Zählqubits verengen diese Spitze.
 
+## Und wenn die Eingabe kein Eigenvektor ist?
+
+Startet Qubit 3 in $|+\rangle = (|0\rangle + |1\rangle)/\sqrt{2}$ statt in $|1\rangle$, ist die Eingabe eine Superposition zweier Eigenvektoren von $U$: $|0\rangle$ (Eigenwert $1$, also $\theta = 0$) und $|1\rangle$ (Eigenwert $e^{2\pi i\theta}$). Die Phasenschätzung wählt zufällig einen davon aus: Das Register liefert $0$ oder $\theta$, mit je 50 %.
+
 ## In diesem Labor
 
 $U$ ist ein Phasengatter, $U = \begin{pmatrix} 1 & 0 \\ 0 & e^{2\pi i\theta} \end{pmatrix}$, dessen Eigenvektor $|1\rangle$ ist. Der Wert von $\theta$ ist geheim. Nach dem Messen führt `run_shots(qc)` den Schaltkreis 1024-mal aus und liefert die Zählungen; berechne mit ihnen `theta` in Python. Der Tab **Register** zeigt die Wahrscheinlichkeit jedes Werts des Zählregisters, mit dem zugehörigen Bruch.

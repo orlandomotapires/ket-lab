@@ -14,6 +14,7 @@
   "hints": [
     "The eigenvector of U is |1⟩: apply qc.x(3). The counting qubits (0 to 2) start with Hadamard.",
     "In the loop for j in range(3), call apply_controlled_u(qc, j, 2**j). Then apply inverse_qft(qc, [0, 1, 2]) and measure qubits 0 to 2 into bits 0 to 2.",
+    "In the keys of run_shots, qubit 0 is the rightmost character (Qiskit convention): the string \"101\" has qubit 0 = 1, qubit 1 = 0 and qubit 2 = 1. That is why int(bits, 2) reads the right value.",
     "counts = run_shots(qc) returns a dictionary like {'101': 1024}. Convert the most frequent result with int(bits, 2) / 8 and store it in theta."
   ]
 }

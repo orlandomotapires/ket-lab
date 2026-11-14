@@ -1,19 +1,19 @@
 {
-  "title": "Relative Phase and Rotations",
-  "summary": "Z, S, T and Rz gates: same probabilities, different states.",
-  "mission": "Qubit 0 received an unknown input state and then a sequence of gates (X, H, S, T, H). Append gates that undo the sequence, so that the qubit returns to its input state, whatever it is.",
+  "title": "Relative Phase and Rotation Operators",
+  "summary": "Z, S, T and R_z gates: same probabilities, different states.",
+  "mission": "Qubit 0 receives an unknown input state and then the gates X, H, S, T, H. Append gates that undo this sequence, so that the qubit returns to its input state, whatever it is.",
   "hints": [
-    "To undo a sequence, you undo the last step first. Repeating the gates in the same order does not work: you must invert each one and walk through the list backwards.",
+    "To undo a sequence, undo the last step first. Repeating the same gates in the same order does not work: invert each gate and apply them in reverse order.",
     "H and X are their own inverses. The inverse of S is S† (qc.sdg(0)) and the inverse of T is T† (qc.tdg(0)).",
-    "After qc.h(0) (the last gate of the sequence), write qc.h(0), qc.tdg(0), qc.sdg(0), qc.h(0) and qc.x(0), in that order."
+    "After the last gate of the sequence (qc.h(0)), write qc.h(0), qc.tdg(0), qc.sdg(0), qc.h(0) and qc.x(0), in that order."
   ],
   "prediction": {
-    "question": "The qubit is in |+⟩, with phase φ = 0. You apply T and then Z. Where does the phase φ end up?",
+    "question": "A qubit is in |+⟩, with relative phase φ = 0. You apply T and then Z. What is φ afterwards?",
     "options": [
       "π/4",
       "5π/4",
       "π"
     ],
-    "explanation": "T adds π/4 to the phase and Z adds π. Rotations around Z accumulate: φ = π/4 + π = 5π/4. The order does not matter, since they all rotate around the same axis."
+    "explanation": "T adds π/4 to the phase and Z adds π, so φ = π/4 + π = 5π/4. Both are rotations about the Z axis, so their angles add and the order does not matter."
   }
 }

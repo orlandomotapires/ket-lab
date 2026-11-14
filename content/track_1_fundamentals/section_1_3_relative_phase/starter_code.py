@@ -1,14 +1,14 @@
 from qiskit import QuantumCircuit
 
 qc = QuantumCircuit(1)
-prepare_input(qc)  # an unknown state on qubit 0
+prepare_input(qc)  # unknown input state on qubit 0
 
-# A sequence of gates has already been applied:
+# This sequence of gates is applied to it:
 qc.x(0)
 qc.h(0)
 qc.s(0)
 qc.t(0)
 qc.h(0)
 
-# Your mission: append gates so the qubit returns to its input state,
+# Mission: append gates that return the qubit to its input state,
 # whatever that state is.

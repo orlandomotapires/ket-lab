@@ -2,43 +2,43 @@
   "tracks": [
     {
       "id": 1,
-      "title": "Quantum Fundamentals",
+      "title": "Basics of Quantum Information",
       "level": "Beginner",
       "sections": [
         {
           "id": "1.1",
-          "title": "The Qubit and the Computational Basis",
+          "title": "Qubits and the Computational Basis",
           "summary": "State vector, normalization and the X gate on the Bloch sphere."
         },
         {
           "id": "1.2",
           "title": "Superposition and the Hadamard Gate",
-          "summary": "The states |+⟩ and |−⟩ and a quantum random number generator."
+          "summary": "The states |+⟩ and |−⟩, measurement and a quantum random number generator."
         },
         {
           "id": "1.3",
-          "title": "Relative Phase and Rotations",
-          "summary": "Z, S, T and Rz gates: same probabilities, different states."
+          "title": "Relative Phase and Rotation Operators",
+          "summary": "Z, S, T and R_z gates: same probabilities, different states."
         },
         {
           "id": "1.4",
-          "title": "Interference and Measuring in Other Bases",
-          "summary": "HH = I, HZH = X and why the phase decides the outcome."
+          "title": "Interference and Measurement in Other Bases",
+          "summary": "HH = I, HZH = X and how the relative phase decides a measurement outcome."
         },
         {
           "id": "1.5",
-          "title": "Entanglement and Bell States",
-          "summary": "Tensor product, CNOT and the qubit ordering convention."
+          "title": "Entanglement and the Bell States",
+          "summary": "Tensor products, the CNOT gate, Bell states and qubit ordering."
         },
         {
           "id": "1.6",
           "title": "Quantum Teleportation",
-          "summary": "Bell pair, mid-circuit measurement and conditional corrections."
+          "summary": "Bell pair, mid-circuit measurement and classically controlled corrections."
         },
         {
           "id": "1.7",
-          "title": "Controlled Gates and Identities",
-          "summary": "Build the CS gate from CNOT and T, and learn identities between gates."
+          "title": "Controlled Operations",
+          "summary": "Build the controlled-S gate from CNOT and T gates, and identities between gates."
         }
       ]
     },

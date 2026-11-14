@@ -1,19 +1,19 @@
 {
-  "title": "Entanglement and Bell States",
-  "summary": "Tensor product, CNOT and the qubit ordering convention.",
+  "title": "Entanglement and the Bell States",
+  "summary": "Tensor products, the CNOT gate, Bell states and qubit ordering.",
   "mission": "Prepare the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 0 and 1.",
   "hints": [
-    "Start by putting qubit 0 in superposition with the Hadamard: qc.h(0). Note that, for now, both qubits still have vectors of length 1.",
-    "The CNOT gate flips the target when the control is 1. Use qubit 0 as the control and qubit 1 as the target: qc.cx(control, target).",
-    "The solution is qc.h(0) followed by qc.cx(0, 1). With the cursor on the CNOT line, the Bloch vectors shrink to the center."
+    "Put qubit 0 in superposition with a Hadamard gate: qc.h(0). At this point each qubit still has a Bloch vector of length 1.",
+    "The CNOT flips the target when the control is 1. Use qubit 0 as control and qubit 1 as target: qc.cx(control, target).",
+    "Apply qc.h(0), then qc.cx(0, 1). With the cursor on the CNOT line, the Bloch vectors shrink to the center of the sphere."
   ],
   "prediction": {
     "question": "The state (|00⟩ + |01⟩ − |10⟩ − |11⟩)/2 has four nonzero amplitudes. Is it entangled?",
     "options": [
-      "Yes: with all four amplitudes nonzero, the qubits are mixed together",
-      "No: it is a separable state, since a₀₀a₁₁ = a₀₁a₁₀",
-      "You cannot tell without measuring both qubits"
+      "Yes: with all four amplitudes nonzero, the qubits are correlated",
+      "No: it is a product state, since a₀₀a₁₁ = a₀₁a₁₀",
+      "It cannot be decided without measuring both qubits"
     ],
-    "explanation": "Here a₀₀a₁₁ = (1/2)(−1/2) = −1/4 and a₀₁a₁₀ = (1/2)(−1/2) = −1/4: the product test passes. Indeed, the state is |−⟩ on qubit 1 and |+⟩ on qubit 0. Having several nonzero amplitudes does not mean entanglement."
+    "explanation": "Here a₀₀a₁₁ = (1/2)(−1/2) = −1/4 and a₀₁a₁₀ = (1/2)(−1/2) = −1/4, so the product test is satisfied. The state is |−⟩ on qubit 1 and |+⟩ on qubit 0. Having several nonzero amplitudes does not imply entanglement."
   }
 }

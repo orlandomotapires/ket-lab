@@ -1,23 +1,23 @@
 {
   "title": "Quantum Teleportation",
-  "summary": "Bell pair, mid-circuit measurement and conditional corrections.",
-  "mission": "Teleport the state of qubit 0 (Alice) to qubit 2 (Bob). Alice and Bob are far apart: no gate can act on qubits 0 and 2 at the same time.",
+  "summary": "Bell pair, mid-circuit measurement and classically controlled corrections.",
+  "mission": "Teleport the state of qubit 0 (Alice) to qubit 2 (Bob). Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
   "hints": [
-    "First, create a Bell pair between qubit 1 (Alice's) and qubit 2 (Bob's), as in the previous lesson: qc.h(1) and qc.cx(1, 2).",
-    "Alice performs a Bell-basis measurement on qubits 0 and 1: qc.cx(0, 1), qc.h(0), then qc.measure(0, 0) and qc.measure(1, 1).",
-    "Bob corrects according to the bits he receives: X if bit 1 is 1, then Z if bit 0 is 1. Use with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the same with qc.clbits[0] and qc.z(2). The order of the two corrections does not matter: XZ = −ZX, and a global sign is not observable."
+    "First create a Bell pair on qubit 1 (Alice's half) and qubit 2 (Bob's half), as in lesson 1.5: qc.h(1) and qc.cx(1, 2).",
+    "Alice measures qubits 0 and 1 in the Bell basis: qc.cx(0, 1), qc.h(0), then qc.measure(0, 0) and qc.measure(1, 1).",
+    "Bob applies X if bit 1 is 1, then Z if bit 0 is 1: with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the same with qc.clbits[0] and qc.z(2). The order of the two corrections does not matter, since XZ = −ZX and a global sign cannot be observed."
   ],
   "prediction": {
-    "question": "After teleportation, what happens to the state that was in Alice's qubit?",
+    "question": "After teleportation, what has happened to the state that was in Alice's qubit?",
     "options": [
-      "It is still there: now there are two copies",
-      "It is destroyed by the measurement: only Bob has the state",
-      "It becomes the Bell state"
+      "It is still there, so there are now two copies",
+      "Alice's measurement destroyed it, and only Bob has the state",
+      "It has become a Bell state"
     ],
-    "explanation": "Alice's measurement destroys the original state. If a copy remained, teleportation would violate the no-cloning theorem, which forbids copying an unknown quantum state."
+    "explanation": "Alice's measurement leaves qubits 0 and 1 in computational basis states, so the original state no longer exists. If a copy remained, teleportation would violate the no-cloning theorem, which forbids copying an unknown quantum state."
   },
   "comparison": {
-    "source_label": "Alice · original state",
-    "target_label": "Bob · current state"
+    "source_label": "Alice, original state",
+    "target_label": "Bob, current state"
   }
 }

@@ -47,8 +47,13 @@ interface State {
   validating: boolean;
   shots: ShotsResult | null;
   hintsShown: number;
+  /** Valores dos controles da lição (ex.: erro injetado). */
+  controls: Record<string, string | number | null>;
+  running: boolean;
 
   init(): void;
+  runNow(): void;
+  setControl(id: string, value: string | number | null): void;
   openLesson(id: string): Promise<void>;
   openSandbox(): void;
   backToHub(): void;
@@ -88,7 +93,12 @@ export const useStore = create<State>((set, get) => {
     const token = ++runToken;
     const { code, lesson, seed } = get();
     try {
-      const response = await engine().call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null });
+      set({ running: true });
+      const response = await engine()
+        .call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls })
+        .finally(() => {
+          if (token === runToken) set({ running: false });
+        });
       if (token !== runToken) return; // chegou uma edição mais nova
       if (response.ok) {
         set({ result: response, resultIsCurrent: true, error: null });
@@ -140,6 +150,15 @@ export const useStore = create<State>((set, get) => {
     }, SAVE_DEBOUNCE_MS);
   }
 
+  function defaultControls(lesson: Lesson | null): Record<string, string | number | null> {
+    return Object.fromEntries((lesson?.controls ?? []).map((control) => [control.id, control.default]));
+  }
+
+  /** Lições de treino (live: false) rodam só pelo botão; as demais, a cada pausa na digitação. */
+  function isLive(): boolean {
+    return get().lesson?.live !== false;
+  }
+
   function enterLab(lesson: Lesson | null, code: string, hintsShown: number): void {
     set({
       view: "lab",
@@ -155,6 +174,8 @@ export const useStore = create<State>((set, get) => {
       validation: null,
       shots: null,
       hintsShown,
+      controls: defaultControls(lesson),
+      running: false,
     });
     scheduleRun(0);
   }
@@ -178,6 +199,8 @@ export const useStore = create<State>((set, get) => {
     validating: false,
     shots: null,
     hintsShown: 0,
+    controls: {},
+    running: false,
 
     init() {
       if (client) return;
@@ -220,7 +243,7 @@ export const useStore = create<State>((set, get) => {
     setCode(code) {
       if (code === get().code) return;
       set({ code, resultIsCurrent: false, validation: null, shots: null });
-      scheduleRun();
+      if (isLive()) scheduleRun();
       scheduleSave();
     },
 
@@ -240,6 +263,15 @@ export const useStore = create<State>((set, get) => {
 
     setFollowCursor(follow) {
       set({ followCursor: follow, manualStep: selectCurrentStep(get()) });
+    },
+
+    runNow() {
+      scheduleRun(0);
+    },
+
+    setControl(id, value) {
+      set({ controls: { ...get().controls, [id]: value }, shots: null, validation: null });
+      scheduleRun(0);
     },
 
     reseed() {
@@ -276,6 +308,7 @@ export const useStore = create<State>((set, get) => {
           shots: 1024,
           seed: seed + Math.floor(Math.random() * 1e6),
           lesson_id: lesson?.id ?? null,
+          controls: get().controls,
         });
         if (response.ok) set({ shots: response });
         else if (response.error) set({ error: response.error });

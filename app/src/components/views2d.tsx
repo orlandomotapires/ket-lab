@@ -5,7 +5,16 @@
  */
 import { t } from "../i18n";
 import type { Complex } from "../engine/types";
-import { formatPercent, formatPhase, modularSequence, phaseColor, phaseOf, probability, registerState } from "../lib/quantum";
+import {
+  formatPercent,
+  formatPhase,
+  modularSequence,
+  phaseColor,
+  phaseOf,
+  probability,
+  registerProbabilities,
+  registerState,
+} from "../lib/quantum";
 import { useTheme } from "../theme/theme";
 
 const W = 600;
@@ -90,9 +99,10 @@ export function AmplitudesView({ amplitudes, numQubits, register, scale, note }:
 }
 
 /** Escala fixa ao longo da execução: as barras não "pulam" ao navegar pelos passos. */
-export function amplitudeScale(snapshots: { amplitudes: Complex[] }[], numQubits: number, register: number[]): number {
+export function amplitudeScale(snapshots: { amplitudes: Complex[] | null }[], numQubits: number, register: number[]): number {
   let peak = 0;
   for (const snapshot of snapshots) {
+    if (!snapshot.amplitudes) continue;
     const state = registerState(snapshot.amplitudes, numQubits, register);
     const values = state.amplitudes ? state.amplitudes.map(signedValue) : state.probabilities.map(Math.sqrt);
     for (const v of values) peak = Math.max(peak, Math.abs(v));
@@ -160,10 +170,11 @@ export function DialsView({ amplitudes, numQubits, register, note }: {
 // Histograma de um registrador
 // --------------------------------------------------------------------------- //
 
-export function HistogramView({ amplitudes, numQubits, register, note }: {
-  amplitudes: Complex[]; numQubits: number; register: number[]; note?: string;
+/** Recebe as probabilidades da base inteira: funciona também para estados mistos. */
+export function HistogramView({ probabilities, register, note }: {
+  probabilities: number[]; register: number[]; note?: string;
 }) {
-  const state = registerState(amplitudes, numQubits, register);
+  const state = { probabilities: registerProbabilities(probabilities, register) };
   const width = register.length;
   const count = 2 ** width;
   const left = 10;

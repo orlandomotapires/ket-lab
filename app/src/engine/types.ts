@@ -2,7 +2,11 @@ export type Complex = [re: number, im: number];
 export type Vec3 = [x: number, y: number, z: number];
 
 export interface Snapshot {
-  amplitudes: Complex[];
+  /** null em estados mistos (circuitos com ruído). */
+  amplitudes: Complex[] | null;
+  probabilities: number[];
+  /** Tr(ρ²) do estado inteiro: 1 para estados puros. */
+  state_purity: number;
   bloch: Vec3[];
   purity: number[];
 }
@@ -25,6 +29,8 @@ export interface RunResult {
   num_clbits: number;
   steps: Step[];
   snapshots: Snapshot[];
+  /** Dados das visualizações de treino, gerados pelo analysis.py da lição. */
+  analysis?: Record<string, unknown> & { error?: string };
   clbits: number[];
   has_measurement: boolean;
   stdout: string;
@@ -82,7 +88,17 @@ export interface Prediction {
   explanation: string;
 }
 
-export type VisualizerKind = "bloch" | "qsphere" | "compare" | "amplitudes" | "dials" | "histogram" | "modular";
+export type VisualizerKind =
+  | "bloch" | "qsphere" | "compare" | "amplitudes" | "dials" | "histogram" | "modular"
+  | "landscape" | "convergence" | "dissociation" | "graph" | "boundary";
+
+export interface LessonControl {
+  id: string;
+  options: (string | number | null)[];
+  default: string | number | null;
+  label: string;
+  option_labels: Record<string, string>;
+}
 
 export interface Comparison {
   source_qubit: number;
@@ -111,5 +127,9 @@ export interface Lesson {
   /** Qubits mostrados nas visualizações de amplitudes, fases e histograma. */
   register?: { qubits: number[] };
   modular?: { a: number; N: number };
+  framework?: "qiskit" | "pennylane";
+  /** false: o código roda só pelo botão Executar (treinos demorados). */
+  live?: boolean;
+  controls?: LessonControl[];
   lang: string;
 }

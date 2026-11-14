@@ -266,7 +266,10 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
 def _format_param(value):
     """Números com o separador decimal do idioma; o resto como texto."""
     if isinstance(value, float):
-        text = f"{value:.4g}" if abs(value) < 1e-3 else f"{value:.4f}".rstrip("0").rstrip(".")
+        if 0 < abs(value) < 1e-4:  # erros desprezíveis: "< 0,0001" em vez de notação científica
+            text = "< 0.0001"
+            return text if current_lang() == "en" else text.replace(".", ",")
+        text = f"{value:.4f}".rstrip("0").rstrip(".")
         return text if current_lang() == "en" else text.replace(".", ",")
     return value
 

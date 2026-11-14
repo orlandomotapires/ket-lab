@@ -1,5 +1,8 @@
+import { useRef, useState } from "react";
+import { saveTextFile } from "../engine/client";
 import type { CatalogSection, LessonProgress } from "../engine/types";
 import { t } from "../strings";
+import { exportLocalProgress, importLocalProgress } from "../lib/localProgress";
 import { useStore } from "../state/store";
 import { CheckIcon, ChevronRightIcon } from "./icons";
 
@@ -98,6 +101,7 @@ export function Hub() {
             })}
           </nav>
           {loadError && <p className="error-text">{loadError}</p>}
+          <ProgressBackup />
         </aside>
 
         <div className="hub-tracks">
@@ -152,6 +156,48 @@ export function Hub() {
         })}
         </div>
       </main>
+    </div>
+  );
+}
+
+/** Motor hospedado: o progresso fica no navegador, então o aluno pode guardá-lo e restaurá-lo. */
+function ProgressBackup() {
+  const storage = useStore((s) => s.progressStorage);
+  const reloadProgress = useStore((s) => s.reloadProgress);
+  const [status, setStatus] = useState<string | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  if (storage !== "client") return null;
+
+  return (
+    <div className="hub-backup">
+      <p className="muted small">{t("hub.backupNote")}</p>
+      <div className="hub-backup-actions">
+        <button className="btn btn-ghost btn-sm" onClick={() => saveTextFile(exportLocalProgress(), "quantum-learning-progress.json")}>
+          {t("hub.backupExport")}
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => input.current?.click()}>
+          {t("hub.backupImport")}
+        </button>
+        <input
+          ref={input}
+          type="file"
+          accept="application/json,.json"
+          hidden
+          onChange={async (event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (!file) return;
+            try {
+              const count = importLocalProgress(await file.text());
+              reloadProgress();
+              setStatus(t("hub.backupImported", { count }));
+            } catch {
+              setStatus(t("hub.backupInvalid"));
+            }
+          }}
+        />
+      </div>
+      {status && <p className="muted small" role="status">{status}</p>}
     </div>
   );
 }

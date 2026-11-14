@@ -1,10 +1,15 @@
 """Servidor WebSocket local do motor.
 
-Segurança: um WebSocket em localhost NÃO é protegido pela same-origin policy —
-qualquer página aberta no navegador do aluno pode tentar conectar. Por isso:
+Modo local (padrão): um WebSocket em localhost NÃO é protegido pela same-origin
+policy, e qualquer página aberta no navegador do aluno pode tentar conectar. Por isso:
   * escuta apenas em 127.0.0.1, em porta aleatória por padrão;
   * exige um token por sessão (query string `?token=`);
   * recusa conexões cujo cabeçalho Origin não esteja na lista permitida.
+
+Modo público (`--public`, motor hospedado atrás do site): não há token, mas o
+Origin é obrigatório e precisa ser o do site; há um teto de conexões; e o
+progresso não é guardado no servidor (fica no navegador de cada aluno). O
+isolamento do código do aluno é responsabilidade do contêiner (deploy/).
 """
 
 from __future__ import annotations
@@ -44,18 +49,29 @@ class EngineServer:
         pool: WorkerPool,
         token: str,
         allowed_origins: tuple[str, ...] = (),
+        *,
+        public: bool = False,
+        max_connections: int = 0,
+        host: str = HOST,
     ):
         self.content = content
-        self.progress = progress
+        self.progress = None if public else progress
         self.pool = pool
         self.token = token
-        # None permite clientes sem cabeçalho Origin (não são navegadores); o token continua exigido.
-        self.origins = [*allowed_origins, None]
+        self.public = public
+        self.max_connections = max_connections
+        self.host = host
+        self.connections = 0
+        # Local: None permite clientes sem Origin (não são navegadores), e o token continua exigido.
+        # Público: sem token, o Origin do site é a única credencial, então ele é obrigatório.
+        if public and not allowed_origins:
+            raise ValueError("o modo público exige ao menos um --allow-origin")
+        self.origins = [*allowed_origins] if public else [*allowed_origins, None]
 
     async def start(self, port: int = 0):
         return await serve(
             self._handle_connection,
-            HOST,
+            self.host,
             port,
             origins=self.origins,
             process_request=self._check_token,
@@ -63,6 +79,10 @@ class EngineServer:
         )
 
     def _check_token(self, connection, request):
+        if self.max_connections and self.connections >= self.max_connections:
+            return connection.respond(http.HTTPStatus.SERVICE_UNAVAILABLE, "muitas conexões\n")
+        if self.public:
+            return None
         query = parse_qs(urlparse(request.path).query)
         supplied = (query.get("token") or [""])[0]
         if not hmac.compare_digest(supplied.encode(), self.token.encode()):
@@ -73,6 +93,7 @@ class EngineServer:
         _log(f"conexão aberta ({websocket.request.headers.get('Origin')})")
         latest_run = {"seq": 0}
         tasks: set[asyncio.Task] = set()
+        self.connections += 1
         try:
             async for raw in websocket:
                 task = asyncio.create_task(self._handle_message(websocket, raw, latest_run))
@@ -81,6 +102,7 @@ class EngineServer:
         except ConnectionClosed:
             pass
         finally:
+            self.connections -= 1
             _log(f"conexão encerrada (código {websocket.close_code}, motivo {websocket.close_reason!r})")
             for task in tasks:
                 task.cancel()
@@ -107,7 +129,9 @@ class EngineServer:
 
         if kind == "catalog":
             catalog = self.content.catalog()
-            return {"ok": True, "catalog": catalog, "progress": self.progress.all()}
+            if self.progress is None:
+                return {"ok": True, "catalog": catalog, "progress": {}, "progress_storage": "client"}
+            return {"ok": True, "catalog": catalog, "progress": self.progress.all(), "progress_storage": "engine"}
 
         if kind == "lesson":
             return {"ok": True, "lesson": self.content.lesson(message["lesson_id"])}
@@ -117,6 +141,8 @@ class EngineServer:
             return {"ok": True, "results": self.content.search(query)}
 
         if kind == "progress.save":
+            if self.progress is None:  # modo público: o navegador guarda o progresso
+                return {"ok": True}
             self.progress.save(
                 message["lesson_id"],
                 code=message.get("code"),
@@ -141,7 +167,7 @@ class EngineServer:
                 job["lesson"] = self.content.validation_bundle(lesson_id)
                 # Validar pode reexecutar o código várias vezes (casos secretos, treinos).
                 result = await self.pool.submit(job, timeout=timeout * 3 if timeout else None)
-                if result.get("passed"):
+                if result.get("passed") and self.progress is not None:
                     self.progress.save(lesson_id, code=code, completed=True)
                 return result
 

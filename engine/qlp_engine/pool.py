@@ -154,3 +154,42 @@ class WorkerPool:
 
 def _failure(message: str, kind: str) -> dict:
     return {"ok": False, "error": {"message": message, "line": None, "kind": kind}}
+
+
+class WorkerGroup:
+    """Vários WorkerPool em paralelo (motor hospedado com vários alunos).
+
+    Cada job vai para um worker livre; o resto espera na fila. A interface é a
+    mesma do WorkerPool, então o servidor não precisa saber quantos são.
+    """
+
+    def __init__(self, size: int, job_timeout: float = DEFAULT_JOB_TIMEOUT_S):
+        self.pools = [WorkerPool(job_timeout=job_timeout) for _ in range(max(1, size))]
+        self._idle: asyncio.Queue | None = None
+
+    def _queue(self) -> asyncio.Queue:
+        if self._idle is None:  # criada dentro do loop do servidor
+            self._idle = asyncio.Queue()
+            for pool in self.pools:
+                self._idle.put_nowait(pool)
+        return self._idle
+
+    def warm_up(self) -> None:
+        for pool in self.pools:
+            pool.warm_up()
+
+    async def submit(self, job: dict, timeout: float | None = None, is_stale=None, on_event=None, tag=None) -> dict:
+        idle = self._queue()
+        pool = await idle.get()
+        try:
+            return await pool.submit(job, timeout=timeout, is_stale=is_stale, on_event=on_event, tag=tag)
+        finally:
+            idle.put_nowait(pool)
+
+    def cancel(self, tag) -> None:
+        for pool in self.pools:
+            pool.cancel(tag)
+
+    def close(self) -> None:
+        for pool in self.pools:
+            pool.close()

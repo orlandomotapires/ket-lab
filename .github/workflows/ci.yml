@@ -69,6 +69,12 @@ jobs:
         env:
           CI: "1"
           QLP_PYTHON: python
+      - name: Testes ponta a ponta (modo hospedado)
+        run: npx playwright test -c playwright.hosted.config.ts
+        working-directory: app
+        env:
+          CI: "1"
+          QLP_PYTHON: python
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -34,6 +34,11 @@ const STRINGS = {
   "hub.action.started": "Continue",
   "hub.action.available": "Start",
   "hub.soon": "Coming soon",
+  "hub.backupNote": "Your progress is saved in this browser.",
+  "hub.backupExport": "Export progress",
+  "hub.backupImport": "Import progress",
+  "hub.backupImported": "Progress imported ({count} lessons).",
+  "hub.backupInvalid": "This file is not a progress export.",
   "hub.loadCatalogFailed": "Could not load the catalog.",
   "hub.openLessonFailed": "Could not open the lesson.",
 

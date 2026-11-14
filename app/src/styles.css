@@ -1948,3 +1948,14 @@ tr.is-zero {
     flex-wrap: wrap;
   }
 }
+
+.hub-backup {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.hub-backup-actions {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0;
+}

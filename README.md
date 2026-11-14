@@ -45,12 +45,17 @@ No Windows, crie o ambiente manualmente: `python -m venv engine\.venv`, `engine\
 
 O progresso fica no diretório de dados do usuário (`~/.local/share/quantum-learning-platform` no Linux). Para isolar uma sessão, defina `QLP_DATA_DIR=/algum/caminho`. Com `QLP_LOG=1`, o motor registra no terminal cada conexão e requisição.
 
+## Publicar na web
+
+A versão web roda o motor num servidor, atrás do site (`deploy/`): `SITE_ORIGIN=https://… docker compose -f deploy/docker-compose.yml up --build`. Leia [deploy/README.md](deploy/README.md) antes: o código dos alunos roda no servidor, e o que falta para abrir ao público está listado lá. O motivo de não rodar no navegador está em [docs/decisao-motor-web.md](docs/decisao-motor-web.md).
+
 ## Testes
 
 ```bash
 npm test             # motor (pytest) + interface (tipos e vitest)
 npm run test:engine
 npm run test:app
+npm run test:e2e     # ponta a ponta (Playwright, usa o Chrome do sistema)
 ```
 
 A suíte do motor inclui:

@@ -17,6 +17,7 @@ const appUrl = `http://127.0.0.1:${APP_PORT}`;
 
 export default defineConfig({
   testDir: "e2e",
+  testIgnore: "hosted.spec.ts",
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,

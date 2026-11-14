@@ -50,6 +50,9 @@ NAMES: dict[str, tuple[str, int, str | None]] = {
     "IsingZZ": ("rzz", 0, None),
     "MultiRZ": ("rzz", 0, None),
     "Identity": ("id", 0, None),
+    # Excitações da química: mantidas como uma porta só (decompostas, viram dezenas de portas).
+    "SingleExcitation": ("singleexcitation", 0, None),
+    "DoubleExcitation": ("doubleexcitation", 0, None),
     "BitFlip": ("bitflip", 0, None),
     "PhaseFlip": ("phaseflip", 0, None),
     "DepolarizingChannel": ("depolarizing", 0, None),

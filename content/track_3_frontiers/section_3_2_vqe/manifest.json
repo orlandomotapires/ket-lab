@@ -1,0 +1,15 @@
+{
+  "id": "3.2",
+  "track": 3,
+  "estimated_minutes": 30,
+  "framework": "pennylane",
+  "live": false,
+  "timeout": 20,
+  "num_qubits": 4,
+  "max_qubits": 4,
+  "qnode": { "name": "circuit", "args": ["theta"] },
+  "default_visualizer": "convergence",
+  "available_visualizers": ["convergence", "dissociation", "qsphere", "bloch"],
+  "prediction_answer": 1,
+  "validation": { "type": "custom" }
+}

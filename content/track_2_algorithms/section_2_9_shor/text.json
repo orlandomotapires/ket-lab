@@ -1,6 +1,11 @@
 {
   "title": "Shor's Algorithm",
   "summary": "Factor 15 by reducing the problem to order finding.",
+  "objectives": [
+    "Find the period of aˣ mod N with phase estimation",
+    "Recover the order r from a measurement result with continued fractions",
+    "Compute the prime factors of N from gcd(a^(r/2) ± 1, N), discarding the results that fail"
+  ],
   "mission": "Factor 15. Find the period of 7^x mod 15 with phase estimation (counting qubits 0 to 3, measured into bits 0 to 3), then use the measurement results to store the prime factors in the variable factors.",
   "prediction": {
     "question": "What is the period of 7^x mod 15?",

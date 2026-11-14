@@ -1,6 +1,11 @@
 {
   "title": "The Quantum Fourier Transform",
   "summary": "Moves the information about x from the basis states into the phases.",
+  "objectives": [
+    "Build the 3-qubit quantum Fourier transform from Hadamard, controlled phase and SWAP gates",
+    "Account for the reversed qubit order at the output of the circuit",
+    "Predict the output of the QFT for a basis state, such as the uniform superposition without relative phases for |000⟩"
+  ],
   "mission": "Build the 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩.",
   "prediction": {
     "question": "What does the QFT do to the state |000⟩?",

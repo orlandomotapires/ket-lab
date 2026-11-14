@@ -1,6 +1,11 @@
 {
   "title": "Entanglement and the Bell States",
   "summary": "Tensor products, the CNOT gate, Bell states and qubit ordering.",
+  "objectives": [
+    "Prepare the Bell state |Φ⁺⟩ with a Hadamard and a CNOT gate",
+    "Choose the control and target qubits of a CNOT gate",
+    "Decide whether a two-qubit state is a product state by comparing a₀₀a₁₁ with a₀₁a₁₀"
+  ],
   "mission": "Prepare the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 0 and 1.",
   "hints": [
     "Put qubit 0 in superposition with a Hadamard gate: qc.h(0). At this point each qubit still has a Bloch vector of length 1.",

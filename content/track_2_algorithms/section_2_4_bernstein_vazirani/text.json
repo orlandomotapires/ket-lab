@@ -1,6 +1,11 @@
 {
   "title": "The Bernstein–Vazirani Algorithm",
   "summary": "Find a whole secret string with one query.",
+  "objectives": [
+    "Recover a hidden n-bit string s with one query to the oracle",
+    "Read s from the final register state, taking the qubit ordering into account",
+    "Explain why a randomized classical algorithm still needs n queries"
+  ],
   "mission": "Find the hidden 4-bit string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in |s⟩. Qubit 0 is the last character of s, so s = s3 s2 s1 s0 and the state label is |q3 q2 q1 q0⟩.",
   "prediction": {
     "question": "A randomized classical algorithm may err with probability 1%. Can it find a 4-bit secret string with fewer than 4 queries?",

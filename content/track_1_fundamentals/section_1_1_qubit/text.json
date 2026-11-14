@@ -1,6 +1,10 @@
 {
   "title": "Qubits and the Computational Basis",
   "summary": "State vector, normalization and the X gate on the Bloch sphere.",
+  "objectives": [
+    "Apply a Pauli X gate to take a qubit from |0⟩ to |1⟩",
+    "Describe the X gate as a half turn about the X axis of the Bloch sphere"
+  ],
   "mission": "Apply a gate to qubit 0 to take it from |0⟩ to |1⟩.",
   "hints": [
     "The circuit is already stored in the variable qc. Gates are its methods: qc.gate_name(qubit_index).",

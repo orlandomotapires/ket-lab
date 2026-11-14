@@ -1,6 +1,12 @@
 {
   "title": "Density Operators and Quantum Noise",
   "summary": "Density operators, Kraus operators, and the difference between error probability and wrong-answer probability.",
+  "objectives": [
+    "Write a Pauli error channel as Kraus operators and apply it to a qubit",
+    "Compute the density matrix of a circuit with noise",
+    "Compute the probability of a wrong result and the purity Tr(ρ²) from the density matrix",
+    "Distinguish the probability that an error occurs from the probability that the result is wrong"
+  ],
   "mission": "The circuit H, T, T†, H returns |0⟩. Insert an error between T and T†: X with probability p_x, Z with probability p_z, nothing otherwise. Compute the final density matrix, and for p_x = p_z = 0.2 store in p_wrong the probability of measuring 1 and in purity the purity Tr(ρ²).",
   "prediction": {
     "question": "With p_x = p_z = 0.2, an error occurs in 40% of the runs. With what probability does the final measurement give the wrong result (1)?",

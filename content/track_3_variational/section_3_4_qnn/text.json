@@ -1,6 +1,11 @@
 {
   "title": "Variational Quantum Classifiers",
   "summary": "Classify points in the plane with two qubits and data re-uploading.",
+  "objectives": [
+    "Build a variational quantum classifier with data re-uploading",
+    "Train the classifier with an optimizer until it generalizes to a test set",
+    "Recognize overfitting from the gap between training and test accuracy"
+  ],
   "mission": "Train a quantum classifier that separates the two concentric circles. The sign of ⟨Z⟩ on qubit 0 is the predicted class, and the accuracy must be at least 92% on a test set that you do not see.",
   "prediction": {
     "question": "If the data are loaded into the circuit only once (LAYERS = 1), can the classifier separate the circles?",

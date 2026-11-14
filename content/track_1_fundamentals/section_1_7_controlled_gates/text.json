@@ -1,6 +1,11 @@
 {
   "title": "Controlled Operations",
   "summary": "Build the controlled-S gate from CNOT and T gates, and identities between gates.",
+  "objectives": [
+    "Build the controlled-S gate from CNOT, T and T† gates",
+    "Compute a relative phase from the parities of the control and target bits",
+    "Predict that conjugating a CNOT with Hadamard gates on both qubits exchanges control and target"
+  ],
   "mission": "Build the controlled-S gate CS = diag(1, 1, 1, i) using only cx, t and tdg. It multiplies the amplitude of |11⟩ by i and leaves the others unchanged. The circuit must work for any input, including superpositions.",
   "hints": [
     "Think of the phase as a sum: each qubit that is 1 receives e^(iπ/4) from a T gate. You need π/2 only when a = b = 1, and a + b − (a ⊕ b) = 2ab.",

@@ -65,7 +65,7 @@ class FakeSampler:
 
 @pytest.fixture
 def fake_ibm(monkeypatch):
-    import qiskit_ibm_runtime
+    qiskit_ibm_runtime = pytest.importorskip("qiskit_ibm_runtime")
 
     monkeypatch.setattr(qiskit_ibm_runtime, "QiskitRuntimeService", FakeService)
     monkeypatch.setattr(qiskit_ibm_runtime, "SamplerV2", FakeSampler)

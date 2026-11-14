@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { Comparison, Lesson, RunResult, Snapshot, VisualizerKind } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import {
   blochFidelity,
   concurrence,
@@ -50,7 +50,6 @@ function tabLabel(kind: VisualizerKind, comparison: Comparison | undefined): str
 }
 
 export function Visualizer({ lesson }: { lesson: Lesson | null }) {
-  useLocale();
   const result = useStore((s) => s.result);
   const resultIsCurrent = useStore((s) => s.resultIsCurrent);
   const shots = useStore((s) => s.shots);

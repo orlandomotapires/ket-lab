@@ -1,4 +1,3 @@
-import { getLocale } from "../i18n";
 import type { EngineError } from "./types";
 
 export interface EngineEndpoint {
@@ -130,8 +129,7 @@ export class EngineClient {
     const id = this.nextId++;
     const done = new Promise<EngineResponse<T>>((resolve, reject) => {
       this.pending.set(id, { resolve: resolve as (value: unknown) => void, reject, onEvent });
-      // O idioma vai em toda requisição: o motor responde mensagens e conteúdo nele.
-      this.socket!.send(JSON.stringify({ id, type, lang: getLocale(), ...payload }));
+      this.socket!.send(JSON.stringify({ id, type, ...payload }));
     });
     return { id, done };
   }

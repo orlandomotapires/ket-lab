@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { Hub } from "./components/Hub";
 import { Lab } from "./components/Lab";
 import { TopBar } from "./components/TopBar";
-import { t, useLocale } from "./i18n";
+import { t } from "./strings";
 import { useStore } from "./state/store";
 
 export function App() {
   const view = useStore((s) => s.view);
   const connection = useStore((s) => s.connection);
   const init = useStore((s) => s.init);
-  useLocale();
 
   useEffect(() => init(), [init]);
 

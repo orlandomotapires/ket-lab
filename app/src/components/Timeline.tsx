@@ -1,9 +1,8 @@
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { selectCurrentStep, useStore } from "../state/store";
 import { FirstIcon, LastIcon, NextIcon, PrevIcon } from "./icons";
 
 export function Timeline() {
-  useLocale();
   const count = useStore((s) => s.result?.steps.length ?? 0);
   const current = useStore(selectCurrentStep);
   const followCursor = useStore((s) => s.followCursor);

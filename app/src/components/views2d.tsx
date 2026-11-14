@@ -3,7 +3,7 @@
  * de fase, histograma de um registrador e a função periódica a^x mod N do Shor.
  * São SVG simples; as cores vêm dos tokens de tema em CSS.
  */
-import { t } from "../i18n";
+import { t } from "../strings";
 import type { Complex } from "../engine/types";
 import {
   formatPercent,

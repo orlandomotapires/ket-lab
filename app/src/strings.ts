@@ -1,6 +1,5 @@
-import type { MessageKey } from "./pt";
-
-export const en: Record<MessageKey, string> = {
+/** Textos da interface (em inglês, o idioma da plataforma). */
+const STRINGS = {
   "app.name": "Quantum Learning Platform",
   "banner.closed": "Simulation engine disconnected. Trying to reconnect…",
   "banner.connecting": "Connecting to the simulation engine…",
@@ -16,7 +15,6 @@ export const en: Record<MessageKey, string> = {
   "topbar.toDark": "Switch to dark theme",
   "topbar.light": "Light theme",
   "topbar.dark": "Dark theme",
-  "topbar.language": "Language",
 
   "search.label": "Search lessons",
   "search.placeholder": "Search lessons (e.g. Grover, entanglement)",
@@ -69,8 +67,8 @@ export const en: Record<MessageKey, string> = {
   "export.copy": "Copy",
   "export.copied": "Copied to the clipboard.",
   "export.copyFailed": "Could not copy. Select the text and copy it manually.",
-  "export.save": "Save file…",
-  "export.saved": "File saved.",
+  "export.save": "Download .qasm",
+  "export.saved": "Downloaded.",
   "export.close": "Close",
   "export.fileName": "circuit",
 
@@ -91,7 +89,6 @@ export const en: Record<MessageKey, string> = {
   "ref.course": "Hands-on course",
   "ref.tutorial": "Tutorial",
   "ref.section": "section {section}",
-  "ref.inEnglish": "in English",
 
   "oracle.idleLesson": "Write the circuit and check it when you think you have completed the mission.",
   "oracle.idleSandbox": "Free lab: the visualization follows the cursor line.",
@@ -233,4 +230,12 @@ export const en: Record<MessageKey, string> = {
   "gate.measure_all": "Measures all qubits",
   "gate.barrier": "Visual separator (does not change the state)",
   "gate.reset": "Returns the qubit to the state |0⟩",
-};
+} as const;
+
+export type MessageKey = keyof typeof STRINGS;
+
+/** Texto da interface, com {parâmetros} substituídos. */
+export function t(key: MessageKey, params?: Record<string, string | number>): string {
+  const template: string = STRINGS[key];
+  return params ? template.replace(/\{(\w+)\}/g, (match, name) => (name in params ? String(params[name]) : match)) : template;
+}

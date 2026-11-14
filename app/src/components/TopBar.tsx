@@ -1,4 +1,4 @@
-import { LOCALES, setLocale, t, useLocale, type Locale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
 import { ArrowLeftIcon, LogoMark, MoonIcon, SunIcon } from "./icons";
@@ -6,7 +6,6 @@ import { SearchBox } from "./SearchBox";
 
 export function TopBar() {
   const theme = useTheme();
-  const locale = useLocale();
   const view = useStore((s) => s.view);
   const lesson = useStore((s) => s.lesson);
   const catalog = useStore((s) => s.catalog);
@@ -52,21 +51,6 @@ export function TopBar() {
         <span className="status-dot" aria-hidden="true" />
         {t(`topbar.engine.${connection}`)}
       </span>
-      <div className="segmented lang-switch" role="radiogroup" aria-label={t("topbar.language")}>
-        {LOCALES.map((option) => (
-          <button
-            key={option.id}
-            role="radio"
-            aria-checked={locale === option.id}
-            aria-selected={locale === option.id}
-            title={option.label}
-            lang={option.id}
-            onClick={() => setLocale(option.id as Locale)}
-          >
-            {option.short}
-          </button>
-        ))}
-      </div>
       <button
         className="btn btn-ghost btn-icon btn-sm"
         onClick={toggleTheme}

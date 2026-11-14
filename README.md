@@ -1,6 +1,6 @@
 # Quantum Learning Platform
 
-Plataforma web para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. Disponível em português, inglês e alemão.
+Plataforma web para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. A interface e as lições estão em inglês.
 
 O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diretor.md](docs/plano-diretor.md).
 
@@ -12,7 +12,7 @@ O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diret
 - **Roda no navegador**, com o motor Python local (WebSocket em 127.0.0.1).
 - **Visualizações**: esferas de Bloch, Q-Sphere, comparador Alice × Bob, medidor de emaranhamento, amplitudes com sinal e média, mostradores de fase, histograma de registrador e função periódica.
 - **Validação matemática**: fidelidade de estado, distribuição de medições, estado reduzido, oráculos secretos e entradas de teste.
-- **Interface, mensagens e conteúdo** em português, inglês e alemão; tema claro e escuro.
+- **Interface, mensagens e conteúdo em inglês**; tema claro e escuro.
 - **Progresso** salvo em SQLite.
 
 Só o Linux foi testado. Windows e macOS dependem do CI.
@@ -20,9 +20,9 @@ Só o Linux foi testado. Windows e macOS dependem do CI.
 ## Estrutura
 
 ```text
-app/        Interface (React + TypeScript + Three.js + Monaco); textos em app/src/i18n/
+app/        Interface (React + TypeScript + Three.js + Monaco); textos em app/src/strings.ts
 engine/     Motor Python (Qiskit): execução, simulação, validação, progresso, mensagens
-content/    Lições (manifest, solução, setup oculto, textos por idioma) e catálogo
+content/    Lições (manifest, textos, teoria, código inicial, solução, setup oculto) e catálogo
 scripts/    dev.mjs: sobe o motor e a interface juntos
 docs/       Plano diretor
 ```
@@ -55,7 +55,7 @@ npm run test:app
 
 A suíte do motor inclui:
 
-- **suíte de conteúdo**: em cada lição e em cada idioma, a solução passa no oráculo e o código inicial executa sem passar;
+- **suíte de conteúdo**: em cada lição, a solução passa no oráculo e o código inicial executa sem passar;
 - **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções;
 - **testes do PennyLane**: o estado de cada QNode é comparado com o do próprio PennyLane, inclusive com ruído.
 
@@ -66,10 +66,10 @@ A suíte do motor inclui:
    - `manifest.json`: estrutura, sem texto;
    - `solution.py`;
    - opcional: `hidden_setup.py`;
-   - `locales/{pt,en,de}/`, cada uma com `text.json`, `theory.md` e `starter_code.py`.
+   - `text.json`, `theory.md` e `starter_code.py`.
 
    Use uma lição existente como modelo.
-2. O `id` precisa existir em `content/catalog.json`, com título e resumo nos três idiomas iguais aos de `text.json`.
+2. O `id` precisa existir em `content/catalog.json`, com título e resumo iguais aos de `text.json`.
 3. Rode `npm run test:engine`. O alvo é calculado a partir do `solution.py`; não é preciso digitá-lo.
 
 | Tipo de validação                                                                        | Exemplo            |

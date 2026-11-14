@@ -1,5 +1,5 @@
 import type { Step } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { selectCurrentStep, useStore } from "../state/store";
 
 const LEFT = 46;
@@ -94,7 +94,6 @@ function GateColumn({ step, x, classicalY }: { step: Step; x: number; classicalY
 }
 
 export function CircuitDiagram() {
-  useLocale();
   const result = useStore((s) => s.result);
   const current = useStore(selectCurrentStep);
   const setStep = useStore((s) => s.setStep);

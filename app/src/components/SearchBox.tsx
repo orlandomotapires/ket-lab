@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { SearchResult } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 
 const DEBOUNCE_MS = 120;
@@ -42,7 +42,6 @@ function isTyping(target: EventTarget | null): boolean {
 }
 
 export function SearchBox() {
-  useLocale();
   const search = useStore((s) => s.search);
   const openLesson = useStore((s) => s.openLesson);
   const connection = useStore((s) => s.connection);

@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { setLocale } from "../i18n";
 
-setLocale("pt");
 import type { Step } from "../engine/types";
 import {
   basisLabel,
@@ -118,7 +116,7 @@ describe("Q-Sphere", () => {
 describe("describeStep", () => {
   it("descreve portas controladas, medições e portas simples", () => {
     expect(describeStep({ ...step(0, 1, "cx"), qubits: [0, 1], num_ctrl: 1 })).toBe("CX q0 → q1");
-    expect(describeStep({ ...step(0, 1, "measure"), kind: "measure", clbits: [0] })).toBe("Medição q0 → c0");
+    expect(describeStep({ ...step(0, 1, "measure"), kind: "measure", clbits: [0] })).toBe("Measure q0 → c0");
     expect(describeStep(step(0, 1, "h"))).toBe("H q0");
   });
 });

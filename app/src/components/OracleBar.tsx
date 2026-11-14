@@ -1,9 +1,8 @@
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { selectManual, selectNextLessonId, useStore, type TrainingState } from "../state/store";
 import { AlertIcon, CheckIcon, DotIcon } from "./icons";
 
 export function OracleBar() {
-  useLocale();
   const lesson = useStore((s) => s.lesson);
   const error = useStore((s) => s.error);
   const resultIsCurrent = useStore((s) => s.resultIsCurrent);

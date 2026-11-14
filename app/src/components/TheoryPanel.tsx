@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { openExternal } from "../engine/client";
 import type { Prediction, Reference } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { TargetIcon } from "./icons";
 import { Markdown } from "./Markdown";
@@ -40,7 +40,6 @@ function PredictionCard({ prediction }: { prediction: Prediction }) {
 }
 
 function References({ items }: { items: Reference[] }) {
-  const locale = useLocale();
   return (
     <section className="references" aria-labelledby="references-title">
       <h2 id="references-title" className="references-title">{t("theory.references")}</h2>
@@ -64,7 +63,6 @@ function References({ items }: { items: Reference[] }) {
               {ref.authors}
               {ref.year ? `, ${ref.year}` : ""}
               {ref.section ? ` · ${t("ref.section", { section: ref.section })}` : ""}
-              {locale !== "en" ? ` · ${t("ref.inEnglish")}` : ""}
             </span>
           </li>
         ))}
@@ -74,7 +72,6 @@ function References({ items }: { items: Reference[] }) {
 }
 
 export function TheoryPanel() {
-  useLocale();
   const lesson = useStore((s) => s.lesson);
   const hintsShown = useStore((s) => s.hintsShown);
   const showNextHint = useStore((s) => s.showNextHint);
@@ -89,7 +86,6 @@ export function TheoryPanel() {
         </p>
         <h1 className="lesson-title">{lesson.title}</h1>
         <Markdown>{lesson.theory}</Markdown>
-        {/* A escolha da previsão sobrevive à troca de idioma (mesma chave). */}
         {lesson.prediction && <PredictionCard key={lesson.id} prediction={lesson.prediction} />}
         {lesson.references?.length ? <References items={lesson.references} /> : null}
       </div>

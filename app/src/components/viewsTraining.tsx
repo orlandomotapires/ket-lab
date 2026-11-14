@@ -2,7 +2,9 @@
  * Visualizações de treino (Trilha 3). Os dados vêm do analysis.py da lição,
  * calculados no motor depois de executar o código do aluno.
  */
-import { formatNumber, t, type MessageKey } from "../i18n";
+import { t, type MessageKey } from "../strings";
+
+const fixed = (value: number, decimals: number) => value.toFixed(decimals);
 
 const W = 600;
 const H = 260;
@@ -22,7 +24,7 @@ function rampColor(value: number): string {
 
 function niceNumber(value: number): string {
   const abs = Math.abs(value);
-  return formatNumber(value, abs >= 100 ? 0 : abs >= 10 ? 1 : abs >= 1 ? 2 : 3).replace("-", "−");
+  return fixed(value, abs >= 100 ? 0 : abs >= 10 ? 1 : abs >= 1 ? 2 : 3).replace("-", "−");
 }
 
 // --------------------------------------------------------------------------- //
@@ -282,14 +284,14 @@ export function GraphView({ data }: { data: GraphData }) {
         <text className="graph-text" x={listX} y={46}>
           |{data.best_bits}⟩ · {t("viz.graphBestDetail", { cut: data.best_cut, max: data.max_cut })}
         </text>
-        <text className="graph-text" x={listX} y={66}>{t("viz.graphRatio", { ratio: formatNumber(data.ratio, 3) })}</text>
+        <text className="graph-text" x={listX} y={66}>{t("viz.graphRatio", { ratio: fixed(data.ratio, 3) })}</text>
         <text className="graph-title" x={listX} y={98}>{t("viz.graphTop")}</text>
         {data.top.map((item, k) => (
           <g key={item.bits} transform={`translate(${listX}, ${116 + k * 22})`}>
             <text className="graph-text" x={0} y={4}>|{item.bits}⟩</text>
             <rect className="chart-bar" x={66} y={-5} width={Math.max(item.probability * 260, 1)} height={10} rx={2} />
             <text className="chart-tick" x={74 + item.probability * 260} y={4}>
-              {formatNumber(item.probability * 100, 0)}% · {t("viz.graphCut", { cut: item.cut })}
+              {fixed(item.probability * 100, 0)}% · {t("viz.graphCut", { cut: item.cut })}
             </text>
           </g>
         ))}
@@ -351,7 +353,7 @@ export function BoundaryView({ data }: { data: BoundaryData }) {
         <rect className="boundary-point is-minus" x={infoX + 2} y={top + 30} width={8} height={8} />
         <text className="graph-text" x={infoX + 18} y={top + 38}>−1</text>
         <text className="graph-text" x={infoX} y={top + 68}>{t("viz.trainAccuracy")}</text>
-        <text className="graph-title" x={infoX} y={top + 88}>{formatNumber(data.train_accuracy * 100, 1)}%</text>
+        <text className="graph-title" x={infoX} y={top + 88}>{fixed(data.train_accuracy * 100, 1)}%</text>
       </svg>
       <div className="stage-footer">{t("viz.boundaryNote")}</div>
     </>

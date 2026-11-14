@@ -23,15 +23,9 @@ Mudanças em relação ao plano original:
 - **PennyLane só entra na Fase 4.** As Trilhas 1 e 2 usam apenas Qiskit: um framework por vez para o aluno e um pacote menor. O protocolo de snapshots não depende do framework.
 - **Versões fixadas** em `engine/pyproject.toml`. A API do Qiskit muda entre versões maiores e as lições dependem dela.
 
-### 1.6 Idiomas
+### 1.6 Idioma
 
-A plataforma funciona em português, inglês e alemão. **[feito]**
-
-- **Interface**: dicionários em `app/src/i18n/{pt,en,de}.ts`. O de português define as chaves; o TypeScript recusa o build se faltar alguma tradução. O idioma vem da escolha salva, senão do sistema, senão inglês, e pode ser trocado pela barra superior a qualquer momento.
-- **Motor**: mensagens em `engine/qlp_engine/i18n.py`. Cada requisição leva o idioma, e erros, diagnósticos de validação e textos de conteúdo voltam nele.
-- **Conteúdo**: cada lição tem `locales/{pt,en,de}/` com textos, teoria e código inicial. Código e identificadores (`prepare_alice_state`, `oracle`, `run_shots`) são os mesmos nos três idiomas; só os comentários mudam.
-- **Troca no meio de uma lição**: textos e mensagens mudam na hora. O código do aluno é preservado; se ainda for o código inicial intocado, ele é trocado pelo do novo idioma.
-- **Testes**: a suíte de conteúdo exige os três idiomas em toda lição, o mesmo número de dicas e opções, título igual ao do catálogo e o código inicial de cada idioma executando sem resolver a missão.
+A plataforma é só em inglês: interface (`app/src/strings.ts`), mensagens do motor (`engine/qlp_engine/messages.py`) e lições. Houve uma versão em português, inglês e alemão; ela foi removida para simplificar o trabalho enquanto o conteúdo muda. Os textos continuam centralizados, então reintroduzir idiomas depois é possível. **[feito]**
 
 ### 1.2 O ciclo em tempo real
 
@@ -88,7 +82,7 @@ Mensagens JSON com `id`; cada requisição recebe uma resposta.
 ### 2.1 Os cinco elementos
 
 1. **Teoria e missão (esquerda).** Blocos curtos, intuição antes da fórmula. A missão fica fixa no rodapé do painel, sempre visível. **[feito]**
-2. **Editor (centro, acima).** Monaco servido junto com a interface (funciona offline), com autocompletar das portas e descrições em português. **[feito]**
+2. **Editor (centro, acima).** Monaco servido junto com a interface (funciona offline), com autocompletar das portas e descrições. **[feito]**
 3. **Visualizador (direita).** Esfera de Bloch por qubit, leitura numérica $(x, y, z, |r|, \text{fase})$ e tabela de amplitudes. **[feito]** As demais visualizações entram por trilha (seção 2.3).
 4. **Circuito e linha do tempo (centro, abaixo).** Diagrama gerado a partir do código; clicar em uma porta leva a visualização àquele passo. **[feito]**
 5. **Barra do oráculo (rodapé).** Erros, resultado da validação e ações. **[feito]**
@@ -206,23 +200,22 @@ Precisão química no VQE; razão de aproximação no QAOA; acurácia em teste n
 
 ```text
 /content
-  catalog.json                    # currículo completo, com títulos e resumos nos três idiomas
+  catalog.json                    # currículo completo, com títulos e resumos
   /schema/manifest.schema.json    # JSON Schema do manifest
-  /schema/text.schema.json        # JSON Schema dos textos de cada idioma
+  /schema/text.schema.json        # JSON Schema dos textos de cada lição
   /track_1_fundamentals
     /section_1_1_qubit
       manifest.json               # estrutura: visualizações, regras do oráculo (sem texto)
       solution.py                 # solução de referência (define o alvo)
       hidden_setup.py             # opcional: preparação oculta, oráculos
-      /locales/{pt,en,de}
-        text.json                 # título, resumo, missão, previsão, dicas
-        theory.md                 # teoria em Markdown com LaTeX
-        starter_code.py           # código inicial (comentários no idioma)
+      text.json                   # título, resumo, missão, previsão, dicas
+      theory.md                   # teoria em Markdown com LaTeX
+      starter_code.py             # código inicial
 ```
 
 Uma seção aparece como "Em breve" no mapa enquanto não tiver pasta de conteúdo. Nenhuma trilha é bloqueada: quem já sabe o básico pode ir direto ao que interessa.
 
-**Suíte de conteúdo.** Para toda lição, os testes verificam: o manifest e os textos seguem os schemas; os três idiomas existem e têm a mesma estrutura; a solução de referência passa no oráculo; o código inicial de cada idioma executa sem passar; a resposta enviada à interface não contém a solução. **[feito]**
+**Suíte de conteúdo.** Para toda lição, os testes verificam: o manifest e os textos seguem os schemas; textos, teoria e código inicial existem; a solução de referência passa no oráculo; o código inicial executa sem passar; a resposta enviada à interface não contém a solução. **[feito]**
 
 ---
 
@@ -260,7 +253,7 @@ Testar com alunos reais antes de seguir para a Trilha 2.
 | Validadores `oracle_cases` e `state_cases`; regras `required_gates` e `expected_variables`; `run_shots` no código do aluno | feito |
 | Visualizações Amplitudes, Fases, Registrador e Período | feito |
 | Lições 2.1 a 2.8 | feito |
-| Interface, motor e conteúdo em português, inglês e alemão | feito |
+| Interface, motor e conteúdo em português, inglês e alemão | feito; depois reduzido a só inglês |
 
 ### Fase 4 — Trilha 3 e revisão com as aulas
 
@@ -269,7 +262,7 @@ Testar com alunos reais antes de seguir para a Trilha 2.
 | PennyLane no motor: rastreamento de QNodes, simulação com matriz densidade e canais de Kraus | feito |
 | Lições de treino: execução por botão, `analysis.py`, `check.py`, controles de experimento | feito |
 | Visualizações Paisagem, Convergência, Dissociação, Grafo, Fronteira e Limiar | feito |
-| Lições 3.1 a 3.6 nos três idiomas | feito |
+| Lições 3.1 a 3.6 | feito |
 | Revisão das três trilhas com as aulas de Müller e de Jülich: lições novas 1.7, 2.2 e 3.5, missões e validações mais rigorosas | feito |
 | Treinamento com streaming de épocas e exportação de circuitos no laboratório livre: `report(...)` envia métricas ao vivo, botão Parar, exportação em OpenQASM 2 e 3 (Qiskit e PennyLane) | feito |
 
@@ -283,5 +276,5 @@ As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`,
 2. **Limite de memória fora do Linux.** No Windows a solução é um Job Object; no macOS, o teto de qubits pode ser suficiente.
 3. **Escopo.** São cerca de 15 visualizações sob medida. As Trilhas 1 e 2 são o produto; a Trilha 3 é uma expansão.
 4. **Motor no navegador.** O Qiskit tem extensões nativas e não roda em Pyodide sem trabalho adicional; por isso o motor é um processo Python.
-5. **Idiomas.** Inglês e alemão foram traduzidos a partir do português por agentes de IA, com glossário e testes estruturais. Os testes garantem estrutura, não qualidade: falta uma revisão por falantes nativos, principalmente da terminologia em alemão. As mensagens de falha do shell desktop (ex.: motor não encontrado) ainda estão só em português.
+5. **Idioma.** O texto em inglês foi traduzido do português original por agentes de IA, com glossário e testes estruturais. Falta uma revisão por um falante nativo.
 6. **Conteúdo de terceiros.** Lições e arquivos de sandbox importados executam código. Antes de permitir compartilhamento, é preciso um modelo de confiança.

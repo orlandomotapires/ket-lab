@@ -7,9 +7,42 @@
   "timeout": 20,
   "num_qubits": 2,
   "max_qubits": 4,
-  "qnode": { "name": "circuit", "args": ["weights", "x_example"] },
+  "qnode": {
+    "name": "circuit",
+    "args": [
+      "weights",
+      "x_example"
+    ]
+  },
   "default_visualizer": "boundary",
-  "available_visualizers": ["boundary", "convergence", "bloch"],
+  "available_visualizers": [
+    "boundary",
+    "convergence",
+    "bloch"
+  ],
   "prediction_answer": 1,
-  "validation": { "type": "custom" }
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Data re-uploading for a universal quantum classifier",
+      "authors": "A. Pérez-Salinas, A. Cervera-Lierta, E. Gil-Fuster, J. I. Latorre",
+      "year": 2020,
+      "url": "https://doi.org/10.22331/q-2020-02-06-226"
+    },
+    {
+      "kind": "course",
+      "title": "QVCs and QNNs",
+      "authors": "IBM Quantum Learning — Quantum machine learning",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/qvc-qnn"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Data-reuploading classifier",
+      "authors": "PennyLane Demos",
+      "url": "https://pennylane.ai/demos/tutorial_data_reuploading_classifier/"
+    }
+  ]
 }

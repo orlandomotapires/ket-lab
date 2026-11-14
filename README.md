@@ -93,9 +93,9 @@ O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
 
 - um `check.py`, com validação própria e mensagens em `messages` no `text.json`;
 - um `analysis.py`, que alimenta as visualizações de treino;
-- `controls`, botões que passam valores ao setup oculto, como o erro injetado na 3.6.
+- `controls`, botões que passam valores ao setup oculto, como o erro injetado na 4.2.
 
-A lição 3.6 é o exemplo mais completo.
+A lição 4.2 (código de bit flip) é o exemplo mais completo.
 
 ## Como a interface e o motor conversam
 

@@ -144,6 +144,12 @@ export const de: Record<MessageKey, string> = {
   "oracle.runTitle": "Code ausführen (Strg+Enter)",
   "oracle.idleManual": "Schreibe den Code und klicke auf Ausführen (Strg+Enter), um zu trainieren.",
 
+  "viz.graphBest": "Wahrscheinlichste Aufteilung",
+  "viz.graphBestDetail": "schneidet {cut} von {max} Kanten",
+  "viz.graphRatio": "Approximationsverhältnis: {ratio}",
+  "viz.graphTop": "Wahrscheinlichste Aufteilungen",
+  "viz.graphCut": "Schnitt {cut}",
+  "viz.graphNote": "Kreise und Quadrate sind die beiden Gruppen der wahrscheinlichsten Aufteilung; durchgezogene Linien sind geschnittene Kanten.",
   "probs.state": "Zustand",
   "probs.probability": "Wahrscheinlichkeit",
   "probs.amplitude": "Amplitude",

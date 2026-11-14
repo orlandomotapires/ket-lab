@@ -144,6 +144,12 @@ export const en: Record<MessageKey, string> = {
   "oracle.runTitle": "Run the code (Ctrl+Enter)",
   "oracle.idleManual": "Write the code and click Run (Ctrl+Enter) to train.",
 
+  "viz.graphBest": "Most likely split",
+  "viz.graphBestDetail": "cuts {cut} of {max} edges",
+  "viz.graphRatio": "Approximation ratio: {ratio}",
+  "viz.graphTop": "Most likely splits",
+  "viz.graphCut": "cut {cut}",
+  "viz.graphNote": "Circles and squares are the two groups of the most likely split; solid lines are cut edges.",
   "probs.state": "State",
   "probs.probability": "Probability",
   "probs.amplitude": "Amplitude",

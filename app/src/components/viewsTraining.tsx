@@ -225,3 +225,70 @@ export function DissociationView({ data }: { data: DissociationData }) {
     </>
   );
 }
+
+// --------------------------------------------------------------------------- //
+// Grafo (Max-Cut)
+// --------------------------------------------------------------------------- //
+
+export interface GraphData {
+  nodes: { id: number; x: number; y: number; side: number }[];
+  edges: { a: number; b: number; cut: boolean }[];
+  best_bits: string;
+  best_cut: number;
+  max_cut: number;
+  ratio: number;
+  top: { bits: string; probability: number; cut: number }[];
+}
+
+export function GraphView({ data }: { data: GraphData }) {
+  const cx = 150;
+  const cy = H / 2 - 6;
+  const radius = 92;
+  const at = (id: number) => {
+    const node = data.nodes.find((n) => n.id === id)!;
+    return { x: cx + node.x * radius, y: cy + node.y * radius };
+  };
+  const listX = 300;
+
+  return (
+    <>
+      <svg className="view2d" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={t("viz.view.graph")}>
+        {data.edges.map((edge) => {
+          const a = at(edge.a);
+          const b = at(edge.b);
+          return <line key={`${edge.a}-${edge.b}`} className={`graph-edge${edge.cut ? " is-cut" : ""}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />;
+        })}
+        {data.nodes.map((node) => {
+          const p = at(node.id);
+          return (
+            <g key={node.id}>
+              {/* Forma e cor distinguem os grupos (não só a cor). */}
+              {node.side ? (
+                <rect className="graph-node is-b" x={p.x - 15} y={p.y - 15} width={30} height={30} rx={6} />
+              ) : (
+                <circle className="graph-node is-a" cx={p.x} cy={p.y} r={16} />
+              )}
+              <text className="graph-label" x={p.x} y={p.y + 4} textAnchor="middle">{node.id}</text>
+            </g>
+          );
+        })}
+        <text className="graph-title" x={listX} y={26}>{t("viz.graphBest")}</text>
+        <text className="graph-text" x={listX} y={46}>
+          |{data.best_bits}⟩ · {t("viz.graphBestDetail", { cut: data.best_cut, max: data.max_cut })}
+        </text>
+        <text className="graph-text" x={listX} y={66}>{t("viz.graphRatio", { ratio: formatNumber(data.ratio, 3) })}</text>
+        <text className="graph-title" x={listX} y={98}>{t("viz.graphTop")}</text>
+        {data.top.map((item, k) => (
+          <g key={item.bits} transform={`translate(${listX}, ${116 + k * 22})`}>
+            <text className="graph-text" x={0} y={4}>|{item.bits}⟩</text>
+            <rect className="chart-bar" x={66} y={-5} width={Math.max(item.probability * 260, 1)} height={10} rx={2} />
+            <text className="chart-tick" x={74 + item.probability * 260} y={4}>
+              {formatNumber(item.probability * 100, 0)}% · {t("viz.graphCut", { cut: item.cut })}
+            </text>
+          </g>
+        ))}
+      </svg>
+      <div className="stage-footer">{t("viz.graphNote")}</div>
+    </>
+  );
+}

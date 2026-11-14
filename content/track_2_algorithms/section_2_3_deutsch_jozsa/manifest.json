@@ -1,20 +1,20 @@
 {
-  "id": "2.4",
+  "id": "2.3",
   "track": 2,
-  "estimated_minutes": 25,
+  "estimated_minutes": 20,
   "num_qubits": 4,
   "max_qubits": 4,
   "default_visualizer": "amplitudes",
   "available_visualizers": [
     "amplitudes",
-    "qsphere"
+    "qsphere",
+    "bloch"
   ],
   "register": {
     "qubits": [
       0,
       1,
-      2,
-      3
+      2
     ]
   },
   "prediction_answer": 1,
@@ -23,8 +23,7 @@
     "register": [
       0,
       1,
-      2,
-      3
+      2
     ],
     "tolerance": 0.02,
     "allowed_gates": [
@@ -41,19 +40,38 @@
       "rz",
       "p",
       "id",
-      "grover_oracle",
-      "cx",
-      "cz",
-      "ccx",
-      "mcx",
-      "cp",
-      "mcp"
+      "oracle"
     ],
     "cases": [
-      "0110",
-      "0001",
-      "1111",
-      "1011"
+      {
+        "kind": "constant",
+        "value": 0
+      },
+      {
+        "kind": "constant",
+        "value": 1
+      },
+      {
+        "kind": "balanced",
+        "mask": [
+          1,
+          1,
+          0
+        ],
+        "flip": 0
+      },
+      {
+        "kind": "balanced",
+        "mask": [
+          0,
+          1,
+          1
+        ],
+        "flip": 1
+      },
+      {
+        "kind": "and"
+      }
     ]
   }
 }

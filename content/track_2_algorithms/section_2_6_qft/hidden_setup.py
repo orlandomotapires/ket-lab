@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.5: prepara a entrada da QFT.
+# Setup oculto da lição 2.6: prepara a entrada da QFT.
 # O validador troca a entrada (via _QLP_INPUT): inteiros, |+++⟩ e uma superposição com fases.
 try:
     _entrada = _QLP_INPUT

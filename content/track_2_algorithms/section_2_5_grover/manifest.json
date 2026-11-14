@@ -1,0 +1,59 @@
+{
+  "id": "2.5",
+  "track": 2,
+  "estimated_minutes": 25,
+  "num_qubits": 4,
+  "max_qubits": 4,
+  "default_visualizer": "amplitudes",
+  "available_visualizers": [
+    "amplitudes",
+    "qsphere"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "oracle_cases",
+    "register": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tolerance": 0.02,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "grover_oracle",
+      "cx",
+      "cz",
+      "ccx",
+      "mcx",
+      "cp",
+      "mcp"
+    ],
+    "cases": [
+      "0110",
+      "0001",
+      "1111",
+      "1011"
+    ]
+  }
+}

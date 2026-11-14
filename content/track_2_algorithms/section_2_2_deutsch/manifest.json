@@ -1,9 +1,9 @@
 {
-  "id": "2.3",
+  "id": "2.2",
   "track": 2,
   "estimated_minutes": 15,
-  "num_qubits": 5,
-  "max_qubits": 5,
+  "num_qubits": 2,
+  "max_qubits": 2,
   "default_visualizer": "amplitudes",
   "available_visualizers": [
     "amplitudes",
@@ -11,20 +11,14 @@
   ],
   "register": {
     "qubits": [
-      0,
-      1,
-      2,
-      3
+      0
     ]
   },
   "prediction_answer": 1,
   "validation": {
     "type": "oracle_cases",
     "register": [
-      0,
-      1,
-      2,
-      3
+      0
     ],
     "tolerance": 0.02,
     "allowed_gates": [
@@ -43,11 +37,14 @@
       "id",
       "oracle"
     ],
+    "gate_counts": {
+      "oracle": 1
+    },
     "cases": [
-      "0110",
-      "1101",
-      "0001",
-      "1011"
+      [0, 0],
+      [1, 1],
+      [0, 1],
+      [1, 0]
     ]
   }
 }

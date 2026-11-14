@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.3: oráculo f(x) = s·x mod 2 com s secreta.
+# Setup oculto da lição 2.4: oráculo f(x) = s·x mod 2 com s secreta.
 # O validador troca s (via _QLP_INPUT) para testar várias strings.
 try:
     _segredo = _QLP_INPUT

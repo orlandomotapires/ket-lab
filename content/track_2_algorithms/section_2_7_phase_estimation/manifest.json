@@ -1,39 +1,42 @@
 {
   "id": "2.7",
   "track": 2,
-  "estimated_minutes": 35,
-  "num_qubits": 8,
-  "max_qubits": 8,
+  "estimated_minutes": 25,
+  "num_qubits": 4,
+  "max_qubits": 4,
   "default_visualizer": "histogram",
   "available_visualizers": [
     "histogram",
-    "modular"
+    "bloch"
   ],
   "register": {
     "qubits": [
       0,
       1,
-      2,
-      3
+      2
     ]
-  },
-  "modular": {
-    "a": 7,
-    "N": 15
   },
   "prediction_answer": 1,
   "validation": {
-    "type": "counts_distribution",
-    "tolerance": 0.05,
+    "type": "oracle_cases",
+    "register": [
+      0,
+      1,
+      2
+    ],
+    "tolerance": 0.02,
     "required_gates": [
-      "c_mod_mult",
+      "c_u",
       "qft_dagger"
     ],
+    "cases": [
+      0.625,
+      0.125,
+      0.375,
+      0.875
+    ],
     "expected_variables": {
-      "factors": [
-        3,
-        5
-      ]
+      "theta": 0.625
     }
   }
 }

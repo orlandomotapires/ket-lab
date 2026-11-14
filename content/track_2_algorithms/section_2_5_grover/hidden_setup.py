@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.4: oráculo de fase que marca um item secreto.
+# Setup oculto da lição 2.5: oráculo de fase que marca um item secreto.
 # O validador troca o item (via _QLP_INPUT) para testar vários casos.
 try:
     _marcado = _QLP_INPUT

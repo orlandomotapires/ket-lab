@@ -5,7 +5,7 @@
   "hints": [
     "Der Schaltkreis ist bereits in der Variablen qc angelegt. Gatter sind Methoden davon: qc.gatter_name(qubit_index).",
     "Das Gatter, das |0⟩ in |1⟩ verwandelt, ist das Pauli-X, das quantenmechanische Gegenstück zum NOT.",
-    "Schreibe qc.x(0) in eine neue Zeile, nach der Erstellung des Schaltkreises."
+    "Schreibe qc.x(0) in eine neue Zeile, nach der Erstellung des Schaltkreises. Hinweis: qc.y(0) und qc.rx(pi, 0) werden ebenfalls akzeptiert, weil sie sich von X nur durch eine globale Phase unterscheiden, die nicht beobachtbar ist."
   ],
   "prediction": {
     "question": "Bevor du Code schreibst: Das X-Gatter dreht den Zustandsvektor um 180° um die X-Achse der Kugel. Wo landet der Vektor, wenn er am Nordpol (|0⟩) startet?",

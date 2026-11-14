@@ -28,6 +28,16 @@ $$
 
 Es macht mit dem Qubit, was `NOT` mit einem Bit macht.
 
+## Normierung
+
+Nicht jedes Zahlenpaar ist ein Zustand. Die Amplituden müssen $|\alpha|^2 + |\beta|^2 = 1$ erfüllen. Zum Beispiel ist $(0{,}6;\ 0{,}8)$ ein gültiger Zustand, denn $0{,}36 + 0{,}64 = 1$. $(0{,}6;\ 0{,}6)$ dagegen nicht: Die Summe ist $0{,}72$. Um ihn gültig zu machen, teilt man den Vektor durch seine Norm (hier $\sqrt{0{,}72}$). Quantengatter erhalten diese Summe, ein Schaltkreis erzeugt also nie einen Vektor außerhalb der Kugel.
+
+## Globale Phase
+
+Multipliziert man den ganzen Zustand mit $e^{i\gamma}$, ändert sich keine Wahrscheinlichkeit und kein Ergebnis irgendeiner möglichen Messung: $|\psi\rangle$ und $e^{i\gamma}|\psi\rangle$ sind physikalisch derselbe Zustand, und die Bloch-Kugel zeichnet sie am selben Punkt. Wichtig ist die **relative** Phase zwischen $\alpha$ und $\beta$, das Thema von Lektion 1.3.
+
+Deshalb bringen $Y$ und $R_x(\pi)$ den Zustand $|0\rangle$ in denselben physikalischen Zustand wie $X$: Die Ergebnisse unterscheiden sich nur durch eine globale Phase ($Y|0\rangle = i|1\rangle$ und $R_x(\pi)|0\rangle = -i|1\rangle$).
+
 ## So benutzt du das Labor
 
 - Die Visualisierung folgt der **Zeile, in der sich der Cursor befindet**: Sie zeigt den Zustand des Qubits nach allem, was bis dorthin ausgeführt wurde.

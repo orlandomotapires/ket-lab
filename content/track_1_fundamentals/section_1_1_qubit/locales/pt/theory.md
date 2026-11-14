@@ -28,6 +28,16 @@ $$
 
 Ela faz com o qubit o que o `NOT` faz com um bit.
 
+## Normalização
+
+Nem todo par de números é um estado. As amplitudes precisam satisfazer $|\alpha|^2 + |\beta|^2 = 1$. Por exemplo, $(0{,}6;\ 0{,}8)$ é um estado válido, pois $0{,}36 + 0{,}64 = 1$. Já $(0{,}6;\ 0{,}6)$ não é: a soma dá $0{,}72$. Para torná-lo válido, divide-se o vetor pela sua norma (aqui, $\sqrt{0{,}72}$). As portas quânticas preservam essa soma, por isso um circuito nunca produz um vetor fora da esfera.
+
+## Fase global
+
+Multiplicar o estado inteiro por $e^{i\gamma}$ não muda nenhuma probabilidade, nem o resultado de qualquer medição possível: $|\psi\rangle$ e $e^{i\gamma}|\psi\rangle$ são fisicamente o mesmo estado, e a esfera de Bloch os desenha no mesmo ponto. O que importa é a fase **relativa** entre $\alpha$ e $\beta$, assunto da lição 1.3.
+
+Por isso $Y$ e $R_x(\pi)$ levam $|0\rangle$ ao mesmo estado físico que $X$ leva: os resultados diferem só por uma fase global ($Y|0\rangle = i|1\rangle$ e $R_x(\pi)|0\rangle = -i|1\rangle$).
+
 ## Como usar o laboratório
 
 - A visualização acompanha a **linha onde está o cursor**: ela mostra o estado do qubit depois de tudo que foi executado até ali.

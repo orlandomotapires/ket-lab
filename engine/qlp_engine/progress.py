@@ -42,7 +42,18 @@ class ProgressStore:
             )
             """
         )
+        self._migrate()
         self._db.commit()
+
+    def _migrate(self) -> None:
+        """Renumerações de lições (PRAGMA user_version guarda a última aplicada)."""
+        version = self._db.execute("PRAGMA user_version").fetchone()[0]
+        if version < 1:
+            # Roadmap fase 2: Simon entra como 2.5 e a Trilha 3 se divide (3.5 e 3.6 viram 4.1 e 4.2).
+            # Ordem decrescente para não colidir (2.8 -> 2.9 antes de 2.7 -> 2.8).
+            for old, new in (("2.8", "2.9"), ("2.7", "2.8"), ("2.6", "2.7"), ("2.5", "2.6"), ("3.6", "4.2"), ("3.5", "4.1")):
+                self._db.execute("UPDATE progress SET lesson_id = ? WHERE lesson_id = ?", (new, old))
+            self._db.execute("PRAGMA user_version = 1")
 
     def all(self) -> dict[str, dict]:
         rows = self._db.execute(

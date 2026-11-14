@@ -74,7 +74,8 @@ def test_catalog_lesson_run_validate_and_progress(library):
             client = Client(websocket)
 
             catalog = await client.call(type="catalog")
-            first = catalog["catalog"]["tracks"][0]["sections"][0]
+            track1 = next(track for track in catalog["catalog"]["tracks"] if track["id"] == 1)
+            first = track1["sections"][0]
             assert first["id"] == "1.1" and first["available"] is True
 
             lesson = (await client.call(type="lesson", lesson_id="1.1"))["lesson"]
@@ -304,3 +305,21 @@ def test_worker_group_runs_jobs_in_parallel(library):
             assert together < 1.6 * alone, (alone, together)
 
     with_public_server(test, library, workers=2)
+
+
+def test_progress_is_migrated_to_the_new_lesson_ids(tmp_path):
+    import sqlite3
+
+    db = sqlite3.connect(tmp_path / "progress.sqlite3")
+    db.execute("CREATE TABLE progress (lesson_id TEXT PRIMARY KEY, code TEXT, completed_at REAL, hints_used INTEGER NOT NULL DEFAULT 0, updated_at REAL NOT NULL)")
+    for lesson_id in ("2.5", "2.8", "3.5", "1.1"):
+        db.execute("INSERT INTO progress VALUES (?, ?, 1.0, 0, 1.0)", (lesson_id, f"code {lesson_id}"))
+    db.commit()
+    db.close()
+
+    store = ProgressStore(tmp_path)
+    saved = store.all()
+    assert set(saved) == {"2.6", "2.9", "4.1", "1.1"}
+    assert saved["2.6"]["code"] == "code 2.5" and saved["4.1"]["code"] == "code 3.5"
+    store.close()
+    assert set(ProgressStore(tmp_path).all()) == {"2.6", "2.9", "4.1", "1.1"}  # roda uma vez só

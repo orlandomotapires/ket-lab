@@ -41,10 +41,13 @@ export function Hub() {
     );
   }
 
-  const sections = catalog.tracks.flatMap((track) => track.sections);
+  const sections = catalog.tracks.flatMap((track) => track.sections).filter((section) => section.available);
   const done = sections.filter((section) => progress[section.id]?.completed).length;
-  // Próxima lição sugerida: a primeira disponível ainda não concluída.
-  const next = sections.find((section) => section.available && !progress[section.id]?.completed);
+  // Próxima lição sugerida: a primeira ainda não concluída, fora da Trilha 0 (opcional).
+  const next = catalog.tracks
+    .filter((track) => track.id !== 0)
+    .flatMap((track) => track.sections)
+    .find((section) => section.available && !progress[section.id]?.completed);
   const offline = connection !== "open";
   const action: Record<Status, string> = {
     done: t("hub.action.done"),

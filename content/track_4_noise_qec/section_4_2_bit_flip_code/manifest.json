@@ -1,6 +1,6 @@
 {
-  "id": "3.6",
-  "track": 3,
+  "id": "4.2",
+  "track": 4,
   "estimated_minutes": 35,
   "framework": "pennylane",
   "timeout": 10,

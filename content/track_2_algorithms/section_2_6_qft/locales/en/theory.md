@@ -29,6 +29,12 @@ $$
 
 applied to the target when the control is $1$.
 
+## Two remarks
+
+**The final swaps.** Without step 4, the circuit computes the QFT with the output qubits in reverse order. Some texts omit the swaps and read the result backwards, or leave the reordering to the user. Here they stay in the circuit, so that the output matches the DFT in Qiskit's convention.
+
+**Hadamard and Fourier.** The Hadamard transform $H^{\otimes n}$ is the Fourier transform over the group $(\mathbb{Z}_2)^n$, whose "characters" are $(-1)^{s\cdot x}$. For a single qubit, $2^1 = 2$ and the QFT coincides with the Hadamard. This is what made Bernstein-Vazirani work; the QFT used here is the version over $\mathbb{Z}_{2^n}$, with phases $e^{2\pi i\,xk/2^n}$.
+
 ## In the lab
 
 The function `prepare_input(qc)` prepares the input $|x\rangle$, here $|101\rangle = |5\rangle$. The **Phases** tab shows one dial per state: the size indicates the probability and the pointer, the phase. After the QFT, the pointers rotate by $5k/8$ of a turn, advancing in equal steps from one state to the next. During validation, the circuit is tested with several inputs, including superpositions.

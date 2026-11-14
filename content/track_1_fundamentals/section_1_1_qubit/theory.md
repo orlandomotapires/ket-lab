@@ -1,45 +1,43 @@
 ## From bit to qubit
 
-A classical bit can only be in one of two values: $0$ or $1$. A **qubit** also has two reference states, written $|0\rangle$ and $|1\rangle$, but it can be in any combination of them:
+A classical bit is either $0$ or $1$. A **qubit** has two orthogonal basis states, $|0\rangle$ and $|1\rangle$ (the **computational basis**), and its state can be any normalized linear combination of them:
 
 $$
 |\psi\rangle = \alpha|0\rangle + \beta|1\rangle
 $$
 
-The numbers $\alpha$ and $\beta$ are the **amplitudes**. They are not probabilities, but they determine the probabilities: when you measure the qubit, you get $0$ with probability $|\alpha|^2$ and $1$ with probability $|\beta|^2$. Since some outcome always happens,
+The complex numbers $\alpha$ and $\beta$ are the **amplitudes**. Measuring the qubit in the computational basis gives $0$ with probability $|\alpha|^2$ and $1$ with probability $|\beta|^2$. Some outcome must occur, so
 
 $$
 |\alpha|^2 + |\beta|^2 = 1
 $$
 
+## Normalization
+
+Not every pair of numbers is a state. $(0.6,\ 0.8)$ is valid, since $0.36 + 0.64 = 1$. $(0.6,\ 0.6)$ is not: the sum is $0.72$. Dividing the vector by its norm, here $\sqrt{0.72}$, makes it valid. Quantum gates preserve the norm, so a circuit never produces an invalid state.
+
 ## The Bloch sphere
 
-Every single-qubit state corresponds to a point on the surface of a sphere. The north pole is $|0\rangle$ and the south pole is $|1\rangle$. On the right, the vector shows where your qubit is right now.
-
-In this lesson the vector only visits the two poles. The other points of the sphere appear starting with the next lesson.
+Every pure single-qubit state corresponds to a point on the surface of a sphere. $|0\rangle$ is the north pole and $|1\rangle$ is the south pole. The vector on the right shows the current state of your qubit. In this lesson it only visits the poles; the rest of the sphere appears from lesson 1.2.
 
 ## The X gate
 
-Quantum gates move the vector around the sphere. The **Pauli-X** rotates it by $180°$ around the $X$ axis:
+Gates move the state vector on the sphere. The Pauli $X$ gate rotates it by $180°$ around the $X$ axis:
 
 $$
 X|0\rangle = |1\rangle \qquad X|1\rangle = |0\rangle
 $$
 
-It does to the qubit what `NOT` does to a bit.
-
-## Normalization
-
-Not every pair of numbers is a state. The amplitudes must satisfy $|\alpha|^2 + |\beta|^2 = 1$. For example, $(0.6,\ 0.8)$ is a valid state, since $0.36 + 0.64 = 1$. But $(0.6,\ 0.6)$ is not: the sum is $0.72$. To make it valid, divide the vector by its norm (here, $\sqrt{0.72}$). Quantum gates preserve this sum, so a circuit never produces a vector outside the sphere.
+On computational basis states it acts like the classical NOT.
 
 ## Global phase
 
-Multiplying the whole state by $e^{i\gamma}$ changes no probability and no outcome of any possible measurement: $|\psi\rangle$ and $e^{i\gamma}|\psi\rangle$ are physically the same state, and the Bloch sphere draws them at the same point. What matters is the **relative** phase between $\alpha$ and $\beta$, the subject of lesson 1.3.
+Multiplying a state by $e^{i\gamma}$ changes no measurement probability, so $|\psi\rangle$ and $e^{i\gamma}|\psi\rangle$ describe the same physical state and have the same point on the Bloch sphere. The **relative** phase between $\alpha$ and $\beta$ does matter; lesson 1.3 covers it.
 
-That is why $Y$ and $R_x(\pi)$ take $|0\rangle$ to the same physical state that $X$ does: the results differ only by a global phase ($Y|0\rangle = i|1\rangle$ and $R_x(\pi)|0\rangle = -i|1\rangle$).
+For this reason $Y$ and $R_x(\pi)$ take $|0\rangle$ to the same physical state as $X$: $Y|0\rangle = i|1\rangle$ and $R_x(\pi)|0\rangle = -i|1\rangle$ differ from $|1\rangle$ only by a global phase.
 
-## How to use the lab
+## In the lab
 
-- The visualization follows the **line where the cursor is**: it shows the state of the qubit after everything that has run up to that point.
-- You do not need to click "run". The state is recalculated when you stop typing.
-- Feel free to experiment: apply `qc.x(0)` twice, for example, and see what happens.
+- The visualization shows the state after the line where the cursor is, that is, after every gate up to that point.
+- The state is recalculated when you stop typing; there is no run button.
+- Try applying `qc.x(0)` twice.

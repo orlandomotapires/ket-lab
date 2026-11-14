@@ -1,35 +1,35 @@
-## Controlled gates
+## Controlled operations
 
-A controlled gate applies an operation to the **target** only when the **control** is $1$. $CS$ applies $S$ to the target, which amounts to multiplying the amplitude of $|11\rangle$ by $i$:
+A controlled operation applies a gate to the **target** qubit only when the **control** qubit is $1$. Controlled-$S$ ($CS$) applies $S = \mathrm{diag}(1, i)$ to the target, which multiplies the amplitude of $|11\rangle$ by $i$:
 
 $$
 CS = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & i \end{pmatrix}
 $$
 
-The phase sits on a basis state of **two** qubits. With basis inputs such as $|01\rangle$ or $|10\rangle$ nothing changes, and for $|11\rangle$ only a global phase shows up; that is why the validator uses superpositions, where the relative phase becomes an observable difference.
+The phase acts on a basis state of two qubits. On $|00\rangle$, $|01\rangle$ and $|10\rangle$ the gate does nothing, and on $|11\rangle$ it only adds a global phase. Only a superposition shows the relative phase, so the validator tests superpositions as well.
 
-## How the solution works
+## Building CS from CNOT and T
 
-The trick is to change what the gate sees. If $a$ and $b$ are the values of the two qubits, after `qc.cx(0, 1)` qubit 1 holds $a \oplus b$ (the parity). Each $T$ adds $\pi/4$ per qubit in $1$; the $T^{\dagger}$ on the parity subtracts $\pi/4$. The total phase is
+Let $a$ and $b$ be the values of qubits 0 and 1. After `qc.cx(0, 1)`, qubit 1 holds the parity $a \oplus b$. Each $T$ adds $\pi/4$ for every qubit that is $1$, and $T^{\dagger}$ on the parity subtracts $\pi/4$ when $a \oplus b = 1$. The total phase is
 
 $$
 \frac{\pi}{4}\bigl(a + b - (a \oplus b)\bigr) = \frac{\pi}{4}\cdot 2ab = \frac{\pi}{2}\,ab
 $$
 
-which is $\pi/2$ only for $a = b = 1$: exactly $CS$.
+because $a + b - (a \oplus b) = 2ab$ for bits. This equals $\pi/2$ only when $a = b = 1$, which is $CS$. A second CNOT restores qubit 1.
 
-## Useful identities
+## Identities between gates
 
-- $S = T^2$ and $Z = S^2 = T^4$: phase gates whose angles add up.
-- $HZH = X$ and $HXH = Z$: the Hadamard swaps the $X$ and $Z$ axes.
-- $CZ = H_{\text{target}}\,\text{CNOT}\,H_{\text{target}}$: a Hadamard on the target before and after the CNOT gives the CZ. In Qiskit, `qc.h(1); qc.cx(0, 1); qc.h(1)`.
-- Hadamard on both qubits before and after a CNOT reverses their roles: you get a CNOT from 1 to 0.
-- $\text{SWAP}$ = three CNOTs: `qc.cx(0, 1); qc.cx(1, 0); qc.cx(0, 1)`.
+- $S = T^2$ and $Z = S^2 = T^4$: phase gates whose angles add.
+- $HZH = X$ and $HXH = Z$: the Hadamard exchanges the $X$ and $Z$ axes.
+- $CZ = H_{\text{target}}\,\text{CNOT}\,H_{\text{target}}$: a Hadamard on the target before and after the CNOT. In Qiskit, `qc.h(1); qc.cx(0, 1); qc.h(1)`.
+- $(H \otimes H)\,\text{CNOT}_{0 \to 1}\,(H \otimes H) = \text{CNOT}_{1 \to 0}$: Hadamards on both qubits exchange control and target.
+- $\text{SWAP}$ is three CNOTs: `qc.cx(0, 1); qc.cx(1, 0); qc.cx(0, 1)`.
 
 ## Universality
 
-The CNOT and single-qubit gates form a **universal set**: with them you can build any multi-qubit gate, as accurately as you wish. Decomposing operations into CNOTs and simple gates, as here, is what real machines do to run a circuit.
+CNOT together with single-qubit gates is a **universal** set: any unitary operation on $n$ qubits can be written as a circuit of these gates. With a finite single-qubit set such as $H$ and $T$, any such operation can be approximated to arbitrary accuracy. Hardware executes circuits by decomposing them into gates of this kind.
 
-## Controlled Rz versus CS
+## Controlled $R_z$ and $CS$
 
-In lesson 1.3 we saw that $R_z(\theta)$ and $P(\theta)$ differ only by a global phase. When the gate is **controlled**, that phase stops being global: it becomes a relative phase and the gate also acts on the control qubit. That is why $CS$ is not the same as a controlled $R_z$.
+$R_z(\theta)$ and $P(\theta)$ differ by the global phase $e^{-i\theta/2}$. In a controlled gate this phase becomes a relative phase between the control states $0$ and $1$, so it acts on the control qubit. Controlled-$R_z(\theta)$ is $\mathrm{diag}(1, 1, e^{-i\theta/2}, e^{i\theta/2})$, which is not controlled-$P(\theta)$. For $\theta = \pi/2$, $CS$ is controlled-$P(\pi/2)$.

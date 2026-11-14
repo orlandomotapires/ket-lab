@@ -82,5 +82,21 @@
     "gate_counts": {
       "oracle": 1
     }
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "1.4.4",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "The Deutsch–Jozsa algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
+    }
+  ]
 }

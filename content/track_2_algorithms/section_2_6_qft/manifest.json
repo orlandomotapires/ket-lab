@@ -49,5 +49,21 @@
       "plus",
       "mixed"
     ]
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "5.1",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Phase estimation procedure",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
+    }
+  ]
 }

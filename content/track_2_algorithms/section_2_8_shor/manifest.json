@@ -35,5 +35,28 @@
         5
       ]
     }
-  }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "5.3",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "paper",
+      "title": "Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer",
+      "authors": "P. W. Shor",
+      "year": 1997,
+      "url": "https://doi.org/10.1137/S0097539795293172"
+    },
+    {
+      "kind": "course",
+      "title": "Shor's algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/shor-algorithm"
+    }
+  ]
 }

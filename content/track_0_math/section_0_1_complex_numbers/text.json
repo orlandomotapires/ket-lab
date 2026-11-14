@@ -1,0 +1,37 @@
+{
+  "title": "Complex Numbers and Phases",
+  "summary": "Complex arithmetic, modulus, polar form and the difference between global and relative phase.",
+  "objectives": [
+    "Multiply complex numbers and compute modulus and argument",
+    "Write a complex number in polar form and explain why e^{iφ} has modulus 1",
+    "Tell a global phase from a relative phase and compute the relative phase of two amplitudes"
+  ],
+  "mission": "The editor defines z, w, theta, a and b. Compute product = z·w, modulus = |z|, phi = the argument of z, z_polar = modulus·e^{iφ} (it must equal z), unit = e^{iθ}, unit_modulus = |unit|, and rel_phase, the relative phase of the amplitudes a and b (the phase of b minus the phase of a).",
+  "prediction": {
+    "question": "The state (|0⟩ + |1⟩)/√2 is multiplied as a whole by e^{iγ}, which gives (e^{iγ}|0⟩ + e^{iγ}|1⟩)/√2. Does the relative phase between the two amplitudes change?",
+    "options": [
+      "Yes: both amplitudes now have a phase γ",
+      "No: the phase of the second amplitude minus the phase of the first is still 0",
+      "Yes: it becomes 2γ"
+    ],
+    "explanation": "The relative phase is arg(b) − arg(a). With both amplitudes shifted by γ the difference is (0 + γ) − (0 + γ) = 0. A common factor e^{iγ} is a global phase and has no measurable effect."
+  },
+  "hints": [
+    "Python writes the imaginary unit as 1j. abs(z) is the modulus, cmath.phase(z) or np.angle(z) is the argument, and np.exp(1j * x) is e^{ix}.",
+    "Use product = z * w, modulus = abs(z), phi = np.angle(z), z_polar = modulus * np.exp(1j * phi), unit = np.exp(1j * theta), unit_modulus = abs(unit). The relative phase is a difference of arguments, not a single one.",
+    "rel_phase = np.angle(b) - np.angle(a) (or np.angle(b / a)). The other lines are product = z * w, modulus = abs(z), phi = np.angle(z), z_polar = modulus * np.exp(1j * phi), unit = np.exp(1j * theta), unit_modulus = abs(unit)."
+  ],
+  "messages": {
+    "ok": "All values are correct: z = {modulus}·e^(i{phi}), |e^(iθ)| = {unit_modulus} and the relative phase of a and b is {rel_phase}.",
+    "missing": "Define the variable {name}.",
+    "not_number": "The variable {name} must be a single number, but it holds {actual}.",
+    "product_wrong": "product should be z·w = {expected}, but it is {actual}. Multiply the two numbers; Python handles 1j directly.",
+    "modulus_wrong": "modulus should be |z| = √(3² + 4²) = {expected}, but it is {actual}. Use abs(z), which returns a real number.",
+    "phi_wrong": "phi should be the argument of z, {expected} rad, but it is {actual}. Use np.angle(z) or cmath.phase(z).",
+    "z_polar_wrong": "z_polar should equal z = {expected}, but it is {actual}. Compute modulus * np.exp(1j * phi).",
+    "unit_wrong": "unit should be e^(iθ) = {expected}, but it is {actual}. Use np.exp(1j * theta), with the 1j inside the exponent.",
+    "unit_modulus_wrong": "unit_modulus should be |e^(iθ)| = {expected}, but it is {actual}. Take abs(unit).",
+    "rel_phase_single": "rel_phase is {actual}, which is the phase of b alone. The relative phase is the phase of b minus the phase of a.",
+    "rel_phase_wrong": "rel_phase should be arg(b) − arg(a) = {expected}, but it is {actual}. Use np.angle(b) - np.angle(a)."
+  }
+}

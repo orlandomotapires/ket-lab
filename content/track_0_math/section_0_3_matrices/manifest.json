@@ -1,0 +1,40 @@
+{
+  "id": "0.3",
+  "track": 0,
+  "estimated_minutes": 25,
+  "framework": "python",
+  "num_qubits": 0,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 2.2.2, “Evolution”, pp. 81–84 (unitary operators), and Section 2.2.3, “Quantum measurement”, pp. 84–86"
+    },
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 4.4.1, “Spin 1/2”, pp. 167–172 (Pauli matrices, eigenvalues and eigenvectors)"
+    },
+    {
+      "kind": "course",
+      "title": "Single systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Unitary operations”, subsection “Examples of unitary operations on qubits”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
+    }
+  ]
+}

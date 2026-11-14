@@ -1,0 +1,39 @@
+{
+  "title": "Matrices, Unitaries and Eigenvalues",
+  "summary": "Matrix–vector products, the conjugate transpose, unitarity, the Pauli matrices, eigenvalues and expectation values of Hermitian matrices.",
+  "objectives": [
+    "Test whether a matrix is unitary with the conjugate transpose",
+    "Write the Pauli matrices and compute the eigenvalues and eigenvectors of X",
+    "Check that a matrix is Hermitian and compute an expectation value ⟨ψ|A|ψ⟩"
+  ],
+  "mission": "The editor defines the matrices A, B, X, Z, K and the state psi. Define Y (the Pauli Y matrix), a_unitary and b_unitary (True or False, for A and B), eigvals and eigvecs (from the eigenvalue decomposition of X, eigenvectors as columns), k_hermitian (True or False, for K), expect_z = ⟨ψ|Z|ψ⟩ and expect_y = ⟨ψ|Y|ψ⟩.",
+  "prediction": {
+    "question": "For the state |+⟩ = (|0⟩ + |1⟩)/√2, what is the expectation value ⟨+|Z|+⟩?",
+    "options": [
+      "1",
+      "0",
+      "−1"
+    ],
+    "explanation": "Z|+⟩ = (|0⟩ − |1⟩)/√2 = |−⟩, and ⟨+|−⟩ = 0. Equivalently, the outcomes +1 and −1 of Z each occur with probability 1/2, so the average is 0."
+  },
+  "hints": [
+    "A matrix U is unitary when U† U = I, where U† = U.conj().T. Floating-point products are not exact, so compare with np.allclose(U.conj().T @ U, np.eye(2)) instead of ==. The Pauli Y matrix is [[0, −i], [i, 0]].",
+    "For a Hermitian matrix use np.linalg.eigh(X), which returns the eigenvalues and the eigenvectors as columns. K is Hermitian when K equals its conjugate transpose. The expectation value of A in |ψ⟩ is np.vdot(psi, A @ psi).",
+    "Y = np.array([[0, -1j], [1j, 0]]); a_unitary = np.allclose(A.conj().T @ A, np.eye(2)); b_unitary likewise with B; eigvals, eigvecs = np.linalg.eigh(X); k_hermitian = np.allclose(K, K.conj().T); expect_z = np.vdot(psi, Z @ psi); expect_y = np.vdot(psi, Y @ psi)."
+  ],
+  "messages": {
+    "ok": "All values are correct. X has eigenvalues {eigvals}, and for ψ the expectation values are ⟨Z⟩ = {expect_z} and ⟨Y⟩ = {expect_y}.",
+    "missing": "Define the variable {name}.",
+    "not_array": "The variable {name} must be a numeric array with shape {shape}, but it holds {actual}.",
+    "not_bool": "The variable {name} must be True or False, but it holds {actual}.",
+    "y_wrong": "Y should be [[0, −i], [i, 0]], but it is {actual}. In Python the entries are 0, -1j, 1j, 0.",
+    "a_unitary_wrong": "a_unitary should be True: A† A = I for A. If you compared with ==, rounding errors make the test fail; use np.allclose(A.conj().T @ A, np.eye(2)).",
+    "b_unitary_wrong": "b_unitary should be False: for B, B† B = {product}, which is not the identity.",
+    "eigvals_wrong": "eigvals should hold the eigenvalues of X, −1 and 1, but it holds {actual}.",
+    "eigvecs_wrong": "eigvecs should have the eigenvectors of X as columns, so that X @ eigvecs[:, k] equals eigvals[k] * eigvecs[:, k]. This fails for column {column}. np.linalg.eigh(X) returns both arrays together.",
+    "k_hermitian_wrong": "k_hermitian should be True: K equals its conjugate transpose K† (real diagonal, opposite off-diagonal entries conjugated). Use np.allclose(K, K.conj().T).",
+    "expect_z_wrong": "expect_z should be ⟨ψ|Z|ψ⟩ = {expected}, but it is {actual}. Use np.vdot(psi, Z @ psi).",
+    "expect_y_no_conjugate": "expect_y is {actual}, which comes from multiplying without conjugating ψ. Use np.vdot(psi, Y @ psi), where vdot conjugates the first vector.",
+    "expect_y_wrong": "expect_y should be ⟨ψ|Y|ψ⟩ = {expected}, but it is {actual}. Check Y and use np.vdot(psi, Y @ psi)."
+  }
+}

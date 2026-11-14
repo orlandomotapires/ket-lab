@@ -1,0 +1,36 @@
+{
+  "title": "Noise on Real Devices",
+  "summary": "T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence.",
+  "objectives": [
+    "Convert T1, T2 and an idle time into the parameters of amplitude damping and phase damping",
+    "Simulate an idling qubit with a density matrix and read its population and coherence",
+    "Check that population decays as exp(−t/T1) and coherence as exp(−t/T2)",
+    "State the constraint T2 ≤ 2·T1"
+  ],
+  "mission": "A qubit in |+⟩ idles for t_wait with relaxation time T1 and coherence time T2. In the QNode idle(T1, T2, t_wait), apply amplitude damping followed by phase damping so that the population of |1⟩ decays as exp(−t/T1) and the coherence as exp(−t/T2). Then store in p1 the probability of measuring 1 and in coherence the size |ρ01| of the off-diagonal element.",
+  "prediction": {
+    "question": "A qubit has T1 = 50 µs. Which coherence time T2 is impossible?",
+    "options": [
+      "T2 = 30 µs",
+      "T2 = 100 µs",
+      "T2 = 120 µs"
+    ],
+    "explanation": "Relaxation alone dephases the qubit: amplitude damping already shrinks the coherence as exp(−t/(2·T1)). Any other process can only shorten T2, so T2 ≤ 2·T1 = 100 µs. T2 = 100 µs is the limit with no pure dephasing, and 120 µs would need negative dephasing."
+  },
+  "hints": [
+    "Amplitude damping with parameter γ takes ρ11 to (1 − γ)·ρ11. For the population to decay as exp(−t/T1), take γ = 1 − exp(−t_wait/T1) and apply qml.AmplitudeDamping(gamma, wires=0).",
+    "Amplitude damping also multiplies the coherence by √(1 − γ) = exp(−t/(2·T1)). The target is exp(−t/T2), so the missing decay comes from pure dephasing with rate 1/T_phi = 1/T2 − 1/(2·T1). Phase damping with parameter λ multiplies the coherence by √(1 − λ), so λ = 1 − exp(−2·t_wait/T_phi).",
+    "Apply qml.AmplitudeDamping(gamma, wires=0) and qml.PhaseDamping(lam, wires=0) after the Hadamard gate. Then rho = idle(T1, T2, t_wait), p1 = np.real(rho[1, 1]) and coherence = np.abs(rho[0, 1]). Expect p1 = exp(−t/T1)/2 and coherence = exp(−t/T2)/2."
+  ],
+  "messages": {
+    "ok": "The density matrix is correct for all the (T1, T2, t) tested. Probability of measuring 1: {p1}. Coherence |ρ01|: {coherence}.",
+    "no_circuit": "Define the QNode idle(T1, T2, t_wait) on a default.mixed device.",
+    "wrong_qubits": "This lesson uses 1 qubit, but the circuit has {count}.",
+    "no_noise": "The final state is still pure, so no noise is applied. Use qml.AmplitudeDamping and qml.PhaseDamping after the Hadamard gate.",
+    "wrong_population": "With T1 = {T1}, T2 = {T2} and t = {t}, the probability of measuring 1 should be {want_p1}, but the circuit gives {got_p1}. Check gamma = 1 − exp(−t/T1).",
+    "wrong_coherence": "With T1 = {T1}, T2 = {T2} and t = {t}, |ρ01| should be {want_c}, but the circuit gives {got_c}. Amplitude damping already contributes exp(−t/(2·T1)); phase damping must supply the rest.",
+    "missing": "Store the result in the variable {name}.",
+    "unphysical": "T1 = {T1} and T2 = {T2} are not allowed: both must be positive and T2 ≤ 2·T1.",
+    "wrong_value": "The variable {name} is {actual}, which does not match the density matrix of idle(T1, T2, t_wait)."
+  }
+}

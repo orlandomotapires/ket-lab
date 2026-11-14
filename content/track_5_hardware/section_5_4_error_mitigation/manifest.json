@@ -1,0 +1,39 @@
+{
+  "id": "5.4",
+  "track": 5,
+  "estimated_minutes": 25,
+  "framework": "python",
+  "num_qubits": 1,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Error mitigation for short-depth quantum circuits",
+      "authors": "K. Temme, S. Bravyi, J. M. Gambetta",
+      "year": 2017,
+      "url": "https://doi.org/10.1103/PhysRevLett.119.180509",
+      "location": "TODO-VERIFY"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum computing in practice: Error mitigation",
+      "authors": "IBM Quantum Learning",
+      "location": "TODO-VERIFY",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-computing-in-practice"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Error mitigation and suppression techniques",
+      "authors": "IBM Quantum Documentation",
+      "location": "TODO-VERIFY",
+      "url": "https://quantum.cloud.ibm.com/docs/en/guides/error-mitigation-and-suppression-techniques"
+    }
+  ]
+}

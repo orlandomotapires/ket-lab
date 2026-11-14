@@ -1,0 +1,35 @@
+{
+  "title": "Transpilation and Qubit Connectivity",
+  "summary": "Basis gates, coupling maps, SWAP insertion, and why the number of two-qubit gates is the cost of a circuit on hardware.",
+  "objectives": [
+    "Transpile a circuit to a basis-gate set and a coupling map with qiskit.transpile",
+    "Explain why a two-qubit gate between non-neighbors costs extra two-qubit gates",
+    "Measure the cost of a transpiled circuit with count_ops() and depth()",
+    "Reduce the cost by writing a logical circuit that matches the device connectivity"
+  ],
+  "mission": "A device has 4 qubits in a line (0 - 1 - 2 - 3) and runs only rz, sx, x and cx. Prepare the GHZ state (|0000⟩ + |1111⟩)/√2 and store in qc the transpiled circuit, with at most 3 two-qubit gates. Every cx in qc must act on neighboring qubits.",
+  "prediction": {
+    "question": "On a line 0 - 1 - 2, with logical qubits 0, 1, 2 placed on the physical qubits 0, 1, 2, a circuit contains one cx(0, 2). How many cx gates does the transpiled circuit contain?",
+    "options": [
+      "1: the gate is already a CNOT",
+      "3: one SWAP makes the qubits neighbors",
+      "4: one SWAP (3 cx) plus the cx itself"
+    ],
+    "explanation": "Qubits 0 and 2 are not neighbors, so the transpiler moves one of them next to the other with a SWAP. A SWAP is 3 CNOTs, and the original CNOT still has to run. Total: 3 + 1 = 4."
+  },
+  "hints": [
+    "Run the starter code and read count_ops(): the star-shaped circuit (every cx starts at qubit 0) needs SWAPs on a line, so it ends with 6 cx. Each SWAP is 3 cx.",
+    "Transpilation does not change the algorithm, it only maps it to the device. The cost depends on the circuit you give it. Write a GHZ circuit in which every cx acts on a pair of neighbors of the line.",
+    "Apply h(0), then a chain of CNOTs: ghz.cx(0, 1), ghz.cx(1, 2), ghz.cx(2, 3). Transpile ghz into qc with the same coupling_map and basis_gates: three cx and no SWAP."
+  ],
+  "messages": {
+    "ok": "The circuit uses only rz, sx, x and cx, every cx acts on neighbors, it prepares the GHZ state, and it has {count} two-qubit gates (depth {depth}).",
+    "no_circuit": "Store the transpiled circuit in the variable qc.",
+    "wrong_qubits": "The device has 4 qubits, but qc has {count}.",
+    "not_basis": "qc contains gates outside the basis: {gates}. Pass basis_gates to transpile.",
+    "not_adjacent": "A two-qubit gate acts on qubits {a} and {b}, which are not neighbors in the line 0 - 1 - 2 - 3. Pass coupling_map to transpile.",
+    "not_unitary": "qc contains measurements or other non-unitary operations. Keep only the gates that prepare the state.",
+    "wrong_state": "qc does not prepare the GHZ state: the fidelity with (|0000⟩ + |1111⟩)/√2 is {fidelity}.",
+    "too_many": "qc has {count} two-qubit gates, but the budget is {budget}. Change the circuit you transpile so that fewer SWAPs are needed."
+  }
+}

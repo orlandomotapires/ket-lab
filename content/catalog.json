@@ -218,22 +218,22 @@
         {
           "id": "5.1",
           "title": "Transpilation and Qubit Connectivity",
-          "summary": "To be written."
+          "summary": "Basis gates, coupling maps, SWAP insertion, and why the number of two-qubit gates is the cost of a circuit on hardware."
         },
         {
           "id": "5.2",
           "title": "The Qiskit Primitives",
-          "summary": "To be written."
+          "summary": "Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots."
         },
         {
           "id": "5.3",
           "title": "Noise on Real Devices",
-          "summary": "To be written."
+          "summary": "T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence."
         },
         {
           "id": "5.4",
           "title": "Error Mitigation",
-          "summary": "To be written."
+          "summary": "Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction."
         }
       ]
     }

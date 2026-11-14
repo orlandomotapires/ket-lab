@@ -1,0 +1,41 @@
+{
+  "id": "5.1",
+  "track": 5,
+  "estimated_minutes": 25,
+  "num_qubits": 4,
+  "max_qubits": 5,
+  "default_visualizer": "qsphere",
+  "available_visualizers": [
+    "qsphere",
+    "amplitudes",
+    "histogram"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 4.5, “Universal quantum gates”, pp. 188–202 (decomposing circuits into a finite gate set)"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum computing in practice: Transpilation",
+      "authors": "IBM Quantum Learning",
+      "location": "TODO-VERIFY",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/qiskit-patterns"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Transpile with pass managers",
+      "authors": "IBM Quantum Documentation",
+      "location": "TODO-VERIFY",
+      "url": "https://quantum.cloud.ibm.com/docs/en/guides/transpile"
+    }
+  ]
+}

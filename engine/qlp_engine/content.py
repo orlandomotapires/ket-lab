@@ -199,10 +199,16 @@ class ContentLibrary:
             raise ContentError(t("content.unknown_lesson", lesson_id=lesson_id)) from None
 
 
+_DASHES = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-", "\u2212": "-"})
+
+
 def _fold(text: str) -> str:
     """Minúsculas e sem acentos: 'Emaranhamento' e 'emaranhamento', 'Quântica' e 'quantica'."""
     decomposed = unicodedata.normalize("NFD", text.lower())
-    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    folded = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    # Hífen, traço e travessão contam como o mesmo caractere: "Deutsch-Jozsa" acha "Deutsch–Jozsa".
+    # A troca é de um caractere por um, então as posições do trecho continuam valendo.
+    return folded.translate(_DASHES)
 
 
 def _plain(markdown: str) -> str:

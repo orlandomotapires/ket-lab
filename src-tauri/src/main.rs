@@ -166,10 +166,32 @@ fn engine_endpoint(app: AppHandle, engine: State<'_, Engine>) -> Result<Endpoint
     engine.endpoint(&app)
 }
 
+/// Exportação: pergunta onde salvar e grava o texto. Devolve false se o aluno cancelar.
+/// A interface nunca escolhe o caminho; ele vem sempre da janela do sistema.
+#[tauri::command(async)]
+fn save_text_file(app: AppHandle, contents: String, file_name: String) -> Result<bool, String> {
+    use tauri_plugin_dialog::DialogExt;
+
+    let Some(path) = app
+        .dialog()
+        .file()
+        .set_file_name(&file_name)
+        .add_filter("OpenQASM", &["qasm"])
+        .blocking_save_file()
+    else {
+        return Ok(false);
+    };
+    let path = path.into_path().map_err(|error| error.to_string())?;
+    std::fs::write(&path, contents).map_err(|error| format!("{}: {error}", path.display()))?;
+    Ok(true)
+}
+
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(Engine::default())
-        .invoke_handler(tauri::generate_handler![engine_endpoint, client_log])
+        .invoke_handler(tauri::generate_handler![engine_endpoint, client_log, save_text_file])
         .setup(|app| {
             // Aquece o motor enquanto a janela carrega.
             let handle = app.handle().clone();

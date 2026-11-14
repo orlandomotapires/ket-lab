@@ -1,0 +1,37 @@
+{
+  "title": "Correção de Erros Quânticos",
+  "summary": "Código de bit flip de 3 qubits, síndromes e o limiar de erro.",
+  "mission": "Proteja o qubit 0 contra bit flips: codifique-o em três qubits (encode), meça a síndrome em duas ancillas sem tocar no estado e corrija o qubit atingido (recover). O estado lógico precisa sobreviver a um X em qualquer um dos três qubits, para qualquer estado de entrada.",
+  "prediction": {
+    "question": "Um erro X atinge os qubits 0 e 1 ao mesmo tempo. O que o código faz?",
+    "options": ["Corrige os dois", "Erra: a síndrome aponta o qubit 2, e o resultado vira um X lógico", "Destrói o estado, que vira uma mistura"],
+    "explanation": "Dois flips nos qubits 0 e 1 dão a mesma síndrome que um flip só no qubit 2. O código aplica X no qubit 2 e termina com os três invertidos: um erro lógico. Ele corrige um flip, não dois."
+  },
+  "hints": [
+    "Codificar é copiar a base, não o estado: qml.CNOT(wires=[0, 1]) e qml.CNOT(wires=[0, 2]) levam α|0⟩ + β|1⟩ a α|000⟩ + β|111⟩.",
+    "Síndrome: a ancilla 3 guarda a paridade dos qubits 0 e 1 (CNOT de 0 e de 1 para 3); a ancilla 4, a dos qubits 1 e 2. Cada flip único dá um par de bits diferente: X0 → 10, X1 → 11, X2 → 01.",
+    "Correção sem medir: qml.Toffoli(wires=[3, 4, alvo]) age quando as duas ancillas valem 1. Para o padrão 10, envolva-o com qml.PauliX na ancilla que deve valer 0 (antes e depois)."
+  ],
+  "controls": {
+    "error": {
+      "label": "Erro injetado",
+      "options": {
+        "none": "Nenhum",
+        "x0": "X no 0",
+        "x1": "X no 1",
+        "x2": "X no 2",
+        "x0x1": "X no 0 e no 1",
+        "z0": "Z no 0",
+        "bitflip": "Bit flip p = 0,1"
+      }
+    }
+  },
+  "messages": {
+    "ok": "O estado lógico sobrevive a qualquer bit flip único. Com ruído de bit flip p = 0,1 em todos os qubits, a fidelidade é {fidelity}, contra {bare} de um qubit sem proteção.",
+    "no_circuit": "Defina o QNode circuit() num dispositivo default.mixed com 5 qubits.",
+    "wrong_qubits": "O código usa 3 qubits de dados e 2 ancillas (5 no total), mas o circuito tem {count}.",
+    "encode_wrong": "Mesmo sem erro, o estado final não é α|000⟩ + β|111⟩ (fidelidade {fidelity}). Confira a codificação e se a recuperação não altera um estado sem erro.",
+    "single_fail": "Com o erro {error}, o estado lógico não foi recuperado (fidelidade {fidelity}). Confira a síndrome e qual qubit cada padrão corrige.",
+    "noisy_mismatch": "Com ruído de bit flip p = 0,1, a fidelidade deveria ser {expected}, mas é {fidelity}."
+  }
+}

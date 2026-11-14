@@ -137,24 +137,29 @@ A seção 1.4 é nova: o plano original prometia interferência na lição de te
 | Seção | Missão | Visualização | Validação |
 | :-- | :-- | :-- | :-- |
 | **2.1 Phase Kickback** *(nova)* [feito] | Controle em $|+\rangle$, alvo em $|-\rangle$, CNOT: quem muda é o controle | Esferas de Bloch | Fidelidade de estado, CNOT obrigatória |
-| **2.2 Oráculos e Deutsch-Jozsa** [feito] | Constante ou balanceada com uma consulta (contra $2^{n-1}+1$ clássicas) | Amplitudes com sinal | 5 oráculos secretos (2 constantes, 3 balanceados, um deles não linear) |
-| **2.3 Bernstein-Vazirani** *(nova)* [feito] | Recuperar a string secreta de 4 bits em uma consulta | Amplitudes concentrando na resposta | 4 strings secretas |
-| **2.4 Busca de Grover** [feito] | Difusor para $N = 16$, 3 iterações | Amplitudes com linha da média; 96,1% na 3ª iteração | 4 itens marcados secretos |
-| **2.5 Transformada Quântica de Fourier** [feito] | QFT de 3 qubits com H, `cp` e `swap` | Fases | 5 entradas de teste, incluindo superposições com fase |
-| **2.6 Estimação de Fase Quântica** [feito] | 3 qubits de contagem + 1 de autovetor; calcular `theta` com `run_shots` | Registrador | 4 fases secretas + valor de `theta` |
-| **2.7 Algoritmo de Shor** [feito] | Fatorar 15 com $a = 7$: achar o período e pós-processar | Registrador (picos em 0, 4, 8, 12) e Período | Distribuição + `factors == [3, 5]` |
+| **2.2 Algoritmo de Deutsch** *(nova)* [feito] | Uma consulta decide se $f$ de 1 bit é constante ou balanceada | Amplitudes com sinal | 4 funções secretas (2 constantes, $x$ e NOT $x$) |
+| **2.3 Oráculos e Deutsch-Jozsa** [feito] | Constante ou balanceada com uma consulta (contra $2^{n-1}+1$ clássicas determinísticas) | Amplitudes com sinal | Oráculos secretos (constantes, balanceados lineares e não lineares) |
+| **2.4 Bernstein-Vazirani** *(nova)* [feito] | Recuperar a string secreta de 4 bits em uma consulta | Amplitudes concentrando na resposta | 4 strings secretas |
+| **2.5 Busca de Grover** [feito] | Difusor para $N = 16$, 3 iterações | Amplitudes com linha da média; 96,1% na 3ª iteração | 4 itens marcados secretos |
+| **2.6 Transformada Quântica de Fourier** [feito] | QFT de 3 qubits com H, `cp` e `swap` | Fases | 5 entradas de teste, incluindo superposições com fase |
+| **2.7 Estimação de Fase Quântica** [feito] | 3 qubits de contagem + 1 de autovetor; calcular `theta` com `run_shots` | Registrador | 4 fases secretas + valor de `theta` |
+| **2.8 Algoritmo de Shor** [feito] | Fatorar 15 com $a = 7$: achar o período e pós-processar | Registrador (picos em 0, 4, 8, 12) e Período | Distribuição + `factors == [3, 5]` |
 
 Shor fatora números **compostos** em primos. A exponenciação modular vem pronta no `hidden_setup.py`: o salto de QPE para Shor já é grande sem ela.
 
-### Trilha 3 — Fronteiras e Aplicações (avançado)
+### Trilha 3 — Fronteiras e Aplicações (avançado) [feito]
+
+Escrita em **PennyLane**; o ruído usa o dispositivo `default.mixed`. As lições de treino rodam pelo botão Executar (Ctrl+Enter), e não a cada tecla.
 
 | Seção | Missão | Visualização | Validação |
 | :-- | :-- | :-- | :-- |
-| **3.1 Circuitos Variacionais** | Ansatz hardware-efficient; regra de parameter-shift na prática | Sliders de parâmetros + $\langle Z \rangle$ | Fidelidade para parâmetros dados |
-| **3.2 VQE para Química Quântica** | Energia do estado fundamental do $H_2$ | Curva de dissociação + paisagem de custo | $|E - E_\text{exato}| \le 1{,}6 \times 10^{-3}$ Ha |
-| **3.3 QAOA e Max-Cut** | Camadas de custo ($R_{ZZ}$) e mistura ($R_X$), grafo de 5 vértices | Grafo colorido + histograma | Razão de aproximação (limiar a calibrar) |
-| **3.4 Redes Neurais Quânticas** | Classificador com data re-uploading para círculos concêntricos | Fronteira de decisão | Acurácia em teste (limiar a calibrar) |
-| **3.5 Ruído e Correção de Erros** | Código de repetição de 3 qubits com 2 ancillas | Injeção de erro + painel de síndromes | Estado lógico recuperado para cada erro injetado |
+| **3.1 Circuitos Variacionais** | Implementar a regra de parameter-shift e um laço de gradiente descendente | Paisagem de custo com a trajetória; convergência | Gradiente contra o do PennyLane, exatamente 2 execuções por derivada, custo ≤ −0,99, `history` verdadeiro |
+| **3.2 VQE para Química Quântica** | Hartree-Fock + excitação dupla para o $H_2$ | Convergência com faixa de precisão química; curva de dissociação | Energia recalculada no estado do aluno, precisão química (1,6 mHa), só o ansatz químico |
+| **3.3 QAOA e Max-Cut** | $p = 2$ camadas no grafo do curso (corte máximo 5) | Grafo com o corte mais provável; convergência; registrador | Razão de aproximação ≥ 0,85 (uma camada fica em ≈ 0,82) |
+| **3.4 Redes Neurais Quânticas** | Classificador de 2 qubits e 3 camadas com data re-uploading | Fronteira de decisão; perda | Acurácia ≥ 92% num conjunto de teste que o aluno não vê |
+| **3.5 Matrizes Densidade e Ruído** *(nova)* | Canal de Kraus no circuito H, T, erro, T†, H | Esfera de Bloch encolhendo; pureza | $
+ho$ para três pares de probabilidades; resposta errada (30%) ≠ erro (40%) |
+| **3.6 Correção de Erros Quânticos** | Código de bit flip de 3 qubits com 2 ancillas | Botões de erro; síndrome no registrador; curva de limiar | Três estados × quatro erros; fidelidade com ruído = $1 - 3p^2 + 2p^3$ |
 
 Notas técnicas da Trilha 3:
 
@@ -256,12 +261,21 @@ Testar com alunos reais antes de seguir para a Trilha 2.
 | :-- | :-- |
 | Validadores `oracle_cases` e `state_cases`; regras `required_gates` e `expected_variables`; `run_shots` no código do aluno | feito |
 | Visualizações Amplitudes, Fases, Registrador e Período | feito |
-| Lições 2.1 a 2.7 | feito |
+| Lições 2.1 a 2.8 | feito |
 | Interface, motor e conteúdo em português, inglês e alemão | feito |
 
-### Fase 4 — Trilha 3
+### Fase 4 — Trilha 3 e revisão com as aulas
 
-Decisão sobre PennyLane e sobre simulação com ruído; treinamento com streaming de épocas; visualizações variacionais; seções 3.1 a 3.5; exportação de circuitos no laboratório livre.
+| Item | Estado |
+| :-- | :-- |
+| PennyLane no motor: rastreamento de QNodes, simulação com matriz densidade e canais de Kraus | feito |
+| Lições de treino: execução por botão, `analysis.py`, `check.py`, controles de experimento | feito |
+| Visualizações Paisagem, Convergência, Dissociação, Grafo, Fronteira e Limiar | feito |
+| Lições 3.1 a 3.6 nos três idiomas | feito |
+| Revisão das três trilhas com as aulas de Müller e de Jülich: lições novas 1.7, 2.2 e 3.5, missões e validações mais rigorosas | feito |
+| Treinamento com streaming de épocas e exportação de circuitos no laboratório livre: `report(...)` envia métricas ao vivo, botão Parar, exportação em OpenQASM 2 e 3 (Qiskit e PennyLane) | feito |
+
+As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`, `lecture (1)/`): são material de terceiros. As lições usam as ideias e os exemplos trabalhados, com texto próprio.
 
 ---
 

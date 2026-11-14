@@ -77,6 +77,43 @@ export function Probabilities({ amplitudes, numQubits }: { amplitudes: Complex[]
   );
 }
 
+/** Estados mistos não têm amplitudes: só probabilidades. */
+export function MixedProbabilities({ probabilities, numQubits }: { probabilities: number[]; numQubits: number }) {
+  useLocale();
+  const rows = probabilities
+    .map((p, index) => ({ p, index }))
+    .filter((row) => probabilities.length <= 8 || row.p > EPSILON)
+    .slice(0, MAX_ROWS);
+  return (
+    <div className="probs">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">{t("probs.state")}</th>
+            <th scope="col">{t("probs.probability")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ p, index }) => (
+            <tr key={index} className={p > EPSILON ? "" : "is-zero"}>
+              <th scope="row" className="mono">{basisLabel(index, numQubits)}</th>
+              <td className="bar-col">
+                <div className="bar-cell">
+                  <div className="bar-track">
+                    <div className="bar-fill is-neutral" style={{ width: `${p * 100}%` }} />
+                  </div>
+                  <span className="bar-value">{formatPercent(p)}</span>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {numQubits > 1 && <p className="footnote">{t("probs.order", { last: numQubits - 1 })}</p>}
+    </div>
+  );
+}
+
 export function ShotsHistogram({ shots }: { shots: ShotsResult }) {
   const entries = Object.entries(shots.counts);
   return (

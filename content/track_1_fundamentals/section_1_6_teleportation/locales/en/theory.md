@@ -35,6 +35,14 @@ with qc.if_test((qc.clbits[1], 1)):
 
 Without the two bits, Bob has a 25% chance of each of the four states, and this mixture carries no information about $|\psi\rangle$. Teleportation depends on the classical message, which travels at most at the speed of light.
 
+## Deferred measurement
+
+The classical message can be dispensed with when Alice and Bob are **not** separated, that is, when acting on both qubits is allowed. The measurements and conditional corrections can be replaced by controlled gates: `qc.cx(1, 2)` instead of the $X$ conditioned on the bit from qubit 1 and `qc.cz(0, 2)` instead of the $Z$ conditioned on the bit from qubit 0, applied before any measurement. The result for Bob is the same. This equivalence is called the **principle of deferred measurement**. In this lesson the separation is the point of the protocol, so the corrections must use the classical bits.
+
+## What Bob sees without the bits
+
+Before receiving the two bits, Bob does not know which of the four cases in the table occurred. For him, whatever $|\psi\rangle$ is, measuring his qubit gives $0$ or $1$ with a $50\%$ chance each: the average state is the same for every $|\psi\rangle$ and carries no information. Only after the classical message does he know which correction to apply.
+
 ## In the lab
 
 The **Alice × Bob** tab compares Alice's original state with Bob's current state. Use the timeline to follow the protocol step by step and "Draw again" to see other measurement outcomes: with the right corrections, Bob ends up equal to Alice in all of them.

@@ -17,6 +17,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import simulator, tracer
+from .i18n import current as current_lang
 from .i18n import percent, t
 
 DEFAULT_TOLERANCE = 0.999
@@ -50,6 +51,7 @@ def validate(code: str, lesson: dict) -> dict:
         "reduced_state": _check_reduced_state,
         "oracle_cases": _check_oracle_cases,
         "state_cases": _check_state_cases,
+        "custom": _check_custom,
     }.get(kind)
     if checker is None:
         return _result(False, "unsupported", t("val.unsupported", kind=kind))
@@ -57,7 +59,12 @@ def validate(code: str, lesson: dict) -> dict:
     max_qubits = int(lesson.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS)
     lesson = {**lesson, "code": code}
     try:
-        student = tracer.execute(code, lesson.get("hidden_setup"), _first_case(rules))
+        pennylane = lesson.get("framework") == "pennylane"
+        student = tracer.execute(
+            code, lesson.get("hidden_setup"), _first_case(rules), trace=not pennylane, require_circuit=not pennylane
+        )
+        if kind == "custom":
+            return _check_custom(student, lesson, rules)
         problem = _structural_problem(student.circuit, rules)
         if problem:
             return problem
@@ -85,6 +92,11 @@ def _structural_problem(circuit, rules: dict) -> dict | None:
     if missing:
         names = ", ".join(f"`{FRIENDLY_NAMES.get(name, 'qc.' + name)}`" for name in missing)
         return _result(False, "required_gate", t("val.required_gate", names=names))
+    for name, expected in (rules.get("gate_counts") or {}).items():
+        actual = sum(1 for i in circuit.data if i.operation.name == name)
+        if actual != expected:
+            friendly = FRIENDLY_NAMES.get(name, "qc." + name)
+            return _result(False, "gate_count", t("val.gate_count", name=friendly, expected=expected, actual=actual))
     pair = _forbidden_pair(circuit, rules.get("forbidden_pairs"))
     if pair:
         return _result(False, "forbidden_pair", t("val.forbidden_pair", a=pair[0], b=pair[1]))
@@ -153,9 +165,15 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
     rng = np.random.default_rng(VALIDATION_SEED)
     worst = 1.0
     branches_ok = branches_total = 0
-    for _ in range(int(rules.get("trials", REDUCED_STATE_TRIALS))):
-        # Ângulos longe dos polos: estados triviais (|0⟩, |1⟩) não testariam a fase.
-        inputs = {"_QLP_INPUT": (float(rng.uniform(0.4, np.pi - 0.4)), float(rng.uniform(0, 2 * np.pi)))}
+    # Entradas fixas primeiro (ex.: |0⟩ e |+⟩, onde cada correção do teletransporte
+    # fica invisível), depois sorteadas longe dos polos.
+    fixed = [tuple(map(float, pair)) for pair in rules.get("inputs") or []]
+    random_trials = [
+        (float(rng.uniform(0.4, np.pi - 0.4)), float(rng.uniform(0, 2 * np.pi)))
+        for _ in range(int(rules.get("trials", REDUCED_STATE_TRIALS)))
+    ]
+    for angles in fixed + random_trials:
+        inputs = {"_QLP_INPUT": angles}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
         target = _bloch(simulator.run_trajectory(reference, seed=0).states[-1], reference.num_qubits, qubit)
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
@@ -223,6 +241,48 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
     if ok:
         return _result(False, "partial", t("val.cases_partial", ok=ok, total=total), fidelity=worst)
     return _result(False, "wrong_state", t("val.state_wrong", fidelity=percent(worst)), fidelity=worst)
+
+
+def _check_custom(student, lesson: dict, rules: dict) -> dict:
+    """Validação própria da lição: `check.py` define check(ns, run_case).
+
+    `ns` é o namespace do aluno; `run_case(entrada)` executa o código de novo com
+    `_QLP_INPUT = entrada` e devolve o namespace. check() devolve
+    {"passed", "key", "params"}; a mensagem vem de `messages[key]` no text.json
+    do idioma atual.
+    """
+    pennylane = lesson.get("framework") == "pennylane"
+
+    def run_case(case):
+        return tracer.execute(
+            lesson["code"], lesson.get("hidden_setup"), {"_QLP_INPUT": case},
+            trace=not pennylane, require_circuit=not pennylane,
+        ).namespace
+
+    module: dict = {"__name__": "qlp_check"}
+    exec(compile(lesson["check"], "<check>", "exec"), module)
+    try:
+        outcome = module["check"](student.namespace, run_case)
+    except tracer.UserCodeError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - erro do aluno ao ser avaliado (ex.: função com assinatura errada)
+        from .tracer import _describe
+
+        return _result(False, "error", _describe(exc))
+    params = {k: _format_param(v) for k, v in (outcome.get("params") or {}).items()}
+    template = (lesson.get("messages") or {}).get(outcome["key"], outcome["key"])
+    return _result(bool(outcome["passed"]), outcome["key"], template.format(**params), fidelity=outcome.get("fidelity"))
+
+
+def _format_param(value):
+    """Números com o separador decimal do idioma; o resto como texto."""
+    if isinstance(value, float):
+        if 0 < abs(value) < 1e-4:  # erros desprezíveis: "< 0,0001" em vez de notação científica
+            text = "< 0.0001"
+            return text if current_lang() == "en" else text.replace(".", ",")
+        text = f"{value:.4f}".rstrip("0").rstrip(".")
+        return text if current_lang() == "en" else text.replace(".", ",")
+    return value
 
 
 def _check_variables(result: dict, namespace: dict, expected: dict) -> dict:

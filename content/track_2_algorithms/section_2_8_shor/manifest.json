@@ -1,0 +1,62 @@
+{
+  "id": "2.8",
+  "track": 2,
+  "estimated_minutes": 35,
+  "num_qubits": 8,
+  "max_qubits": 8,
+  "default_visualizer": "histogram",
+  "available_visualizers": [
+    "histogram",
+    "modular"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "modular": {
+    "a": 7,
+    "N": 15
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "counts_distribution",
+    "tolerance": 0.05,
+    "required_gates": [
+      "c_mod_mult",
+      "qft_dagger"
+    ],
+    "expected_variables": {
+      "factors": [
+        3,
+        5
+      ]
+    }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "5.3",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "paper",
+      "title": "Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer",
+      "authors": "P. W. Shor",
+      "year": 1997,
+      "url": "https://doi.org/10.1137/S0097539795293172"
+    },
+    {
+      "kind": "course",
+      "title": "Shor's algorithm",
+      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/shor-algorithm"
+    }
+  ]
+}

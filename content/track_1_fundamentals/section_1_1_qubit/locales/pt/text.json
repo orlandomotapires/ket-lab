@@ -5,7 +5,7 @@
   "hints": [
     "O circuito já está criado na variável qc. Portas são métodos dela: qc.nome_da_porta(indice_do_qubit).",
     "A porta que troca |0⟩ por |1⟩ é a Pauli-X, o equivalente quântico do NOT.",
-    "Escreva qc.x(0) em uma linha nova, depois da criação do circuito."
+    "Escreva qc.x(0) em uma linha nova, depois da criação do circuito. Nota: qc.y(0) e qc.rx(pi, 0) também passam, porque diferem de X só por uma fase global, que não se observa."
   ],
   "prediction": {
     "question": "Antes de escrever código: a porta X gira o vetor de estado 180° em torno do eixo X da esfera. Partindo do polo norte (|0⟩), onde o vetor vai parar?",

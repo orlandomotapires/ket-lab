@@ -99,6 +99,21 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "No circuit found. Create one with `qc = QuantumCircuit(1)`.",
         "de": "Kein Schaltkreis gefunden. Erstelle einen mit `qc = QuantumCircuit(1)`.",
     },
+    "run.cancelled": {
+        "pt": "Execução interrompida.",
+        "en": "Execution stopped.",
+        "de": "Ausführung abgebrochen.",
+    },
+    "export.unsupported": {
+        "pt": "Este circuito não pode ser exportado para {format}: {detail}",
+        "en": "This circuit cannot be exported to {format}: {detail}",
+        "de": "Dieser Schaltkreis lässt sich nicht nach {format} exportieren: {detail}",
+    },
+    "export.noise": {
+        "pt": "Canais de ruído (matriz densidade) não existem em OpenQASM. Exporte o circuito sem ruído.",
+        "en": "Noise channels (density matrix) do not exist in OpenQASM. Export the circuit without noise.",
+        "de": "Rauschkanäle (Dichtematrix) gibt es in OpenQASM nicht. Exportiere den Schaltkreis ohne Rauschen.",
+    },
     "run.timeout": {
         "pt": "A execução passou de {seconds} s e foi interrompida. Há algum laço infinito no código?",
         "en": "Execution took longer than {seconds} s and was stopped. Is there an infinite loop in the code?",
@@ -185,6 +200,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "pt": "A missão pede usar {names} no circuito.",
         "en": "The mission requires using {names} in the circuit.",
         "de": "Die Aufgabe verlangt, {names} im Schaltkreis zu verwenden.",
+    },
+    "val.gate_count": {
+        "pt": "A missão permite exatamente {expected} chamada(s) de `{name}`, e o seu circuito tem {actual}.",
+        "en": "The mission allows exactly {expected} call(s) to `{name}`, and your circuit has {actual}.",
+        "de": "Die Aufgabe erlaubt genau {expected} Aufruf(e) von `{name}`, dein Schaltkreis hat {actual}.",
     },
     "val.forbidden_pair": {
         "pt": "Nesta missão nenhuma porta pode atuar ao mesmo tempo nos qubits {a} e {b}: eles estão longe um do outro. Ligue-os com medições e correções condicionadas aos bits clássicos.",
@@ -295,6 +315,27 @@ MESSAGES: dict[str, dict[str, str]] = {
         "pt": "{first} E a resposta em `{name}` está certa: {value}.",
         "en": "{first} And the answer in `{name}` is right: {value}.",
         "de": "{first} Und die Antwort in `{name}` stimmt: {value}.",
+    },
+    # --- PennyLane -------------------------------------------------------------
+    "pl.no_qnode": {
+        "pt": "Nenhum circuito encontrado. Defina um QNode com `@qml.qnode(dev)`.",
+        "en": "No circuit found. Define a QNode with `@qml.qnode(dev)`.",
+        "de": "Kein Schaltkreis gefunden. Definiere einen QNode mit `@qml.qnode(dev)`.",
+    },
+    "pl.missing_argument": {
+        "pt": "A variável `{name}` ainda não existe: ela é usada para desenhar o circuito.",
+        "en": "The variable `{name}` does not exist yet: it is used to draw the circuit.",
+        "de": "Die Variable `{name}` existiert noch nicht: Sie wird zum Zeichnen des Schaltkreises gebraucht.",
+    },
+    "pl.unsupported": {
+        "pt": "A operação `{name}` ainda não é suportada na visualização.",
+        "en": "The operation `{name}` is not supported in the visualization yet.",
+        "de": "Die Operation `{name}` wird in der Darstellung noch nicht unterstützt.",
+    },
+    "pl.unknown_wire": {
+        "pt": "O fio `{wire}` não existe no dispositivo.",
+        "en": "The wire `{wire}` does not exist on the device.",
+        "de": "Der Draht `{wire}` existiert auf dem Gerät nicht.",
     },
     # --- servidor e conteúdo ---------------------------------------------------
     "server.bad_code": {

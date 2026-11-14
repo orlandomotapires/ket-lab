@@ -1,0 +1,30 @@
+{
+  "title": "VQE für Quantenchemie",
+  "summary": "Grundzustandsenergie des H₂-Moleküls.",
+  "mission": "Finde die Grundzustandsenergie von H₂ mit chemischer Genauigkeit: ein Ansatz, der vom Hartree-Fock-Zustand ausgeht und eine Doppelanregung mit dem Winkel theta anwendet, optimiert per Gradientenabstieg. Klicke auf Ausführen, um zu trainieren.",
+  "prediction": {
+    "question": "Nach dem Variationsprinzip ist die Energie, die in einem beliebigen vom Schaltkreis präparierten Zustand gemessen wird, …",
+    "options": [
+      "kleiner oder gleich der Grundzustandsenergie",
+      "größer oder gleich der Grundzustandsenergie",
+      "immer gleich der Grundzustandsenergie"
+    ],
+    "explanation": "Der Grundzustand hat per Definition die kleinstmögliche Energie. Jeder andere Zustand hat eine größere oder gleiche Energie, daher nähert das Minimieren von ⟨H⟩ den Grundzustand von oben an."
+  },
+  "hints": [
+    "Der Schaltkreis beginnt mit qml.BasisState(hf_state, wires=[0, 1, 2, 3]), dem Hartree-Fock-Zustand, und wendet qml.DoubleExcitation(theta, wires=[0, 1, 2, 3]) an. Er gibt qml.expval(H) zurück.",
+    "Beginne mit theta = np.array(0.0, requires_grad=True) und erstelle optimizer = qml.GradientDescentOptimizer(stepsize=0.4).",
+    "In einer Schleife von etwa 40 Schritten: theta = optimizer.step(circuit, theta) und speichere die Energie mit energies.append(float(circuit(theta)))."
+  ],
+  "messages": {
+    "ok": "Energie von {energy} Ha, {error} Ha vom exakten Wert ({exact} Ha) entfernt: innerhalb der chemischen Genauigkeit.",
+    "no_circuit": "Definiere den QNode circuit(theta), der qml.expval(H) zurückgibt.",
+    "no_theta": "Speichere den optimierten Winkel in der Variablen theta.",
+    "wrong_qubits": "H₂ benötigt in dieser Basis 4 Qubits, der Schaltkreis hat aber {count}.",
+    "not_converged": "Der präparierte Zustand hat die Energie {energy} Ha, {error} Ha vom exakten Wert entfernt. Die chemische Genauigkeit verlangt höchstens 0,0016 Ha: Optimiere weiter.",
+    "forbidden_op": "Verwende nur den chemischen Ansatz (qml.BasisState und Anregungen). Gefunden: {names}.",
+    "stuck_hf": "Die Energie ist die Hartree-Fock-Energie ({energy} Ha): theta hat sich nicht bewegt. Prüfe die Optimierungsschleife und die Schrittweite des Optimierers.",
+    "above_hf": "Die Energie ({energy} Ha) liegt sogar über der Hartree-Fock-Energie: Der Startzustand ist wahrscheinlich nicht hf_state.",
+    "energies_inconsistent": "Die Energie stimmt, aber der letzte Eintrag von energies ist nicht der des Endzustands. Speichere nach jedem Schritt float(circuit(theta))."
+  }
+}

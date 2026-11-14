@@ -1,6 +1,6 @@
 from qiskit import QuantumCircuit
 
-# 1 qubit and 1 classical bit (to store the measurement result).
-qc = QuantumCircuit(1, 1)
+# 3 qubits and 3 classical bits (to store the measurement results).
+qc = QuantumCircuit(3, 3)
 
-# Your mission: uniform superposition on qubit 0, then measure into bit 0.
+# Your mission: uniform superposition on all three qubits, then measure each qubit into the bit with the same index.

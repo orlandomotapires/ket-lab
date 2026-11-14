@@ -1,7 +1,7 @@
 {
   "id": "1.3",
   "track": 1,
-  "estimated_minutes": 15,
+  "estimated_minutes": 18,
   "num_qubits": 1,
   "max_qubits": 3,
   "default_visualizer": "bloch",
@@ -9,8 +9,12 @@
     "bloch"
   ],
   "validation": {
-    "type": "state_fidelity",
+    "type": "state_cases",
     "tolerance": 0.999,
+    "required_gates": [
+      "s",
+      "t"
+    ],
     "allowed_gates": [
       "x",
       "y",
@@ -24,8 +28,33 @@
       "ry",
       "rz",
       "p",
-      "id"
+      "id",
+      "prepare_input",
+      "barrier"
+    ],
+    "cases": [
+      0,
+      1,
+      "plus",
+      "plusi",
+      "generic"
     ]
   },
-  "prediction_answer": 1
+  "prediction_answer": 1,
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "4.2",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Single systems: quantum information",
+      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
+    }
+  ]
 }

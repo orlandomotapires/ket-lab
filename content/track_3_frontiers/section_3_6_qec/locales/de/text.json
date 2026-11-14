@@ -1,0 +1,37 @@
+{
+  "title": "Quantenfehlerkorrektur",
+  "summary": "Der 3-Qubit-Bitflip-Code, Syndrome und die Fehlerschwelle.",
+  "mission": "Schütze Qubit 0 vor Bitflips: Kodiere es in drei Qubits (encode), miss das Syndrom auf zwei Ancillas, ohne den Zustand anzutasten, und korrigiere das betroffene Qubit (recover). Der logische Zustand muss ein X auf jedem der drei Qubits überstehen, für jeden Eingangszustand.",
+  "prediction": {
+    "question": "Ein X-Fehler trifft die Qubits 0 und 1 gleichzeitig. Was macht der Code?",
+    "options": ["Korrigiert beide", "Scheitert: Das Syndrom zeigt auf Qubit 2, und das Ergebnis wird zu einem logischen X", "Zerstört den Zustand, der zu einer Mischung wird"],
+    "explanation": "Zwei Flips auf den Qubits 0 und 1 ergeben dasselbe Syndrom wie ein einzelner Flip auf Qubit 2. Der Code wendet X auf Qubit 2 an und endet mit allen drei invertiert: ein logischer Fehler. Er korrigiert einen Flip, nicht zwei."
+  },
+  "hints": [
+    "Kodieren kopiert die Basis, nicht den Zustand: qml.CNOT(wires=[0, 1]) und qml.CNOT(wires=[0, 2]) bringen α|0⟩ + β|1⟩ nach α|000⟩ + β|111⟩.",
+    "Syndrom: Ancilla 3 speichert die Parität der Qubits 0 und 1 (CNOT von 0 und von 1 auf 3); Ancilla 4 die der Qubits 1 und 2. Jeder einzelne Flip ergibt ein anderes Bitpaar: X0 → 10, X1 → 11, X2 → 01.",
+    "Korrektur ohne Messung: qml.Toffoli(wires=[3, 4, Ziel]) wirkt, wenn beide Ancillas 1 sind. Für das Muster 10 umgib es mit qml.PauliX auf der Ancilla, die 0 sein muss (davor und danach)."
+  ],
+  "controls": {
+    "error": {
+      "label": "Eingefügter Fehler",
+      "options": {
+        "none": "Keiner",
+        "x0": "X auf 0",
+        "x1": "X auf 1",
+        "x2": "X auf 2",
+        "x0x1": "X auf 0 und 1",
+        "z0": "Z auf 0",
+        "bitflip": "Bitflip p = 0,1"
+      }
+    }
+  },
+  "messages": {
+    "ok": "Der logische Zustand übersteht jeden einzelnen Bitflip. Mit Bitflip-Rauschen p = 0,1 auf allen Qubits beträgt die Fidelity {fidelity}, gegenüber {bare} bei einem ungeschützten Qubit.",
+    "no_circuit": "Definiere den QNode circuit() auf einem default.mixed-Gerät mit 5 Qubits.",
+    "wrong_qubits": "Der Code verwendet 3 Datenqubits und 2 Ancillas (insgesamt 5), der Schaltkreis hat aber {count}.",
+    "encode_wrong": "Auch ohne Fehler ist der Endzustand nicht α|000⟩ + β|111⟩ (Fidelity {fidelity}). Prüfe die Kodierung und ob die Wiederherstellung einen fehlerfreien Zustand unverändert lässt.",
+    "single_fail": "Beim Fehler {error} wurde der logische Zustand nicht wiederhergestellt (Fidelity {fidelity}). Prüfe das Syndrom und welches Qubit jedes Muster korrigiert.",
+    "noisy_mismatch": "Mit Bitflip-Rauschen p = 0,1 müsste die Fidelity {expected} betragen, ist aber {fidelity}."
+  }
+}

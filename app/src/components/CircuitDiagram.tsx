@@ -8,6 +8,17 @@ const ROW = 40;
 const TOP = 26;
 const BOX = 28;
 
+/** Largura da caixa de uma porta, pelo comprimento do rótulo (fonte mono de 12 px). */
+function boxWidth(label: string): number {
+  return Math.max(BOX, label.length * 7.2 + 12);
+}
+
+/** Largura da coluna: cabe a caixa mais larga, com folga (portas com parâmetro ficam largas). */
+function columnWidth(step: Step): number {
+  const label = step.kind === "conditional" ? step.label.replace(/ se .*/, "") : step.label;
+  return Math.max(COL, boxWidth(label) + 14);
+}
+
 function rowY(row: number): number {
   return TOP + row * ROW;
 }
@@ -18,7 +29,7 @@ function GateColumn({ step, x, classicalY }: { step: Step; x: number; classicalY
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
   const box = (y: number, label: string, key: string, dashed = false) => {
-    const width = Math.max(BOX, label.length * 7.2 + 12);
+    const width = boxWidth(label);
     return (
       <g key={key}>
         <rect className={`gate-box${dashed ? " is-dashed" : ""}`} x={x - width / 2} y={y - BOX / 2} width={width} height={BOX} rx={5} />
@@ -92,7 +103,11 @@ export function CircuitDiagram() {
 
   const { num_qubits: n, num_clbits, steps } = result;
   const classicalY = num_clbits > 0 ? rowY(n) : null;
-  const width = LEFT + Math.max(steps.length, 1) * COL + 20;
+  // Posição de cada coluna: soma das larguras anteriores.
+  const widths = steps.map(columnWidth);
+  const starts: number[] = [];
+  widths.reduce((offset, w, i) => ((starts[i] = offset), offset + w), LEFT);
+  const width = LEFT + (widths.reduce((a, b) => a + b, 0) || COL) + 20;
   const height = rowY(n - 1 + (num_clbits > 0 ? 1 : 0)) + TOP;
 
   return (
@@ -112,12 +127,13 @@ export function CircuitDiagram() {
           </g>
         )}
         {steps.map((step, index) => {
-          const x = LEFT + index * COL + COL / 2;
+          const columnW = widths[index];
+          const x = starts[index] + columnW / 2;
           const state = index + 1 === current ? " is-current" : index + 1 > current ? " is-pending" : "";
           return (
             <g key={index} className={`gate${state}`} onClick={() => setStep(index + 1)}>
               <title>{t("circuit.stepTitle", { n: index + 1, line: step.line, label: step.label })}</title>
-              <rect className="gate-hit" x={x - COL / 2 + 2} y={2} width={COL - 4} height={height - 4} rx={6} />
+              <rect className="gate-hit" x={x - columnW / 2 + 2} y={2} width={columnW - 4} height={height - 4} rx={6} />
               <GateColumn step={step} x={x} classicalY={classicalY} />
             </g>
           );

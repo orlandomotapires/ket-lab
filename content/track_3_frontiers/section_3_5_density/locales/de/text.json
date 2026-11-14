@@ -1,0 +1,24 @@
+{
+  "title": "Dichtematrizen und Rauschen",
+  "summary": "Gemischte Zustände, Kraus-Kanäle und warum die Fehlerwahrscheinlichkeit nicht die Wahrscheinlichkeit einer falschen Antwort ist.",
+  "mission": "Der Schaltkreis H, T, T†, H liefert |0⟩. Füge zwischen T und T† einen Fehler ein: X mit Wahrscheinlichkeit p_x, Z mit Wahrscheinlichkeit p_z, sonst nichts. Berechne die finale Dichtematrix und speichere in p_wrong die Wahrscheinlichkeit, 1 zu messen, und in purity die Reinheit Tr(ρ²), für p_x = p_z = 0,2.",
+  "prediction": {
+    "question": "Mit p_x = p_z = 0,2 tritt der Fehler in 40 % der Durchläufe auf. Mit welcher Wahrscheinlichkeit liefert die finale Messung das falsche Ergebnis (1)?",
+    "options": ["40 %", "30 %", "20 %"],
+    "explanation": "Nach dem letzten H wird ein Z-Fehler zu einem vollständigen X: Er kehrt das Ergebnis immer um. Ein X-Fehler zwischen T und T† wird dagegen zu einer Rotation, die das Ergebnis nur in der Hälfte der Fälle umkehrt. Insgesamt: 0,2 + 0,2 × 0,5 = 30 %."
+  },
+  "hints": [
+    "Ein Kanal wird durch Kraus-Operatoren beschrieben. Für diesen Fehler: √(1 − p_x − p_z)·I, √p_x·X und √p_z·Z. Baue diese Liste in error_kraus und wende sie mit qml.QubitChannel(error_kraus(p_x, p_z), wires=0) an.",
+    "Der Schaltkreis besteht aus qml.Hadamard, qml.T, dem Kanal, qml.adjoint(qml.T(wires=0)) und qml.Hadamard. Um ρ zu speichern, muss das Gerät default.mixed sein, und der QNode gibt qml.density_matrix(wires=0) zurück.",
+    "Mit rho = circuit(p_x, p_z) ist die Wahrscheinlichkeit, 1 zu messen, rho[1, 1], und die Reinheit ist np.trace(rho @ rho). Verwende np.real, um den Realteil zu erhalten."
+  ],
+  "messages": {
+    "ok": "Dichtematrix für alle getesteten Fehlerwahrscheinlichkeiten korrekt. Falsche Antwort in {p_wrong} der Durchläufe und Reinheit {purity}: Das Rauschen hat den Zustand gemischt gelassen.",
+    "no_circuit": "Definiere den QNode circuit(p_x, p_z) auf einem default.mixed-Gerät.",
+    "wrong_qubits": "Diese Lektion verwendet 1 Qubit, der Schaltkreis hat aber {count}.",
+    "no_noise": "Der finale Zustand ist noch rein: Der Fehler wird nicht angewendet. Verwende qml.QubitChannel mit den Kraus-Operatoren zwischen T und T†.",
+    "wrong_rho": "Mit p_x = {px} und p_z = {pz} müsste die Wahrscheinlichkeit, 1 zu messen, {want} betragen, der Schaltkreis liefert aber {got}. Prüfe die Kraus-Operatoren und die Position des Fehlers.",
+    "missing": "Speichere das Ergebnis in der Variablen {name}.",
+    "wrong_value": "Die Variable {name} hat den Wert {actual}, stimmt aber nicht mit der Dichtematrix für p_x = p_z = 0,2 überein."
+  }
+}

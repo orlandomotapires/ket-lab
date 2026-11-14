@@ -90,6 +90,19 @@
             "en": "Bell pair, mid-circuit measurement and conditional corrections.",
             "de": "Bell-Paar, Messung mitten im Schaltkreis und bedingte Korrekturen."
           }
+        },
+        {
+          "id": "1.7",
+          "title": {
+            "pt": "Portas Controladas e Identidades",
+            "en": "Controlled Gates and Identities",
+            "de": "Kontrollierte Gatter und Identitäten"
+          },
+          "summary": {
+            "pt": "Construa a porta CS com CNOT e T, e conheça identidades entre portas.",
+            "en": "Build the CS gate from CNOT and T, and learn identities between gates.",
+            "de": "Baue das CS-Gatter aus CNOT und T und lerne Identitäten zwischen Gattern."
+          }
         }
       ]
     },
@@ -122,6 +135,19 @@
         {
           "id": "2.2",
           "title": {
+            "pt": "Algoritmo de Deutsch",
+            "en": "Deutsch's Algorithm",
+            "de": "Deutsch-Algorithmus"
+          },
+          "summary": {
+            "pt": "Uma consulta decide se f de um bit é constante ou balanceada.",
+            "en": "One query decides whether a one-bit f is constant or balanced.",
+            "de": "Eine Abfrage entscheidet, ob eine Ein-Bit-Funktion konstant oder balanciert ist."
+          }
+        },
+        {
+          "id": "2.3",
+          "title": {
             "pt": "Oráculos e Deutsch-Jozsa",
             "en": "Oracles and Deutsch–Jozsa",
             "de": "Orakel und Deutsch-Jozsa"
@@ -133,7 +159,7 @@
           }
         },
         {
-          "id": "2.3",
+          "id": "2.4",
           "title": {
             "pt": "Bernstein-Vazirani",
             "en": "Bernstein–Vazirani",
@@ -146,7 +172,7 @@
           }
         },
         {
-          "id": "2.4",
+          "id": "2.5",
           "title": {
             "pt": "Busca de Grover",
             "en": "Grover's Search",
@@ -159,7 +185,7 @@
           }
         },
         {
-          "id": "2.5",
+          "id": "2.6",
           "title": {
             "pt": "Transformada Quântica de Fourier",
             "en": "Quantum Fourier Transform",
@@ -172,7 +198,7 @@
           }
         },
         {
-          "id": "2.6",
+          "id": "2.7",
           "title": {
             "pt": "Estimação de Fase Quântica",
             "en": "Quantum Phase Estimation",
@@ -185,7 +211,7 @@
           }
         },
         {
-          "id": "2.7",
+          "id": "2.8",
           "title": {
             "pt": "Algoritmo de Shor",
             "en": "Shor's Algorithm",
@@ -246,9 +272,9 @@
             "de": "QAOA und Max-Cut"
           },
           "summary": {
-            "pt": "Otimização combinatória em grafos.",
-            "en": "Combinatorial optimization on graphs.",
-            "de": "Kombinatorische Optimierung auf Graphen."
+            "pt": "Otimização combinatória num grafo, com p = 2 camadas.",
+            "en": "Combinatorial optimization on a graph, with p = 2 layers.",
+            "de": "Kombinatorische Optimierung auf einem Graphen mit p = 2 Schichten."
           }
         },
         {
@@ -267,14 +293,27 @@
         {
           "id": "3.5",
           "title": {
-            "pt": "Ruído e Correção de Erros",
-            "en": "Noise and Error Correction",
-            "de": "Rauschen und Fehlerkorrektur"
+            "pt": "Matrizes Densidade e Ruído",
+            "en": "Density Matrices and Noise",
+            "de": "Dichtematrizen und Rauschen"
           },
           "summary": {
-            "pt": "Código de repetição, síndromes e canais de ruído.",
-            "en": "Repetition code, syndromes and noise channels.",
-            "de": "Wiederholungscode, Syndrome und Rauschkanäle."
+            "pt": "Estados mistos, canais de Kraus e por que a probabilidade de erro não é a de resposta errada.",
+            "en": "Mixed states, Kraus channels, and why the error probability is not the wrong-answer probability.",
+            "de": "Gemischte Zustände, Kraus-Kanäle und warum die Fehlerwahrscheinlichkeit nicht die Wahrscheinlichkeit einer falschen Antwort ist."
+          }
+        },
+        {
+          "id": "3.6",
+          "title": {
+            "pt": "Correção de Erros Quânticos",
+            "en": "Quantum Error Correction",
+            "de": "Quantenfehlerkorrektur"
+          },
+          "summary": {
+            "pt": "Código de bit flip de 3 qubits, síndromes e o limiar de erro.",
+            "en": "The 3-qubit bit-flip code, syndromes and the error threshold.",
+            "de": "Der 3-Qubit-Bitflip-Code, Syndrome und die Fehlerschwelle."
           }
         }
       ]

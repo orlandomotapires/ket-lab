@@ -11,17 +11,26 @@ from .simulator import Op, StepRecord, Trajectory
 DECIMALS = 6
 
 
+def reduced_density(state: np.ndarray, n: int, qubit: int) -> np.ndarray:
+    """Matriz densidade 2x2 de um qubit, a partir de um vetor de estado ou de uma matriz densidade."""
+    if state.ndim == 2:
+        tensor = state.reshape((2,) * (2 * n))
+        row, col = n - 1 - qubit, 2 * n - 1 - qubit
+        moved = np.moveaxis(tensor, (row, col), (0, n))
+        return np.einsum("ajbj->ab", moved.reshape(2, 2 ** (n - 1), 2, 2 ** (n - 1)))
+    m = np.moveaxis(state.reshape((2,) * n), n - 1 - qubit, 0).reshape(2, -1)
+    return m @ m.conj().T
+
+
 def bloch_vectors(state: np.ndarray, n: int) -> tuple[list[list[float]], list[float]]:
     """Vetor de Bloch (x, y, z) e pureza Tr(rho^2) do estado reduzido de cada qubit.
 
-    Um qubit emaranhado tem estado local misto: o vetor encolhe (|r| < 1).
+    Um qubit emaranhado, ou sujeito a ruído, tem estado local misto: o vetor encolhe (|r| < 1).
     """
-    tensor = state.reshape((2,) * n)
     vectors: list[list[float]] = []
     purities: list[float] = []
     for qubit in range(n):
-        m = np.moveaxis(tensor, n - 1 - qubit, 0).reshape(2, -1)
-        rho = m @ m.conj().T
+        rho = reduced_density(state, n, qubit)
         x = 2.0 * rho[0, 1].real
         y = -2.0 * rho[0, 1].imag
         z = (rho[0, 0] - rho[1, 1]).real
@@ -31,12 +40,23 @@ def bloch_vectors(state: np.ndarray, n: int) -> tuple[list[list[float]], list[fl
 
 
 def snapshot(state: np.ndarray, n: int) -> dict:
+    """Estado pronto para a interface. Estados mistos não têm amplitudes (`None`)."""
     vectors, purities = bloch_vectors(state, n)
-    rounded = np.round(state, DECIMALS)
+    if state.ndim == 2:
+        probabilities = np.clip(np.real(np.diag(state)), 0.0, None)
+        amplitudes = None
+        total_purity = float(np.real(np.trace(state @ state)))
+    else:
+        probabilities = np.abs(state) ** 2
+        rounded = np.round(state, DECIMALS)
+        amplitudes = [[float(a.real), float(a.imag)] for a in rounded]
+        total_purity = 1.0
     return {
-        "amplitudes": [[float(a.real), float(a.imag)] for a in rounded],
+        "amplitudes": amplitudes,
+        "probabilities": [round(float(p), DECIMALS) for p in probabilities],
         "bloch": vectors,
         "purity": purities,
+        "state_purity": round(total_purity, DECIMALS),
     }
 
 
@@ -96,6 +116,16 @@ _NAMES = {
     "mcx": "X",
     "ccz": "Z",
     "mcp": "P",
+    "rzz": "RZZ",
+    "singleexcitation": "G",
+    "doubleexcitation": "G²",
+    "rot": "Rot",
+    "kraus": "E",
+    "bitflip": "BitFlip",
+    "phaseflip": "PhaseFlip",
+    "depolarizing": "Dep",
+    "amplitudedamping": "AmpDamp",
+    "phasedamping": "PhaseDamp",
 }
 
 

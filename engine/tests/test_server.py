@@ -24,7 +24,7 @@ class Client:
         await self.websocket.send(json.dumps(message))
         while True:
             response = json.loads(await self.websocket.recv())
-            if response["id"] == message["id"]:
+            if response["id"] == message["id"] and "event" not in response:
                 return response
 
 
@@ -141,5 +141,90 @@ def test_superseded_runs_are_dropped(library):
                 responses[response["id"]] = response
             assert responses[3]["ok"] is True
             assert sum(1 for r in responses.values() if r.get("stale")) >= 1
+
+    with_server(test, library=library)
+
+
+TRAINING = """from qiskit import QuantumCircuit
+qc = QuantumCircuit(1)
+qc.h(0)
+for epoch in range(150):
+    work = sum(range(100_000))
+    report(1 / (epoch + 1), accuracy=epoch / 150)
+"""
+
+
+def test_training_streams_progress_before_the_result(library):
+    async def test(url, _):
+        async with connect(f"{url}/?token={TOKEN}") as websocket:
+            await websocket.send(json.dumps({"id": 1, "type": "run", "code": TRAINING, "train": True}))
+            events, result = [], None
+            while result is None:
+                message = json.loads(await websocket.recv())
+                if message.get("event") == "progress":
+                    events.append(message)
+                else:
+                    result = message
+            assert result["ok"] is True, result
+            series = result["training"]["series"]
+            assert len(series["cost"]) == 150 and len(series["accuracy"]) == 150
+            assert len(events) >= 2, "a curva precisa chegar em lotes durante o treino"
+            streamed = [v for event in events for v in event["series"]["cost"]]
+            assert streamed == series["cost"], "os lotes somados dão a série inteira"
+
+    with_server(test, library=library)
+
+
+def test_training_can_be_cancelled(library):
+    async def test(url, _):
+        async with connect(f"{url}/?token={TOKEN}") as websocket:
+            client = Client(websocket)
+            await client.call(type="run", code=GOOD)  # aquece o worker
+            endless = "i = 0\nwhile True:\n    i += 1\n    if i % 100000 == 0:\n        report(i)\n"
+            await websocket.send(json.dumps({"id": 50, "type": "run", "code": endless, "train": True}))
+            first = json.loads(await websocket.recv())
+            assert first.get("event") == "progress"
+            await websocket.send(json.dumps({"id": 51, "type": "cancel", "target": 50}))
+            responses = {}
+            while 50 not in responses:
+                message = json.loads(await websocket.recv())
+                if "event" not in message:
+                    responses[message["id"]] = message
+            assert responses[50]["error"]["kind"] == "cancelled"
+            assert (await client.call(type="run", code=GOOD))["ok"] is True
+
+    with_server(test, library=library)
+
+
+def test_export_to_openqasm(library):
+    bell = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\n"
+    pennylane = (
+        "import pennylane as qml\n"
+        "from pennylane import numpy as np\n"
+        "dev = qml.device('default.qubit', wires=2)\n"
+        "@qml.qnode(dev)\n"
+        "def circuit(params):\n"
+        "    qml.RY(params[0], wires=0)\n"
+        "    qml.CNOT(wires=[0, 1])\n"
+        "    return qml.expval(qml.PauliZ(1))\n"
+        "params = np.array([0.5])\n"
+    )
+    noisy = pennylane.replace("default.qubit", "default.mixed").replace(
+        "    return", "    qml.BitFlip(0.1, wires=0)\n    return"
+    )
+
+    async def test(url, _):
+        async with connect(f"{url}/?token={TOKEN}") as websocket:
+            client = Client(websocket)
+            qasm2 = await client.call(type="export", code=bell, format="qasm2")
+            assert qasm2["ok"] and qasm2["text"].startswith("OPENQASM 2.0;") and "cx q[0],q[1];" in qasm2["text"]
+            qasm3 = await client.call(type="export", code=bell, format="qasm3")
+            assert qasm3["text"].startswith("OPENQASM 3.0;") and "cx q[0], q[1];" in qasm3["text"]
+            # PennyLane: o QNode é desenhado com a variável `params` do código.
+            from_pl = await client.call(type="export", code=pennylane, format="qasm3")
+            assert from_pl["ok"], from_pl
+            assert "ry(0.5) q[0];" in from_pl["text"]
+            refused = await client.call(type="export", code=noisy, format="qasm2", lang="en")
+            assert refused["ok"] is False and "Noise channels" in refused["error"]["message"]
 
     with_server(test, library=library)

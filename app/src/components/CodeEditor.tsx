@@ -50,6 +50,11 @@ export function CodeEditor() {
     editor.focus();
 
     const onContent = editor.onDidChangeModelContent(() => setCode(editor.getValue()));
+    // Ctrl+Enter (Cmd+Enter no macOS) executa: essencial nas lições de treino.
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      useStore.getState().setCode(editor.getValue());
+      useStore.getState().runNow();
+    });
     const onCursor = editor.onDidChangeCursorPosition((event) => {
       // Só o aluno move o foco da inspeção; mudanças programáticas não contam.
       if (event.source !== "api" && event.source !== "modelChange") setCursorLine(event.position.lineNumber);

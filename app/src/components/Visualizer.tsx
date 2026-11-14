@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { Comparison, Lesson, RunResult, Snapshot, VisualizerKind } from "../engine/types";
 import { t, useLocale } from "../i18n";
 import {
@@ -12,9 +12,21 @@ import {
   vectorLength,
 } from "../lib/quantum";
 import { stepForLine } from "../lib/steps";
-import { selectCurrentStep, useStore } from "../state/store";
-import { Probabilities, ShotsHistogram } from "./Probabilities";
+import { selectCurrentStep, useStore, type TrainingState } from "../state/store";
+import { MixedProbabilities, Probabilities, ShotsHistogram } from "./Probabilities";
 import { AmplitudesView, amplitudeScale, DialsView, HistogramView, ModularView } from "./views2d";
+import {
+  ConvergenceView,
+  DissociationView,
+  BoundaryView,
+  GraphView,
+  type BoundaryData,
+  type GraphData,
+  LandscapeView,
+  type ConvergenceData,
+  type DissociationData,
+  type LandscapeData,
+} from "./viewsTraining";
 
 // As cenas 3D são o módulo mais pesado; carregam separadas do resto da interface.
 const BlochScene = lazy(() => import("./scene3d").then((module) => ({ default: module.BlochScene })));
@@ -46,9 +58,18 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const code = useStore((s) => s.code);
   const current = useStore(selectCurrentStep);
   const hasError = useStore((s) => s.error !== null);
+  const training = useStore((s) => s.training);
 
-  const views = lesson ? lesson.available_visualizers : SANDBOX_VIEWS;
-  const [view, setView] = useState<VisualizerKind>(lesson?.default_visualizer ?? "bloch");
+  // No laboratório livre, um código com report(...) ganha a aba da curva de treino.
+  const sandboxTraining = !lesson && training !== null;
+  const views = lesson ? lesson.available_visualizers : sandboxTraining ? ["convergence" as const, ...SANDBOX_VIEWS] : SANDBOX_VIEWS;
+  const [chosen, setView] = useState<VisualizerKind>(lesson?.default_visualizer ?? "bloch");
+  // Ao começar um treino, a curva aparece sozinha; depois o aluno troca de aba à vontade.
+  const trainingActive = sandboxTraining && training.active;
+  useEffect(() => {
+    if (trainingActive) setView("convergence");
+  }, [trainingActive]);
+  const view: VisualizerKind = views.includes(chosen) ? chosen : views[0];
 
   const header = (
     <div className="panel-head">
@@ -66,6 +87,17 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
     </div>
   );
 
+  if (sandboxTraining && view === "convergence" && (!result || training.active)) {
+    return (
+      <aside className="panel visualizer" aria-label={t("viz.aria")}>
+        {header}
+        <div className="stage">
+          <TrainingStage training={training} />
+        </div>
+      </aside>
+    );
+  }
+
   if (!result) {
     return (
       <aside className="panel visualizer" aria-label={t("viz.aria")}>
@@ -82,8 +114,9 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   return (
     <aside className={`panel visualizer${resultIsCurrent ? "" : " is-stale"}`} aria-label={t("viz.aria")}>
       {header}
+      {lesson?.controls?.length ? <Controls lesson={lesson} /> : null}
       <div className="stage">
-        <div className="stage-caption">
+        {!(sandboxTraining && view === "convergence") && <div className="stage-caption">
           <span>
             {current === 0 ? (
               <strong>{t("viz.initial")}</strong>
@@ -101,14 +134,22 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
           </span>
           <span className="grow" />
           {!resultIsCurrent && <span className="pill pill-warn">{t("viz.stale")}</span>}
-        </div>
+        </div>}
         <Suspense fallback={null}>
-          <Stage view={view} result={result} snapshot={snapshot} current={current} code={code} lesson={lesson} />
+          {sandboxTraining && view === "convergence" ? (
+            <TrainingStage training={training} />
+          ) : (
+            <Stage view={view} result={result} snapshot={snapshot} current={current} code={code} lesson={lesson} />
+          )}
         </Suspense>
       </div>
 
       <div className="panel-scroll">
-        {result.num_qubits >= 2 && <Entanglement snapshot={snapshot} numQubits={result.num_qubits} />}
+        {snapshot.amplitudes === null ? (
+          <StatePurity value={snapshot.state_purity} />
+        ) : (
+          result.num_qubits >= 2 && <Entanglement snapshot={snapshot} numQubits={result.num_qubits} />
+        )}
 
         <h3 className="section-label">{t("viz.blochVectors")}</h3>
         <table className="readout">
@@ -149,7 +190,11 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         )}
 
         <h3 className="section-label">{t("viz.amplitudes")}</h3>
-        <Probabilities amplitudes={snapshot.amplitudes} numQubits={result.num_qubits} />
+        {snapshot.amplitudes ? (
+          <Probabilities amplitudes={snapshot.amplitudes} numQubits={result.num_qubits} />
+        ) : (
+          <MixedProbabilities probabilities={snapshot.probabilities} numQubits={result.num_qubits} />
+        )}
         {shots && <ShotsHistogram shots={shots} />}
         {result.stdout && (
           <>
@@ -159,6 +204,36 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         )}
       </div>
     </aside>
+  );
+}
+
+/** Curva das métricas de report(...): ao vivo durante o treino, com troca de métrica. */
+function TrainingStage({ training }: { training: TrainingState }) {
+  const names = Object.keys(training.series);
+  const [picked, setPicked] = useState<string | null>(null);
+  const name = picked && names.includes(picked) ? picked : names[0];
+  if (!name) {
+    return <div className="stage-message">{training.active ? t("oracle.trainingStart") : t("viz.runToSee")}</div>;
+  }
+  return (
+    <div className="training-stage">
+      <div className="training-head">
+        {names.length > 1 ? (
+          <div className="segmented" role="tablist" aria-label={t("viz.metric")}>
+            {names.map((option) => (
+              <button key={option} role="tab" aria-selected={option === name} onClick={() => setPicked(option)}>
+                <span className="mono">{option}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="mono small">{name}</span>
+        )}
+        <span className="grow" />
+        {training.active && <span className="pill pill-live">{t("viz.live")}</span>}
+      </div>
+      <ConvergenceView data={{ values: training.series[name], y_label: name }} note={t("viz.trainingNote")} />
+    </div>
   );
 }
 
@@ -175,6 +250,20 @@ function Stage({ view, result, snapshot, current, code, lesson }: {
     [view, result, n, register],
   );
 
+  if (["landscape", "convergence", "dissociation", "graph", "boundary", "threshold"].includes(view)) {
+    const analysis = result.analysis;
+    if (!analysis) return <div className="stage-message">{t("viz.runToSee")}</div>;
+    if (analysis.error) return <div className="stage-message">{t("viz.analysisError", { error: analysis.error })}</div>;
+    const data = analysis[view as string];
+    if (!data) return <div className="stage-message">{t("viz.runToSee")}</div>;
+    if (view === "landscape") return <LandscapeView data={data as LandscapeData} />;
+    if (view === "convergence") return <ConvergenceView data={data as ConvergenceData} />;
+    if (view === "dissociation") return <DissociationView data={data as DissociationData} />;
+    if (view === "graph") return <GraphView data={data as GraphData} />;
+    if (view === "boundary") return <BoundaryView data={data as BoundaryData} />;
+    if (view === "threshold") return <DissociationView data={data as DissociationData} label={t("viz.view.threshold")} />;
+    return <div className="stage-message">{t("viz.runToSee")}</div>;
+  }
   if (view === "modular" && lesson?.modular) {
     return <ModularView a={lesson.modular.a} N={lesson.modular.N} />;
   }
@@ -184,14 +273,17 @@ function Stage({ view, result, snapshot, current, code, lesson }: {
     // (os picos da QPE e do Shor) é o estado logo antes da primeira medição dele.
     const firstMeasure = result.steps.findIndex((s) => s.kind === "measure" && register.includes(s.qubits[0]));
     const collapsed = firstMeasure >= 0 && current > firstMeasure;
-    const amplitudes = collapsed ? result.snapshots[firstMeasure].amplitudes : snapshot.amplitudes;
+    const source = collapsed ? result.snapshots[firstMeasure] : snapshot;
+    const amplitudes = source.amplitudes;
     const note = collapsed ? t("viz.beforeMeasurement") : undefined;
+    if (view === "histogram") return <HistogramView probabilities={source.probabilities} register={register} note={note} />;
+    if (!amplitudes) return <div className="stage-message">{t("viz.mixedState")}</div>;
     if (view === "amplitudes") return <AmplitudesView amplitudes={amplitudes} numQubits={n} register={register} scale={scale} note={note} />;
     if (view === "dials") return <DialsView amplitudes={amplitudes} numQubits={n} register={register} note={note} />;
-    return <HistogramView amplitudes={amplitudes} numQubits={n} register={register} note={note} />;
   }
   if (view === "qsphere") {
     if (n > MAX_QSPHERE_QUBITS) return <div className="stage-message">{t("viz.tooManyQsphere", { limit: MAX_QSPHERE_QUBITS })}</div>;
+    if (!snapshot.amplitudes) return <div className="stage-message">{t("viz.mixedState")}</div>;
     return <QSphereScene amplitudes={snapshot.amplitudes} numQubits={n} />;
   }
   if (view === "compare" && lesson?.comparison) {
@@ -233,9 +325,25 @@ function CompareStage({ result, snapshot, code, comparison }: {
   );
 }
 
+function StatePurity({ value }: { value: number }) {
+  return (
+    <>
+      <h3 className="section-label">{t("viz.statePurity")}</h3>
+      <div className="entanglement">
+        <span>Tr(ρ²)</span>
+        <div className="meter" role="meter" aria-label={t("viz.statePurity")} aria-valuemin={0} aria-valuemax={1} aria-valuenow={value}>
+          <span style={{ width: `${value * 100}%` }} />
+        </div>
+        <span className="value">{value.toFixed(2)}</span>
+      </div>
+      <p className="footnote">{t("viz.statePurityNote")}</p>
+    </>
+  );
+}
+
 function Entanglement({ snapshot, numQubits }: { snapshot: Snapshot; numQubits: number }) {
   const rows =
-    numQubits === 2
+    numQubits === 2 && snapshot.amplitudes
       ? [{ label: t("viz.concurrence"), value: concurrence(snapshot.amplitudes) }]
       : snapshot.purity.map((purity, qubit) => ({ label: t("viz.withRest", { qubit }), value: entanglementWithRest(purity) }));
   return (
@@ -254,5 +362,37 @@ function Entanglement({ snapshot, numQubits }: { snapshot: Snapshot; numQubits: 
       </div>
       <p className="footnote">{numQubits === 2 ? t("viz.concurrenceNote") : t("viz.withRestNote")}</p>
     </>
+  );
+}
+
+function Controls({ lesson }: { lesson: Lesson }) {
+  const values = useStore((s) => s.controls);
+  const setControl = useStore((s) => s.setControl);
+  const running = useStore((s) => s.running);
+  return (
+    <div className="controls" aria-label={t("viz.controls")}>
+      {lesson.controls!.map((control) => (
+        <div key={control.id} className="control">
+          <span className="control-label">{control.label}</span>
+          <div className="segmented" role="radiogroup" aria-label={control.label}>
+            {control.options.map((option) => {
+              const key = String(option);
+              return (
+                <button
+                  key={key}
+                  role="radio"
+                  aria-checked={values[control.id] === option}
+                  aria-selected={values[control.id] === option}
+                  disabled={running}
+                  onClick={() => setControl(control.id, option)}
+                >
+                  {control.option_labels[key] ?? key}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

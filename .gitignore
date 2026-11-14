@@ -8,3 +8,10 @@ engine/build/
 engine/dist/
 src-tauri/target/
 .DS_Store
+
+# Material de referência de cursos (terceiros, grande): fica só no disco, fora do repositório.
+/Lecture Muller/
+/lecture (1)/
+
+# Worktrees e estado local do Claude Code
+/.claude/

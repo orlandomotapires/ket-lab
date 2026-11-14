@@ -1645,10 +1645,15 @@ tr.is-zero {
   font-size: 12.5px;
   color: var(--muted);
 }
+.ref-location {
+  grid-column: 2;
+  font-size: 13px;
+  color: var(--text-2);
+}
 .ref-kind {
   justify-content: center;
   justify-self: stretch;
-  grid-row: span 2;
+  grid-row: span 3;
   align-self: start;
 }
 .ref-kind.is-book,

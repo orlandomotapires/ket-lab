@@ -113,7 +113,8 @@ export interface Reference {
   title: string;
   authors: string;
   year?: number;
-  section?: string;
+  /** Onde ler: seção, título e páginas (livros) ou aula e seção (cursos). */
+  location: string;
   url: string;
 }
 

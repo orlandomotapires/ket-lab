@@ -1,6 +1,10 @@
 from qiskit import QuantumCircuit
 
+N = 16
 qc = QuantumCircuit(4)
+
+# num_marked (M) é fornecido pelo laboratório: quantos itens o oráculo marca.
+iterations = 0  # calcule a partir de N e num_marked
 
 
 def diffuser(qc):

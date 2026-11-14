@@ -1,6 +1,6 @@
 ## Unstructured search
 
-Among $N$ items, exactly one is marked and only an oracle knows which. A classical algorithm needs to check, on average, $N/2$ items. Grover's algorithm finds the marked one with about $\frac{\pi}{4}\sqrt{N}$ queries: a quadratic speedup.
+Among $N$ items, some are marked ($M$ of them in total) and only an oracle knows which. A classical algorithm needs to check, on average, $N/2$ items. Grover's algorithm finds the marked one with about $\frac{\pi}{4}\sqrt{N}$ queries: a quadratic speedup.
 
 ## The phase oracle
 
@@ -32,7 +32,25 @@ qc.h(3)
 
 ## How many iterations
 
-Each iteration (oracle and diffuser) rotates the state by an angle $2\theta$ toward $|\omega\rangle$, with $\sin\theta = 1/\sqrt{N}$. With $N = 16$, the ideal is $\left\lfloor \frac{\pi}{4}\sqrt{16} \right\rfloor = 3$ iterations, and the probability of the marked state reaches $96.1\%$. Iterating beyond that overshoots, and the probability drops.
+With $M$ marked items among $N$, $\sin\theta = \sqrt{M/N}$. Each iteration (oracle and diffuser) rotates the state by an angle $2\theta$ toward the subspace of marked items; after $k$ iterations, the success probability is $\sin^2\big((2k+1)\theta\big)$. The best $k$ is
+
+$$
+k = \left\lfloor \frac{\pi}{4}\sqrt{\frac{N}{M}} \right\rfloor
+$$
+
+With $N = 16$:
+
+| $M$ | $k$ | success probability |
+| :-: | :-: | :-: |
+| 1 | 3 | $96.1\%$ |
+| 2 | 2 | $94.5\%$ |
+| 4 | 1 | $100\%$ |
+
+Iterating beyond the ideal overshoots, and the probability drops. That is why a search that does not know $M$ has to estimate it first (for example, with quantum counting, which uses phase estimation).
+
+## Limits
+
+The speedup is **quadratic** ($\sqrt{N}$ against $N$), not exponential, and it is optimal for unstructured search. Grover also does **not** make NP-complete problems easy: for them, $2^{n/2}$ queries are still needed, which remains exponential in $n$.
 
 ## In the lab
 

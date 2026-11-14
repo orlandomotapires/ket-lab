@@ -1,6 +1,6 @@
 ## Busca sem estrutura
 
-Entre $N$ itens, um único está marcado e só um oráculo sabe qual. Um algoritmo clássico precisa testar, em média, $N/2$ itens. O algoritmo de Grover encontra o marcado com cerca de $\frac{\pi}{4}\sqrt{N}$ consultas: uma aceleração quadrática.
+Entre $N$ itens, alguns estão marcados ($M$ deles, ao todo) e só um oráculo sabe quais. Um algoritmo clássico precisa testar, em média, $N/2$ itens. O algoritmo de Grover encontra o marcado com cerca de $\frac{\pi}{4}\sqrt{N}$ consultas: uma aceleração quadrática.
 
 ## O oráculo de fase
 
@@ -32,7 +32,25 @@ qc.h(3)
 
 ## Quantas iterações
 
-Cada iteração (oráculo e difusor) gira o estado de um ângulo $2\theta$ em direção a $|\omega\rangle$, com $\sin\theta = 1/\sqrt{N}$. Com $N = 16$, o ideal é $\left\lfloor \frac{\pi}{4}\sqrt{16} \right\rfloor = 3$ iterações, e a probabilidade do marcado chega a $96{,}1\%$. Iterar além disso passa do ponto, e a probabilidade cai.
+Com $M$ itens marcados entre $N$, vale $\sin\theta = \sqrt{M/N}$. Cada iteração (oráculo e difusor) gira o estado de um ângulo $2\theta$ em direção ao subespaço dos marcados; depois de $k$ iterações, a probabilidade de acertar é $\sin^2\big((2k+1)\theta\big)$. O melhor $k$ é
+
+$$
+k = \left\lfloor \frac{\pi}{4}\sqrt{\frac{N}{M}} \right\rfloor
+$$
+
+Com $N = 16$:
+
+| $M$ | $k$ | probabilidade de acertar |
+| :-: | :-: | :-: |
+| 1 | 3 | $96{,}1\%$ |
+| 2 | 2 | $94{,}5\%$ |
+| 4 | 1 | $100\%$ |
+
+Iterar além do ideal passa do ponto, e a probabilidade cai. Por isso, quem busca sem saber $M$ precisa estimá-lo antes (por exemplo, com contagem quântica, que usa a estimação de fase).
+
+## Limites
+
+A aceleração é **quadrática** ($\sqrt{N}$ contra $N$), não exponencial, e é ótima para busca não estruturada. Grover também **não** torna fáceis os problemas NP-completos: para eles, ainda restam $2^{n/2}$ consultas, que continua exponencial em $n$.
 
 ## No laboratório
 

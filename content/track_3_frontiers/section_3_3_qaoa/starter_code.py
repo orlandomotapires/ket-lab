@@ -1,13 +1,13 @@
 import pennylane as qml
 from pennylane import numpy as np
 
-# Already available: edges (the graph's edges) and cost_h = sum of Z_i Z_j over the edges.
+# Already defined: edges (the graph's edges) and cost_h, the sum of Z_i Z_j over the edges.
 dev = qml.device("default.qubit", wires=5)
 
 
 def layer(gamma, beta):
-    # 1. Cost: IsingZZ(gamma) on each edge.
-    # 2. Mixer: RX(2 * beta) on each qubit.
+    # 1. Cost unitary: IsingZZ(gamma) on each edge.
+    # 2. Mixer unitary: RX(2 * beta) on each qubit.
     pass
 
 
@@ -24,4 +24,4 @@ np.random.seed(0)
 params = np.random.uniform(-1, 1, (1, 2), requires_grad=True)  # p = 1 layer
 history = [float(circuit(params))]
 
-# 3. Optimize params (minimize circuit) and store each value in history.
+# 3. Minimize circuit(params) over params and append each value to history.

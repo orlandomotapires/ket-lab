@@ -1,23 +1,27 @@
 {
-  "title": "Quantum Neural Networks",
-  "summary": "Variational classifier with data re-uploading.",
-  "mission": "Train a quantum classifier that separates the two concentric circles: the sign of ⟨Z⟩ on qubit 0 is the predicted class. It must get at least 92% right on a test set that you do not see.",
+  "title": "Variational Quantum Classifiers",
+  "summary": "Classify points in the plane with two qubits and data re-uploading.",
+  "mission": "Train a quantum classifier that separates the two concentric circles. The sign of ⟨Z⟩ on qubit 0 is the predicted class, and the accuracy must be at least 92% on a test set that you do not see.",
   "prediction": {
-    "question": "With the data loaded only once into the circuit (LAYERS = 1), can the classifier separate the circles?",
-    "options": ["Yes, above 95%", "Barely: it stays near 70%", "It does not exceed 50%, pure chance"],
-    "explanation": "With a single data upload, the output is a simple trigonometric function of the coordinates and cannot draw one circle inside another well: the result stays near 70%. Re-uploading the data in several layers (data re-uploading) makes the function richer, and with 3 layers the accuracy exceeds 95%."
+    "question": "If the data are loaded into the circuit only once (LAYERS = 1), can the classifier separate the circles?",
+    "options": [
+      "Yes, above 95%",
+      "Barely: it stays near 70%",
+      "It does not exceed 50%, pure chance"
+    ],
+    "explanation": "With a single upload, the output is a trigonometric function of low degree in the coordinates, and it cannot separate one circle from another well: accuracy stays near 70%. Re-uploading the data in several layers increases the frequencies the circuit can represent, and with 3 layers the accuracy exceeds 95%."
   },
   "hints": [
-    "The starting circuit loads the data only once. Increase LAYERS to 3: each layer applies trainable rotations and then loads x again.",
-    "Train with optimizer = qml.AdamOptimizer(0.1) and weights = optimizer.step(loss, weights) in a loop of about 40 epochs.",
-    "Store float(loss(weights)) in history at every epoch. If the training accuracy is high and the test accuracy low, the model memorized the points: train less or use fewer layers."
+    "The starting circuit loads the data once. Increase LAYERS to 3: each layer applies trainable rotations and then loads x again.",
+    "Create optimizer = qml.AdamOptimizer(0.1) and update weights = optimizer.step(loss, weights) in a loop of about 40 epochs.",
+    "Append float(loss(weights)) to history at every epoch. If the training accuracy is high and the test accuracy is low, the model has memorized the points: train for fewer epochs or use fewer layers."
   ],
   "messages": {
     "ok": "Accuracy of {test}% on the test set (threshold {threshold}%), and {train}% on the training set.",
     "no_circuit": "Define the QNode circuit(weights, x), which returns qml.expval(qml.PauliZ(0)).",
     "no_weights": "Store the trained weights in the variable weights.",
-    "overfit": "Accuracy of {train}% on the training set, but only {test}% on the test set: the model memorized the training points instead of learning the shape. Use fewer layers or fewer epochs.",
-    "no_reupload": "Accuracy of {test}% on the test set (threshold {threshold}%). The circuit loads the data only {uploads} times: re-upload x in several layers (data re-uploading).",
-    "low_accuracy": "Accuracy of {test}% on the test set (threshold {threshold}%). Train for more epochs or adjust the learning rate."
+    "overfit": "Accuracy {train}% on the training set but only {test}% on the test set: the model memorized the training points. Use fewer layers or fewer epochs.",
+    "no_reupload": "Accuracy {test}% on the test set (threshold {threshold}%). The circuit loads the data only {uploads} times. Re-upload x in several layers (data re-uploading).",
+    "low_accuracy": "Accuracy {test}% on the test set (threshold {threshold}%). Train for more epochs or adjust the learning rate."
   }
 }

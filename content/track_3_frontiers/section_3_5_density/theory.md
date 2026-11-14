@@ -1,37 +1,50 @@
-## When we do not know the state
+## Pure and mixed states
 
-So far, the qubit was always in a well-defined state $|\psi\rangle$: a **pure state**. On a real computer, noise acts at random: sometimes a gate fails, sometimes it does not. After that, all we know is that the qubit is in $|\psi_1\rangle$ with probability $p_1$, in $|\psi_2\rangle$ with probability $p_2$, and so on. This is a **mixed state**.
+A **pure state** is a single state vector $|\psi\rangle$. When noise acts at random, for example a gate that fails with some probability, we only know that the qubit is in $|\psi_i\rangle$ with probability $p_i$. This is a **mixed state**.
 
-A mixed state is not a superposition. The superposition $\frac{|0\rangle + |1\rangle}{\sqrt2}$ is a pure state, with a well-defined phase; a coin that gives $|0\rangle$ or $|1\rangle$ with 50% each has no phase at all.
+A mixed state is not a superposition. $(|0\rangle+|1\rangle)/\sqrt2$ is a pure state with a definite relative phase. A coin that yields $|0\rangle$ or $|1\rangle$ with probability 1/2 each has no phase to speak of, and its measurements in the $X$ basis are random.
 
-## The density matrix
+## The density operator
 
-Both cases fit in the same description, the **density matrix**:
+Both cases are described by the **density operator** (density matrix)
 
 $$
 \rho = \sum_i p_i\, |\psi_i\rangle\langle\psi_i|
 $$
 
-- The diagonal gives the measurement probabilities: $P(0) = \rho_{00}$ and $P(1) = \rho_{11}$.
-- The **purity** $\mathrm{Tr}(\rho^2)$ is $1$ for a pure state and less than $1$ for a mixed one; for 1 qubit, the minimum is $1/2$.
-- On the Bloch sphere, pure states sit on the surface and mixed states sit inside, with a shortened vector.
+which is Hermitian, positive semidefinite and has $\mathrm{Tr}\,\rho = 1$.
 
-The entangled qubits of Track 1 shrank on the sphere for the same reason: the state of one qubit of a Bell pair, looked at alone, is mixed. It is obtained by the **partial trace**, which discards the other qubit.
+- In the computational basis, the diagonal gives the measurement probabilities: $P(0)=\rho_{00}$, $P(1)=\rho_{11}$.
+- The **purity** $\mathrm{Tr}(\rho^2)$ equals 1 for a pure state and is less than 1 for a mixed state. For one qubit its minimum is $1/2$ (for $d$ dimensions, $1/d$).
+- On the Bloch sphere, pure states lie on the surface and mixed states inside it. The Bloch vector has length $\sqrt{2\,\mathrm{Tr}(\rho^2)-1}$.
 
-## Noise channels
+One qubit of an entangled pair is also mixed. Its state is the **reduced density operator**, obtained by the partial trace over the other qubit. This is why the Bloch vectors of entangled qubits in Track 1 were shorter than 1.
 
-A noisy operation acts on $\rho$ through **Kraus operators** $K_k$:
+## Quantum channels
+
+A noisy operation takes $\rho$ to
 
 $$
 \rho \;\longrightarrow\; \sum_k K_k\, \rho\, K_k^\dagger, \qquad \sum_k K_k^\dagger K_k = I
 $$
 
-An error that applies $X$ with probability $p_x$, $Z$ with $p_z$ and nothing otherwise has $K_0 = \sqrt{1-p_x-p_z}\,I$, $K_1 = \sqrt{p_x}\,X$ and $K_2 = \sqrt{p_z}\,Z$. The most common channels have names: *bit flip*, *phase flip*, depolarizing, amplitude damping.
+where the $K_k$ are the **Kraus operators** (operator-sum representation). The completeness condition keeps $\mathrm{Tr}\,\rho = 1$. An error that applies $X$ with probability $p_x$, $Z$ with probability $p_z$ and nothing otherwise has
 
-## An error is not the same as a wrong answer
+$$
+K_0 = \sqrt{1-p_x-p_z}\,I, \qquad K_1 = \sqrt{p_x}\,X, \qquad K_2 = \sqrt{p_z}\,Z
+$$
 
-The probability that **an error happens** is not the probability that **the answer comes out wrong**. The effect of an error depends on where it occurs and on what comes after: a $Z$ followed by a Hadamard becomes a full $X$, while an $X$ between $T$ and $T^\dagger$ becomes a rotation that only sometimes changes the result. That is why error correction, in the next lesson, looks at the type of error and not only at its frequency.
+and $\sum_k K_k^\dagger K_k = (1-p_x-p_z)I + p_xI + p_zI = I$. Standard single-qubit channels are the bit flip, phase flip, depolarizing and amplitude damping channels. The first two are the cases $p_z=0$ and $p_x=0$ above.
+
+## Error probability and wrong-answer probability
+
+The probability that an error occurs is not the probability that the final answer is wrong. It depends on what follows the error. In this circuit, $H\,T\,\cdot\,T^\dagger H$ is the identity, so the ideal output is $|0\rangle$.
+
+- $Z$ commutes with $T$, so it reaches the last Hadamard unchanged. $HZH=X$ then flips the result with certainty.
+- $X$ does not commute with $T$. The error reaches the end as $H\,T^\dagger X T\,H$, and $T^\dagger X T=(X-Y)/\sqrt2$, so the effective error is $(Z+Y)/\sqrt2$. Acting on $|0\rangle$ it gives $(|0\rangle+i|1\rangle)/\sqrt2$, which yields 0 or 1 with probability 1/2 each.
+
+So with $p_x=p_z=0.2$, $P(1) = 0.2 + 0.2\times 0.5 = 0.3$, not $0.4$. Error correction therefore has to consider which error occurred, not only how often errors occur. The next lesson does this.
 
 ## In the lab
 
-The `default.mixed` device simulates the density matrix. In the **Bloch spheres** tab, watch the vector shrink at the error step; the panel shows the purity of the state. The **Register** tab shows $P(0)$ and $P(1)$.
+The `default.mixed` device simulates the density matrix. In the Bloch spheres tab the vector shortens at the error step and the panel shows the purity. The Register tab shows $P(0)$ and $P(1)$.

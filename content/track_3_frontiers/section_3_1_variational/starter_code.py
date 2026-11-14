@@ -12,8 +12,8 @@ def circuit(params):
 
 
 def parameter_shift(params, i):
-    # Derivative of circuit with respect to params[i]:
-    # [f(θ + π/2) − f(θ − π/2)] / 2, shifting only parameter i.
+    # Parameter-shift rule for params[i]:
+    # [f(θ + π/2) − f(θ − π/2)] / 2, shifting only params[i].
     return 0.0
 
 
@@ -21,6 +21,6 @@ params = np.array([0.3, 0.2])
 learning_rate = 0.4
 history = [[float(params[0]), float(params[1]), float(circuit(params))]]
 
-# Gradient descent: repeat a few steps of
+# Gradient descent: repeat
 #   params = params - learning_rate * gradient
-# and append [params[0], params[1], cost] to history at each step.
+# and append [params[0], params[1], cost] to history after each step.

@@ -1,16 +1,20 @@
 {
-  "title": "Quantum Error Correction",
-  "summary": "The 3-qubit bit-flip code, syndromes and the error threshold.",
-  "mission": "Protect qubit 0 against bit flips: encode it into three qubits (encode), measure the syndrome on two ancillas without touching the state, and correct the affected qubit (recover). The logical state must survive an X on any of the three qubits, for any input state.",
+  "title": "The Three-Qubit Bit-Flip Code",
+  "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold.",
+  "mission": "Protect qubit 0 against bit flips. Encode it into three qubits (encode), store the syndrome in two ancillas without measuring the data qubits, and correct the flipped qubit (recover). The logical state must survive an X error on any one of the three qubits, for any input state.",
   "prediction": {
     "question": "An X error hits qubits 0 and 1 at the same time. What does the code do?",
-    "options": ["Corrects both", "Fails: the syndrome points to qubit 2, and the result becomes a logical X", "Destroys the state, which becomes a mixture"],
-    "explanation": "Two flips on qubits 0 and 1 give the same syndrome as a single flip on qubit 2. The code applies X to qubit 2 and ends up with all three inverted: a logical error. It corrects one flip, not two."
+    "options": [
+      "It corrects both",
+      "It fails: the syndrome points to qubit 2, and the result is a logical X",
+      "It destroys the state, which becomes a mixture"
+    ],
+    "explanation": "Flips on qubits 0 and 1 give the same syndrome as a single flip on qubit 2. The code applies X to qubit 2, so all three qubits end up flipped, which is a logical X. The code corrects one flip, not two."
   },
   "hints": [
-    "Encoding copies the basis, not the state: qml.CNOT(wires=[0, 1]) and qml.CNOT(wires=[0, 2]) take α|0⟩ + β|1⟩ to α|000⟩ + β|111⟩.",
-    "Syndrome: ancilla 3 stores the parity of qubits 0 and 1 (CNOT from 0 and from 1 to 3); ancilla 4, that of qubits 1 and 2. Each single flip gives a different pair of bits: X0 → 10, X1 → 11, X2 → 01.",
-    "Correction without measuring: qml.Toffoli(wires=[3, 4, target]) acts when both ancillas are 1. For the pattern 10, wrap it with qml.PauliX on the ancilla that must be 0 (before and after)."
+    "Encoding entangles the basis states instead of copying the state: qml.CNOT(wires=[0, 1]) and qml.CNOT(wires=[0, 2]) take α|0⟩ + β|1⟩ to α|000⟩ + β|111⟩.",
+    "Syndrome: ancilla 3 stores the parity of qubits 0 and 1 (CNOT from qubit 0 and from qubit 1 onto qubit 3), and ancilla 4 stores the parity of qubits 1 and 2. Each single flip gives a different pair of bits: X0 → 10, X1 → 11, X2 → 01.",
+    "Correction without measuring: qml.Toffoli(wires=[3, 4, target]) acts when both ancillas are 1. For a pattern with a 0, apply qml.PauliX to that ancilla before and after the Toffoli."
   ],
   "controls": {
     "error": {
@@ -27,10 +31,10 @@
     }
   },
   "messages": {
-    "ok": "The logical state survives any single bit flip. With bit-flip noise p = 0.1 on all qubits, the fidelity is {fidelity}, versus {bare} for an unprotected qubit.",
+    "ok": "The logical state survives any single bit flip. With bit-flip noise p = 0.1 on all qubits, the fidelity is {fidelity}, against {bare} for an unprotected qubit.",
     "no_circuit": "Define the QNode circuit() on a default.mixed device with 5 qubits.",
     "wrong_qubits": "The code uses 3 data qubits and 2 ancillas (5 in total), but the circuit has {count}.",
-    "encode_wrong": "Even with no error, the final state is not α|000⟩ + β|111⟩ (fidelity {fidelity}). Check the encoding and make sure the recovery does not alter an error-free state.",
+    "encode_wrong": "Even with no error, the final state is not α|000⟩ + β|111⟩ (fidelity {fidelity}). Check the encoding, and make sure the recovery does not change an error-free state.",
     "single_fail": "With the error {error}, the logical state was not recovered (fidelity {fidelity}). Check the syndrome and which qubit each pattern corrects.",
     "noisy_mismatch": "With bit-flip noise p = 0.1, the fidelity should be {expected}, but it is {fidelity}."
   }

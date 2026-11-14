@@ -4,7 +4,7 @@ try:
     _theta = _QLP_INPUT
     del _QLP_INPUT
 except NameError:
-    _theta = 0.625
+    _theta = 0.375
 
 
 def _criar_potencias(theta):

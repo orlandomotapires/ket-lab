@@ -1,7 +1,7 @@
 {
-  "title": "Quantum Fourier Transform",
-  "summary": "From the computational basis to the phase basis.",
-  "mission": "Build the 3-qubit QFT after prepare_input(qc). It must work for any input, not just |101⟩.",
+  "title": "The Quantum Fourier Transform",
+  "summary": "Moves the information about x from the basis states into the phases.",
+  "mission": "Build the 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩.",
   "prediction": {
     "question": "What does the QFT do to the state |000⟩?",
     "options": [
@@ -9,11 +9,11 @@
       "Creates a uniform superposition, with all phases equal to 0",
       "Creates a uniform superposition, with different phases"
     ],
-    "explanation": "With x = 0, all the phases e^(2πi·xk/N) equal 1: the result is the uniform superposition |+++⟩. The information about x shows up in the phases, and with x = 0 there is nothing to encode."
+    "explanation": "For x = 0 every phase e^(2πi·xk/N) equals 1, so the result is the uniform superposition |+++⟩ with no relative phases. The information about x is stored in the phases, and x = 0 gives none."
   },
   "hints": [
-    "Start with qubit 2: qc.h(2), then qc.cp(pi / 2, 1, 2) and qc.cp(pi / 4, 0, 2). pi comes from the math module.",
-    "Repeat with qubit 1 (qc.h(1) and qc.cp(pi / 2, 0, 1)) and finish with qc.h(0).",
-    "The bit order still has to be reversed: qc.swap(0, 2)."
+    "Start with the most significant qubit, qubit 2: qc.h(2), then qc.cp(pi / 2, 1, 2) and qc.cp(pi / 4, 0, 2). pi comes from the math module.",
+    "Repeat for qubit 1 (qc.h(1), qc.cp(pi / 2, 0, 1)) and finish with qc.h(0).",
+    "The output qubits are in reverse order, so end with qc.swap(0, 2)."
   ]
 }

@@ -1,19 +1,19 @@
 {
   "title": "Deutsch's Algorithm",
-  "summary": "One query decides whether a one-bit f is constant or balanced.",
-  "mission": "With a single call to oracle(qc), leave qubit 0 in |0⟩ if the secret one-bit function f is constant and in |1⟩ if it is balanced.",
+  "summary": "One query decides whether a one-bit function is constant or balanced.",
+  "mission": "Call oracle(qc) once so that qubit 0 ends in |0⟩ if the hidden one-bit function f is constant and in |1⟩ if it is balanced.",
   "prediction": {
-    "question": "Suppose the auxiliary qubit is in |0⟩ (not |−⟩) and the input is in |+⟩ before the oracle. When you measure the input, what do you get?",
+    "question": "The auxiliary qubit is in |0⟩ (not |−⟩) and the input is in |+⟩ before the query. You measure the input. What do you get?",
     "options": [
       "Always 0 if f is constant, always 1 if it is balanced",
       "0 or 1 with 50% each, whatever f is",
       "Always the value of f(0)"
     ],
-    "explanation": "The oracle produces (|0⟩|f(0)⟩ + |1⟩|f(1)⟩)/√2. The input becomes entangled with the auxiliary qubit and measuring it gives 0 or 1 with 50% each, for any f. Parallelism, without phase kickback and a final interference step, yields no information."
+    "explanation": "The query gives (|0⟩|f(0)⟩ + |1⟩|f(1)⟩)/√2. The input is entangled with the auxiliary qubit, so measuring it returns 0 or 1 with probability 1/2 each, for any f. Without phase kickback and a final Hadamard there is no interference, and no information about f."
   },
   "hints": [
-    "Prepare the auxiliary qubit in |−⟩ with qc.x(1) and qc.h(1): then the oracle returns the phase (−1)^f(x) to the input.",
-    "Put qubit 0 in |+⟩ with a Hadamard before the oracle and apply a Hadamard to it again afterwards.",
-    "Sequence: qc.x(1), qc.h(1), qc.h(0), oracle(qc), qc.h(0)."
+    "Phase kickback needs the auxiliary qubit in |−⟩, so that the query writes (−1)^f(x) on the input.",
+    "Put the input in |+⟩ with a Hadamard before the query, and apply a Hadamard to it again after the query.",
+    "qc.x(1), qc.h(1), qc.h(0), oracle(qc), qc.h(0)."
   ]
 }

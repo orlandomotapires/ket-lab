@@ -44,48 +44,48 @@
     },
     {
       "id": 2,
-      "title": "Quantum Algorithms",
+      "title": "Fundamentals of Quantum Algorithms",
       "level": "Intermediate",
       "sections": [
         {
           "id": "2.1",
           "title": "Phase Kickback",
-          "summary": "How the target qubit kicks a phase back to the control."
+          "summary": "A controlled gate acting on an eigenstate of its target changes the control, not the target."
         },
         {
           "id": "2.2",
           "title": "Deutsch's Algorithm",
-          "summary": "One query decides whether a one-bit f is constant or balanced."
+          "summary": "One query decides whether a one-bit function is constant or balanced."
         },
         {
           "id": "2.3",
-          "title": "Oracles and Deutsch–Jozsa",
-          "summary": "Constant or balanced with a single query."
+          "title": "The Deutsch–Jozsa Algorithm",
+          "summary": "Decide constant or balanced for an n-bit function with one query."
         },
         {
           "id": "2.4",
-          "title": "Bernstein–Vazirani",
-          "summary": "Recover a whole secret string in one query."
+          "title": "The Bernstein–Vazirani Algorithm",
+          "summary": "Find a whole secret string with one query."
         },
         {
           "id": "2.5",
-          "title": "Grover's Search",
-          "summary": "Amplitude amplification and inversion about the mean."
+          "title": "Grover's Algorithm",
+          "summary": "Amplitude amplification by an oracle and inversion about the mean."
         },
         {
           "id": "2.6",
-          "title": "Quantum Fourier Transform",
-          "summary": "From the computational basis to the phase basis."
+          "title": "The Quantum Fourier Transform",
+          "summary": "Moves the information about x from the basis states into the phases."
         },
         {
           "id": "2.7",
-          "title": "Quantum Phase Estimation",
-          "summary": "Read out an eigenvalue with controlled powers and an inverse QFT."
+          "title": "Phase Estimation",
+          "summary": "Read an eigenvalue phase with controlled powers of U and an inverse QFT."
         },
         {
           "id": "2.8",
           "title": "Shor's Algorithm",
-          "summary": "Factor 15 by reducing it to finding a period."
+          "summary": "Factor 15 by reducing the problem to order finding."
         }
       ]
     },

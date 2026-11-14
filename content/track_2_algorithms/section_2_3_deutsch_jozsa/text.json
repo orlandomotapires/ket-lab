@@ -1,19 +1,19 @@
 {
-  "title": "Oracles and Deutsch–Jozsa",
-  "summary": "Constant or balanced with a single query.",
-  "mission": "With a single call to oracle(qc), leave the input register (qubits 0 to 2) in |000⟩ if the secret function is constant, and with no chance of |000⟩ if it is balanced.",
+  "title": "The Deutsch–Jozsa Algorithm",
+  "summary": "Decide constant or balanced for an n-bit function with one query.",
+  "mission": "Call oracle(qc) once so that the input register (qubits 0 to 2) ends in |000⟩ if the hidden function is constant, and has zero probability of being |000⟩ if it is balanced.",
   "prediction": {
-    "question": "With 3 input bits, how many queries does a deterministic (zero-error) classical algorithm need, in the worst case, to decide whether the function is constant or balanced?",
+    "question": "A deterministic classical algorithm must decide, with no error, whether a function of 3 bits is constant or balanced. How many queries does it need in the worst case?",
     "options": [
       "1",
       "5",
       "8"
     ],
-    "explanation": "If the first 4 queries give the same value, the function can still be balanced; only the fifth decides. In general it takes 2^(n−1) + 1 queries. The quantum algorithm uses one."
+    "explanation": "If the first 4 queries return the same value, the function can still be balanced, so only the fifth query decides. In general the worst case is 2^(n−1) + 1 queries. The quantum algorithm uses one."
   },
   "hints": [
-    "Prepare the auxiliary qubit in |−⟩, as in the phase kickback lesson: qc.x(3) and qc.h(3).",
-    "Put qubits 0, 1 and 2 in superposition before the oracle and apply Hadamard to them again afterwards.",
-    "Sequence: qc.x(3), qc.h(3), Hadamard on qubits 0 to 2, oracle(qc), Hadamard on qubits 0 to 2."
+    "Prepare the auxiliary qubit in |−⟩ as in the phase kickback lesson: qc.x(3), then qc.h(3).",
+    "Apply a Hadamard to qubits 0, 1 and 2 before the oracle, and again after it.",
+    "qc.x(3), qc.h(3), Hadamard on qubits 0 to 2, oracle(qc), Hadamard on qubits 0 to 2."
   ]
 }

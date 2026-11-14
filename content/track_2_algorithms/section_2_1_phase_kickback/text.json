@@ -1,19 +1,19 @@
 {
   "title": "Phase Kickback",
-  "summary": "How the target qubit kicks a phase back to the control.",
-  "mission": "Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, and apply a CNOT from qubit 0 to qubit 1. The target does not change: watch what happens to the control.",
+  "summary": "A controlled gate acting on an eigenstate of its target changes the control, not the target.",
+  "mission": "Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, then apply a CNOT from qubit 0 to qubit 1. The target keeps its state; observe the control.",
   "prediction": {
-    "question": "The target is in |−⟩, and X|−⟩ = −|−⟩. With the control in |+⟩, you apply a CNOT. Which qubit changes state?",
+    "question": "The target is in |−⟩, an eigenstate of X with eigenvalue −1. The control is in |+⟩ and you apply a CNOT. Which qubit changes state?",
     "options": [
       "Only the target",
       "Only the control",
       "Neither of them"
     ],
-    "explanation": "The target stays in |−⟩. The −1 sign that X produces only appears in the term where the control is 1, and it becomes a relative phase of the control: it goes from |+⟩ to |−⟩."
+    "explanation": "The target stays in |−⟩. The sign −1 from X appears only in the term where the control is |1⟩, so it is a relative phase of the control, which goes from |+⟩ to |−⟩."
   },
   "hints": [
-    "The target must be in |−⟩: take it to |1⟩ with X and then apply a Hadamard.",
-    "The control in |+⟩ is just a Hadamard on qubit 0. The CNOT comes last.",
-    "Sequence: qc.x(1), qc.h(1), qc.h(0) and finally qc.cx(0, 1)."
+    "The target must be in |−⟩: apply X to take it to |1⟩, then a Hadamard.",
+    "The control in |+⟩ needs a Hadamard on qubit 0. Apply the CNOT last.",
+    "qc.x(1), qc.h(1), qc.h(0), qc.cx(0, 1)."
   ]
 }

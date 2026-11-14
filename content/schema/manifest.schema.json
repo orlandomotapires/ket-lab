@@ -93,6 +93,14 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
             }
           }
         },
@@ -147,6 +155,14 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
             }
           }
         },
@@ -206,6 +222,26 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+            },
+            "inputs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "description": "Pares (θ, φ) testados sempre, antes dos sorteados"
             }
           }
         },
@@ -269,6 +305,14 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
             }
           }
         },
@@ -323,6 +367,14 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
             }
           }
         },
@@ -367,6 +419,14 @@
               "items": {
                 "type": "string"
               }
+            },
+            "gate_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
             }
           }
         }

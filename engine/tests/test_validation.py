@@ -164,3 +164,21 @@ def test_teleport_inputs_are_hidden_from_the_student():
         "print(prepare_alice_state.__closure__)\n"
     )
     assert validation.validate(code, lesson)["code"] == "error"
+
+
+def test_gate_counts_enforce_a_single_oracle_query(library):
+    bundle = library.validation_bundle("2.2")
+    rules = {**bundle["validation"], "gate_counts": {"oracle": 1}}
+    twice = bundle["solution"].replace("oracle(qc)\n", "oracle(qc)\noracle(qc)\n")
+    result = validation.validate(twice, {**bundle, "validation": rules})
+    assert result["code"] == "gate_count"
+    assert "`oracle`" in result["message"] and "2" in result["message"]
+
+
+def test_reduced_state_tests_fixed_inputs_first():
+    lesson = _teleport_lesson()
+    rules = {**lesson["validation"], "inputs": [[0.0, 0.0], [1.5707963, 0.0]], "trials": 0}
+    only_x = TELEPORT_PREFIX + "with qc.if_test((qc.clbits[1], 1)):\n    qc.x(2)\n"
+    result = validation.validate(only_x, {**lesson, "validation": rules})
+    # Em |0⟩ a correção Z não faz falta, mas em |+⟩ faz: o erro é pego mesmo sem sorteio.
+    assert result["code"] == "partial", result

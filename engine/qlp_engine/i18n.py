@@ -186,6 +186,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "The mission requires using {names} in the circuit.",
         "de": "Die Aufgabe verlangt, {names} im Schaltkreis zu verwenden.",
     },
+    "val.gate_count": {
+        "pt": "A missão permite exatamente {expected} chamada(s) de `{name}`, e o seu circuito tem {actual}.",
+        "en": "The mission allows exactly {expected} call(s) to `{name}`, and your circuit has {actual}.",
+        "de": "Die Aufgabe erlaubt genau {expected} Aufruf(e) von `{name}`, dein Schaltkreis hat {actual}.",
+    },
     "val.forbidden_pair": {
         "pt": "Nesta missão nenhuma porta pode atuar ao mesmo tempo nos qubits {a} e {b}: eles estão longe um do outro. Ligue-os com medições e correções condicionadas aos bits clássicos.",
         "en": "In this mission no gate may act on qubits {a} and {b} at the same time: they are far apart. Connect them with measurements and corrections conditioned on classical bits.",

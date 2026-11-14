@@ -2,7 +2,7 @@
 
 Versão revisada em 13/11/2026. Substitui o plano original e incorpora a revisão técnica feita antes do início do desenvolvimento. Onde o texto diz **[feito]**, o item já existe no repositório e é coberto por testes.
 
-A plataforma é um aplicativo desktop para ensinar Computação Quântica, dos fundamentos de qubits até algoritmos e aplicações variacionais. O aluno escreve código Qiskit e vê o estado quântico mudar enquanto digita.
+A plataforma é uma aplicação web para ensinar Computação Quântica, dos fundamentos de qubits até algoritmos e aplicações variacionais. O aluno escreve código Qiskit e vê o estado quântico mudar enquanto digita.
 
 ---
 
@@ -12,14 +12,14 @@ A plataforma é um aplicativo desktop para ensinar Computação Quântica, dos f
 
 | Camada | Tecnologia | Responsabilidade |
 | :-- | :-- | :-- |
-| Shell desktop | Tauri (Rust) | Janela e ciclo de vida do sidecar. Permanece fino: inicia o motor (e o reinicia se cair), lê a porta e o token que ele imprime e os entrega à interface. Mantém o stdin do motor aberto: se o shell morrer, o motor encerra sozinho. **[feito]** |
-| Interface | React + TypeScript + Three.js (React Three Fiber) + Monaco | Teoria em Markdown/LaTeX, editor, visualizações. Não depende do Tauri: roda igual no navegador durante o desenvolvimento, o que mantém aberta a porta para uma versão web. |
-| Motor (sidecar) | Python + Qiskit + NumPy + `websockets` | Executa o código do aluno, simula, valida e guarda o progresso em SQLite. Empacotado com PyInstaller. |
+| Interface | React + TypeScript + Three.js (React Three Fiber) + Monaco | Teoria em Markdown/LaTeX, editor, visualizações. Roda no navegador. |
+| Motor | Python + Qiskit + PennyLane + NumPy + `websockets` | Roda localmente (`npm run dev`). Executa o código do aluno, simula, valida e guarda o progresso em SQLite. |
 
 Mudanças em relação ao plano original:
 
 - **Sem FastAPI.** O motor só fala WebSocket; a biblioteca `websockets` basta e reduz o tamanho do pacote.
-- **O progresso fica no motor**, em SQLite da biblioteca padrão do Python, e não no Rust. Funciona igual com ou sem o shell.
+- **O progresso fica no motor**, em SQLite da biblioteca padrão do Python.
+- **Só web.** Houve um shell desktop (Tauri, com o motor empacotado por PyInstaller); ele foi removido: numa plataforma de estudo, o navegador basta e simplifica tudo.
 - **PennyLane só entra na Fase 4.** As Trilhas 1 e 2 usam apenas Qiskit: um framework por vez para o aluno e um pacote menor. O protocolo de snapshots não depende do framework.
 - **Versões fixadas** em `engine/pyproject.toml`. A API do Qiskit muda entre versões maiores e as lições dependem dela.
 
@@ -88,7 +88,7 @@ Mensagens JSON com `id`; cada requisição recebe uma resposta.
 ### 2.1 Os cinco elementos
 
 1. **Teoria e missão (esquerda).** Blocos curtos, intuição antes da fórmula. A missão fica fixa no rodapé do painel, sempre visível. **[feito]**
-2. **Editor (centro, acima).** Monaco empacotado no aplicativo (funciona offline), com autocompletar das portas e descrições em português. **[feito]**
+2. **Editor (centro, acima).** Monaco servido junto com a interface (funciona offline), com autocompletar das portas e descrições em português. **[feito]**
 3. **Visualizador (direita).** Esfera de Bloch por qubit, leitura numérica $(x, y, z, |r|, \text{fase})$ e tabela de amplitudes. **[feito]** As demais visualizações entram por trilha (seção 2.3).
 4. **Circuito e linha do tempo (centro, abaixo).** Diagrama gerado a partir do código; clicar em uma porta leva a visualização àquele passo. **[feito]**
 5. **Barra do oráculo (rodapé).** Erros, resultado da validação e ações. **[feito]**
@@ -97,7 +97,7 @@ Mensagens JSON com `id`; cada requisição recebe uma resposta.
 
 ### 2.2 Direção visual
 
-Sóbria e moderna, com cara de ferramenta científica: paleta neutra com um único acento azul-cobalto, painéis em cartões com cantos arredondados e sombras sutis, sem gradientes, brilhos, emojis ou vidro fosco. Tipografia IBM Plex (Sans para interface e teoria, Mono para código e números), empacotada no aplicativo para funcionar offline. Tema claro e escuro, seguindo o sistema por padrão. **[feito]**
+Sóbria e moderna, com cara de ferramenta científica: paleta neutra com um único acento azul-cobalto, painéis em cartões com cantos arredondados e sombras sutis, sem gradientes, brilhos, emojis ou vidro fosco. Tipografia IBM Plex (Sans para interface e teoria, Mono para código e números), servida junto com a interface para funcionar offline. Tema claro e escuro, seguindo o sistema por padrão. **[feito]**
 
 A fase nunca é comunicada só por cor: todo lugar que usa a roda de cores também mostra um ponteiro e o valor do ângulo. A roda é cíclica (0 = azul, $\pi$ = laranja). Animações respeitam a preferência de movimento reduzido do sistema. **[feito]**
 
@@ -240,9 +240,7 @@ O objetivo é uma lição completa de ponta a ponta, não um protótipo de cada 
 | Interface: mapa de trilhas, laboratório, Esfera de Bloch, amplitudes, circuito, linha do tempo, temas | feito |
 | Laboratório livre (sandbox) | feito |
 | Lição 1.1 completa | feito |
-| Empacotamento do motor (PyInstaller onedir) com teste de fumaça | feito no Linux (217 MB; pronto em 0,1 s) |
-| Shell Tauri com o motor embutido | feito no Linux (executável de 9 MB; `.deb` de 104 MB) |
-| CI nos três sistemas, incluindo instaladores | escrito, ainda não executado |
+| CI: motor nos três sistemas e interface | escrito |
 
 ### Fase 2 — Trilha 1 completa
 
@@ -281,9 +279,9 @@ As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`,
 
 ## 7. Riscos e decisões em aberto
 
-1. **Distribuição.** Continua sendo o maior risco. No Linux o instalador `.deb` tem 104 MB e funciona. Faltam validar: Windows e macOS, AppImage, assinatura de código e falsos positivos de antivírus.
+1. **Hospedagem.** Hoje o motor roda na máquina do aluno (`npm run setup` + `npm run dev`). Para abrir a plataforma a qualquer pessoa, o motor precisa ser hospedado, com isolamento real do código do aluno (contêiner por sessão), já que a verificação estática não é uma sandbox.
 2. **Limite de memória fora do Linux.** No Windows a solução é um Job Object; no macOS, o teto de qubits pode ser suficiente.
 3. **Escopo.** São cerca de 15 visualizações sob medida. As Trilhas 1 e 2 são o produto; a Trilha 3 é uma expansão.
-4. **Versão web.** A interface já roda em navegador. O que impede uma versão web é o motor: o Qiskit tem extensões nativas e não roda em Pyodide sem trabalho adicional. Alternativa a avaliar: motor hospedado.
+4. **Motor no navegador.** O Qiskit tem extensões nativas e não roda em Pyodide sem trabalho adicional; por isso o motor é um processo Python.
 5. **Idiomas.** Inglês e alemão foram traduzidos a partir do português por agentes de IA, com glossário e testes estruturais. Os testes garantem estrutura, não qualidade: falta uma revisão por falantes nativos, principalmente da terminologia em alemão. As mensagens de falha do shell desktop (ex.: motor não encontrado) ainda estão só em português.
 6. **Conteúdo de terceiros.** Lições e arquivos de sandbox importados executam código. Antes de permitir compartilhamento, é preciso um modelo de confiança.

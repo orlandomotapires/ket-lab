@@ -6,39 +6,13 @@ export interface EngineEndpoint {
   token: string;
 }
 
-interface TauriGlobal {
-  core: { invoke<T>(command: string, args?: Record<string, unknown>): Promise<T> };
-}
-
-declare global {
-  interface Window {
-    /** Presente quando a interface roda dentro do shell desktop (Tauri). */
-    __TAURI__?: TauriGlobal;
-  }
-}
-
-export function isDesktop(): boolean {
-  return window.__TAURI__ !== undefined;
-}
-
-/**
- * Abre um link externo no navegador do sistema. Na janela desktop, um link comum
- * não sai do app; o plugin opener do Tauri faz isso.
- */
+/** Abre um link externo numa aba nova. */
 export function openExternal(url: string): void {
-  if (window.__TAURI__) {
-    void window.__TAURI__.core.invoke("plugin:opener|open_url", { url }).catch(() => undefined);
-  } else {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
-/**
- * Salva um arquivo de texto. No desktop, o shell abre a janela "Salvar como" do
- * sistema (devolve false se o aluno cancelar); no navegador, vira um download.
- */
-export async function saveTextFile(contents: string, fileName: string): Promise<boolean> {
-  if (window.__TAURI__) return window.__TAURI__.core.invoke<boolean>("save_text_file", { contents, fileName });
+/** Salva um arquivo de texto (vira um download no navegador). */
+export function saveTextFile(contents: string, fileName: string): boolean {
   const url = URL.createObjectURL(new Blob([contents], { type: "text/plain;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
@@ -48,17 +22,8 @@ export async function saveTextFile(contents: string, fileName: string): Promise<
   return true;
 }
 
-/** No desktop, envia uma linha de diagnóstico ao terminal do shell. */
-export function reportToShell(message: string): void {
-  void window.__TAURI__?.core.invoke("client_log", { message }).catch(() => undefined);
-}
-
-/**
- * Onde o motor está escutando. No desktop, o shell inicia o motor e informa a
- * porta e o token sorteados; no navegador (desenvolvimento), vêm do ambiente.
- */
+/** Onde o motor está escutando: porta e token vêm do ambiente do Vite (o `npm run dev` os define). */
 export async function resolveEndpoint(): Promise<EngineEndpoint> {
-  if (window.__TAURI__) return window.__TAURI__.core.invoke<EngineEndpoint>("engine_endpoint");
   return {
     port: Number(import.meta.env.VITE_ENGINE_PORT ?? 8765),
     token: String(import.meta.env.VITE_ENGINE_TOKEN ?? "dev"),
@@ -116,10 +81,8 @@ export class EngineClient {
     try {
       endpoint = await this.resolve();
     } catch (error) {
-      // O shell não conseguiu iniciar o motor: mostra o motivo e tenta de novo.
       this.onStatus("closed");
       const message = String(error instanceof Error ? error.message : error);
-      reportToShell(`motor indisponível: ${message}`);
       this.onFailure(message);
       this.scheduleReconnect();
       throw new Error("O motor de simulação não iniciou.");
@@ -129,7 +92,6 @@ export class EngineClient {
       this.socket = socket;
       // Um handshake que nunca termina deixaria a interface presa em "conectando".
       const timeout = window.setTimeout(() => {
-        reportToShell(`WebSocket sem resposta em ${OPEN_TIMEOUT_MS} ms (porta ${endpoint.port})`);
         socket.close();
       }, OPEN_TIMEOUT_MS);
       socket.onopen = () => {
@@ -138,9 +100,8 @@ export class EngineClient {
         resolve();
       };
       socket.onmessage = (event) => this.handleMessage(String(event.data));
-      socket.onclose = (event) => {
+      socket.onclose = () => {
         window.clearTimeout(timeout);
-        reportToShell(`conexão encerrada (código ${event.code})`);
         if (this.socket === socket) this.socket = null;
         this.onStatus("closed");
         this.failAll(new Error("Conexão com o motor encerrada."));

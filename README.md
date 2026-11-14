@@ -1,6 +1,6 @@
 # Quantum Learning Platform
 
-Aplicativo para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. Disponível em português, inglês e alemão.
+Plataforma web para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. Disponível em português, inglês e alemão.
 
 O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diretor.md](docs/plano-diretor.md).
 
@@ -9,13 +9,13 @@ O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diret
 - **Três trilhas completas, 21 lições**: Fundamentos (7), Algoritmos (8, do algoritmo de Deutsch ao de Shor) e Fronteiras (6: circuitos variacionais, VQE, QAOA, redes neurais quânticas, ruído e correção de erros).
 - **Qiskit nas Trilhas 1 e 2, PennyLane na Trilha 3**, com simulação de ruído por matriz densidade.
 - **Exercícios revisados** a partir das aulas de Müller e de Jülich: missões, previsões e validações mais rigorosas.
-- **Aplicativo desktop** (Tauri) com o motor Python embutido; também roda no navegador para desenvolvimento.
+- **Roda no navegador**, com o motor Python local (WebSocket em 127.0.0.1).
 - **Visualizações**: esferas de Bloch, Q-Sphere, comparador Alice × Bob, medidor de emaranhamento, amplitudes com sinal e média, mostradores de fase, histograma de registrador e função periódica.
 - **Validação matemática**: fidelidade de estado, distribuição de medições, estado reduzido, oráculos secretos e entradas de teste.
 - **Interface, mensagens e conteúdo** em português, inglês e alemão; tema claro e escuro.
 - **Progresso** salvo em SQLite.
 
-Só o Linux foi testado. Windows e macOS dependem do CI, que ainda não rodou.
+Só o Linux foi testado. Windows e macOS dependem do CI.
 
 ## Estrutura
 
@@ -23,8 +23,7 @@ Só o Linux foi testado. Windows e macOS dependem do CI, que ainda não rodou.
 app/        Interface (React + TypeScript + Three.js + Monaco); textos em app/src/i18n/
 engine/     Motor Python (Qiskit): execução, simulação, validação, progresso, mensagens
 content/    Lições (manifest, solução, setup oculto, textos por idioma) e catálogo
-src-tauri/  Shell desktop (Rust): abre a janela e gerencia o motor
-scripts/    Utilitários de desenvolvimento
+scripts/    dev.mjs: sobe o motor e a interface juntos
 docs/       Plano diretor
 ```
 
@@ -32,24 +31,15 @@ docs/       Plano diretor
 
 - Python 3.11 ou mais novo
 - Node.js 18 ou mais novo (20+ recomendado)
-- Para o aplicativo desktop: Rust e, no Linux, as bibliotecas do WebKitGTK:
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev
-```
 
 ## Como rodar
 
 ```bash
-npm run setup         # uma vez: cria engine/.venv e instala as dependências
-npm run desktop:dev   # janela desktop; a interface recarrega a cada alteração
-npm run dev           # alternativa no navegador: http://127.0.0.1:5173
+npm run setup   # uma vez: cria engine/.venv e instala as dependências
+npm run dev     # motor + interface; abra http://localhost:5173
 ```
 
-`npm run dev` e `npm run desktop:dev` usam a mesma porta (5173): rode um de cada vez. O motor é carregado na inicialização, então lições novas ou alteradas só aparecem depois de reiniciar o comando.
-
-**Use sempre `npm run desktop:*` para abrir a janela**, e não `tauri` ou o executável diretamente. O VS Code instalado via snap injeta no terminal variáveis GTK que derrubam aplicativos WebKitGTK com `symbol lookup error`; o lançador em `scripts/desktop.mjs` as restaura.
+A interface recarrega a cada alteração. O motor carrega as lições na inicialização, então lições novas ou alteradas só aparecem depois de reiniciar o `npm run dev`.
 
 No Windows, crie o ambiente manualmente: `python -m venv engine\.venv`, `engine\.venv\Scripts\pip install -e "engine[dev]"`, `npm install` e `npm --prefix app install`.
 
@@ -68,35 +58,6 @@ A suíte do motor inclui:
 - **suíte de conteúdo**: em cada lição e em cada idioma, a solução passa no oráculo e o código inicial executa sem passar;
 - **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções;
 - **testes do PennyLane**: o estado de cada QNode é comparado com o do próprio PennyLane, inclusive com ruído.
-
-## Gerar o aplicativo
-
-```bash
-engine/.venv/bin/pip install -e "engine[package]"   # uma vez: instala o PyInstaller
-npm run desktop:build                               # motor + interface + instaladores
-npm run desktop:run                                 # abre o build gerado
-```
-
-Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um formato: `npm run desktop:build -- --bundles deb`. Para testar só o motor empacotado: `engine/.venv/bin/python engine/packaging/smoke_test.py`.
-
-### Instalar no Ubuntu (página de aplicativos)
-
-Na pasta do projeto, gere o pacote `.deb` e instale com o `apt`:
-
-```bash
-npm run desktop:build -- --bundles deb
-sudo apt install "./src-tauri/target/release/bundle/deb/Quantum Learning Platform_0.1.0_amd64.deb"
-```
-
-O primeiro comando empacota o motor e compila o app (leva alguns minutos); o segundo instala e pede a senha. Depois disso, o **Quantum Learning Platform** aparece na página de aplicativos e pode ser fixado na dock. Se o ícone não aparecer logo, saia da sessão e entre de novo.
-
-Para **atualizar** depois de mudanças no código, rode os mesmos dois comandos: a instalação nova substitui a antiga. Um `.deb` gerado antes das mudanças não as contém.
-
-Para **desinstalar**:
-
-```bash
-sudo apt remove quantum-learning-platform
-```
 
 ## Criar uma lição
 
@@ -129,6 +90,6 @@ O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
 
 A lição 3.6 é o exemplo mais completo.
 
-## Como o shell e o motor conversam
+## Como a interface e o motor conversam
 
-O shell inicia o motor e lê a primeira linha que ele imprime: `{"event": "ready", "port": ..., "token": ...}`. A interface pede esses dados pelo comando `engine_endpoint` e abre o WebSocket. Toda mensagem leva o idioma atual (`lang`), e o motor responde nele. O shell mantém o stdin do motor aberto; se o shell morrer, o motor percebe o pipe fechado e encerra sozinho.
+O `npm run dev` inicia o motor (`python -m qlp_engine`) numa porta fixa (8765) com um token de sessão, e o Vite passa esses dados à interface (`VITE_ENGINE_PORT`, `VITE_ENGINE_TOKEN`). A interface abre um WebSocket em `ws://127.0.0.1:8765`; o motor só aceita conexões com o token certo e vindas das origens permitidas (`--allow-origin`). O código do aluno roda num processo separado, com limite de tempo e de memória.

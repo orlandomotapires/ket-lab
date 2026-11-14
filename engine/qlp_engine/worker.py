@@ -23,16 +23,22 @@ def _limit_memory() -> None:
     resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
 
 
-def handle(job: dict) -> dict:
-    """Atende um job. Erros do aluno voltam como {ok: False, error: {...}}."""
+def handle(job: dict, emit=None) -> dict:
+    """Atende um job. Erros do aluno voltam como {ok: False, error: {...}}.
+
+    `emit` envia eventos ao servidor enquanto o job roda (progresso de treino).
+    """
     from . import geometry, i18n, simulator, tracer, validation
 
     i18n.set_lang(job.get("lang"))
     kind = job.get("type")
     try:
         if kind == "run":
-            trajectory, execution = _simulate(job)
+            reporter = tracer.Reporter(emit if job.get("stream") else None)
+            trajectory, execution = _simulate(job, reporter)
             result = {"ok": True, "stdout": execution.stdout, **geometry.describe_trajectory(trajectory)}
+            if execution.reports:
+                result["training"] = {"series": execution.reports}
             if job.get("analysis"):
                 result["analysis"] = run_analysis(job["analysis"], execution.namespace)
             return result
@@ -46,6 +52,8 @@ def handle(job: dict) -> dict:
                     max_qubits=_max_qubits(job),
                 )}
             return {"ok": True, **_sample_final_state(trajectory, int(job.get("shots", 1024)), int(job.get("seed", 0)))}
+        if kind == "export":
+            return {"ok": True, **export_circuit(job)}
         if kind == "validate":
             return {"ok": True, **validation.validate(job["code"], job["lesson"])}
         if kind == "ping":
@@ -67,7 +75,7 @@ def _max_qubits(job: dict) -> int:
     return int(job.get("max_qubits") or DEFAULT_MAX_QUBITS)
 
 
-def _simulate(job: dict):
+def _simulate(job: dict, reporter=None):
     """Executa o código e devolve (trajetória, execução), para Qiskit ou PennyLane.
 
     Lições PennyLane rodam sem rastreamento linha a linha (treinos ficam rápidos);
@@ -77,7 +85,8 @@ def _simulate(job: dict):
 
     pennylane = job.get("framework") == "pennylane"
     execution = tracer.execute(
-        job["code"], job.get("hidden_setup"), job.get("inputs"), trace=not pennylane, require_circuit=False
+        job["code"], job.get("hidden_setup"), job.get("inputs"),
+        trace=not pennylane, require_circuit=False, reporter=reporter,
     )
     if execution.circuit is not None and not pennylane:
         trajectory = simulator.run_trajectory(
@@ -94,6 +103,55 @@ def _simulate(job: dict):
     ops, lines, n = pl.trace_qnode(qnode, pl.qnode_arguments(qnode, execution.namespace, spec.get("args")))
     trajectory = simulator.run_ops_trajectory(ops, lines, n, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job))
     return trajectory, execution
+
+
+EXPORT_FORMATS = {"qasm2": "OpenQASM 2.0", "qasm3": "OpenQASM 3.0"}
+
+
+def export_circuit(job: dict) -> dict:
+    """O circuito do código em OpenQASM 2 ou 3 (Qiskit ou o QNode PennyLane)."""
+    from qiskit import qasm2, qasm3
+
+    from . import i18n, pl, tracer
+
+    fmt = job.get("format") if job.get("format") in EXPORT_FORMATS else "qasm3"
+    label = EXPORT_FORMATS[fmt]
+    pennylane = job.get("framework") == "pennylane"
+    execution = tracer.execute(
+        job["code"], job.get("hidden_setup"), job.get("inputs"), trace=not pennylane, require_circuit=False
+    )
+    circuit = execution.circuit if not pennylane else None
+    if circuit is None:
+        import pennylane as qml
+
+        spec = job.get("qnode") or {}
+        try:
+            qnode = pl.find_qnode(execution.namespace, spec.get("name"))
+        except tracer.UserCodeError:
+            if pennylane:
+                raise
+            raise tracer.UserCodeError(_no_circuit_message(), kind="no_circuit") from None
+        args = pl.qnode_arguments(qnode, execution.namespace, spec.get("args"))
+        ops, _, _ = pl.trace_qnode(qnode, args)
+        if any(op.kind == "channel" for op in ops):
+            raise tracer.UserCodeError(i18n.t("export.noise"), kind="export")
+        try:
+            source = qml.to_openqasm(qnode)(*args)
+            if fmt == "qasm2":
+                return {"format": fmt, "text": source}
+            circuit = qasm2.loads(source, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+        except Exception as exc:  # noqa: BLE001 - porta sem equivalente em OpenQASM
+            raise tracer.UserCodeError(i18n.t("export.unsupported", format=label, detail=_short(exc)), kind="export") from None
+    try:
+        text = qasm2.dumps(circuit) if fmt == "qasm2" else qasm3.dumps(circuit)
+    except Exception as exc:  # noqa: BLE001
+        raise tracer.UserCodeError(i18n.t("export.unsupported", format=label, detail=_short(exc)), kind="export") from None
+    return {"format": fmt, "text": text}
+
+
+def _short(exc: BaseException) -> str:
+    text = str(exc).strip().splitlines()[0] if str(exc).strip() else type(exc).__name__
+    return text[:200]
 
 
 def _no_circuit_message() -> str:
@@ -174,4 +232,4 @@ def worker_main(connection) -> None:
             return
         if job is None:
             return
-        connection.send(handle(job))
+        connection.send(handle(job, connection.send))

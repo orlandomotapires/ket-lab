@@ -95,3 +95,21 @@ def test_guard_rejects_unsafe_constructs(code):
 
 def test_guard_allows_scientific_imports():
     run("import math, numpy as np\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.rx(math.pi, 0)\n")
+
+
+def test_report_records_series_and_rejects_non_numbers():
+    import pytest as _pytest
+
+    code = (
+        "from qiskit import QuantumCircuit\n"
+        "import numpy as np\n"
+        "qc = QuantumCircuit(1)\n"
+        "for k in range(3):\n"
+        "    report(np.float64(k) / 2)\n"
+        "report(cost=9, accuracy=1)\n"
+    )
+    execution = tracer.execute(code)
+    assert execution.reports == {"cost": [0.0, 0.5, 1.0, 9.0], "accuracy": [1.0]}
+    with _pytest.raises(tracer.UserCodeError) as error:
+        tracer.execute("from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nreport('x')\n")
+    assert error.value.line == 3

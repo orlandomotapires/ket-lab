@@ -82,12 +82,29 @@ def find_qnode(namespace: dict, name: str | None = None):
 
 def qnode_arguments(qnode, namespace: dict, names: list[str] | None) -> list:
     """Argumentos para desenhar o circuito: variáveis do código do aluno (ex.: os parâmetros treinados)."""
+    if names is None:
+        names = required_parameters(qnode)
     values = []
-    for name in names or []:
+    for name in names:
         if name not in namespace:
             raise UserCodeError(t("pl.missing_argument", name=name), kind="runtime")
         values.append(namespace[name])
     return values
+
+
+def required_parameters(qnode) -> list[str]:
+    """Parâmetros sem valor padrão da função do QNode: no laboratório livre, `circuit(params)`
+    é desenhado com a variável `params` do código, se ela existir."""
+    import inspect
+
+    try:
+        signature = inspect.signature(qnode.func)
+    except (TypeError, ValueError):
+        return []
+    return [
+        p.name for p in signature.parameters.values()
+        if p.default is inspect.Parameter.empty and p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)
+    ]
 
 
 def trace_qnode(qnode, args: list) -> tuple[list[Op], list[int], int]:

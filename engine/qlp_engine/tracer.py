@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import contextlib
 import io
+import math
 import sys
+import time
 import traceback
 from dataclasses import dataclass, field
 
@@ -40,6 +42,66 @@ class Execution:
     lines: list[int]  # linha de origem de cada instrução de circuit.data
     stdout: str = ""
     namespace: dict = field(default_factory=dict)
+    reports: dict[str, list[float]] = field(default_factory=dict)
+
+
+MAX_REPORTS = 5_000
+REPORT_INTERVAL_S = 0.1
+
+
+class Reporter:
+    """`report(...)` no código do aluno: registra métricas de um laço de treino.
+
+    `report(custo)` grava a série "cost"; `report(cost=c, accuracy=a)` grava várias.
+    Com `emit`, os valores novos saem em lotes enquanto o código ainda roda
+    (no máximo a cada REPORT_INTERVAL_S), para a curva aparecer época a época.
+    """
+
+    def __init__(self, emit=None):
+        self.series: dict[str, list[float]] = {}
+        self.emit = emit
+        self._pending: dict[str, list[float]] = {}
+        self._last_emit = 0.0
+        self._count = 0
+
+    def __call__(self, *args, **values):
+        if len(args) > 1 or (args and "cost" in values):
+            raise TypeError("report(value) or report(name=value, ...)")
+        if args:
+            values = {"cost": args[0], **values}
+        if not values:
+            raise TypeError("report(value) or report(name=value, ...)")
+        if self._count >= MAX_REPORTS:
+            return
+        self._count += 1
+        for name, value in values.items():
+            number = _to_float(value)
+            if number is None:
+                raise TypeError(f"report(): {name} must be a number")
+            self.series.setdefault(str(name), []).append(number)
+            self._pending.setdefault(str(name), []).append(number)
+        if self.emit is not None and time.monotonic() - self._last_emit >= REPORT_INTERVAL_S:
+            self.flush()
+
+    def flush(self) -> None:
+        if self.emit is None or not self._pending:
+            return
+        self.emit({"event": "progress", "series": self._pending})
+        self._pending = {}
+        self._last_emit = time.monotonic()
+
+
+def _to_float(value) -> float | None:
+    """Número real de um float, inteiro, escalar NumPy ou tensor PennyLane de um elemento."""
+    import numpy as np
+
+    try:
+        array = np.real(np.asarray(value, dtype=complex)).reshape(-1)
+    except (TypeError, ValueError):
+        return None
+    if array.size != 1 or not np.isfinite(array[0]):
+        return None
+    return float(array[0])
 
 
 class _CircuitWatcher:
@@ -87,6 +149,7 @@ def execute(
     *,
     trace: bool = True,
     require_circuit: bool = True,
+    reporter: Reporter | None = None,
 ) -> Execution:
     """Roda o código e devolve o circuito principal com a linha de cada instrução.
 
@@ -103,6 +166,8 @@ def execute(
 
     namespace: dict = {"__name__": "__main__", "__builtins__": guard.restricted_builtins()}
     namespace["run_shots"] = _run_shots
+    reporter = reporter or Reporter()
+    namespace["report"] = reporter
     if inputs:
         namespace.update(inputs)
     if hidden_setup:
@@ -123,6 +188,7 @@ def execute(
                 sys.settrace(previous_trace)
                 if trace:
                     watcher.flush()
+                reporter.flush()
     except MemoryError:
         raise UserCodeError(t("run.memory"), watcher.current_line) from None
     except RecursionError:
@@ -131,13 +197,17 @@ def execute(
         raise UserCodeError(_describe(exc), _user_line(exc) or watcher.current_line) from None
 
     if not require_circuit and not watcher.seen:
-        return Execution(circuit=None, lines=[], stdout=stdout.getvalue()[:MAX_STDOUT_CHARS], namespace=namespace)
+        return Execution(
+            circuit=None, lines=[], stdout=stdout.getvalue()[:MAX_STDOUT_CHARS], namespace=namespace,
+            reports=reporter.series,
+        )
     circuit, lines = _pick_main_circuit(namespace, watcher)
     return Execution(
         circuit=circuit,
         lines=lines,
         stdout=stdout.getvalue()[:MAX_STDOUT_CHARS],
         namespace=namespace,
+        reports=reporter.series,
     )
 
 

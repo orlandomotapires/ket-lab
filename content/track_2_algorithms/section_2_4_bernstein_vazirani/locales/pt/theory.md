@@ -6,7 +6,11 @@ $$
 f(x) = s \cdot x = s_0x_0 \oplus s_1x_1 \oplus \dots \oplus s_{n-1}x_{n-1}
 $$
 
-Classicamente, cada consulta revela um bit de $s$ (consultando $x = 0001$, $0010$, …), então são necessárias $n$ consultas. O algoritmo de Bernstein-Vazirani recupera $s$ inteira com **uma**.
+Convenção de ordem: o qubit $i$ guarda o bit $x_i$ e o qubit 0 é o **último** caractere da string. Se $s = 1000$, então só $s_3 = 1$ e $f(x) = x_3$; o estado final é $|1000\rangle$, com o qubit 3 em $|1\rangle$.
+
+O oráculo pode ainda somar um viés $b$: $f(x) = s \cdot x \oplus b$. Esse $b$ só multiplica o estado por uma fase global $(-1)^b$ e não muda a resposta.
+
+Classicamente, cada consulta revela um bit de $s$ (consultando $x = 0001$, $0010$, …), então são necessárias $n$ consultas. Aleatoriedade não ajuda: cada consulta dá no máximo 1 bit de informação, e $s$ tem $n$ bits, então com menos de $n$ consultas não dá para acertar com alta probabilidade. O algoritmo de Bernstein-Vazirani recupera $s$ inteira com **uma**.
 
 ## O mesmo circuito, outra leitura
 

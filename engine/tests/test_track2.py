@@ -42,9 +42,21 @@ def test_deutsch_jozsa_separates_constant_from_balanced(library, case, constant)
     assert distribution.get("000", 0.0) == pytest.approx(1.0 if constant else 0.0, abs=1e-9)
 
 
-@pytest.mark.parametrize("secret", ["1011", "0110", "0001", "1111"])
-def test_bernstein_vazirani_recovers_the_secret(library, secret):
-    distribution = simulator.register_distribution(run(library, "2.4", secret).circuit, [0, 1, 2, 3])
+@pytest.mark.parametrize(
+    "case, secret",
+    [
+        ("1011", "1011"),
+        ("0110", "0110"),
+        ("0001", "0001"),
+        ("1111", "1111"),
+        ("0000", "0000"),
+        ("1000", "1000"),
+        ({"s": "0110", "b": 1}, "0110"),
+        ({"s": "1011", "b": 1}, "1011"),
+    ],
+)
+def test_bernstein_vazirani_recovers_the_secret(library, case, secret):
+    distribution = simulator.register_distribution(run(library, "2.4", case).circuit, [0, 1, 2, 3])
     assert distribution == pytest.approx({secret: 1.0})
 
 

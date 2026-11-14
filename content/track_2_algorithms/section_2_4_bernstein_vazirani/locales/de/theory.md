@@ -6,7 +6,11 @@ $$
 f(x) = s \cdot x = s_0x_0 \oplus s_1x_1 \oplus \dots \oplus s_{n-1}x_{n-1}
 $$
 
-Klassisch verrät jede Abfrage ein Bit von $s$ (durch Abfragen von $x = 0001$, $0010$, …), also braucht man $n$ Abfragen. Der Bernstein-Vazirani-Algorithmus gewinnt ganz $s$ mit **einer**.
+Reihenfolge-Konvention: Qubit $i$ trägt das Bit $x_i$, und Qubit 0 ist das **letzte** Zeichen der Folge. Für $s = 1000$ ist nur $s_3 = 1$ und $f(x) = x_3$; der Endzustand ist $|1000\rangle$, mit Qubit 3 in $|1\rangle$.
+
+Das Orakel kann zusätzlich einen Bias $b$ addieren: $f(x) = s \cdot x \oplus b$. Das $b$ multipliziert den Zustand nur mit einer globalen Phase $(-1)^b$ und ändert die Antwort nicht.
+
+Klassisch verrät jede Abfrage ein Bit von $s$ (durch Abfragen von $x = 0001$, $0010$, …), also braucht man $n$ Abfragen. Zufall hilft nicht: Jede Abfrage liefert höchstens 1 Bit Information, und $s$ hat $n$ Bits; mit weniger als $n$ Abfragen kann man also nicht mit hoher Wahrscheinlichkeit richtig liegen. Der Bernstein-Vazirani-Algorithmus gewinnt ganz $s$ mit **einer**.
 
 ## Derselbe Schaltkreis, eine andere Lesart
 

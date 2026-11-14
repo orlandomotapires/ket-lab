@@ -19,7 +19,7 @@ export function OracleBar() {
   let tone: "neutral" | "success" | "warn" | "error" = "neutral";
   let message = manual
     ? lesson ? t("oracle.idleManual") : t("oracle.idleTraining")
-    : lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
+    : lesson?.framework === "python" ? t("oracle.idlePython") : lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
   if (running && training?.active) {
     message = trainingMessage(training, "oracle.training");
   } else if (training && !training.active && resultIsCurrent && !error) {

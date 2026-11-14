@@ -101,6 +101,7 @@ const STRINGS = {
   "ref.tutorial": "Tutorial",
 
   "oracle.idleLesson": "Write the circuit, then press Check.",
+  "oracle.idlePython": "Compute the variables, then press Check.",
   "oracle.idleSandbox": "Free lab: the visualization follows the cursor line.",
   "oracle.atLine": "Line {line}: {message}",
   "oracle.reset": "Reset code",

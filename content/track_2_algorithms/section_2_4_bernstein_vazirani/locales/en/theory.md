@@ -6,7 +6,11 @@ $$
 f(x) = s \cdot x = s_0x_0 \oplus s_1x_1 \oplus \dots \oplus s_{n-1}x_{n-1}
 $$
 
-Classically, each query reveals one bit of $s$ (by querying $x = 0001$, $0010$, ...), so $n$ queries are needed. The Bernstein-Vazirani algorithm recovers all of $s$ with **one**.
+Ordering convention: qubit $i$ holds the bit $x_i$, and qubit 0 is the **last** character of the string. If $s = 1000$, only $s_3 = 1$ and $f(x) = x_3$; the final state is $|1000\rangle$, with qubit 3 in $|1\rangle$.
+
+The oracle may also add a bias $b$: $f(x) = s \cdot x \oplus b$. The $b$ only multiplies the state by a global phase $(-1)^b$ and does not change the answer.
+
+Classically, each query reveals one bit of $s$ (by querying $x = 0001$, $0010$, ...), so $n$ queries are needed. Randomness does not help: each query gives at most 1 bit of information and $s$ has $n$ bits, so with fewer than $n$ queries you cannot succeed with high probability. The Bernstein-Vazirani algorithm recovers all of $s$ with **one**.
 
 ## The same circuit, another reading
 

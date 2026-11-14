@@ -21,6 +21,18 @@ export function isDesktop(): boolean {
   return window.__TAURI__ !== undefined;
 }
 
+/**
+ * Abre um link externo no navegador do sistema. Na janela desktop, um link comum
+ * não sai do app; o plugin opener do Tauri faz isso.
+ */
+export function openExternal(url: string): void {
+  if (window.__TAURI__) {
+    void window.__TAURI__.core.invoke("plugin:opener|open_url", { url }).catch(() => undefined);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 /** No desktop, envia uma linha de diagnóstico ao terminal do shell. */
 export function reportToShell(message: string): void {
   void window.__TAURI__?.core.invoke("client_log", { message }).catch(() => undefined);

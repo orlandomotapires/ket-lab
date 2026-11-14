@@ -1464,3 +1464,64 @@ tr.is-zero {
 .prose blockquote p:last-child {
   margin-bottom: 0;
 }
+
+/* referências da lição */
+
+.references {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.references-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.references-intro {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.references ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.references li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 2px;
+  align-items: baseline;
+}
+.references a {
+  color: var(--accent-text);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+}
+.references a:hover {
+  text-decoration: underline;
+}
+.ref-meta {
+  grid-column: 2;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.ref-kind {
+  min-width: 92px;
+  justify-content: center;
+}
+.ref-kind.is-book,
+.ref-kind.is-paper {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+.ref-kind.is-course,
+.ref-kind.is-tutorial {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}

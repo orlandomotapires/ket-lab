@@ -553,6 +553,49 @@
           "default": {}
         }
       }
+    },
+    "references": {
+      "type": "array",
+      "minItems": 2,
+      "description": "Leituras para aprofundar: ao menos uma teórica (livro/artigo) e uma prática (curso/tutorial)",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "title",
+          "authors",
+          "url"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "book",
+              "paper",
+              "course",
+              "tutorial"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authors": {
+            "type": "string",
+            "minLength": 1
+          },
+          "year": {
+            "type": "integer"
+          },
+          "section": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https://"
+          }
+        }
+      }
     }
   },
   "$defs": {

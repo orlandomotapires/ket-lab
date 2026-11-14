@@ -88,6 +88,15 @@ export interface Prediction {
   explanation: string;
 }
 
+export interface Reference {
+  kind: "book" | "paper" | "course" | "tutorial";
+  title: string;
+  authors: string;
+  year?: number;
+  section?: string;
+  url: string;
+}
+
 export type VisualizerKind =
   | "bloch" | "qsphere" | "compare" | "amplitudes" | "dials" | "histogram" | "modular"
   | "landscape" | "convergence" | "dissociation" | "graph" | "boundary" | "threshold";
@@ -131,5 +140,6 @@ export interface Lesson {
   /** false: o código roda só pelo botão Executar (treinos demorados). */
   live?: boolean;
   controls?: LessonControl[];
+  references?: Reference[];
   lang: string;
 }

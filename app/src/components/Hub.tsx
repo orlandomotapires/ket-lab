@@ -54,39 +54,66 @@ export function Hub() {
   return (
     <div className="hub-scroll">
       <main className="hub">
-        <section className="hub-hero">
-          <div>
-            <h1>{t("hub.title")}</h1>
-            <p>{t("hub.subtitle")}</p>
-            <div className="hub-progress">
-              <Meter value={done / sections.length} />
-              <span>{t("hub.progress", { done, total: sections.length })}</span>
-            </div>
+        {/* Painel lateral fixo: resumo, próxima lição e índice das trilhas. */}
+        <aside className="hub-side">
+          <h1>{t("hub.title")}</h1>
+          <p className="hub-subtitle">{t("hub.subtitle")}</p>
+          <div className="hub-progress">
+            <Meter value={done / sections.length} />
+            <span>{t("hub.progress", { done, total: sections.length })}</span>
           </div>
           <div className="hub-actions">
+            {next && (
+              <button className="btn btn-primary hub-next" onClick={() => void openLesson(next.id)} disabled={offline}>
+                <span className="hub-next-label">
+                  {t(progress[next.id]?.code != null || done > 0 ? "hub.continueShort" : "hub.startShort")}
+                </span>
+                <span className="hub-next-title">
+                  {next.id} {next.title}
+                </span>
+              </button>
+            )}
             <button className="btn" onClick={openSandbox} disabled={offline}>
               {t("hub.sandbox")}
             </button>
-            {next && (
-              <button className="btn btn-primary" onClick={() => void openLesson(next.id)} disabled={offline}>
-                {t(progress[next.id]?.code != null || done > 0 ? "hub.continue" : "hub.start", { id: next.id, title: next.title })}
-              </button>
-            )}
           </div>
-        </section>
-        {loadError && <p className="error-text">{loadError}</p>}
+          <nav className="hub-index" aria-label={t("topbar.tracks")}>
+            {catalog.tracks.map((track) => {
+              const trackDone = track.sections.filter((section) => progress[section.id]?.completed).length;
+              return (
+                <button
+                  key={track.id}
+                  className="hub-index-item"
+                  onClick={() => document.getElementById(`track-${track.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                >
+                  <span className="hub-index-number">{track.id}</span>
+                  <span className="hub-index-text">
+                    <span className="hub-index-title">{track.title}</span>
+                    <span className="hub-index-level">{track.level}</span>
+                  </span>
+                  <span className="hub-index-count">
+                    {trackDone}/{track.sections.length}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+          {loadError && <p className="error-text">{loadError}</p>}
+        </aside>
+
+        <div className="hub-tracks">
 
         {catalog.tracks.map((track) => {
           const trackDone = track.sections.filter((section) => progress[section.id]?.completed).length;
           return (
-            <section key={track.id} className="track" aria-labelledby={`track-${track.id}`}>
+            <section key={track.id} id={`track-${track.id}`} className="track" aria-labelledby={`track-title-${track.id}`}>
               <header className="track-head">
                 <div>
                   <div className="track-eyebrow">
                     {t("hub.track", { id: track.id })}
                     <span className="pill">{track.level}</span>
                   </div>
-                  <h2 id={`track-${track.id}`}>{track.title}</h2>
+                  <h2 id={`track-title-${track.id}`}>{track.title}</h2>
                 </div>
                 <div className="track-progress">
                   <Meter value={trackDone / track.sections.length} />
@@ -128,6 +155,7 @@ export function Hub() {
             </section>
           );
         })}
+        </div>
       </main>
     </div>
   );

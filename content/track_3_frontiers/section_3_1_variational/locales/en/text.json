@@ -4,7 +4,11 @@
   "mission": "Implement parameter_shift(params, i), the derivative of the cost by the parameter-shift rule, and use it in a gradient descent loop that takes ⟨Z⟩ close to −1. Click Run (or Ctrl+Enter) to train.",
   "prediction": {
     "question": "The cost is ⟨Z⟩ after RX(θ₀) and RY(θ₁). Starting from θ = (0.3, 0.2), near the maximum, where does gradient descent take the Bloch vector?",
-    "options": ["To the equator", "It stays put: at a maximum the gradient is zero", "To the south pole, where ⟨Z⟩ = −1"],
+    "options": [
+      "To the equator",
+      "It stays put: at a maximum the gradient is zero",
+      "To the south pole, where ⟨Z⟩ = −1"
+    ],
     "explanation": "Away from the exact maximum the gradient is not zero, and each step goes down the landscape. The minimum of ⟨Z⟩ is −1, at the south pole of the sphere, reached for example with θ₀ = π or θ₁ = π."
   },
   "hints": [
@@ -17,6 +21,9 @@
     "shift_missing": "Define the function parameter_shift(params, i).",
     "shift_wrong": "parameter_shift does not give the right derivative yet: at params = {point}, for i = {i}, the expected value is {expected}, but the function returned {actual}.",
     "no_params": "Store the final parameters in the variable params.",
-    "not_converged": "The gradient is correct, but the final cost is {cost}, and the minimum is −1. Increase the number of steps or the learning rate."
+    "not_converged": "The gradient is correct, but the final cost is {cost}, and the minimum is −1. Increase the number of steps or the learning rate.",
+    "shift_executions": "parameter_shift must run the circuit exactly 2 times per derivative (at θ + π/2 and θ − π/2), but it ran {count}. Do not use qml.grad or finite differences here.",
+    "history_missing": "Store one row [θ₀, θ₁, cost] per training step in history.",
+    "history_inconsistent": "history does not match the circuit: each row must be [θ₀, θ₁, circuit([θ₀, θ₁])], and the last one the final params."
   }
 }

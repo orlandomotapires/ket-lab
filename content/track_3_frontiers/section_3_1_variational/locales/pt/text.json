@@ -4,7 +4,11 @@
   "mission": "Implemente parameter_shift(params, i), a derivada do custo pela regra de parameter-shift, e use-a num laço de gradiente descendente que leve ⟨Z⟩ até perto de −1. Clique em Executar (ou Ctrl+Enter) para treinar.",
   "prediction": {
     "question": "O custo é ⟨Z⟩ depois de RX(θ₀) e RY(θ₁). Partindo de θ = (0,3; 0,2), perto do máximo, para onde o gradiente descendente leva o vetor de Bloch?",
-    "options": ["Para o equador", "Fica parado: no máximo o gradiente é zero", "Para o polo sul, onde ⟨Z⟩ = −1"],
+    "options": [
+      "Para o equador",
+      "Fica parado: no máximo o gradiente é zero",
+      "Para o polo sul, onde ⟨Z⟩ = −1"
+    ],
     "explanation": "Fora do máximo exato o gradiente não é zero, e cada passo desce a paisagem. O mínimo de ⟨Z⟩ é −1, no polo sul da esfera, alcançado por exemplo com θ₀ = π ou θ₁ = π."
   },
   "hints": [
@@ -17,6 +21,9 @@
     "shift_missing": "Defina a função parameter_shift(params, i).",
     "shift_wrong": "parameter_shift ainda não dá a derivada certa: em params = {point}, para i = {i}, o esperado é {expected}, mas a função devolveu {actual}.",
     "no_params": "Guarde os parâmetros finais na variável params.",
-    "not_converged": "O gradiente está certo, mas o custo final é {cost}, e o mínimo é −1. Aumente o número de passos ou a taxa de aprendizado."
+    "not_converged": "O gradiente está certo, mas o custo final é {cost}, e o mínimo é −1. Aumente o número de passos ou a taxa de aprendizado.",
+    "shift_executions": "parameter_shift deve executar o circuito exatamente 2 vezes por derivada (em θ + π/2 e θ − π/2), mas executou {count}. Não use qml.grad nem diferenças finitas aqui.",
+    "history_missing": "Guarde em history uma linha [θ₀, θ₁, custo] por passo do treino.",
+    "history_inconsistent": "O history não confere com o circuito: cada linha precisa ser [θ₀, θ₁, circuit([θ₀, θ₁])], e a última, os params finais."
   }
 }

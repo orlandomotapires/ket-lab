@@ -4,7 +4,11 @@
   "mission": "Encontre a energia do estado fundamental do H₂ com precisão química: um ansatz que parte do estado de Hartree-Fock e aplica uma excitação dupla com ângulo theta, otimizado por gradiente descendente. Clique em Executar para treinar.",
   "prediction": {
     "question": "Pelo princípio variacional, a energia medida em qualquer estado que o circuito preparar é…",
-    "options": ["menor ou igual à do estado fundamental", "maior ou igual à do estado fundamental", "sempre igual à do estado fundamental"],
+    "options": [
+      "menor ou igual à do estado fundamental",
+      "maior ou igual à do estado fundamental",
+      "sempre igual à do estado fundamental"
+    ],
     "explanation": "O estado fundamental tem, por definição, a menor energia possível. Qualquer outro estado tem energia maior ou igual, por isso minimizar ⟨H⟩ aproxima o estado fundamental por cima."
   },
   "hints": [
@@ -17,6 +21,10 @@
     "no_circuit": "Defina o QNode circuit(theta), que devolve qml.expval(H).",
     "no_theta": "Guarde o ângulo otimizado na variável theta.",
     "wrong_qubits": "O H₂ nesta base usa 4 qubits, mas o circuito tem {count}.",
-    "not_converged": "O estado preparado tem energia {energy} Ha, a {error} Ha do valor exato. A precisão química exige no máximo 0,0016 Ha: continue otimizando."
+    "not_converged": "O estado preparado tem energia {energy} Ha, a {error} Ha do valor exato. A precisão química exige no máximo 0,0016 Ha: continue otimizando.",
+    "forbidden_op": "Use só o ansatz químico (qml.BasisState e excitações). Encontrado: {names}.",
+    "stuck_hf": "A energia é a de Hartree-Fock ({energy} Ha): theta não saiu do lugar. Confira o laço de otimização e o passo do otimizador.",
+    "above_hf": "A energia ({energy} Ha) está acima até da de Hartree-Fock: o estado de partida provavelmente não é hf_state.",
+    "energies_inconsistent": "A energia está certa, mas a última entrada de energies não é a do estado final. Guarde float(circuit(theta)) depois de cada passo."
   }
 }

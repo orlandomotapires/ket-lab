@@ -16,7 +16,12 @@ def check(ns, run_case):
     for point in POINTS:
         expected = qml.grad(circuit)(pnp.array(point, requires_grad=True))
         for i in range(2):
-            actual = float(shift(pnp.array(point), i))
+            # A regra de parameter-shift usa exatamente duas execuções do circuito.
+            with qml.Tracker(circuit.device) as tracker:
+                actual = float(shift(pnp.array(point), i))
+            executions = tracker.totals.get("executions", 0)
+            if executions != 2:
+                return {"passed": False, "key": "shift_executions", "params": {"count": executions}}
             if abs(actual - float(expected[i])) > 1e-6:
                 return {
                     "passed": False,
@@ -28,5 +33,14 @@ def check(ns, run_case):
     cost = float(circuit(ns["params"]))
     if cost > TARGET:
         return {"passed": False, "key": "not_converged", "params": {"cost": cost}}
-    steps = max(len(ns.get("history") or []) - 1, 0)
+    history = ns.get("history") or []
+    if len(history) < 2:
+        return {"passed": False, "key": "history_missing"}
+    # A paisagem e a convergência mostram o history: ele precisa ser o treino de verdade.
+    for row in history:  # todas as linhas: um valor inventado pode coincidir perto do mínimo
+        if abs(float(circuit(pnp.array(row[:2]))) - float(row[2])) > 1e-6:
+            return {"passed": False, "key": "history_inconsistent"}
+    if np.max(np.abs(np.array(history[-1][:2], dtype=float) - np.array(ns["params"], dtype=float))) > 1e-6:
+        return {"passed": False, "key": "history_inconsistent"}
+    steps = len(history) - 1
     return {"passed": True, "key": "ok", "params": {"cost": cost, "steps": steps}}

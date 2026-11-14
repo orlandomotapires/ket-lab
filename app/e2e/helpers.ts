@@ -27,7 +27,9 @@ export function collectErrors(page: Page): string[] {
   return errors;
 }
 
-export async function openHub(page: Page): Promise<void> {
+export async function openHub(page: Page, { tour = false } = {}): Promise<void> {
+  // O guia da primeira lição cobriria botões nos outros testes; ele tem um teste próprio.
+  if (!tour) await page.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
   await page.goto("/");
   await expect(page.locator(".section-row").first()).toBeVisible();
 }

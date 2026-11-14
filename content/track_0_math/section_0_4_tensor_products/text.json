@@ -1,0 +1,40 @@
+{
+  "title": "Tensor Products",
+  "summary": "The Kronecker product of vectors and matrices, product and entangled states, and Qiskit's qubit ordering.",
+  "objectives": [
+    "Build multi-qubit states and operators with np.kron and state their dimension 2^n",
+    "Decide whether a two-qubit state is a product state with the test a00·a11 = a01·a10",
+    "Write an operator that acts on one qubit of a register in Qiskit's ordering (qubit 0 rightmost)"
+  ],
+  "mission": "The editor defines the vectors zero, one, plus, the matrices I and X, and the states s1 and s2. Using Qiskit's ordering, with qubit 0 as the last factor, define prod (qubit 1 in |+⟩, qubit 0 in |0⟩), op_q0 and op_q1 (the 4×4 matrices of X on qubit 0 and on qubit 1), after (op_q0 applied to prod), three (the vector |+⟩⊗|+⟩⊗|+⟩) and s1_product, s2_product (True or False: is the state a product state).",
+  "prediction": {
+    "question": "In Qiskit's ordering, which vector is the state with qubit 1 in |1⟩ and qubit 0 in |0⟩ (the label '10')?",
+    "options": [
+      "(0, 1, 0, 0)",
+      "(0, 0, 1, 0)",
+      "(0, 0, 0, 1)"
+    ],
+    "explanation": "The label '10' is the basis state with index 2 (binary 10), so the amplitude 1 sits in position 2 of (a00, a01, a10, a11), which counts from 0. It equals np.kron(one, zero): the factor for qubit 1 comes first."
+  },
+  "hints": [
+    "np.kron(u, v) returns the Kronecker product u ⊗ v. In Qiskit's ordering the leftmost factor is the highest qubit, so qubit 0 is the last argument: prod = np.kron(plus, zero).",
+    "X on qubit 0 means the identity on qubit 1: op_q0 = np.kron(I, X), and op_q1 = np.kron(X, I). Then after = op_q0 @ prod. For three, nest the product: np.kron(np.kron(plus, plus), plus). A 2-qubit vector (a00, a01, a10, a11) is a product state when a00 * a11 equals a01 * a10, which you compare with np.isclose.",
+    "prod = np.kron(plus, zero); op_q0 = np.kron(I, X); op_q1 = np.kron(X, I); after = op_q0 @ prod; three = np.kron(np.kron(plus, plus), plus); s1_product = np.isclose(s1[0] * s1[3], s1[1] * s1[2]); s2_product = np.isclose(s2[0] * s2[3], s2[1] * s2[2])."
+  ],
+  "messages": {
+    "ok": "All values are correct. prod has the entries {prod}, X on qubit 0 gives {after}, and the product test separates s1 (entangled) from s2 (product).",
+    "missing": "Define the variable {name}.",
+    "not_array": "The variable {name} must be a numeric array with shape {shape}, but it holds {actual}.",
+    "not_bool": "The variable {name} must be True or False, but it holds {actual}.",
+    "prod_reversed": "prod is {actual}, which is |0⟩⊗|+⟩. In Qiskit's ordering qubit 0 is the last factor, so qubit 1 (in |+⟩) comes first: np.kron(plus, zero).",
+    "prod_wrong": "prod should be |+⟩⊗|0⟩ = {expected}, but it is {actual}. Use np.kron(plus, zero).",
+    "op_q0_swapped": "op_q0 is the matrix of X on qubit 1 (X ⊗ I). With qubit 0 as the last factor, X on qubit 0 is I ⊗ X: np.kron(I, X).",
+    "op_q0_wrong": "op_q0 should be I ⊗ X, a 4×4 matrix, but it is {actual}. Use np.kron(I, X).",
+    "op_q1_swapped": "op_q1 is the matrix of X on qubit 0 (I ⊗ X). With qubit 1 as the first factor, X on qubit 1 is X ⊗ I: np.kron(X, I).",
+    "op_q1_wrong": "op_q1 should be X ⊗ I, a 4×4 matrix, but it is {actual}. Use np.kron(X, I).",
+    "after_wrong": "after should be op_q0 @ prod = {expected} (qubit 0 flipped from |0⟩ to |1⟩, qubit 1 still |+⟩), but it is {actual}.",
+    "three_wrong": "three should be |+⟩⊗|+⟩⊗|+⟩, 8 entries equal to 1/√8 = 0.3536, but it is {actual}. Nest np.kron three times, as in np.kron(np.kron(plus, plus), plus).",
+    "s1_wrong": "s1_product should be False: s1 = (|00⟩ + |11⟩)/√2 has a00·a11 = 1/2 but a01·a10 = 0, so it is entangled.",
+    "s2_wrong": "s2_product should be True: for s2 = (1, 1, −1, −1)/2, a00·a11 = −1/4 = a01·a10, so it is a product state."
+  }
+}

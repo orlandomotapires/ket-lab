@@ -1,0 +1,40 @@
+{
+  "title": "Vectors and Inner Products",
+  "summary": "Column vectors in C² and C⁴, the inner product with conjugation, normalization and the computational and ± bases.",
+  "objectives": [
+    "Compute the norm of a complex vector and normalize it",
+    "Compute an inner product with the conjugation on the first vector, in C² and C⁴",
+    "Build the ± basis, check orthonormality and expand a state in it"
+  ],
+  "mission": "The editor defines the vectors v, a, b, plus, psi, phi_plus and q. Compute norm = ‖v‖, v_hat = v/‖v‖, inner = ⟨a|b⟩, prob = |⟨a|b⟩|², minus (the vector |−⟩ in the ± basis, orthogonal to plus, normalized, with a positive first entry), amp_plus = ⟨+|ψ⟩, amp_minus = ⟨−|ψ⟩ and inner4 = ⟨φ⁺|q⟩ in C⁴.",
+  "prediction": {
+    "question": "For complex vectors, how are ⟨a|b⟩ and ⟨b|a⟩ related?",
+    "options": [
+      "They are equal",
+      "They are complex conjugates of each other",
+      "They differ by a minus sign"
+    ],
+    "explanation": "⟨a|b⟩ = Σ aₖ* bₖ and ⟨b|a⟩ = Σ bₖ* aₖ. Each term of the second sum is the conjugate of the corresponding term of the first, so ⟨b|a⟩ = ⟨a|b⟩*. They are equal only when the inner product is real."
+  },
+  "hints": [
+    "The inner product ⟨a|b⟩ conjugates the entries of the first vector before multiplying. np.vdot(a, b) does exactly this, while np.dot(a, b) does not conjugate.",
+    "norm = np.linalg.norm(v) and v_hat = v / norm. For minus, flip the sign of the second entry of plus. amp_plus = np.vdot(plus, psi), and prob is the squared modulus of the inner product, abs(inner) ** 2.",
+    "norm = np.linalg.norm(v); v_hat = v / norm; inner = np.vdot(a, b); prob = abs(inner) ** 2; minus = np.array([1, -1]) / np.sqrt(2); amp_plus = np.vdot(plus, psi); amp_minus = np.vdot(minus, psi); inner4 = np.vdot(phi_plus, q)."
+  ],
+  "messages": {
+    "ok": "All values are correct. ⟨a|b⟩ = {inner} gives probability {prob}, and |ψ⟩ has amplitudes {amp_plus} and {amp_minus} in the ± basis.",
+    "missing": "Define the variable {name}.",
+    "not_array": "The variable {name} must be an array of numbers with shape {shape}, but it holds {actual}.",
+    "norm_wrong": "norm should be ‖v‖ = √(Σ|vₖ|²) = {expected}, but it is {actual}. Use np.linalg.norm(v).",
+    "v_hat_wrong": "v_hat should be v / norm = {expected}, but it is {actual}. Divide every entry of v by its norm.",
+    "inner_conjugate": "inner is {actual}, the conjugate of ⟨a|b⟩. Either the conjugation is missing (np.dot) or it is applied to the second vector (np.vdot(b, a)). The conjugation belongs to the first vector: use np.vdot(a, b).",
+    "inner_wrong": "inner should be ⟨a|b⟩ = {expected}, but it is {actual}. Use np.vdot(a, b).",
+    "prob_wrong": "prob should be |⟨a|b⟩|² = {expected}, but it is {actual}. Take the squared modulus of inner with abs(inner) ** 2.",
+    "minus_not_unit": "minus has norm {actual}, but a basis vector must have norm 1. Divide by √2.",
+    "minus_not_orthogonal": "minus is not orthogonal to plus: ⟨+|−⟩ = {actual}, and it must be 0.",
+    "minus_wrong": "minus should be (|0⟩ − |1⟩)/√2 = {expected} (orthogonal to plus, norm 1, positive first entry), but it is {actual}.",
+    "amp_plus_wrong": "amp_plus should be ⟨+|ψ⟩ = {expected}, but it is {actual}. Use np.vdot(plus, psi), which conjugates plus.",
+    "amp_minus_wrong": "amp_minus should be ⟨−|ψ⟩ = {expected}, but it is {actual}. Use np.vdot(minus, psi).",
+    "inner4_wrong": "inner4 should be ⟨φ⁺|q⟩ = {expected}, but it is {actual}. The formula is the same in C⁴: np.vdot(phi_plus, q)."
+  }
+}

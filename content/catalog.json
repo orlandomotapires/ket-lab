@@ -8,22 +8,22 @@
         {
           "id": "0.1",
           "title": "Complex Numbers and Phases",
-          "summary": "To be written."
+          "summary": "Complex arithmetic, modulus, polar form and the difference between global and relative phase."
         },
         {
           "id": "0.2",
           "title": "Vectors and Inner Products",
-          "summary": "To be written."
+          "summary": "Column vectors in C² and C⁴, the inner product with conjugation, normalization and the computational and ± bases."
         },
         {
           "id": "0.3",
           "title": "Matrices, Unitaries and Eigenvalues",
-          "summary": "To be written."
+          "summary": "Matrix–vector products, the conjugate transpose, unitarity, the Pauli matrices, eigenvalues and expectation values of Hermitian matrices."
         },
         {
           "id": "0.4",
           "title": "Tensor Products",
-          "summary": "To be written."
+          "summary": "The Kronecker product of vectors and matrices, product and entangled states, and Qiskit's qubit ordering."
         }
       ]
     },

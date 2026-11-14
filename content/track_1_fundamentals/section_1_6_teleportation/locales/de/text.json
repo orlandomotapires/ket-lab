@@ -5,7 +5,7 @@
   "hints": [
     "Erzeuge zuerst ein Bell-Paar zwischen Qubit 1 (Alice) und Qubit 2 (Bob), wie in der vorigen Lektion: qc.h(1) und qc.cx(1, 2).",
     "Alice führt eine Messung in der Bell-Basis auf den Qubits 0 und 1 durch: qc.cx(0, 1), qc.h(0), dann qc.measure(0, 0) und qc.measure(1, 1).",
-    "Bob korrigiert anhand der empfangenen Bits: X, wenn Bit 1 den Wert 1 hat, danach Z, wenn Bit 0 den Wert 1 hat. Verwende with qc.if_test((qc.clbits[1], 1)): qc.x(2) und dasselbe mit qc.clbits[0] und qc.z(2)."
+    "Bob korrigiert anhand der empfangenen Bits: X, wenn Bit 1 den Wert 1 hat, danach Z, wenn Bit 0 den Wert 1 hat. Verwende with qc.if_test((qc.clbits[1], 1)): qc.x(2) und dasselbe mit qc.clbits[0] und qc.z(2). Die Reihenfolge der beiden Korrekturen spielt keine Rolle: XZ = −ZX, und ein globales Vorzeichen ist nicht beobachtbar."
   ],
   "prediction": {
     "question": "Was passiert nach der Teleportation mit dem Zustand, der im Qubit von Alice war?",

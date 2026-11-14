@@ -128,7 +128,7 @@ def test_teleport_reference_passes_with_varied_inputs():
     lesson = _teleport_lesson()
     result = validation.validate(lesson["solution"], lesson)
     assert result["passed"], result
-    assert "128 combinações" in result["message"]
+    assert "192 combinações" in result["message"]
 
 
 def test_teleport_with_one_correction_missing_is_partial():

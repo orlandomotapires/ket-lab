@@ -9,6 +9,9 @@ export function Timeline() {
   const setStep = useStore((s) => s.setStep);
   const setFollowCursor = useStore((s) => s.setFollowCursor);
 
+  // Sem instruções, não há o que percorrer: os controles só apareceriam desativados.
+  if (count === 0) return null;
+
   return (
     <div className="timeline">
       <div className="timeline-buttons">
@@ -36,7 +39,7 @@ export function Timeline() {
         onChange={(event) => setStep(Number(event.target.value))}
         aria-label={t("timeline.slider")}
       />
-      <label className="check">
+      <label className="check" title={t("lab.followHint")}>
         <input type="checkbox" checked={followCursor} onChange={(event) => setFollowCursor(event.target.checked)} />
         {t("timeline.follow")}
       </label>

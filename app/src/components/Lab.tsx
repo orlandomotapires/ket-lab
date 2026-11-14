@@ -20,11 +20,7 @@ export function Lab() {
           <div className="panel-head">
             <h2>{t("lab.code")}</h2>
             <span className="grow" />
-            {lesson ? (
-              <span className="muted small">{t("lab.followHint")}</span>
-            ) : (
-              <ExamplePicker />
-            )}
+            {!lesson && <ExamplePicker />}
           </div>
           {/* A chave recria o editor ao trocar de lição (cursor e histórico de desfazer). */}
           <CodeEditor key={key} />

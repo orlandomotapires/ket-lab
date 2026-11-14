@@ -84,7 +84,7 @@ const STRINGS = {
   "theory.hint": "Show hint {n} of {total}",
 
   "theory.references": "Further reading",
-  "theory.referencesIntro": "A theoretical and a hands-on reading on this lesson's topic. Links open in your browser.",
+  "theory.referencesIntro": "A theoretical and a hands-on reading on this lesson's topic. Links open in a new tab.",
   "ref.book": "Book",
   "ref.paper": "Paper",
   "ref.course": "Hands-on course",
@@ -110,6 +110,7 @@ const STRINGS = {
   "timeline.follow": "Follow cursor",
 
   "circuit.empty": "The circuit appears here as you type.",
+  "circuit.noGates": "No gates yet. Each gate you write appears on these wires.",
   "circuit.aria": "Circuit with {qubits} qubit(s) and {steps} instruction(s)",
   "circuit.stepTitle": "Step {n} · line {line} · {label}",
 

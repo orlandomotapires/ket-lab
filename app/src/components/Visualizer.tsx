@@ -18,6 +18,8 @@ import { AmplitudesView, amplitudeScale, DialsView, HistogramView, ModularView }
 import {
   ConvergenceView,
   DissociationView,
+  GraphView,
+  type GraphData,
   LandscapeView,
   type ConvergenceData,
   type DissociationData,
@@ -201,6 +203,7 @@ function Stage({ view, result, snapshot, current, code, lesson }: {
     if (view === "landscape") return <LandscapeView data={data as LandscapeData} />;
     if (view === "convergence") return <ConvergenceView data={data as ConvergenceData} />;
     if (view === "dissociation") return <DissociationView data={data as DissociationData} />;
+    if (view === "graph") return <GraphView data={data as GraphData} />;
     return <div className="stage-message">{t("viz.runToSee")}</div>;
   }
   if (view === "modular" && lesson?.modular) {

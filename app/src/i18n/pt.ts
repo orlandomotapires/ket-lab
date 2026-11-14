@@ -143,6 +143,12 @@ export const pt = {
   "oracle.runTitle": "Executar o código (Ctrl+Enter)",
   "oracle.idleManual": "Escreva o código e clique em Executar (Ctrl+Enter) para treinar.",
 
+  "viz.graphBest": "Divisão mais provável",
+  "viz.graphBestDetail": "corta {cut} de {max} arestas",
+  "viz.graphRatio": "Razão de aproximação: {ratio}",
+  "viz.graphTop": "Divisões mais prováveis",
+  "viz.graphCut": "corte {cut}",
+  "viz.graphNote": "Círculos e quadrados são os dois grupos da divisão mais provável; linhas cheias são arestas cortadas.",
   "probs.state": "Estado",
   "probs.probability": "Probabilidade",
   "probs.amplitude": "Amplitude",

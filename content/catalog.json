@@ -246,9 +246,9 @@
             "de": "QAOA und Max-Cut"
           },
           "summary": {
-            "pt": "Otimização combinatória em grafos.",
-            "en": "Combinatorial optimization on graphs.",
-            "de": "Kombinatorische Optimierung auf Graphen."
+            "pt": "Otimização combinatória num grafo, com p = 2 camadas.",
+            "en": "Combinatorial optimization on a graph, with p = 2 layers.",
+            "de": "Kombinatorische Optimierung auf einem Graphen mit p = 2 Schichten."
           }
         },
         {
@@ -267,14 +267,27 @@
         {
           "id": "3.5",
           "title": {
-            "pt": "Ruído e Correção de Erros",
-            "en": "Noise and Error Correction",
-            "de": "Rauschen und Fehlerkorrektur"
+            "pt": "Matrizes Densidade e Ruído",
+            "en": "Density Matrices and Noise",
+            "de": "Dichtematrizen und Rauschen"
           },
           "summary": {
-            "pt": "Código de repetição, síndromes e canais de ruído.",
-            "en": "Repetition code, syndromes and noise channels.",
-            "de": "Wiederholungscode, Syndrome und Rauschkanäle."
+            "pt": "Estados mistos, canais de Kraus e por que a probabilidade de erro não é a de resposta errada.",
+            "en": "Mixed states, Kraus channels, and why the error probability is not the wrong-answer probability.",
+            "de": "Gemischte Zustände, Kraus-Kanäle und warum die Fehlerwahrscheinlichkeit nicht die Wahrscheinlichkeit einer falschen Antwort ist."
+          }
+        },
+        {
+          "id": "3.6",
+          "title": {
+            "pt": "Correção de Erros Quânticos",
+            "en": "Quantum Error Correction",
+            "de": "Quantenfehlerkorrektur"
+          },
+          "summary": {
+            "pt": "Código de bit flip de 3 qubits, síndromes e o limiar de erro.",
+            "en": "The 3-qubit bit-flip code, syndromes and the error threshold.",
+            "de": "Der 3-Qubit-Bitflip-Code, Syndrome und die Fehlerschwelle."
           }
         }
       ]

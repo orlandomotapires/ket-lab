@@ -14,6 +14,6 @@
   "hints": [
     "Der Schaltkreis ist der der Phasenschätzung: Hadamard auf die Qubits 0 bis 3, das Arbeitsregister mit qc.x(4) in |1⟩ und in der Schleife for j in range(4) apply_controlled_mod_mult(qc, j, 2**j).",
     "Beende mit inverse_qft(qc, [0, 1, 2, 3]) und miss die Qubits 0 bis 3 in die Bits 0 bis 3. Danach counts = run_shots(qc).",
-    "Für jedes Ergebnis: r = Fraction(int(bits, 2) / 16).limit_denominator(15).denominator. Wenn r gerade ist, berechne gcd(7**(r // 2) - 1, 15) und gcd(7**(r // 2) + 1, 15) und speichere in factors die Werte, die ungleich 1 und 15 sind, ohne Wiederholungen."
+    "Für jedes Ergebnis: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Verwende r nur, wenn pow(a, r, N) == 1 gilt und r gerade ist; dann half = pow(a, r // 2, N). Ist half == N - 1, verwirf es; andernfalls berechne gcd(half - 1, N) und gcd(half + 1, N) und speichere in factors die Werte, die ungleich 1 und N sind, ohne Wiederholungen."
   ]
 }

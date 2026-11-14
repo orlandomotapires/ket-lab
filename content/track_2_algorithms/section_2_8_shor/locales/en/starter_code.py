@@ -3,6 +3,7 @@ from math import gcd
 
 from qiskit import QuantumCircuit
 
+# a = 7 and N = 15 are provided by the lab.
 # Qubits 0 to 3: counting. Qubits 4 to 7: work. 4 bits for the measurement.
 qc = QuantumCircuit(8, 4)
 

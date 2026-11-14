@@ -14,6 +14,6 @@
   "hints": [
     "The circuit is the phase estimation one: Hadamard on qubits 0 to 3, the work register in |1⟩ with qc.x(4) and, in the loop for j in range(4), apply_controlled_mod_mult(qc, j, 2**j).",
     "Finish with inverse_qft(qc, [0, 1, 2, 3]) and measure qubits 0 to 3 into bits 0 to 3. Then, counts = run_shots(qc).",
-    "For each result: r = Fraction(int(bits, 2) / 16).limit_denominator(15).denominator. If r is even, compute gcd(7**(r // 2) - 1, 15) and gcd(7**(r // 2) + 1, 15) and store in factors the values different from 1 and 15, without repeats."
+    "For each result: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Only use r if pow(a, r, N) == 1 and r is even; then half = pow(a, r // 2, N). If half == N - 1, discard it; otherwise compute gcd(half - 1, N) and gcd(half + 1, N) and store in factors the values different from 1 and N, without repeats."
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "title": "Matrizes Densidade e Ruído",
+  "summary": "Estados mistos, canais de Kraus e por que a probabilidade de erro não é a de resposta errada.",
+  "mission": "O circuito H, T, T†, H devolve |0⟩. Entre T e T†, insira um erro: X com probabilidade p_x, Z com probabilidade p_z, nada no resto. Calcule a matriz densidade final e guarde em p_wrong a probabilidade de medir 1 e em purity a pureza Tr(ρ²), para p_x = p_z = 0,2.",
+  "prediction": {
+    "question": "Com p_x = p_z = 0,2, o erro acontece em 40% das execuções. Com que probabilidade a medição final dá o resultado errado (1)?",
+    "options": ["40%", "30%", "20%"],
+    "explanation": "Depois do H final, um erro Z vira um X completo: sempre inverte o resultado. Já um erro X, entre T e T†, vira uma rotação que inverte o resultado só metade das vezes. Total: 0,2 + 0,2 × 0,5 = 30%."
+  },
+  "hints": [
+    "Um canal é dado por operadores de Kraus. Para este erro: √(1 − p_x − p_z)·I, √p_x·X e √p_z·Z. Monte essa lista em error_kraus e aplique com qml.QubitChannel(error_kraus(p_x, p_z), wires=0).",
+    "O circuito é qml.Hadamard, qml.T, o canal, qml.adjoint(qml.T(wires=0)) e qml.Hadamard. Para guardar ρ, o dispositivo precisa ser default.mixed e o QNode devolve qml.density_matrix(wires=0).",
+    "Com rho = circuit(p_x, p_z), a probabilidade de medir 1 é rho[1, 1] e a pureza é np.trace(rho @ rho). Use np.real para ficar com a parte real."
+  ],
+  "messages": {
+    "ok": "Matriz densidade correta para todas as probabilidades de erro testadas. Resposta errada em {p_wrong} das execuções e pureza {purity}: o ruído deixou o estado misto.",
+    "no_circuit": "Defina o QNode circuit(p_x, p_z) num dispositivo default.mixed.",
+    "wrong_qubits": "Esta lição usa 1 qubit, mas o circuito tem {count}.",
+    "no_noise": "O estado final ainda é puro: o erro não está sendo aplicado. Use qml.QubitChannel com os operadores de Kraus entre T e T†.",
+    "wrong_rho": "Com p_x = {px} e p_z = {pz}, a probabilidade de medir 1 deveria ser {want}, mas o circuito dá {got}. Confira os operadores de Kraus e a posição do erro.",
+    "missing": "Guarde o resultado na variável {name}.",
+    "wrong_value": "A variável {name} vale {actual}, mas não confere com a matriz densidade para p_x = p_z = 0,2."
+  }
+}

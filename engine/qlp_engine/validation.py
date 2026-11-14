@@ -17,6 +17,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import simulator, tracer
+from .i18n import current as current_lang
 from .i18n import percent, t
 
 DEFAULT_TOLERANCE = 0.999
@@ -50,6 +51,7 @@ def validate(code: str, lesson: dict) -> dict:
         "reduced_state": _check_reduced_state,
         "oracle_cases": _check_oracle_cases,
         "state_cases": _check_state_cases,
+        "custom": _check_custom,
     }.get(kind)
     if checker is None:
         return _result(False, "unsupported", t("val.unsupported", kind=kind))
@@ -57,7 +59,12 @@ def validate(code: str, lesson: dict) -> dict:
     max_qubits = int(lesson.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS)
     lesson = {**lesson, "code": code}
     try:
-        student = tracer.execute(code, lesson.get("hidden_setup"), _first_case(rules))
+        pennylane = lesson.get("framework") == "pennylane"
+        student = tracer.execute(
+            code, lesson.get("hidden_setup"), _first_case(rules), trace=not pennylane, require_circuit=not pennylane
+        )
+        if kind == "custom":
+            return _check_custom(student, lesson, rules)
         problem = _structural_problem(student.circuit, rules)
         if problem:
             return problem
@@ -223,6 +230,45 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
     if ok:
         return _result(False, "partial", t("val.cases_partial", ok=ok, total=total), fidelity=worst)
     return _result(False, "wrong_state", t("val.state_wrong", fidelity=percent(worst)), fidelity=worst)
+
+
+def _check_custom(student, lesson: dict, rules: dict) -> dict:
+    """Validação própria da lição: `check.py` define check(ns, run_case).
+
+    `ns` é o namespace do aluno; `run_case(entrada)` executa o código de novo com
+    `_QLP_INPUT = entrada` e devolve o namespace. check() devolve
+    {"passed", "key", "params"}; a mensagem vem de `messages[key]` no text.json
+    do idioma atual.
+    """
+    pennylane = lesson.get("framework") == "pennylane"
+
+    def run_case(case):
+        return tracer.execute(
+            lesson["code"], lesson.get("hidden_setup"), {"_QLP_INPUT": case},
+            trace=not pennylane, require_circuit=not pennylane,
+        ).namespace
+
+    module: dict = {"__name__": "qlp_check"}
+    exec(compile(lesson["check"], "<check>", "exec"), module)
+    try:
+        outcome = module["check"](student.namespace, run_case)
+    except tracer.UserCodeError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - erro do aluno ao ser avaliado (ex.: função com assinatura errada)
+        from .tracer import _describe
+
+        return _result(False, "error", _describe(exc))
+    params = {k: _format_param(v) for k, v in (outcome.get("params") or {}).items()}
+    template = (lesson.get("messages") or {}).get(outcome["key"], outcome["key"])
+    return _result(bool(outcome["passed"]), outcome["key"], template.format(**params), fidelity=outcome.get("fidelity"))
+
+
+def _format_param(value):
+    """Números com o separador decimal do idioma; o resto como texto."""
+    if isinstance(value, float):
+        text = f"{value:.4g}" if abs(value) < 1e-3 else f"{value:.4f}".rstrip("0").rstrip(".")
+        return text if current_lang() == "en" else text.replace(".", ",")
+    return value
 
 
 def _check_variables(result: dict, namespace: dict, expected: dict) -> dict:

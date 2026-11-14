@@ -31,23 +31,21 @@ def handle(job: dict) -> dict:
     kind = job.get("type")
     try:
         if kind == "run":
-            execution = tracer.execute(job["code"], job.get("hidden_setup"))
-            trajectory = simulator.run_trajectory(
-                execution.circuit,
-                execution.lines,
-                seed=int(job.get("seed", 0)),
-                max_qubits=int(job.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS),
-            )
-            return {"ok": True, "stdout": execution.stdout, **geometry.describe_trajectory(trajectory)}
+            trajectory, execution = _simulate(job)
+            result = {"ok": True, "stdout": execution.stdout, **geometry.describe_trajectory(trajectory)}
+            if job.get("analysis"):
+                result["analysis"] = run_analysis(job["analysis"], execution.namespace)
+            return result
         if kind == "shots":
-            execution = tracer.execute(job["code"], job.get("hidden_setup"))
-            result = simulator.sample_counts(
-                execution.circuit,
-                shots=int(job.get("shots", 1024)),
-                seed=int(job.get("seed", 0)),
-                max_qubits=int(job.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS),
-            )
-            return {"ok": True, **result}
+            trajectory, execution = _simulate(job)
+            if execution.circuit is not None:
+                return {"ok": True, **simulator.sample_counts(
+                    execution.circuit,
+                    shots=int(job.get("shots", 1024)),
+                    seed=int(job.get("seed", 0)),
+                    max_qubits=_max_qubits(job),
+                )}
+            return {"ok": True, **_sample_final_state(trajectory, int(job.get("shots", 1024)), int(job.get("seed", 0)))}
         if kind == "validate":
             return {"ok": True, **validation.validate(job["code"], job["lesson"])}
         if kind == "ping":
@@ -63,6 +61,97 @@ def handle(job: dict) -> dict:
         return _error(i18n.t("run.internal", detail=f"{type(exc).__name__}: {exc}"), kind="internal")
 
 
+def _max_qubits(job: dict) -> int:
+    from .simulator import DEFAULT_MAX_QUBITS
+
+    return int(job.get("max_qubits") or DEFAULT_MAX_QUBITS)
+
+
+def _simulate(job: dict):
+    """Executa o código e devolve (trajetória, execução), para Qiskit ou PennyLane.
+
+    Lições PennyLane rodam sem rastreamento linha a linha (treinos ficam rápidos);
+    no laboratório livre, um QNode é usado quando não há QuantumCircuit.
+    """
+    from . import pl, simulator, tracer
+
+    pennylane = job.get("framework") == "pennylane"
+    execution = tracer.execute(
+        job["code"], job.get("hidden_setup"), job.get("inputs"), trace=not pennylane, require_circuit=False
+    )
+    if execution.circuit is not None and not pennylane:
+        trajectory = simulator.run_trajectory(
+            execution.circuit, execution.lines, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job)
+        )
+        return trajectory, execution
+    spec = job.get("qnode") or {}
+    try:
+        qnode = pl.find_qnode(execution.namespace, spec.get("name"))
+    except tracer.UserCodeError:
+        if pennylane:
+            raise
+        raise tracer.UserCodeError(_no_circuit_message(), kind="no_circuit") from None
+    ops, lines, n = pl.trace_qnode(qnode, pl.qnode_arguments(qnode, execution.namespace, spec.get("args")))
+    trajectory = simulator.run_ops_trajectory(ops, lines, n, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job))
+    return trajectory, execution
+
+
+def _no_circuit_message() -> str:
+    from .i18n import t
+
+    return t("run.no_circuit")
+
+
+def _sample_final_state(trajectory, shots: int, seed: int) -> dict:
+    import numpy as np
+
+    from .simulator import MAX_SHOTS, state_probabilities
+
+    shots = max(1, min(shots, MAX_SHOTS))
+    probabilities = state_probabilities(trajectory.states[-1])
+    probabilities = probabilities / probabilities.sum()
+    samples = np.random.default_rng(seed).choice(len(probabilities), size=shots, p=probabilities)
+    width = trajectory.num_qubits
+    counts: dict[str, int] = {}
+    for sample in samples:
+        key = format(int(sample), f"0{width}b")
+        counts[key] = counts.get(key, 0) + 1
+    return {"shots": shots, "counts": dict(sorted(counts.items())), "measured": "qubits", "width": width}
+
+
+def run_analysis(code: str, namespace: dict) -> dict:
+    """Roda o analysis.py da lição (conteúdo confiável) sobre o namespace do aluno.
+
+    O resultado alimenta as visualizações de treino (paisagem de custo, curva de
+    convergência, grafo, fronteira de decisão). Erros viram {"error": ...} e não
+    impedem o resto da visualização.
+    """
+    try:
+        module: dict = {"__name__": "qlp_analysis"}
+        exec(compile(code, "<analysis>", "exec"), module)
+        return to_json(module["analyze"](namespace))
+    except Exception as exc:  # noqa: BLE001
+        return {"error": f"{type(exc).__name__}: {exc}"}
+
+
+def to_json(value):
+    """Converte arrays e números do NumPy/PennyLane em tipos JSON."""
+    import numpy as np
+
+    if isinstance(value, dict):
+        return {str(k): to_json(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [to_json(v) for v in value]
+    if hasattr(value, "tolist"):
+        return to_json(np.asarray(value).tolist())
+    if isinstance(value, (np.floating, float)):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    return value
+
+
 def _error(message: str, line: int | None = None, kind: str = "runtime") -> dict:
     return {"ok": False, "error": {"message": message, "line": line, "kind": kind}}
 
@@ -71,6 +160,11 @@ def worker_main(connection) -> None:
     """Ponto de entrada do processo filho."""
     _limit_memory()
     from . import geometry, simulator, tracer, validation  # noqa: F401 - pré-aquecimento
+
+    try:  # o PennyLane leva ~1 s para importar: melhor agora do que na primeira lição
+        import pennylane  # noqa: F401
+    except ImportError:
+        pass
 
     connection.send({"event": "ready"})
     while True:

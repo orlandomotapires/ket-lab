@@ -130,22 +130,25 @@ class EngineServer:
             lesson_id = message.get("lesson_id")
             job = {"type": kind, "code": code, "seed": message.get("seed", 0), "lang": i18n.current()}
 
+            timeout = self.content.timeout(lesson_id)
             if kind == "validate":
-                job["lesson"] = self.content.validation_bundle(lesson_id)
-                result = await self.pool.submit(job)
+                job["lesson"] = self.content.validation_bundle(lesson_id, i18n.current())
+                # Validar pode reexecutar o código várias vezes (casos secretos, treinos).
+                result = await self.pool.submit(job, timeout=timeout * 3 if timeout else None)
                 if result.get("passed"):
                     self.progress.save(lesson_id, code=code, completed=True)
                 return result
 
             job.update(self.content.run_context(lesson_id))
+            job["inputs"] = self.content.control_inputs(lesson_id, message.get("controls"))
             if kind == "shots":
                 job["shots"] = message.get("shots", 1024)
-                return await self.pool.submit(job)
+                return await self.pool.submit(job, timeout=timeout)
 
             # run: só a edição mais recente interessa; execuções ultrapassadas são descartadas.
             latest_run["seq"] += 1
             seq = latest_run["seq"]
-            return await self.pool.submit(job, is_stale=lambda: seq != latest_run["seq"])
+            return await self.pool.submit(job, timeout=timeout, is_stale=lambda: seq != latest_run["seq"])
 
         return _error(i18n.t("server.unknown_type", kind=kind), "protocol")
 

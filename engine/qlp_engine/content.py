@@ -86,6 +86,13 @@ class ContentLibrary:
             lesson["comparison"] = {**manifest["comparison"], **text.get("comparison", {})}
         if "views" in text:
             lesson["view_labels"] = text["views"]
+        if "controls" in manifest:
+            labels = text.get("controls", {})
+            lesson["controls"] = [
+                {**control, "label": labels.get(control["id"], {}).get("label", control["id"]),
+                 "option_labels": labels.get(control["id"], {}).get("options", {})}
+                for control in manifest["controls"]
+            ]
         lesson["theory"] = _read_text(locale / "theory.md")
         lesson["starter_code"] = _read_text(locale / "starter_code.py")
         lesson["lang"] = locale.name
@@ -98,17 +105,43 @@ class ContentLibrary:
         folder = self._folder(lesson_id) / "locales"
         return sorted(p.name for p in folder.iterdir() if p.is_dir()) if folder.is_dir() else []
 
-    def validation_bundle(self, lesson_id: str) -> dict:
+    def validation_bundle(self, lesson_id: str, lang: str | None = None) -> dict:
         """Dados que o worker precisa para validar (inclui a solução de referência)."""
         folder = self._folder(lesson_id)
         manifest = _read_json(folder / "manifest.json")
-        return {
+        bundle = {
             "id": manifest["id"],
             "validation": manifest["validation"],
             "max_qubits": manifest.get("max_qubits"),
+            "framework": manifest.get("framework", "qiskit"),
             "solution": _read_text(folder / "solution.py"),
             "hidden_setup": self._hidden_setup(folder),
         }
+        if manifest["validation"]["type"] == "custom":
+            bundle["check"] = _read_text(folder / "check.py")
+            text = _read_json(self._locale_dir(folder, i18n.normalize(lang)) / "text.json")
+            bundle["messages"] = text.get("messages", {})
+        return bundle
+
+    def timeout(self, lesson_id: str | None) -> float | None:
+        if not lesson_id:
+            return None
+        value = _read_json(self._folder(lesson_id) / "manifest.json").get("timeout")
+        return float(value) if value else None
+
+    def control_inputs(self, lesson_id: str | None, chosen: dict | None) -> dict | None:
+        """Valores dos controles da lição (ex.: erro injetado), validados contra o manifest."""
+        if not lesson_id:
+            return None
+        controls = _read_json(self._folder(lesson_id) / "manifest.json").get("controls")
+        if not controls:
+            return None
+        chosen = chosen if isinstance(chosen, dict) else {}
+        values = {}
+        for control in controls:
+            value = chosen.get(control["id"], control["default"])
+            values[control["id"]] = value if value in control["options"] else control["default"]
+        return {"_QLP_INPUT": values}
 
     def run_context(self, lesson_id: str | None) -> dict:
         """Contexto opcional de execução de uma lição (setup oculto, teto de qubits)."""
@@ -116,7 +149,14 @@ class ContentLibrary:
             return {}
         folder = self._folder(lesson_id)
         manifest = _read_json(folder / "manifest.json")
-        return {"max_qubits": manifest.get("max_qubits"), "hidden_setup": self._hidden_setup(folder)}
+        analysis = folder / "analysis.py"
+        return {
+            "max_qubits": manifest.get("max_qubits"),
+            "hidden_setup": self._hidden_setup(folder),
+            "framework": manifest.get("framework", "qiskit"),
+            "qnode": manifest.get("qnode"),
+            "analysis": _read_text(analysis) if analysis.exists() else None,
+        }
 
     def _hidden_setup(self, folder: Path) -> str | None:
         path = folder / "hidden_setup.py"

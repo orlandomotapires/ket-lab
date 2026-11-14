@@ -117,3 +117,54 @@ def test_error_inside_qnode_points_to_the_line():
             "    return qml.state()\n"
         )
     assert info.value.line == 6
+
+
+SANDBOX_QNODE = HEADER + (
+    "dev = qml.device('default.qubit', wires=2)\n"
+    "@qml.qnode(dev)\n"
+    "def bell():\n"
+    "    qml.Hadamard(0)\n"
+    "    qml.CNOT(wires=[0, 1])\n"
+    "    return qml.probs()\n"
+)
+
+
+def test_sandbox_runs_a_qnode_when_there_is_no_qiskit_circuit():
+    from qlp_engine import worker
+
+    result = worker.handle({"type": "run", "code": SANDBOX_QNODE})
+    assert result["ok"], result
+    assert [s["label"] for s in result["steps"]] == ["H", "X"]
+    assert result["snapshots"][-1]["probabilities"] == pytest.approx([0.5, 0, 0, 0.5])
+
+    shots = worker.handle({"type": "shots", "code": SANDBOX_QNODE, "shots": 400})
+    assert set(shots["counts"]) == {"00", "11"}
+
+
+def test_pennylane_lesson_runs_analysis_with_student_variables():
+    from qlp_engine import worker
+
+    code = SANDBOX_QNODE + "history = [1.0, 0.5, np.array(0.25)]\n"
+    analysis = "def analyze(ns):\n    return {'values': ns['history'], 'n': len(ns['history'])}\n"
+    result = worker.handle({"type": "run", "code": code, "framework": "pennylane", "qnode": {"name": "bell"}, "analysis": analysis})
+    assert result["analysis"] == {"values": [1.0, 0.5, 0.25], "n": 3}
+
+    broken = worker.handle({"type": "run", "code": code, "framework": "pennylane", "analysis": "def analyze(ns):\n    return ns['nope']\n"})
+    assert broken["ok"] and "KeyError" in broken["analysis"]["error"]
+
+
+def test_noisy_snapshots_have_no_amplitudes():
+    from qlp_engine import worker
+
+    code = HEADER + (
+        "dev = qml.device('default.mixed', wires=1)\n"
+        "@qml.qnode(dev)\n"
+        "def circuit():\n"
+        "    qml.Hadamard(0)\n"
+        "    qml.PhaseDamping(0.5, wires=0)\n"
+        "    return qml.density_matrix(0)\n"
+    )
+    result = worker.handle({"type": "run", "code": code, "framework": "pennylane"})
+    last = result["snapshots"][-1]
+    assert last["amplitudes"] is None
+    assert last["bloch"][0][0] < 0.99 and last["state_purity"] < 1

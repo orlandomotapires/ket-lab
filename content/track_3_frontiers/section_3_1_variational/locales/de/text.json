@@ -1,0 +1,22 @@
+{
+  "title": "Variationelle Schaltkreise",
+  "summary": "Parametrisierter Ansatz und die Parameter-Shift-Regel.",
+  "mission": "Implementiere parameter_shift(params, i), die Ableitung der Kostenfunktion nach der Parameter-Shift-Regel, und nutze sie in einer Gradientenabstieg-Schleife, die ⟨Z⟩ nahe an −1 bringt. Klicke auf Ausführen (oder Ctrl+Enter), um zu trainieren.",
+  "prediction": {
+    "question": "Die Kostenfunktion ist ⟨Z⟩ nach RX(θ₀) und RY(θ₁). Ausgehend von θ = (0,3; 0,2), nahe am Maximum: Wohin führt der Gradientenabstieg den Bloch-Vektor?",
+    "options": ["Zum Äquator", "Er bleibt stehen: Am Maximum ist der Gradient null", "Zum Südpol, wo ⟨Z⟩ = −1 ist"],
+    "explanation": "Abseits des exakten Maximums ist der Gradient nicht null, und jeder Schritt führt die Landschaft hinab. Das Minimum von ⟨Z⟩ ist −1, am Südpol der Kugel, erreichbar zum Beispiel mit θ₀ = π oder θ₁ = π."
+  },
+  "hints": [
+    "Um nach params[i] abzuleiten, erstelle einen Verschiebungsvektor aus Nullen mit π/2 nur an der Position i: shift = np.zeros_like(params) und shift[i] = np.pi / 2.",
+    "Die Ableitung ist (circuit(params + shift) − circuit(params − shift)) / 2. Der Gradient ist die Liste dieser Ableitungen für i = 0 und i = 1.",
+    "In der Schleife: gradient = np.array([parameter_shift(params, i) for i in range(2)]), params = params − learning_rate * gradient und history.append([...]). Etwa 60 Schritte mit der Rate 0,4 genügen."
+  ],
+  "messages": {
+    "ok": "Der Gradient nach der Parameter-Shift-Regel stimmt mit dem von PennyLane überein, und die Kostenfunktion erreichte {cost} nach {steps} Schritten.",
+    "shift_missing": "Definiere die Funktion parameter_shift(params, i).",
+    "shift_wrong": "parameter_shift liefert noch nicht die richtige Ableitung: Bei params = {point} und i = {i} ist der erwartete Wert {expected}, die Funktion gab aber {actual} zurück.",
+    "no_params": "Speichere die endgültigen Parameter in der Variablen params.",
+    "not_converged": "Der Gradient stimmt, aber die endgültige Kostenfunktion ist {cost}, und das Minimum ist −1. Erhöhe die Anzahl der Schritte oder die Lernrate."
+  }
+}

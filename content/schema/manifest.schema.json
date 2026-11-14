@@ -325,6 +325,50 @@
               }
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "custom"
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       ]
     },
@@ -391,6 +435,64 @@
           "minimum": 3
         }
       }
+    },
+    "framework": {
+      "enum": [
+        "qiskit",
+        "pennylane"
+      ],
+      "description": "pennylane: o circuito é um QNode"
+    },
+    "qnode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Qual QNode desenhar e com quais variáveis do aluno como argumentos"
+    },
+    "live": {
+      "type": "boolean",
+      "description": "false: executa só pelo botão (treinos demorados)"
+    },
+    "timeout": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 30,
+      "description": "Segundos por execução"
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "options",
+          "default"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "minItems": 2
+          },
+          "default": {}
+        }
+      }
     }
   },
   "$defs": {
@@ -402,7 +504,12 @@
         "amplitudes",
         "dials",
         "histogram",
-        "modular"
+        "modular",
+        "landscape",
+        "convergence",
+        "dissociation",
+        "graph",
+        "boundary"
       ]
     }
   }

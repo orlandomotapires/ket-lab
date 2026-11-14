@@ -91,38 +91,38 @@
     },
     {
       "id": 3,
-      "title": "Frontiers and Applications",
+      "title": "Variational Algorithms, Noise and Error Correction",
       "level": "Advanced",
       "sections": [
         {
           "id": "3.1",
-          "title": "Variational Circuits",
-          "summary": "Parameterized ansatz and the parameter-shift rule."
+          "title": "Variational Circuits and the Parameter-Shift Rule",
+          "summary": "Ansatz, parameter-shift gradients and gradient descent."
         },
         {
           "id": "3.2",
-          "title": "VQE for Quantum Chemistry",
-          "summary": "Ground-state energy of the H₂ molecule."
+          "title": "The Variational Quantum Eigensolver",
+          "summary": "Ground-state energy of H₂ with a variational circuit."
         },
         {
           "id": "3.3",
-          "title": "QAOA and Max-Cut",
-          "summary": "Combinatorial optimization on a graph, with p = 2 layers."
+          "title": "QAOA for Max-Cut",
+          "summary": "Max-Cut on a 5-vertex graph with a two-layer QAOA."
         },
         {
           "id": "3.4",
-          "title": "Quantum Neural Networks",
-          "summary": "Variational classifier with data re-uploading."
+          "title": "Variational Quantum Classifiers",
+          "summary": "Classify points in the plane with two qubits and data re-uploading."
         },
         {
           "id": "3.5",
-          "title": "Density Matrices and Noise",
-          "summary": "Mixed states, Kraus channels, and why the error probability is not the wrong-answer probability."
+          "title": "Density Operators and Quantum Noise",
+          "summary": "Density operators, Kraus operators, and the difference between error probability and wrong-answer probability."
         },
         {
           "id": "3.6",
-          "title": "Quantum Error Correction",
-          "summary": "The 3-qubit bit-flip code, syndromes and the error threshold."
+          "title": "The Three-Qubit Bit-Flip Code",
+          "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold."
         }
       ]
     }

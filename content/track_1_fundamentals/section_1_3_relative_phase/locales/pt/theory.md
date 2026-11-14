@@ -33,6 +33,27 @@ As portas desta lição giram o vetor em torno do eixo $Z$. Elas mudam $\phi$ e 
 
 Uma medição comum não enxerga a fase. Mas as portas seguintes enxergam: é a fase que decide se as amplitudes se somam ou se cancelam. Esse é o assunto da próxima lição.
 
+## Desfazer uma sequência
+
+Toda porta quântica tem inverso: a porta que desfaz o seu efeito. Para uma sequência $U_3 U_2 U_1$ (aplicada na ordem $U_1$, $U_2$, $U_3$), o inverso é a sequência dos inversos **na ordem contrária**:
+
+$$
+(U_3 U_2 U_1)^{-1} = U_1^{\dagger}\, U_2^{\dagger}\, U_3^{\dagger}
+$$
+
+É como desfazer as etapas de um trabalho: a última a ser feita é a primeira a ser desfeita. Como $H$ e $X$ são os próprios inversos, só $S$ e $T$ precisam de portas novas:
+
+| Porta | Inverso | No Qiskit |
+| :-- | :-- | :-- |
+| $S$ (giro de $90°$) | $S^{\dagger}$ (giro de $-90°$) | `qc.sdg(0)` |
+| $T$ (giro de $45°$) | $T^{\dagger}$ (giro de $-45°$) | `qc.tdg(0)` |
+
+Desfazer funciona para **qualquer** entrada, inclusive as que você não conhece, porque a identidade vale para todos os estados ao mesmo tempo.
+
+## Rz e a porta de fase
+
+A porta de fase $P(\theta) = \mathrm{diag}(1, e^{i\theta})$ e a rotação $R_z(\theta) = \mathrm{diag}(e^{-i\theta/2}, e^{i\theta/2})$ diferem só por uma fase global ($R_z(\theta) = e^{-i\theta/2} P(\theta)$). Para um qubit isolado são a mesma porta. A diferença só aparece quando uma delas é controlada, como veremos na lição 1.7.
+
 ## No laboratório
 
 Observe a coluna **fase** na tabela à direita, o ponteiro ao lado de cada amplitude e a cor do vetor. As barras de probabilidade não se mexem enquanto você gira em torno de $Z$.

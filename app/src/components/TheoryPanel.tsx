@@ -87,6 +87,16 @@ export function TheoryPanel() {
           {lesson.estimated_minutes ? `, ${t("theory.minutes", { minutes: lesson.estimated_minutes })}` : ""}
         </p>
         <h1 className="lesson-title">{lesson.title}</h1>
+        {lesson.objectives.length > 0 && (
+          <div className="objectives">
+            <h2 className="objectives-title">{t("theory.objectives")}</h2>
+            <ul>
+              {lesson.objectives.map((objective) => (
+                <li key={objective}>{objective}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <section className={`mission${completed ? " is-done" : ""}`} aria-labelledby="mission-title">
           <h2 className="mission-title" id="mission-title">
             {completed ? <CheckIcon size={14} /> : <TargetIcon />}

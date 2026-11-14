@@ -58,9 +58,9 @@ def validate(code: str, lesson: dict) -> dict:
     max_qubits = int(lesson.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS)
     lesson = {**lesson, "code": code}
     try:
-        pennylane = lesson.get("framework") == "pennylane"
+        qiskit = lesson.get("framework", "qiskit") == "qiskit"
         student = tracer.execute(
-            code, lesson.get("hidden_setup"), _first_case(rules), trace=not pennylane, require_circuit=not pennylane
+            code, lesson.get("hidden_setup"), _first_case(rules), trace=qiskit, require_circuit=qiskit
         )
         if kind == "custom":
             return _check_custom(student, lesson, rules)
@@ -250,12 +250,12 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
     {"passed", "key", "params"}; a mensagem vem de `messages[key]` no text.json
     da lição.
     """
-    pennylane = lesson.get("framework") == "pennylane"
+    qiskit = lesson.get("framework", "qiskit") == "qiskit"
 
     def run_case(case):
         return tracer.execute(
             lesson["code"], lesson.get("hidden_setup"), {"_QLP_INPUT": case},
-            trace=not pennylane, require_circuit=not pennylane,
+            trace=qiskit, require_circuit=qiskit,
         ).namespace
 
     module: dict = {"__name__": "qlp_check"}

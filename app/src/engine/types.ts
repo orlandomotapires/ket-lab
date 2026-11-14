@@ -36,6 +36,14 @@ export interface RunResult {
   stdout: string;
   /** Métricas registradas com report(...) no código. */
   training?: TrainingData;
+  /** Lições sem circuito (framework "python"): as variáveis do aluno. */
+  variables?: VariableRow[];
+}
+
+export interface VariableRow {
+  name: string;
+  type: string;
+  value: string;
 }
 
 export interface TrainingData {
@@ -120,7 +128,7 @@ export interface Reference {
 
 export type VisualizerKind =
   | "bloch" | "qsphere" | "compare" | "amplitudes" | "dials" | "histogram" | "modular"
-  | "landscape" | "convergence" | "dissociation" | "graph" | "boundary" | "threshold";
+  | "landscape" | "convergence" | "dissociation" | "graph" | "boundary" | "threshold" | "variables";
 
 export interface LessonControl {
   id: string;
@@ -147,6 +155,8 @@ export interface Lesson {
   estimated_minutes?: number;
   num_qubits: number;
   mission: string;
+  /** O que o aluno saberá fazer ao fim da lição. */
+  objectives: string[];
   prediction?: Prediction;
   hints: string[];
   theory: string;
@@ -157,7 +167,7 @@ export interface Lesson {
   /** Qubits mostrados nas visualizações de amplitudes, fases e histograma. */
   register?: { qubits: number[] };
   modular?: { a: number; N: number };
-  framework?: "qiskit" | "pennylane";
+  framework?: "qiskit" | "pennylane" | "python";
   /** false: o código roda só pelo botão Executar (treinos demorados). */
   live?: boolean;
   controls?: LessonControl[];

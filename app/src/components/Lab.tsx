@@ -12,6 +12,8 @@ import { Visualizer } from "./Visualizer";
 export function Lab() {
   const lesson = useStore((s) => s.lesson);
   const key = lesson?.id ?? "sandbox";
+  // Lições sem circuito (kit de matemática) não têm painel de circuito.
+  const hasCircuit = lesson?.framework !== "python";
   return (
     <div className={`lab${lesson ? "" : " is-sandbox"}`}>
       <TheoryPanel />
@@ -25,7 +27,7 @@ export function Lab() {
           {/* A chave recria o editor ao trocar de lição (cursor e histórico de desfazer). */}
           <CodeEditor key={key} />
         </section>
-        <section className="panel circuit-panel" aria-label={t("lab.circuit")}>
+        {hasCircuit && <section className="panel circuit-panel" aria-label={t("lab.circuit")}>
           <div className="panel-head">
             <h2>{t("lab.circuit")}</h2>
             <span className="grow" />
@@ -33,7 +35,7 @@ export function Lab() {
           </div>
           <CircuitDiagram />
           <Timeline />
-        </section>
+        </section>}
       </div>
       <Visualizer key={key} lesson={lesson} />
       <OracleBar />

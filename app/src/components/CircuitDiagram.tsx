@@ -7,6 +7,8 @@ const COL = 48;
 const ROW = 40;
 const TOP = 26;
 const BOX = 28;
+/** O desenho é feito na escala acima e ampliado: portas legíveis sem refazer a geometria. */
+const SCALE = 1.3;
 
 /** Largura da caixa de uma porta, pelo comprimento do rótulo (fonte mono de 12 px). */
 function boxWidth(label: string): number {
@@ -111,7 +113,12 @@ export function CircuitDiagram() {
 
   return (
     <div className="circuit-scroll">
-      <svg className="circuit" width={width} height={height} role="img" aria-label={t("circuit.aria", { qubits: n, steps: steps.length })}>
+      <svg
+        className="circuit"
+        width={width * SCALE}
+        height={height * SCALE}
+        viewBox={`0 0 ${width} ${height}`}
+        role="img" aria-label={t("circuit.aria", { qubits: n, steps: steps.length })}>
         {Array.from({ length: n }, (_, q) => (
           <g key={q}>
             <text className="wire-label" x={10} y={rowY(q) + 4}>q{q}</text>

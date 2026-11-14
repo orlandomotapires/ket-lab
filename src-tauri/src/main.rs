@@ -168,6 +168,7 @@ fn engine_endpoint(app: AppHandle, engine: State<'_, Engine>) -> Result<Endpoint
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .manage(Engine::default())
         .invoke_handler(tauri::generate_handler![engine_endpoint, client_log])
         .setup(|app| {

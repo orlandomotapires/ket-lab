@@ -48,6 +48,15 @@ export const pt = {
   "theory.mission": "Missão",
   "theory.hint": "Ver dica {n} de {total}",
 
+  "theory.references": "Para aprofundar",
+  "theory.referencesIntro": "Uma leitura teórica e uma prática sobre o tema desta lição. Os links abrem no navegador.",
+  "ref.book": "Livro",
+  "ref.paper": "Artigo",
+  "ref.course": "Curso prático",
+  "ref.tutorial": "Tutorial",
+  "ref.section": "seção {section}",
+  "ref.inEnglish": "em inglês",
+
   "oracle.idleLesson": "Escreva o circuito e valide quando achar que cumpriu a missão.",
   "oracle.idleSandbox": "Laboratório livre: a visualização acompanha a linha do cursor.",
   "oracle.atLine": "Linha {line}: {message}",

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { Prediction } from "../engine/types";
+import { openExternal } from "../engine/client";
+import type { Prediction, Reference } from "../engine/types";
 import { t, useLocale } from "../i18n";
 import { useStore } from "../state/store";
 import { TargetIcon } from "./icons";
@@ -38,6 +39,40 @@ function PredictionCard({ prediction }: { prediction: Prediction }) {
   );
 }
 
+function References({ items }: { items: Reference[] }) {
+  const locale = useLocale();
+  return (
+    <section className="references" aria-labelledby="references-title">
+      <h2 id="references-title" className="references-title">{t("theory.references")}</h2>
+      <p className="references-intro">{t("theory.referencesIntro")}</p>
+      <ul>
+        {items.map((ref) => (
+          <li key={ref.url}>
+            <span className={`pill ref-kind is-${ref.kind}`}>{t(`ref.${ref.kind}`)}</span>
+            <a
+              href={ref.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(event) => {
+                event.preventDefault();
+                openExternal(ref.url);
+              }}
+            >
+              {ref.title}
+            </a>
+            <span className="ref-meta">
+              {ref.authors}
+              {ref.year ? `, ${ref.year}` : ""}
+              {ref.section ? ` · ${t("ref.section", { section: ref.section })}` : ""}
+              {locale !== "en" ? ` · ${t("ref.inEnglish")}` : ""}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function TheoryPanel() {
   useLocale();
   const lesson = useStore((s) => s.lesson);
@@ -56,6 +91,7 @@ export function TheoryPanel() {
         <Markdown>{lesson.theory}</Markdown>
         {/* A escolha da previsão sobrevive à troca de idioma (mesma chave). */}
         {lesson.prediction && <PredictionCard key={lesson.id} prediction={lesson.prediction} />}
+        {lesson.references?.length ? <References items={lesson.references} /> : null}
       </div>
 
       {/* A missão fica fixa no rodapé do painel: sempre visível, mesmo com a teoria rolada. */}

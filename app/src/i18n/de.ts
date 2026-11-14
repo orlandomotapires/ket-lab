@@ -49,6 +49,15 @@ export const de: Record<MessageKey, string> = {
   "theory.mission": "Aufgabe",
   "theory.hint": "Hinweis {n} von {total} anzeigen",
 
+  "theory.references": "Zum Vertiefen",
+  "theory.referencesIntro": "Eine theoretische und eine praktische Quelle zum Thema dieser Lektion. Die Links öffnen sich im Browser.",
+  "ref.book": "Buch",
+  "ref.paper": "Artikel",
+  "ref.course": "Praxiskurs",
+  "ref.tutorial": "Tutorial",
+  "ref.section": "Abschnitt {section}",
+  "ref.inEnglish": "auf Englisch",
+
   "oracle.idleLesson": "Schreibe den Schaltkreis und prüfe ihn, sobald du die Aufgabe gelöst hast.",
   "oracle.idleSandbox": "Freies Labor: Die Darstellung folgt der Zeile des Cursors.",
   "oracle.atLine": "Zeile {line}: {message}",

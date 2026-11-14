@@ -49,6 +49,15 @@ export const en: Record<MessageKey, string> = {
   "theory.mission": "Mission",
   "theory.hint": "Show hint {n} of {total}",
 
+  "theory.references": "Further reading",
+  "theory.referencesIntro": "A theoretical and a hands-on reading on this lesson's topic. Links open in your browser.",
+  "ref.book": "Book",
+  "ref.paper": "Paper",
+  "ref.course": "Hands-on course",
+  "ref.tutorial": "Tutorial",
+  "ref.section": "section {section}",
+  "ref.inEnglish": "in English",
+
   "oracle.idleLesson": "Write the circuit and check it when you think you have completed the mission.",
   "oracle.idleSandbox": "Free lab: the visualization follows the cursor line.",
   "oracle.atLine": "Line {line}: {message}",

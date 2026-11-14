@@ -1,0 +1,50 @@
+{
+  "id": "2.2",
+  "track": 2,
+  "estimated_minutes": 15,
+  "num_qubits": 2,
+  "max_qubits": 2,
+  "default_visualizer": "amplitudes",
+  "available_visualizers": [
+    "amplitudes",
+    "bloch"
+  ],
+  "register": {
+    "qubits": [
+      0
+    ]
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "oracle_cases",
+    "register": [
+      0
+    ],
+    "tolerance": 0.02,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "oracle"
+    ],
+    "gate_counts": {
+      "oracle": 1
+    },
+    "cases": [
+      [0, 0],
+      [1, 1],
+      [0, 1],
+      [1, 0]
+    ]
+  }
+}

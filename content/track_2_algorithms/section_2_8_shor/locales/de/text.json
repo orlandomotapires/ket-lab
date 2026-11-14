@@ -1,0 +1,19 @@
+{
+  "title": "Shor-Algorithmus",
+  "summary": "15 faktorisieren, indem man eine Periode findet.",
+  "mission": "Faktorisiere 15: Finde die Periode von 7^x mod 15 mit der Phasenschätzung (Zählregister auf den Qubits 0 bis 3, gemessen in die Bits 0 bis 3) und speichere aus den Messungen die Primfaktoren in der Variablen factors.",
+  "prediction": {
+    "question": "Wie lautet die Periode von 7^x mod 15?",
+    "options": [
+      "2",
+      "4",
+      "7"
+    ],
+    "explanation": "7^x mod 15 durchläuft 1, 7, 4, 13 und kehrt zu 1 zurück: Der Zyklus hat 4 Werte, also r = 4."
+  },
+  "hints": [
+    "Der Schaltkreis ist der der Phasenschätzung: Hadamard auf die Qubits 0 bis 3, das Arbeitsregister mit qc.x(4) in |1⟩ und in der Schleife for j in range(4) apply_controlled_mod_mult(qc, j, 2**j).",
+    "Beende mit inverse_qft(qc, [0, 1, 2, 3]) und miss die Qubits 0 bis 3 in die Bits 0 bis 3. Danach counts = run_shots(qc).",
+    "Für jedes Ergebnis: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Verwende r nur, wenn pow(a, r, N) == 1 gilt und r gerade ist; dann half = pow(a, r // 2, N). Ist half == N - 1, verwirf es; andernfalls berechne gcd(half - 1, N) und gcd(half + 1, N) und speichere in factors die Werte, die ungleich 1 und N sind, ohne Wiederholungen."
+  ]
+}

@@ -91,10 +91,10 @@ Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um f
 | Tipo de validação | Exemplo |
 | :-- | :-- |
 | `state_fidelity`: estado final | 1.1 |
-| `counts_distribution`: estatística das medições | 1.2, 2.7 |
+| `counts_distribution`: estatística das medições | 1.2, 2.8 |
 | `reduced_state`: estado de um qubit, para várias entradas e todos os ramos de medição | 1.6 |
-| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos | 2.2, 2.4, 2.6 |
-| `state_cases`: estado final para várias entradas | 2.5 |
+| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos | 2.2, 2.3, 2.5, 2.7 |
+| `state_cases`: estado final para várias entradas | 2.6 |
 
 O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
 

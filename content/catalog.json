@@ -135,6 +135,19 @@
         {
           "id": "2.2",
           "title": {
+            "pt": "Algoritmo de Deutsch",
+            "en": "Deutsch's Algorithm",
+            "de": "Deutsch-Algorithmus"
+          },
+          "summary": {
+            "pt": "Uma consulta decide se f de um bit é constante ou balanceada.",
+            "en": "One query decides whether a one-bit f is constant or balanced.",
+            "de": "Eine Abfrage entscheidet, ob eine Ein-Bit-Funktion konstant oder balanciert ist."
+          }
+        },
+        {
+          "id": "2.3",
+          "title": {
             "pt": "Oráculos e Deutsch-Jozsa",
             "en": "Oracles and Deutsch–Jozsa",
             "de": "Orakel und Deutsch-Jozsa"
@@ -146,7 +159,7 @@
           }
         },
         {
-          "id": "2.3",
+          "id": "2.4",
           "title": {
             "pt": "Bernstein-Vazirani",
             "en": "Bernstein–Vazirani",
@@ -159,7 +172,7 @@
           }
         },
         {
-          "id": "2.4",
+          "id": "2.5",
           "title": {
             "pt": "Busca de Grover",
             "en": "Grover's Search",
@@ -172,7 +185,7 @@
           }
         },
         {
-          "id": "2.5",
+          "id": "2.6",
           "title": {
             "pt": "Transformada Quântica de Fourier",
             "en": "Quantum Fourier Transform",
@@ -185,7 +198,7 @@
           }
         },
         {
-          "id": "2.6",
+          "id": "2.7",
           "title": {
             "pt": "Estimação de Fase Quântica",
             "en": "Quantum Phase Estimation",
@@ -198,7 +211,7 @@
           }
         },
         {
-          "id": "2.7",
+          "id": "2.8",
           "title": {
             "pt": "Algoritmo de Shor",
             "en": "Shor's Algorithm",

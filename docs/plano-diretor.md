@@ -137,12 +137,13 @@ A seção 1.4 é nova: o plano original prometia interferência na lição de te
 | Seção | Missão | Visualização | Validação |
 | :-- | :-- | :-- | :-- |
 | **2.1 Phase Kickback** *(nova)* [feito] | Controle em $|+\rangle$, alvo em $|-\rangle$, CNOT: quem muda é o controle | Esferas de Bloch | Fidelidade de estado, CNOT obrigatória |
-| **2.2 Oráculos e Deutsch-Jozsa** [feito] | Constante ou balanceada com uma consulta (contra $2^{n-1}+1$ clássicas) | Amplitudes com sinal | 5 oráculos secretos (2 constantes, 3 balanceados, um deles não linear) |
-| **2.3 Bernstein-Vazirani** *(nova)* [feito] | Recuperar a string secreta de 4 bits em uma consulta | Amplitudes concentrando na resposta | 4 strings secretas |
-| **2.4 Busca de Grover** [feito] | Difusor para $N = 16$, 3 iterações | Amplitudes com linha da média; 96,1% na 3ª iteração | 4 itens marcados secretos |
-| **2.5 Transformada Quântica de Fourier** [feito] | QFT de 3 qubits com H, `cp` e `swap` | Fases | 5 entradas de teste, incluindo superposições com fase |
-| **2.6 Estimação de Fase Quântica** [feito] | 3 qubits de contagem + 1 de autovetor; calcular `theta` com `run_shots` | Registrador | 4 fases secretas + valor de `theta` |
-| **2.7 Algoritmo de Shor** [feito] | Fatorar 15 com $a = 7$: achar o período e pós-processar | Registrador (picos em 0, 4, 8, 12) e Período | Distribuição + `factors == [3, 5]` |
+| **2.2 Algoritmo de Deutsch** *(nova)* [feito] | Uma consulta decide se $f$ de 1 bit é constante ou balanceada | Amplitudes com sinal | 4 funções secretas (2 constantes, $x$ e NOT $x$) |
+| **2.3 Oráculos e Deutsch-Jozsa** [feito] | Constante ou balanceada com uma consulta (contra $2^{n-1}+1$ clássicas determinísticas) | Amplitudes com sinal | Oráculos secretos (constantes, balanceados lineares e não lineares) |
+| **2.4 Bernstein-Vazirani** *(nova)* [feito] | Recuperar a string secreta de 4 bits em uma consulta | Amplitudes concentrando na resposta | 4 strings secretas |
+| **2.5 Busca de Grover** [feito] | Difusor para $N = 16$, 3 iterações | Amplitudes com linha da média; 96,1% na 3ª iteração | 4 itens marcados secretos |
+| **2.6 Transformada Quântica de Fourier** [feito] | QFT de 3 qubits com H, `cp` e `swap` | Fases | 5 entradas de teste, incluindo superposições com fase |
+| **2.7 Estimação de Fase Quântica** [feito] | 3 qubits de contagem + 1 de autovetor; calcular `theta` com `run_shots` | Registrador | 4 fases secretas + valor de `theta` |
+| **2.8 Algoritmo de Shor** [feito] | Fatorar 15 com $a = 7$: achar o período e pós-processar | Registrador (picos em 0, 4, 8, 12) e Período | Distribuição + `factors == [3, 5]` |
 
 Shor fatora números **compostos** em primos. A exponenciação modular vem pronta no `hidden_setup.py`: o salto de QPE para Shor já é grande sem ela.
 
@@ -256,7 +257,7 @@ Testar com alunos reais antes de seguir para a Trilha 2.
 | :-- | :-- |
 | Validadores `oracle_cases` e `state_cases`; regras `required_gates` e `expected_variables`; `run_shots` no código do aluno | feito |
 | Visualizações Amplitudes, Fases, Registrador e Período | feito |
-| Lições 2.1 a 2.7 | feito |
+| Lições 2.1 a 2.8 | feito |
 | Interface, motor e conteúdo em português, inglês e alemão | feito |
 
 ### Fase 4 — Trilha 3

@@ -1,0 +1,19 @@
+{
+  "title": "Algoritmo de Deutsch",
+  "summary": "Uma consulta decide se f de um bit é constante ou balanceada.",
+  "mission": "Com uma única chamada a oracle(qc), deixe o qubit 0 em |0⟩ se a função secreta f de um bit for constante e em |1⟩ se for balanceada.",
+  "prediction": {
+    "question": "Suponha que o auxiliar fique em |0⟩ (e não em |−⟩) e a entrada em |+⟩ antes do oráculo. Ao medir a entrada, o que você obtém?",
+    "options": [
+      "Sempre 0 se f for constante, sempre 1 se for balanceada",
+      "0 ou 1 com 50% cada, qualquer que seja f",
+      "Sempre o valor de f(0)"
+    ],
+    "explanation": "O oráculo produz (|0⟩|f(0)⟩ + |1⟩|f(1)⟩)/√2. A entrada fica emaranhada com o auxiliar e a medição dá 0 ou 1 com 50% cada, para qualquer f. O paralelismo, sem o phase kickback e a interferência final, não entrega informação."
+  },
+  "hints": [
+    "Prepare o auxiliar em |−⟩ com qc.x(1) e qc.h(1): assim o oráculo devolve a fase (−1)^f(x) à entrada.",
+    "Coloque o qubit 0 em |+⟩ com Hadamard antes do oráculo e aplique Hadamard nele de novo depois.",
+    "Sequência: qc.x(1), qc.h(1), qc.h(0), oracle(qc), qc.h(0)."
+  ]
+}

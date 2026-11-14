@@ -53,16 +53,17 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "5.1",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 5.1, “The quantum Fourier transform”, pp. 217–221"
     },
     {
       "kind": "course",
-      "title": "Phase estimation procedure",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Phase estimation and factoring: Phase estimation procedure",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Section “Quantum Fourier transform”, subsections “Definition of the quantum Fourier transform” and “Circuit implementation of the QFT”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
     }
   ]

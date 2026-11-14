@@ -42,23 +42,25 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "5.2",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 5.2, “Phase estimation”, pp. 221–226 (5.2.1 Performance and requirements, pp. 223–226)"
     },
     {
       "kind": "course",
-      "title": "Phase estimation procedure",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
-    },
-    {
-      "kind": "course",
-      "title": "Phase estimation problem",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Phase estimation and factoring: Phase estimation problem",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Section “Phase estimation problem statement”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-problem"
+    },
+    {
+      "kind": "course",
+      "title": "Phase estimation and factoring: Phase estimation procedure",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Sections “Warm-up: approximating phases with low precision” and “General procedure and analysis”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
     }
   ]
 }

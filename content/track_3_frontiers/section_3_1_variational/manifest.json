@@ -29,19 +29,15 @@
       "title": "Evaluating analytic gradients on quantum hardware",
       "authors": "M. Schuld, V. Bergholm, C. Gogolin, J. Izaac, N. Killoran",
       "year": 2019,
+      "location": "Phys. Rev. A 99, 032331. Section III.A, “Parameter-shift rule for gates with generators with two distinct eigenvalues”, Eqs. (13)–(14); for qubit rotations the shift is π/2 (numbering of arXiv:1811.11184)",
       "url": "https://doi.org/10.1103/PhysRevA.99.032331"
     },
     {
       "kind": "course",
       "title": "Optimization loops",
-      "authors": "IBM Quantum Learning — Variational algorithm design",
+      "authors": "IBM Quantum Learning, Variational algorithm design",
+      "location": "Section “Gradient-Based and Gradient-Free Optimizers”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/variational-algorithm-design/optimization-loops"
-    },
-    {
-      "kind": "tutorial",
-      "title": "Quantum gradients with backpropagation",
-      "authors": "PennyLane Demos",
-      "url": "https://pennylane.ai/demos/tutorial_backprop/"
     }
   ]
 }

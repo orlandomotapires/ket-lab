@@ -565,6 +565,7 @@
           "kind",
           "title",
           "authors",
+          "location",
           "url"
         ],
         "properties": {
@@ -587,12 +588,14 @@
           "year": {
             "type": "integer"
           },
-          "section": {
-            "type": "string"
-          },
           "url": {
             "type": "string",
             "pattern": "^https://"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Onde ler, com precisão: capítulo/seção, título e páginas (livros) ou aula e título da seção (cursos)"
           }
         }
       }

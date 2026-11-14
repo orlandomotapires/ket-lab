@@ -86,16 +86,17 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "1.4.4",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.4.4, “The Deutsch–Jozsa algorithm”, pp. 34–36"
     },
     {
       "kind": "course",
-      "title": "The Deutsch–Jozsa algorithm",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Quantum query algorithms: The Deutsch–Jozsa algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Section “The Deutsch–Jozsa problem”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
     }
   ]

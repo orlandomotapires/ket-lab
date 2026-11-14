@@ -40,12 +40,14 @@
       "title": "Quantum algorithms revisited",
       "authors": "R. Cleve, A. Ekert, C. Macchiavello, M. Mosca",
       "year": 1998,
+      "location": "Proc. R. Soc. Lond. A 454, 339–354. Section 1, Eq. (1.2) and Fig. 2, where the eigenvalue is “kicked back” (numbering of arXiv:quant-ph/9708016)",
       "url": "https://doi.org/10.1098/rspa.1998.0164"
     },
     {
       "kind": "course",
-      "title": "Deutsch's algorithm",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Quantum query algorithms: Deutsch’s algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Section “Further remarks on the phase kickback”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-algorithm"
     }
   ]

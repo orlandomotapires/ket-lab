@@ -30,23 +30,33 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "8.2.3",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 2.4, “The density operator”, pp. 98–109; Section 8.2.3, “Operator-sum representation”, pp. 360–366; Sections 8.3.3 to 8.3.5 (bit flip, phase flip, depolarizing and amplitude damping channels), pp. 376–383"
+    },
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 12.3, “Mixed States and the Density Matrix”, pp. 455–459"
     },
     {
       "kind": "course",
-      "title": "Channel representations",
-      "authors": "IBM Quantum Learning — General formulation of quantum information",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/general-formulation-of-quantum-information/quantum-channels/representations-of-channels"
+      "title": "Density matrices: Density matrix basics",
+      "authors": "IBM Quantum Learning, General formulation of quantum information",
+      "location": "Section “Definition”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/general-formulation-of-quantum-information/density-matrices/density-matrix-basics"
     },
     {
-      "kind": "tutorial",
-      "title": "Noisy circuits",
-      "authors": "PennyLane Demos",
-      "url": "https://pennylane.ai/demos/tutorial_noisy_circuits/"
+      "kind": "course",
+      "title": "Quantum channels: Channel representations",
+      "authors": "IBM Quantum Learning, General formulation of quantum information",
+      "location": "Section “Kraus representations”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/general-formulation-of-quantum-information/quantum-channels/representations-of-channels"
     }
   ]
 }

@@ -30,18 +30,21 @@
       "title": "Data re-uploading for a universal quantum classifier",
       "authors": "A. Pérez-Salinas, A. Cervera-Lierta, E. Gil-Fuster, J. I. Latorre",
       "year": 2020,
+      "location": "Quantum 4, 226: the article that introduced data re-uploading (read in full)",
       "url": "https://doi.org/10.22331/q-2020-02-06-226"
     },
     {
       "kind": "course",
       "title": "QVCs and QNNs",
-      "authors": "IBM Quantum Learning — Quantum machine learning",
+      "authors": "IBM Quantum Learning, Quantum machine learning",
+      "location": "Section “Variational quantum classifier: a first attempt”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/qvc-qnn"
     },
     {
       "kind": "tutorial",
       "title": "Data-reuploading classifier",
-      "authors": "PennyLane Demos",
+      "authors": "PennyLane demos (Xanadu)",
+      "location": "Single page, read in full",
       "url": "https://pennylane.ai/demos/tutorial_data_reuploading_classifier/"
     }
   ]

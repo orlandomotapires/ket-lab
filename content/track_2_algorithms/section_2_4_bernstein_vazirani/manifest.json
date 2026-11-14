@@ -65,16 +65,18 @@
   },
   "references": [
     {
-      "kind": "paper",
-      "title": "Quantum complexity theory",
-      "authors": "E. Bernstein, U. Vazirani",
-      "year": 1997,
-      "url": "https://doi.org/10.1137/S0097539796300921"
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.4.4, Eq. (1.50) on p. 35, the identity for H applied to n qubits that the algorithm uses. The Bernstein–Vazirani problem itself is not in the book"
     },
     {
       "kind": "course",
-      "title": "The Deutsch–Jozsa algorithm",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Quantum query algorithms: The Deutsch–Jozsa algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Section “The Bernstein–Vazirani problem” (on the Deutsch–Jozsa page)",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
     }
   ]

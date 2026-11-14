@@ -56,22 +56,32 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "1.3.7",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.3.7, “Example: quantum teleportation”, pp. 26–28"
+    },
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 12.4, “The No-Clone Theorem”, pp. 459–461"
     },
     {
       "kind": "course",
-      "title": "Quantum teleportation",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "title": "Entanglement in action: Quantum teleportation",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Sections “Protocol” and “Analysis”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/quantum-teleportation"
     },
     {
       "kind": "course",
-      "title": "Limitations on quantum information",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "title": "Quantum circuits: Limitations on quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “No-cloning theorem”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/limitations-on-quantum-information"
     }
   ]

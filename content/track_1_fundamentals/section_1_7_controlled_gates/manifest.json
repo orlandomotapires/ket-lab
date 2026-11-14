@@ -31,17 +31,18 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "4.5",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 4.3, “Controlled operations”, pp. 177–185; Section 4.5.2, “Single qubit and CNOT gates are universal”, pp. 191–194"
     },
     {
       "kind": "course",
-      "title": "Circuits",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/circuits"
+      "title": "Multiple systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Unitary operations”, subsection “Controlled-unitary operations”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information"
     }
   ]
 }

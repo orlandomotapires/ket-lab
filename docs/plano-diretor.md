@@ -157,7 +157,8 @@ Escrita em **PennyLane**; o ruído usa o dispositivo `default.mixed`. As liçõe
 | **3.2 VQE para Química Quântica** | Hartree-Fock + excitação dupla para o $H_2$ | Convergência com faixa de precisão química; curva de dissociação | Energia recalculada no estado do aluno, precisão química (1,6 mHa), só o ansatz químico |
 | **3.3 QAOA e Max-Cut** | $p = 2$ camadas no grafo do curso (corte máximo 5) | Grafo com o corte mais provável; convergência; registrador | Razão de aproximação ≥ 0,85 (uma camada fica em ≈ 0,82) |
 | **3.4 Redes Neurais Quânticas** | Classificador de 2 qubits e 3 camadas com data re-uploading | Fronteira de decisão; perda | Acurácia ≥ 92% num conjunto de teste que o aluno não vê |
-| **3.5 Matrizes Densidade e Ruído** *(nova)* | Canal de Kraus no circuito H, T, erro, T†, H | Esfera de Bloch encolhendo; pureza | $ho$ para três pares de probabilidades; resposta errada (30%) ≠ erro (40%) |
+| **3.5 Matrizes Densidade e Ruído** *(nova)* | Canal de Kraus no circuito H, T, erro, T†, H | Esfera de Bloch encolhendo; pureza | $
+ho$ para três pares de probabilidades; resposta errada (30%) ≠ erro (40%) |
 | **3.6 Correção de Erros Quânticos** | Código de bit flip de 3 qubits com 2 ancillas | Botões de erro; síndrome no registrador; curva de limiar | Três estados × quatro erros; fidelidade com ruído = $1 - 3p^2 + 2p^3$ |
 
 Notas técnicas da Trilha 3:
@@ -272,7 +273,7 @@ Testar com alunos reais antes de seguir para a Trilha 2.
 | Visualizações Paisagem, Convergência, Dissociação, Grafo, Fronteira e Limiar | feito |
 | Lições 3.1 a 3.6 nos três idiomas | feito |
 | Revisão das três trilhas com as aulas de Müller e de Jülich: lições novas 1.7, 2.2 e 3.5, missões e validações mais rigorosas | feito |
-| Treinamento com streaming de épocas e exportação de circuitos no laboratório livre | pendente |
+| Treinamento com streaming de épocas e exportação de circuitos no laboratório livre: `report(...)` envia métricas ao vivo, botão Parar, exportação em OpenQASM 2 e 3 (Qiskit e PennyLane) | feito |
 
 As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`, `lecture (1)/`): são material de terceiros. As lições usam as ideias e os exemplos trabalhados, com texto próprio.
 

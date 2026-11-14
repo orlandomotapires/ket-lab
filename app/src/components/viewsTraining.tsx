@@ -107,7 +107,7 @@ export interface ConvergenceData {
   y_label?: string;
 }
 
-export function ConvergenceView({ data }: { data: ConvergenceData }) {
+export function ConvergenceView({ data, note }: { data: ConvergenceData; note?: string }) {
   const values = data.values.filter((v) => Number.isFinite(v));
   if (!values.length) return <div className="stage-message">{t("viz.runToSee")}</div>;
   const reference = [...values, ...(data.target !== undefined ? [data.target] : [])];
@@ -155,7 +155,7 @@ export function ConvergenceView({ data }: { data: ConvergenceData }) {
           </text>
         )}
       </svg>
-      <div className="stage-footer">{data.band !== undefined ? t("viz.bandNote") : t("viz.convergenceNote")}</div>
+      <div className="stage-footer">{note ?? (data.band !== undefined ? t("viz.bandNote") : t("viz.convergenceNote"))}</div>
     </>
   );
 }

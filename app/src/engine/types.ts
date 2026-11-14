@@ -34,6 +34,19 @@ export interface RunResult {
   clbits: number[];
   has_measurement: boolean;
   stdout: string;
+  /** Métricas registradas com report(...) no código. */
+  training?: TrainingData;
+}
+
+export interface TrainingData {
+  series: Record<string, number[]>;
+}
+
+export type ExportFormat = "qasm3" | "qasm2";
+
+export interface ExportResult {
+  format: ExportFormat;
+  text: string;
 }
 
 export interface EngineError {

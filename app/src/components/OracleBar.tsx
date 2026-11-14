@@ -1,5 +1,5 @@
 import { t, useLocale } from "../i18n";
-import { selectNextLessonId, useStore } from "../state/store";
+import { selectManual, selectNextLessonId, useStore, type TrainingState } from "../state/store";
 import { AlertIcon, CheckIcon, DotIcon } from "./icons";
 
 export function OracleBar() {
@@ -13,12 +13,21 @@ export function OracleBar() {
   const nextLessonId = useStore(selectNextLessonId);
   const running = useStore((s) => s.running);
   const resultIsCurrentForManual = useStore((s) => s.resultIsCurrent);
-  const { validate, runShots, resetCode, openLesson, backToHub, runNow } = useStore.getState();
-  const manual = lesson?.live === false;
+  const training = useStore((s) => s.training);
+  const manual = useStore(selectManual);
+  const { validate, runShots, resetCode, openLesson, backToHub, runNow, stopRun } = useStore.getState();
 
   let tone: "neutral" | "success" | "warn" | "error" = "neutral";
-  let message = manual ? t("oracle.idleManual") : lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
-  if (error && !resultIsCurrent) {
+  let message = manual
+    ? lesson ? t("oracle.idleManual") : t("oracle.idleTraining")
+    : lesson ? t("oracle.idleLesson") : t("oracle.idleSandbox");
+  if (running && training?.active) {
+    message = trainingMessage(training, "oracle.training");
+  } else if (training && !training.active && resultIsCurrent && !error) {
+    message = trainingMessage(training, "oracle.trainingDone");
+  } else if (error?.kind === "cancelled" && !resultIsCurrent) {
+    message = error.message;
+  } else if (error && !resultIsCurrent) {
     tone = "error";
     message = error.line != null ? t("oracle.atLine", { line: error.line, message: error.message }) : error.message;
   } else if (validation) {
@@ -38,7 +47,9 @@ export function OracleBar() {
       </p>
       <div className="oracle-actions">
         <button className="btn btn-ghost" onClick={resetCode}>{t("oracle.reset")}</button>
-        {manual ? (
+        {manual && running && training?.active ? (
+          <button className="btn" onClick={stopRun} title={t("oracle.stopTitle")}>{t("oracle.stop")}</button>
+        ) : manual ? (
           <button
             className={`btn${resultIsCurrentForManual ? "" : " btn-primary"}`}
             onClick={runNow}
@@ -65,4 +76,12 @@ export function OracleBar() {
       </div>
     </footer>
   );
+}
+
+function trainingMessage(training: TrainingState, key: "oracle.training" | "oracle.trainingDone"): string {
+  const [name, values] = Object.entries(training.series)[0] ?? [];
+  if (!name || !values?.length) return t("oracle.trainingStart");
+  const value = values[values.length - 1];
+  const shown = Math.abs(value) >= 1e4 || (value !== 0 && Math.abs(value) < 1e-3) ? value.toExponential(3) : value.toFixed(4);
+  return t(key, { step: values.length, name, value: shown.replace("-", "−") });
 }

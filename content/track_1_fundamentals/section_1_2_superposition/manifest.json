@@ -1,0 +1,33 @@
+{
+  "id": "1.2",
+  "track": 1,
+  "estimated_minutes": 12,
+  "num_qubits": 1,
+  "max_qubits": 3,
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch"
+  ],
+  "validation": {
+    "type": "counts_distribution",
+    "shots": 4096,
+    "tolerance": 0.05,
+    "allowed_gates": [
+      "x",
+      "y",
+      "z",
+      "h",
+      "s",
+      "sdg",
+      "t",
+      "tdg",
+      "rx",
+      "ry",
+      "rz",
+      "p",
+      "id",
+      "measure"
+    ]
+  },
+  "prediction_answer": 2
+}

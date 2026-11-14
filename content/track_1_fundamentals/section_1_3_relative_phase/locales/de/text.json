@@ -1,0 +1,19 @@
+{
+  "title": "Relative Phase und Rotationen",
+  "summary": "Z-, S-, T- und Rz-Gatter: gleiche Wahrscheinlichkeiten, verschiedene Zustände.",
+  "mission": "Der Schaltkreis bereitet bereits |+⟩ vor. Drehe den Vektor um eine Viertelumdrehung um die Z-Achse bis zum Punkt +Y auf dem Äquator: den Zustand (|0⟩ + i|1⟩)/√2.",
+  "hints": [
+    "Drehungen um Z bewegen den Vektor entlang des Äquators, ohne die Wahrscheinlichkeiten zu ändern. Probiere qc.z(0) aus und sieh, wo der Vektor landet.",
+    "Z ist eine halbe Umdrehung (180°). Du brauchst eine Viertelumdrehung (90°): das S-Gatter oder qc.rz(theta, 0) mit dem richtigen Winkel.",
+    "Füge qc.s(0) nach dem Hadamard hinzu. Mit rz importierst du math und verwendest qc.rz(math.pi / 2, 0)."
+  ],
+  "prediction": {
+    "question": "Das Qubit ist in |+⟩, mit 50 % Wahrscheinlichkeit für jedes Ergebnis. Du wendest das Z-Gatter an. Was passiert mit den Wahrscheinlichkeiten, 0 und 1 zu messen?",
+    "options": [
+      "Sie werden zu 100 % und 0 %",
+      "Sie bleiben 50 % und 50 %",
+      "Sie werden zu 0 % und 100 %"
+    ],
+    "explanation": "Das Z-Gatter ändert nur das Vorzeichen der Amplitude von |1⟩. Die Beträge bleiben gleich, also auch die Wahrscheinlichkeiten. Was sich ändert, ist die relative Phase: Der Vektor wandert auf die gegenüberliegende Seite des Äquators."
+  }
+}

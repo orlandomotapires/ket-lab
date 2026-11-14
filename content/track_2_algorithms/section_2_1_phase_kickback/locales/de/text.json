@@ -1,0 +1,19 @@
+{
+  "title": "Phase Kickback",
+  "summary": "Wie das Zielqubit eine Phase auf das Kontrollqubit zurückwirft.",
+  "mission": "Bereite die Kontrolle (Qubit 0) in |+⟩ und das Ziel (Qubit 1) in |−⟩ vor und wende ein CNOT von Qubit 0 auf Qubit 1 an. Das Ziel ändert sich nicht: Beobachte, was mit der Kontrolle passiert.",
+  "prediction": {
+    "question": "Das Ziel ist in |−⟩, und X|−⟩ = −|−⟩. Mit der Kontrolle in |+⟩ wendest du ein CNOT an. Welches Qubit ändert seinen Zustand?",
+    "options": [
+      "Nur das Ziel",
+      "Nur die Kontrolle",
+      "Keines der beiden"
+    ],
+    "explanation": "Das Ziel bleibt in |−⟩. Das Vorzeichen −1, das X erzeugt, taucht nur in dem Term auf, in dem die Kontrolle 1 ist, und wird zu einer relativen Phase der Kontrolle: Sie geht von |+⟩ nach |−⟩."
+  },
+  "hints": [
+    "Das Ziel muss in |−⟩ sein: Bringe es mit X nach |1⟩ und wende dann ein Hadamard an.",
+    "Die Kontrolle in |+⟩ ist nur ein Hadamard auf Qubit 0. Das CNOT kommt zuletzt.",
+    "Reihenfolge: qc.x(1), qc.h(1), qc.h(0) und zum Schluss qc.cx(0, 1)."
+  ]
+}

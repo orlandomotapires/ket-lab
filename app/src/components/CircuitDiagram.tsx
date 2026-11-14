@@ -1,0 +1,128 @@
+import type { Step } from "../engine/types";
+import { t, useLocale } from "../i18n";
+import { selectCurrentStep, useStore } from "../state/store";
+
+const LEFT = 46;
+const COL = 48;
+const ROW = 40;
+const TOP = 26;
+const BOX = 28;
+
+function rowY(row: number): number {
+  return TOP + row * ROW;
+}
+
+function GateColumn({ step, x, classicalY }: { step: Step; x: number; classicalY: number | null }) {
+  const rows = step.qubits;
+  const ys = rows.map(rowY);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const box = (y: number, label: string, key: string, dashed = false) => {
+    const width = Math.max(BOX, label.length * 7.2 + 12);
+    return (
+      <g key={key}>
+        <rect className={`gate-box${dashed ? " is-dashed" : ""}`} x={x - width / 2} y={y - BOX / 2} width={width} height={BOX} rx={5} />
+        <text className="gate-label" x={x} y={y + 4}>{label}</text>
+      </g>
+    );
+  };
+
+  if (step.kind === "noop") {
+    return <line className="gate-barrier" x1={x} x2={x} y1={minY - ROW / 2 + 6} y2={maxY + ROW / 2 - 6} />;
+  }
+  if (step.kind === "measure") {
+    return (
+      <g>
+        {classicalY !== null && <line className="gate-link is-classical" x1={x} x2={x} y1={ys[0]} y2={classicalY} />}
+        {box(ys[0], step.outcome === null ? "M" : `M=${step.outcome}`, "m")}
+      </g>
+    );
+  }
+  if (step.name === "swap") {
+    return (
+      <g>
+        <line className="gate-link" x1={x} x2={x} y1={minY} y2={maxY} />
+        {ys.map((y) => (
+          <path key={y} className="gate-cross" d={`M${x - 5} ${y - 5}l10 10M${x + 5} ${y - 5}l-10 10`} />
+        ))}
+      </g>
+    );
+  }
+  if (step.kind === "gate" && step.num_ctrl > 0 && step.num_ctrl < rows.length) {
+    const targets = ys.slice(step.num_ctrl);
+    const isNot = step.label === "X" && targets.length === 1;
+    return (
+      <g>
+        <line className="gate-link" x1={x} x2={x} y1={minY} y2={maxY} />
+        {ys.slice(0, step.num_ctrl).map((y) => (
+          <circle key={y} className="gate-control" cx={x} cy={y} r={4} />
+        ))}
+        {isNot ? (
+          <g>
+            <circle className="gate-target" cx={x} cy={targets[0]} r={10} />
+            <path className="gate-cross" d={`M${x - 10} ${targets[0]}h20M${x} ${targets[0] - 10}v20`} />
+          </g>
+        ) : (
+          targets.map((y) => box(y, step.label, `t${y}`))
+        )}
+      </g>
+    );
+  }
+  // Porta comum (ou condicional): uma caixa por qubit, ligadas quando há mais de um.
+  const dashed = step.kind === "conditional" && step.applied === false;
+  const label = step.kind === "conditional" ? step.label.replace(/ se .*/, "") : step.label;
+  return (
+    <g>
+      {rows.length > 1 && <line className="gate-link" x1={x} x2={x} y1={minY} y2={maxY} />}
+      {step.kind === "conditional" && classicalY !== null && (
+        <line className="gate-link is-classical" x1={x} x2={x} y1={maxY} y2={classicalY} />
+      )}
+      {ys.map((y) => box(y, label, `b${y}`, dashed))}
+    </g>
+  );
+}
+
+export function CircuitDiagram() {
+  useLocale();
+  const result = useStore((s) => s.result);
+  const current = useStore(selectCurrentStep);
+  const setStep = useStore((s) => s.setStep);
+
+  if (!result) return <div className="circuit-empty muted">{t("circuit.empty")}</div>;
+
+  const { num_qubits: n, num_clbits, steps } = result;
+  const classicalY = num_clbits > 0 ? rowY(n) : null;
+  const width = LEFT + Math.max(steps.length, 1) * COL + 20;
+  const height = rowY(n - 1 + (num_clbits > 0 ? 1 : 0)) + TOP;
+
+  return (
+    <div className="circuit-scroll">
+      <svg className="circuit" width={width} height={height} role="img" aria-label={t("circuit.aria", { qubits: n, steps: steps.length })}>
+        {Array.from({ length: n }, (_, q) => (
+          <g key={q}>
+            <text className="wire-label" x={10} y={rowY(q) + 4}>q{q}</text>
+            <line className="wire" x1={LEFT - 12} x2={width - 8} y1={rowY(q)} y2={rowY(q)} />
+          </g>
+        ))}
+        {classicalY !== null && (
+          <g>
+            <text className="wire-label" x={10} y={classicalY + 4}>c</text>
+            <line className="wire is-classical" x1={LEFT - 12} x2={width - 8} y1={classicalY - 1.5} y2={classicalY - 1.5} />
+            <line className="wire is-classical" x1={LEFT - 12} x2={width - 8} y1={classicalY + 1.5} y2={classicalY + 1.5} />
+          </g>
+        )}
+        {steps.map((step, index) => {
+          const x = LEFT + index * COL + COL / 2;
+          const state = index + 1 === current ? " is-current" : index + 1 > current ? " is-pending" : "";
+          return (
+            <g key={index} className={`gate${state}`} onClick={() => setStep(index + 1)}>
+              <title>{t("circuit.stepTitle", { n: index + 1, line: step.line, label: step.label })}</title>
+              <rect className="gate-hit" x={x - COL / 2 + 2} y={2} width={COL - 4} height={height - 4} rx={6} />
+              <GateColumn step={step} x={x} classicalY={classicalY} />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}

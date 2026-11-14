@@ -1,0 +1,19 @@
+{
+  "title": "Emaranhamento e Estados de Bell",
+  "summary": "Dois qubits, o produto tensorial e a porta CNOT: um estado que não se descreve qubit a qubit.",
+  "mission": "Prepare o estado de Bell |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 nos qubits 0 e 1.",
+  "hints": [
+    "Comece colocando o qubit 0 em superposição com a Hadamard: qc.h(0). Observe que, por enquanto, os dois qubits ainda têm vetores de comprimento 1.",
+    "A porta CNOT inverte o alvo quando o controle vale 1. Use o qubit 0 como controle e o qubit 1 como alvo: qc.cx(controle, alvo).",
+    "A solução é qc.h(0) seguida de qc.cx(0, 1). Com o cursor na linha do CNOT, os vetores de Bloch encolhem até o centro."
+  ],
+  "prediction": {
+    "question": "Os dois qubits estão em |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. Você mede o qubit 0 e obtém 1. O que vai sair ao medir o qubit 1?",
+    "options": [
+      "0 ou 1, com 50% de chance cada",
+      "Sempre 1",
+      "Sempre 0"
+    ],
+    "explanation": "No estado |Φ⁺⟩ só existem as parcelas |00⟩ e |11⟩. Se o qubit 0 deu 1, sobra apenas |11⟩: o qubit 1 dá 1 com certeza. Os resultados são aleatórios, mas sempre iguais."
+  }
+}

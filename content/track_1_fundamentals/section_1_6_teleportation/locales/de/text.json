@@ -1,0 +1,23 @@
+{
+  "title": "Quantenteleportation",
+  "summary": "Bell-Paar, Messung mitten im Schaltkreis und bedingte Korrekturen.",
+  "mission": "Teleportiere den Zustand von Qubit 0 (Alice) auf Qubit 2 (Bob). Alice und Bob sind weit voneinander entfernt: Kein Gatter darf gleichzeitig auf die Qubits 0 und 2 wirken.",
+  "hints": [
+    "Erzeuge zuerst ein Bell-Paar zwischen Qubit 1 (Alice) und Qubit 2 (Bob), wie in der vorigen Lektion: qc.h(1) und qc.cx(1, 2).",
+    "Alice führt eine Messung in der Bell-Basis auf den Qubits 0 und 1 durch: qc.cx(0, 1), qc.h(0), dann qc.measure(0, 0) und qc.measure(1, 1).",
+    "Bob korrigiert anhand der empfangenen Bits: X, wenn Bit 1 den Wert 1 hat, danach Z, wenn Bit 0 den Wert 1 hat. Verwende with qc.if_test((qc.clbits[1], 1)): qc.x(2) und dasselbe mit qc.clbits[0] und qc.z(2)."
+  ],
+  "prediction": {
+    "question": "Was passiert nach der Teleportation mit dem Zustand, der im Qubit von Alice war?",
+    "options": [
+      "Er bleibt dort: Jetzt gibt es zwei Kopien",
+      "Er wird durch die Messung zerstört: Nur Bob behält den Zustand",
+      "Er wird zum Bell-Zustand"
+    ],
+    "explanation": "Alices Messung zerstört den ursprünglichen Zustand. Bliebe eine Kopie übrig, würde die Teleportation das No-Cloning-Theorem verletzen, das das Kopieren eines unbekannten Quantenzustands verbietet."
+  },
+  "comparison": {
+    "source_label": "Alice · ursprünglicher Zustand",
+    "target_label": "Bob · aktueller Zustand"
+  }
+}

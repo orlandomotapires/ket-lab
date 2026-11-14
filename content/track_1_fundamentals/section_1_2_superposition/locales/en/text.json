@@ -1,0 +1,19 @@
+{
+  "title": "Superposition and the Hadamard Gate",
+  "summary": "The states |+⟩ and |−⟩ and a quantum random number generator.",
+  "mission": "Build a quantum random number generator: put qubit 0 in a uniform superposition and measure it into classical bit 0.",
+  "hints": [
+    "The Hadamard gate takes |0⟩ to the state |+⟩, on the equator of the sphere: qc.h(0).",
+    "To read the result, measure the qubit and store the value in a classical bit: qc.measure(qubit, bit).",
+    "The solution has two lines: qc.h(0) and then qc.measure(0, 0)."
+  ],
+  "prediction": {
+    "question": "You prepare the state |+⟩ and measure. Then you repeat the experiment from scratch, 1000 times. What do you expect to see?",
+    "options": [
+      "Always 0",
+      "An intermediate value, such as 0.5, in every measurement",
+      "About 500 times 0 and 500 times 1"
+    ],
+    "explanation": "Each measurement returns only 0 or 1, never an intermediate value. The superposition shows up in the statistics: each outcome half of the time."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Entanglement and Bell States",
+  "summary": "Tensor product, CNOT and the qubit ordering convention.",
+  "mission": "Prepare the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 0 and 1.",
+  "hints": [
+    "Start by putting qubit 0 in superposition with the Hadamard: qc.h(0). Note that, for now, both qubits still have vectors of length 1.",
+    "The CNOT gate flips the target when the control is 1. Use qubit 0 as the control and qubit 1 as the target: qc.cx(control, target).",
+    "The solution is qc.h(0) followed by qc.cx(0, 1). With the cursor on the CNOT line, the Bloch vectors shrink to the center."
+  ],
+  "prediction": {
+    "question": "The two qubits are in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. You measure qubit 0 and get 1. What will come out when you measure qubit 1?",
+    "options": [
+      "0 or 1, with a 50% chance each",
+      "Always 1",
+      "Always 0"
+    ],
+    "explanation": "In the state |Φ⁺⟩ only the terms |00⟩ and |11⟩ exist. If qubit 0 gave 1, only |11⟩ remains: qubit 1 gives 1 with certainty. The results are random, but always equal."
+  }
+}

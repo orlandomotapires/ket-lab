@@ -1,0 +1,283 @@
+{
+  "tracks": [
+    {
+      "id": 1,
+      "title": {
+        "pt": "Fundamentos Quânticos",
+        "en": "Quantum Fundamentals",
+        "de": "Quantengrundlagen"
+      },
+      "level": {
+        "pt": "Iniciante",
+        "en": "Beginner",
+        "de": "Einsteiger"
+      },
+      "sections": [
+        {
+          "id": "1.1",
+          "title": {
+            "pt": "O Qubit e a Base Computacional",
+            "en": "The Qubit and the Computational Basis",
+            "de": "Das Qubit und die Rechenbasis"
+          },
+          "summary": {
+            "pt": "Vetor de estado, normalização e a porta X na Esfera de Bloch.",
+            "en": "State vector, normalization and the X gate on the Bloch sphere.",
+            "de": "Zustandsvektor, Normierung und das X-Gatter auf der Bloch-Kugel."
+          }
+        },
+        {
+          "id": "1.2",
+          "title": {
+            "pt": "Superposição e a Porta Hadamard",
+            "en": "Superposition and the Hadamard Gate",
+            "de": "Superposition und das Hadamard-Gatter"
+          },
+          "summary": {
+            "pt": "Estados |+⟩ e |−⟩ e um gerador quântico de números aleatórios.",
+            "en": "The states |+⟩ and |−⟩ and a quantum random number generator.",
+            "de": "Die Zustände |+⟩ und |−⟩ und ein Quanten-Zufallszahlengenerator."
+          }
+        },
+        {
+          "id": "1.3",
+          "title": {
+            "pt": "Fase Relativa e Rotações",
+            "en": "Relative Phase and Rotations",
+            "de": "Relative Phase und Rotationen"
+          },
+          "summary": {
+            "pt": "Portas Z, S, T e Rz: mesmas probabilidades, estados diferentes.",
+            "en": "Z, S, T and Rz gates: same probabilities, different states.",
+            "de": "Z-, S-, T- und Rz-Gatter: gleiche Wahrscheinlichkeiten, verschiedene Zustände."
+          }
+        },
+        {
+          "id": "1.4",
+          "title": {
+            "pt": "Interferência e Medição em Outras Bases",
+            "en": "Interference and Measuring in Other Bases",
+            "de": "Interferenz und Messung in anderen Basen"
+          },
+          "summary": {
+            "pt": "HH = I, HZH = X e por que a fase decide o resultado.",
+            "en": "HH = I, HZH = X and why the phase decides the outcome.",
+            "de": "HH = I, HZH = X und warum die Phase das Ergebnis bestimmt."
+          }
+        },
+        {
+          "id": "1.5",
+          "title": {
+            "pt": "Emaranhamento e Estados de Bell",
+            "en": "Entanglement and Bell States",
+            "de": "Verschränkung und Bell-Zustände"
+          },
+          "summary": {
+            "pt": "Produto tensorial, CNOT e a convenção de ordem dos qubits.",
+            "en": "Tensor product, CNOT and the qubit ordering convention.",
+            "de": "Tensorprodukt, CNOT und die Reihenfolge der Qubits."
+          }
+        },
+        {
+          "id": "1.6",
+          "title": {
+            "pt": "Teletransporte Quântico",
+            "en": "Quantum Teleportation",
+            "de": "Quantenteleportation"
+          },
+          "summary": {
+            "pt": "Par de Bell, medição no meio do circuito e correções condicionais.",
+            "en": "Bell pair, mid-circuit measurement and conditional corrections.",
+            "de": "Bell-Paar, Messung mitten im Schaltkreis und bedingte Korrekturen."
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": {
+        "pt": "Algoritmos Quânticos",
+        "en": "Quantum Algorithms",
+        "de": "Quantenalgorithmen"
+      },
+      "level": {
+        "pt": "Intermediário",
+        "en": "Intermediate",
+        "de": "Fortgeschritten"
+      },
+      "sections": [
+        {
+          "id": "2.1",
+          "title": {
+            "pt": "Phase Kickback",
+            "en": "Phase Kickback",
+            "de": "Phase Kickback"
+          },
+          "summary": {
+            "pt": "Como o qubit alvo devolve fase ao qubit de controle.",
+            "en": "How the target qubit kicks a phase back to the control.",
+            "de": "Wie das Zielqubit eine Phase auf das Kontrollqubit zurückwirft."
+          }
+        },
+        {
+          "id": "2.2",
+          "title": {
+            "pt": "Oráculos e Deutsch-Jozsa",
+            "en": "Oracles and Deutsch–Jozsa",
+            "de": "Orakel und Deutsch-Jozsa"
+          },
+          "summary": {
+            "pt": "Constante ou balanceada com uma única consulta.",
+            "en": "Constant or balanced with a single query.",
+            "de": "Konstant oder balanciert mit einer einzigen Abfrage."
+          }
+        },
+        {
+          "id": "2.3",
+          "title": {
+            "pt": "Bernstein-Vazirani",
+            "en": "Bernstein–Vazirani",
+            "de": "Bernstein-Vazirani"
+          },
+          "summary": {
+            "pt": "Recuperar uma string secreta inteira em uma consulta.",
+            "en": "Recover a whole secret string in one query.",
+            "de": "Eine ganze geheime Bitfolge mit einer Abfrage finden."
+          }
+        },
+        {
+          "id": "2.4",
+          "title": {
+            "pt": "Busca de Grover",
+            "en": "Grover's Search",
+            "de": "Grover-Suche"
+          },
+          "summary": {
+            "pt": "Amplificação de amplitude e inversão em torno da média.",
+            "en": "Amplitude amplification and inversion about the mean.",
+            "de": "Amplitudenverstärkung und Spiegelung am Mittelwert."
+          }
+        },
+        {
+          "id": "2.5",
+          "title": {
+            "pt": "Transformada Quântica de Fourier",
+            "en": "Quantum Fourier Transform",
+            "de": "Quanten-Fourier-Transformation"
+          },
+          "summary": {
+            "pt": "Da base computacional para a base de fase.",
+            "en": "From the computational basis to the phase basis.",
+            "de": "Von der Rechenbasis in die Phasenbasis."
+          }
+        },
+        {
+          "id": "2.6",
+          "title": {
+            "pt": "Estimação de Fase Quântica",
+            "en": "Quantum Phase Estimation",
+            "de": "Quanten-Phasenschätzung"
+          },
+          "summary": {
+            "pt": "Ler um autovalor com potências controladas e QFT inversa.",
+            "en": "Read out an eigenvalue with controlled powers and an inverse QFT.",
+            "de": "Einen Eigenwert mit kontrollierten Potenzen und inverser QFT auslesen."
+          }
+        },
+        {
+          "id": "2.7",
+          "title": {
+            "pt": "Algoritmo de Shor",
+            "en": "Shor's Algorithm",
+            "de": "Shor-Algorithmus"
+          },
+          "summary": {
+            "pt": "Fatorar 15 reduzindo o problema a encontrar um período.",
+            "en": "Factor 15 by reducing it to finding a period.",
+            "de": "15 faktorisieren, indem man eine Periode findet."
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": {
+        "pt": "Fronteiras e Aplicações",
+        "en": "Frontiers and Applications",
+        "de": "Grenzen und Anwendungen"
+      },
+      "level": {
+        "pt": "Avançado",
+        "en": "Advanced",
+        "de": "Experten"
+      },
+      "sections": [
+        {
+          "id": "3.1",
+          "title": {
+            "pt": "Circuitos Variacionais",
+            "en": "Variational Circuits",
+            "de": "Variationelle Schaltkreise"
+          },
+          "summary": {
+            "pt": "Ansatz parametrizado e a regra de parameter-shift.",
+            "en": "Parameterized ansatz and the parameter-shift rule.",
+            "de": "Parametrisierter Ansatz und die Parameter-Shift-Regel."
+          }
+        },
+        {
+          "id": "3.2",
+          "title": {
+            "pt": "VQE para Química Quântica",
+            "en": "VQE for Quantum Chemistry",
+            "de": "VQE für Quantenchemie"
+          },
+          "summary": {
+            "pt": "Energia do estado fundamental da molécula de H₂.",
+            "en": "Ground-state energy of the H₂ molecule.",
+            "de": "Grundzustandsenergie des H₂-Moleküls."
+          }
+        },
+        {
+          "id": "3.3",
+          "title": {
+            "pt": "QAOA e Max-Cut",
+            "en": "QAOA and Max-Cut",
+            "de": "QAOA und Max-Cut"
+          },
+          "summary": {
+            "pt": "Otimização combinatória em grafos.",
+            "en": "Combinatorial optimization on graphs.",
+            "de": "Kombinatorische Optimierung auf Graphen."
+          }
+        },
+        {
+          "id": "3.4",
+          "title": {
+            "pt": "Redes Neurais Quânticas",
+            "en": "Quantum Neural Networks",
+            "de": "Quanten-neuronale Netze"
+          },
+          "summary": {
+            "pt": "Classificador variacional com data re-uploading.",
+            "en": "Variational classifier with data re-uploading.",
+            "de": "Variationeller Klassifikator mit Data Re-Uploading."
+          }
+        },
+        {
+          "id": "3.5",
+          "title": {
+            "pt": "Ruído e Correção de Erros",
+            "en": "Noise and Error Correction",
+            "de": "Rauschen und Fehlerkorrektur"
+          },
+          "summary": {
+            "pt": "Código de repetição, síndromes e canais de ruído.",
+            "en": "Repetition code, syndromes and noise channels.",
+            "de": "Wiederholungscode, Syndrome und Rauschkanäle."
+          }
+        }
+      ]
+    }
+  ]
+}

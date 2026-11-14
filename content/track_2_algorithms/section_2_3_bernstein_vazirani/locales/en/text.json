@@ -1,0 +1,19 @@
+{
+  "title": "Bernstein–Vazirani",
+  "summary": "Recover a whole secret string in one query.",
+  "mission": "Find the 4-bit secret string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in the state |s⟩.",
+  "prediction": {
+    "question": "How many queries does a classical algorithm need to find a 4-bit secret string?",
+    "options": [
+      "1",
+      "4",
+      "16"
+    ],
+    "explanation": "Each classical query reveals a single bit of s (by querying 0001, 0010, 0100 and 1000), so it takes 4. The quantum algorithm uses one, for any length of s."
+  },
+  "hints": [
+    "The circuit is the same as Deutsch-Jozsa, now with 4 input qubits and the auxiliary on qubit 4.",
+    "Auxiliary in |−⟩ with qc.x(4) and qc.h(4); Hadamard on qubits 0 to 3 before and after the oracle.",
+    "Use a loop for qubit in range(4): qc.h(qubit). It appears twice, around oracle(qc)."
+  ]
+}

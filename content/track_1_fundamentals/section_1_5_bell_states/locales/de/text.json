@@ -1,0 +1,19 @@
+{
+  "title": "Verschränkung und Bell-Zustände",
+  "summary": "Tensorprodukt, CNOT und die Reihenfolge der Qubits.",
+  "mission": "Bereite den Bell-Zustand |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 auf den Qubits 0 und 1 vor.",
+  "hints": [
+    "Beginne damit, Qubit 0 mit dem Hadamard in Superposition zu bringen: qc.h(0). Beachte, dass beide Qubits vorerst noch Vektoren der Länge 1 haben.",
+    "Das CNOT-Gatter kehrt das Ziel um, wenn die Kontrolle 1 ist. Verwende Qubit 0 als Kontrolle und Qubit 1 als Ziel: qc.cx(kontrolle, ziel).",
+    "Die Lösung ist qc.h(0) gefolgt von qc.cx(0, 1). Mit dem Cursor in der CNOT-Zeile schrumpfen die Bloch-Vektoren bis zum Mittelpunkt."
+  ],
+  "prediction": {
+    "question": "Beide Qubits sind in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. Du misst Qubit 0 und erhältst 1. Was kommt heraus, wenn du Qubit 1 misst?",
+    "options": [
+      "0 oder 1, mit jeweils 50 % Wahrscheinlichkeit",
+      "Immer 1",
+      "Immer 0"
+    ],
+    "explanation": "Im Zustand |Φ⁺⟩ gibt es nur die Terme |00⟩ und |11⟩. Wenn Qubit 0 den Wert 1 ergab, bleibt nur |11⟩ übrig: Qubit 1 ergibt mit Sicherheit 1. Die Ergebnisse sind zufällig, aber immer gleich."
+  }
+}

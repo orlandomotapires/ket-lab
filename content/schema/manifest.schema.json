@@ -1,0 +1,409 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manifest de lição",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "track",
+    "num_qubits",
+    "default_visualizer",
+    "available_visualizers",
+    "validation"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[1-9]\\.[0-9]+$"
+    },
+    "track": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "estimated_minutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "num_qubits": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "max_qubits": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "default_visualizer": {
+      "$ref": "#/$defs/visualizer"
+    },
+    "available_visualizers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/visualizer"
+      }
+    },
+    "validation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "state_fidelity"
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "counts_distribution"
+            },
+            "shots": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 8192
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "qubit"
+          ],
+          "properties": {
+            "type": {
+              "const": "reduced_state"
+            },
+            "qubit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "trials": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "cases",
+            "register"
+          ],
+          "properties": {
+            "type": {
+              "const": "oracle_cases"
+            },
+            "cases": {
+              "type": "array",
+              "minItems": 1
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "register": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "cases"
+          ],
+          "properties": {
+            "type": {
+              "const": "state_cases"
+            },
+            "cases": {
+              "type": "array",
+              "minItems": 1
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "allowed_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "max_gates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forbidden_pairs": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "expected_variables": {
+              "type": "object",
+              "description": "Variáveis do código do aluno conferidas após a validação principal"
+            },
+            "required_gates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_qubit",
+        "source_marker",
+        "target_qubit"
+      ],
+      "properties": {
+        "source_qubit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_marker": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trecho de código; o estado de origem é o da linha onde ele aparece"
+        },
+        "target_qubit": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "prediction_answer": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "register": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qubits"
+      ],
+      "description": "Registrador mostrado nas visualizações de amplitudes, mostradores e histograma",
+      "properties": {
+        "qubits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "modular": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "a",
+        "N"
+      ],
+      "properties": {
+        "a": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "N": {
+          "type": "integer",
+          "minimum": 3
+        }
+      }
+    }
+  },
+  "$defs": {
+    "visualizer": {
+      "enum": [
+        "bloch",
+        "qsphere",
+        "compare",
+        "amplitudes",
+        "dials",
+        "histogram",
+        "modular"
+      ]
+    }
+  }
+}

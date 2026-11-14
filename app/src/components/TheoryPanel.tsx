@@ -62,8 +62,8 @@ function References({ items }: { items: Reference[] }) {
             <span className="ref-meta">
               {ref.authors}
               {ref.year ? `, ${ref.year}` : ""}
-              {ref.section ? ` · ${t("ref.section", { section: ref.section })}` : ""}
             </span>
+            <span className="ref-location">{ref.location}</span>
           </li>
         ))}
       </ul>

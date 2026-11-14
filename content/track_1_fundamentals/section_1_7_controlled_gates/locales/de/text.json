@@ -1,0 +1,19 @@
+{
+  "title": "Kontrollierte Gatter und Identitäten",
+  "summary": "Baue das CS-Gatter aus CNOT und T und lerne Identitäten zwischen Gattern.",
+  "mission": "Baue das kontrollierte S-Gatter (CS = diag(1, 1, 1, i)) nur mit cx, t und tdg: Es multipliziert die Amplitude von |11⟩ mit i und lässt die anderen unverändert. Die Lösung muss für jede Eingabe funktionieren, auch für Superpositionen.",
+  "hints": [
+    "Stell dir den gewünschten Effekt als Summe von Phasen vor: Jedes Qubit in 1 erhält e^(iπ/4) von einem T-Gatter. Es fehlt noch, aus a + b eine Phase von π/2 nur für a = b = 1 zu machen. Nutze a + b − (a ⊕ b) = 2ab.",
+    "Nach qc.cx(0, 1) enthält Qubit 1 den Wert a ⊕ b. Ein Gatter darauf wirkt nun auf diese Parität: Nutze T† (qc.tdg(1)), um π/4 abzuziehen, wenn a ⊕ b = 1, und mache das CNOT danach rückgängig.",
+    "Die Lösung ist qc.t(0), qc.t(1), qc.cx(0, 1), qc.tdg(1) und qc.cx(0, 1)."
+  ],
+  "prediction": {
+    "question": "Du wendest Hadamard auf beide Qubits an, dann ein CNOT von 0 auf 1 und zuletzt wieder Hadamard auf beide Qubits. Was erhältst du?",
+    "options": [
+      "Dasselbe CNOT von 0 auf 1: Die Hadamards heben sich auf",
+      "Ein CNOT von 1 auf 0: Kontroll- und Zielqubit tauschen die Rollen",
+      "Ein SWAP-Gatter"
+    ],
+    "explanation": "Das Hadamard-Gatter vertauscht die X- und die Z-Basis. Um das CNOT herum lässt es Kontroll- und Zielqubit die Rollen tauschen: H⊗H · CNOT(0→1) · H⊗H = CNOT(1→0). In einer der Basen ist es Qubit 1, das das andere ändert, nicht Qubit 0."
+  }
+}

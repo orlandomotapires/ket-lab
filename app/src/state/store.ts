@@ -38,6 +38,14 @@ export interface TrainingState {
 }
 
 /** O código chama report(...) fora de um comentário: é um treino, roda pelo botão. */
+export interface HardwareJob {
+  job_id: string;
+  backend?: string;
+  status?: string;
+  counts?: Record<string, number>;
+  error?: string;
+}
+
 export function usesReport(code: string): boolean {
   return /^[^#\n]*\breport\s*\(/m.test(code);
 }
@@ -78,6 +86,11 @@ interface State {
   init(): void;
   runNow(): void;
   stopRun(): void;
+  /** Computador quântico real (IBM): só com o motor local e o pacote opcional instalado. */
+  hardwareAvailable: boolean;
+  submitHardware(options: { token: string; instance: string; shots: number }): Promise<EngineResponse<HardwareJob>>;
+  hardwareStatus(options: { jobId: string; token: string; instance: string }): Promise<EngineResponse<HardwareJob>>;
+  simulateCounts(shots: number): Promise<EngineResponse<ShotsResult>>;
   exportCircuit(format: ExportFormat): Promise<EngineResponse<ExportResult>>;
   search(query: string): Promise<SearchResult[]>;
   setControl(id: string, value: string | number | null): void;
@@ -249,6 +262,7 @@ export const useStore = create<State>((set, get) => {
     catalog: null,
     progress: {},
     progressStorage: "engine",
+    hardwareAvailable: false,
     loadError: null,
     lesson: null,
     code: "",
@@ -280,6 +294,10 @@ export const useStore = create<State>((set, get) => {
           set({ connection: status });
           if (status === "open" && previous !== "open") {
             void loadCatalog();
+            void engine()
+              .call<{ available: boolean }>("hardware.available")
+              .then((response) => set({ hardwareAvailable: response.ok && response.available }))
+              .catch(() => undefined);
             if (get().view === "lab") scheduleRun(0);
           }
         },
@@ -341,6 +359,20 @@ export const useStore = create<State>((set, get) => {
         if (!get().training?.active) void train();
       }
       else scheduleRun(0);
+    },
+
+    submitHardware({ token, instance, shots }) {
+      const { code, lesson, controls } = get();
+      return engine().call<HardwareJob>("hardware.submit", { code, lesson_id: lesson?.id ?? null, controls, token, instance, shots });
+    },
+
+    hardwareStatus({ jobId, token, instance }) {
+      return engine().call<HardwareJob>("hardware.status", { job_id: jobId, token, instance });
+    },
+
+    simulateCounts(shots) {
+      const { code, lesson, controls } = get();
+      return engine().call<ShotsResult>("shots", { code, shots, seed: 0, lesson_id: lesson?.id ?? null, controls });
     },
 
     stopRun() {

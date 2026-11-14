@@ -126,3 +126,24 @@ test("guia da primeira lição: aparece uma vez e reabre pelo botão", async ({ 
   await expect(card).toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+test("hardware real (IBM simulado): envia, acompanha e compara com a simulação", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await page.getByRole("button", { name: "Free lab" }).click();
+  await page.locator(".example-picker select").selectOption("bell");
+  await page.locator(".circuit-panel").getByRole("button", { name: "Run on hardware" }).click();
+  const dialog = page.locator(".hardware-dialog");
+  await dialog.getByLabel("IBM Quantum API key").fill("wrong-key");
+  await dialog.getByRole("button", { name: /Send/ }).click();
+  await expect(dialog.locator(".notice-error")).toContainText("did not accept");
+  await dialog.getByLabel("IBM Quantum API key").fill("test-key");
+  await dialog.getByRole("button", { name: /Send/ }).click();
+  await expect(dialog).toContainText("Job fake-job-1");
+  await expect(dialog).toContainText("done");
+  await expect(dialog.locator(".hw-compare tbody tr")).toHaveCount(4);
+  await expect(dialog.locator(".hw-compare")).toContainText("48.6%");
+  // A chave não fica guardada sem pedir.
+  expect(await page.evaluate(() => localStorage.getItem("qlp.ibm.key"))).toBeNull();
+  expect(errors).toEqual([]);
+});

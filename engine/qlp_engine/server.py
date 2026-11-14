@@ -25,7 +25,7 @@ from urllib.parse import parse_qs, urlparse
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosed
 
-from . import messages
+from . import hardware, messages
 from .content import ContentError, ContentLibrary
 from .pool import WorkerPool
 from .progress import ProgressStore
@@ -151,6 +151,12 @@ class EngineServer:
             )
             return {"ok": True}
 
+        if kind == "hardware.available":
+            return {"ok": True, "available": not self.public and hardware.available()}
+
+        if kind in ("hardware.submit", "hardware.status"):
+            return await self._hardware(kind, message)
+
         if kind == "cancel":
             self.pool.cancel((id(websocket), message.get("target")))
             return {"ok": True}
@@ -189,6 +195,30 @@ class EngineServer:
             return await self.pool.submit(job, timeout=timeout, is_stale=lambda: seq != latest_run["seq"])
 
         return _error(messages.t("server.unknown_type", kind=kind), "protocol")
+
+    async def _hardware(self, kind: str, message: dict) -> dict:
+        """Computador quântico real. O token não é guardado nem registrado."""
+        if self.public:
+            return _error(messages.t("hw.public"), "hardware")
+        token, instance = message.get("token"), message.get("instance")
+        try:
+            if kind == "hardware.status":
+                result = await asyncio.to_thread(hardware.status, str(message.get("job_id", "")), token, instance)
+                return {"ok": True, **result}
+            code = message.get("code")
+            if not isinstance(code, str) or len(code) > MAX_CODE_CHARS:
+                return _error(messages.t("server.bad_code"), "protocol")
+            lesson_id = message.get("lesson_id")
+            job = {"type": "export", "code": code, "format": "qasm3", "seed": 0}
+            job.update(self.content.run_context(lesson_id))
+            job["inputs"] = self.content.control_inputs(lesson_id, message.get("controls"))
+            exported = await self.pool.submit(job, timeout=TRAIN_TIMEOUT_S)
+            if not exported.get("ok"):
+                return exported
+            result = await asyncio.to_thread(hardware.submit, exported["text"], token, instance, int(message.get("shots", 1024)))
+            return {"ok": True, **result}
+        except hardware.HardwareError as exc:
+            return _error(str(exc), "hardware")
 
     async def _train(self, job: dict, message: dict, websocket, timeout: float | None) -> dict:
         """Execução longa pelo botão: envia as métricas de `report(...)` enquanto roda."""

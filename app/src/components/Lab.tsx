@@ -4,6 +4,7 @@ import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
 import { CodeEditor } from "./CodeEditor";
 import { ExportButton } from "./ExportDialog";
+import { HardwareButton } from "./HardwareDialog";
 import { exampleCode, SANDBOX_EXAMPLES, type SandboxExample } from "../lib/examples";
 import { OracleBar } from "./OracleBar";
 import { TheoryPanel } from "./TheoryPanel";
@@ -50,6 +51,7 @@ export function Lab() {
           <div className="panel-head">
             <h2>{t("lab.circuit")}</h2>
             <span className="grow" />
+            <HardwareButton />
             <ExportButton />
           </div>
           <CircuitDiagram />

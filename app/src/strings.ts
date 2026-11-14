@@ -119,6 +119,10 @@ const STRINGS = {
   "timeline.follow": "Follow cursor",
 
   "circuit.empty": "The circuit appears here as you type.",
+  "circuit.keyboard": "Circuit. Use the left and right arrow keys to move between steps, Home and End for the first and last.",
+  "circuit.current": "Step {n} of {total}: {label}",
+  "viz.stateDescription": "State after this step. {qubits}",
+  "viz.qubitDescription": "Qubit {q}: Bloch vector x {x}, y {y}, z {z}, length {r}.",
   "circuit.noGates": "No gates yet. Each gate you write appears on these wires.",
   "circuit.aria": "Circuit with {qubits} qubit(s) and {steps} instruction(s)",
   "circuit.stepTitle": "Step {n}: {label} (line {line})",

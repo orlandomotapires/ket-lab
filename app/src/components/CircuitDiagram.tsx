@@ -1,4 +1,5 @@
 import type { Step } from "../engine/types";
+import { describeStep } from "../lib/quantum";
 import { t } from "../strings";
 import { selectCurrentStep, useStore } from "../state/store";
 
@@ -111,8 +112,26 @@ export function CircuitDiagram() {
   const width = LEFT + (widths.reduce((a, b) => a + b, 0) || COL) + 20;
   const height = rowY(n - 1 + (num_clbits > 0 ? 1 : 0)) + TOP;
 
+  // Teclado: setas, Home e End percorrem os passos; o passo atual é anunciado.
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    const target = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: steps.length }[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    setStep(Math.max(0, Math.min(steps.length, target)));
+  };
+  const announcement = current === 0
+    ? t("viz.initial")
+    : t("circuit.current", { n: current, total: steps.length, label: describeStep(steps[current - 1]) });
+
   return (
-    <div className="circuit-scroll">
+    <div
+      className="circuit-scroll"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      aria-label={t("circuit.keyboard")}
+      aria-describedby="circuit-current"
+    >
+      <p id="circuit-current" className="sr-only" aria-live="polite">{announcement}</p>
       <svg
         className="circuit"
         width={width * SCALE}

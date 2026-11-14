@@ -1,19 +1,19 @@
 {
   "title": "Relative Phase and Rotations",
   "summary": "Z, S, T and Rz gates: same probabilities, different states.",
-  "mission": "The circuit already prepares |+⟩. Rotate the vector a quarter turn around the Z axis, to the +Y point of the equator: the state (|0⟩ + i|1⟩)/√2.",
+  "mission": "Qubit 0 received an unknown input state and then a sequence of gates (X, H, S, T, H). Append gates that undo the sequence, so that the qubit returns to its input state, whatever it is.",
   "hints": [
-    "Rotations around Z move the vector along the equator without changing the probabilities. Try qc.z(0) and see where the vector ends up.",
-    "Z is a half turn (180°). You need a quarter turn (90°): the S gate, or qc.rz(theta, 0) with the right angle.",
-    "Add qc.s(0) after the Hadamard. With rz, import math and use qc.rz(math.pi / 2, 0)."
+    "To undo a sequence, you undo the last step first. Repeating the gates in the same order does not work: you must invert each one and walk through the list backwards.",
+    "H and X are their own inverses. The inverse of S is S† (qc.sdg(0)) and the inverse of T is T† (qc.tdg(0)).",
+    "After qc.h(0) (the last gate of the sequence), write qc.h(0), qc.tdg(0), qc.sdg(0), qc.h(0) and qc.x(0), in that order."
   ],
   "prediction": {
-    "question": "The qubit is in |+⟩, with a 50% chance for each outcome. You apply the Z gate. What happens to the probabilities of measuring 0 and 1?",
+    "question": "The qubit is in |+⟩, with phase φ = 0. You apply T and then Z. Where does the phase φ end up?",
     "options": [
-      "They become 100% and 0%",
-      "They stay 50% and 50%",
-      "They become 0% and 100%"
+      "π/4",
+      "5π/4",
+      "π"
     ],
-    "explanation": "The Z gate only flips the sign of the |1⟩ amplitude. The magnitudes do not change, so the probabilities do not either. What changes is the relative phase: the vector goes to the opposite side of the equator."
+    "explanation": "T adds π/4 to the phase and Z adds π. Rotations around Z accumulate: φ = π/4 + π = 5π/4. The order does not matter, since they all rotate around the same axis."
   }
 }

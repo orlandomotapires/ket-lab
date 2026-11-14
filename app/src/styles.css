@@ -493,17 +493,6 @@ button {
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.track-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12.5px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-.track-progress .meter {
-  width: 110px;
-}
 
 .section-list {
   list-style: none;
@@ -539,8 +528,9 @@ button {
   place-items: center;
   color: var(--accent-contrast);
 }
-.section-mark.is-available {
+.is-next .section-mark {
   border-color: var(--accent);
+  border-width: 2px;
 }
 .section-mark.is-started {
   border-color: var(--accent);
@@ -586,8 +576,32 @@ button {
   color: var(--muted);
   white-space: nowrap;
 }
+/* A ação ("Start", "Review") só aparece na próxima lição, nas já começadas e ao
+   passar o mouse ou focar a linha: 21 "Start" iguais viravam ruído. */
+.section-row .section-action {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.section-row.is-next .section-action,
+.section-row.is-started .section-action,
+.section-row:hover:not(:disabled) .section-action,
+.section-row:focus-visible .section-action {
+  opacity: 1;
+}
+.section-row.is-next .section-action,
 .section-row:hover:not(:disabled) .section-action {
   color: var(--accent-text);
+}
+.section-row.is-next {
+  background: var(--accent-soft);
+}
+.section-row.is-next:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+@media (hover: none) and (pointer: coarse) {
+  .section-row .section-action {
+    opacity: 1;
+  }
 }
 
 /* -------------------------------------------------------------- laboratório */

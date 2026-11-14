@@ -1,8 +1,7 @@
 import type { EngineError } from "./types";
 
 export interface EngineEndpoint {
-  port: number;
-  token: string;
+  url: string;
 }
 
 /** Abre um link externo numa aba nova. */
@@ -21,11 +20,22 @@ export function saveTextFile(contents: string, fileName: string): boolean {
   return true;
 }
 
-/** Onde o motor está escutando: porta e token vêm do ambiente do Vite (o `npm run dev` os define). */
+/**
+ * Onde o motor está escutando.
+ * - Hospedado: VITE_ENGINE_URL (ex.: "/engine"), no mesmo site da interface.
+ * - Local (npm run dev): 127.0.0.1, com a porta e o token de VITE_ENGINE_PORT e VITE_ENGINE_TOKEN.
+ */
 export async function resolveEndpoint(): Promise<EngineEndpoint> {
+  const hosted = import.meta.env.VITE_ENGINE_URL as string | undefined;
+  if (hosted) {
+    const url = new URL(hosted, window.location.href);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    return { url: url.toString() };
+  }
+  const port = Number(import.meta.env.VITE_ENGINE_PORT ?? 8765);
+  const token = String(import.meta.env.VITE_ENGINE_TOKEN ?? "dev");
   return {
-    port: Number(import.meta.env.VITE_ENGINE_PORT ?? 8765),
-    token: String(import.meta.env.VITE_ENGINE_TOKEN ?? "dev"),
+    url: `ws://127.0.0.1:${port}/?token=${encodeURIComponent(token)}`,
   };
 }
 
@@ -87,7 +97,7 @@ export class EngineClient {
       throw new Error("O motor de simulação não iniciou.");
     }
     await new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(`ws://127.0.0.1:${endpoint.port}/?token=${encodeURIComponent(endpoint.token)}`);
+      const socket = new WebSocket(endpoint.url);
       this.socket = socket;
       // Um handshake que nunca termina deixaria a interface presa em "conectando".
       const timeout = window.setTimeout(() => {

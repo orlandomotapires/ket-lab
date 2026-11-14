@@ -228,3 +228,79 @@ def test_export_to_openqasm(library):
             assert refused["ok"] is False and "Noise channels" in refused["error"]["message"]
 
     with_server(test, library=library)
+
+
+def with_public_server(test, library, max_connections=0, workers=1):
+    from qlp_engine.pool import WorkerGroup
+
+    async def scenario():
+        pool = WorkerGroup(workers) if workers > 1 else WorkerPool()
+        engine = EngineServer(
+            library, None, pool, "nao-usado", ("https://quantum.example",), public=True, max_connections=max_connections
+        )
+        server = await engine.start(0)
+        port = server.sockets[0].getsockname()[1]
+        try:
+            await test(f"ws://127.0.0.1:{port}")
+        finally:
+            server.close()
+            await server.wait_closed()
+            pool.close()
+
+    asyncio.run(scenario())
+
+
+def test_public_mode_requires_the_site_origin_and_keeps_progress_in_the_browser(library):
+    async def test(url):
+        with pytest.raises(InvalidStatus):  # sem Origin: não é o site
+            async with connect(url):
+                pass
+        with pytest.raises(InvalidStatus):
+            async with connect(url, origin="https://outro.example"):
+                pass
+        async with connect(url, origin="https://quantum.example") as websocket:  # sem token
+            client = Client(websocket)
+            catalog = await client.call(type="catalog")
+            assert catalog["ok"] and catalog["progress_storage"] == "client" and catalog["progress"] == {}
+            assert (await client.call(type="progress.save", lesson_id="1.1", code="x"))["ok"] is True
+            assert (await client.call(type="catalog"))["progress"] == {}
+            assert (await client.call(type="run", code=GOOD))["ok"] is True
+
+    with_public_server(test, library)
+
+
+def test_public_mode_refuses_to_start_without_an_origin(library):
+    with pytest.raises(ValueError):
+        EngineServer(library, None, WorkerPool(), "t", (), public=True)
+
+
+def test_connection_limit(library):
+    async def test(url):
+        async with connect(url, origin="https://quantum.example"):
+            with pytest.raises(InvalidStatus) as refused:
+                async with connect(url, origin="https://quantum.example"):
+                    pass
+            assert refused.value.response.status_code == 503
+
+    with_public_server(test, library, max_connections=1)
+
+
+def test_worker_group_runs_jobs_in_parallel(library):
+    import time
+
+    slow = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\n" + "x = sum(range(3_000_000))\n" * 3
+
+    async def test(url):
+        async with connect(url, origin="https://quantum.example") as a, connect(url, origin="https://quantum.example") as b:
+            await Client(a).call(type="run", code=GOOD)  # aquece
+            await asyncio.gather(Client(a).call(type="shots", code=GOOD), Client(b).call(type="shots", code=GOOD))
+            start = time.perf_counter()
+            await Client(a).call(type="shots", code=slow)
+            alone = time.perf_counter() - start
+            start = time.perf_counter()
+            results = await asyncio.gather(Client(a).call(type="shots", code=slow), Client(b).call(type="shots", code=slow))
+            together = time.perf_counter() - start
+            assert all(r["ok"] for r in results), results
+            assert together < 1.6 * alone, (alone, together)
+
+    with_public_server(test, library, workers=2)

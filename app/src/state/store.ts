@@ -13,6 +13,7 @@ import type {
   ValidationResult,
 } from "../engine/types";
 import { t } from "../strings";
+import { loadLocalProgress, saveLocalProgress } from "../lib/localProgress";
 import { clampStep, stepForLine } from "../lib/steps";
 
 const RUN_DEBOUNCE_MS = 200;
@@ -51,6 +52,9 @@ interface State {
   view: "hub" | "lab";
   catalog: Catalog | null;
   progress: Record<string, LessonProgress>;
+  /** "client": motor hospedado, o progresso fica neste navegador. */
+  progressStorage: "engine" | "client";
+  reloadProgress(): void;
   loadError: string | null;
 
   lesson: Lesson | null; // null no laboratório livre
@@ -105,8 +109,16 @@ function engine(): EngineClient {
 export const useStore = create<State>((set, get) => {
   async function loadCatalog(): Promise<void> {
     try {
-      const response = await engine().call<{ catalog: Catalog; progress: Record<string, LessonProgress> }>("catalog");
-      if (response.ok) set({ catalog: response.catalog, progress: response.progress, loadError: null });
+      const response = await engine().call<{
+        catalog: Catalog;
+        progress: Record<string, LessonProgress>;
+        progress_storage?: "engine" | "client";
+      }>("catalog");
+      if (response.ok) {
+        const storage = response.progress_storage ?? "engine";
+        const progress = storage === "client" ? loadLocalProgress() : response.progress;
+        set({ catalog: response.catalog, progress, progressStorage: storage, loadError: null });
+      }
       else set({ loadError: response.error?.message ?? t("hub.loadCatalogFailed") });
     } catch {
       // Sem conexão: o aviso de conexão já aparece; nova tentativa ao reconectar.
@@ -190,6 +202,10 @@ export const useStore = create<State>((set, get) => {
     const lessonId = get().lesson?.id ?? SANDBOX_ID;
     window.clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
+      if (get().progressStorage === "client") {
+        set({ progress: saveLocalProgress(lessonId, { code: get().code, hints_used: get().hintsShown }) });
+        return;
+      }
       void engine()
         .call("progress.save", { lesson_id: lessonId, code: get().code, hints_used: get().hintsShown })
         .catch(() => undefined);
@@ -232,6 +248,7 @@ export const useStore = create<State>((set, get) => {
     view: "hub",
     catalog: null,
     progress: {},
+    progressStorage: "engine",
     loadError: null,
     lesson: null,
     code: "",
@@ -249,6 +266,10 @@ export const useStore = create<State>((set, get) => {
     controls: {},
     running: false,
     training: null,
+
+    reloadProgress() {
+      if (get().progressStorage === "client") set({ progress: loadLocalProgress() });
+    },
 
     init() {
       if (client) return;
@@ -360,7 +381,12 @@ export const useStore = create<State>((set, get) => {
         if (response.ok) {
           set({ validation: response });
           if (response.passed) {
-            set({ progress: { ...get().progress, [lesson.id]: { code, completed: true, hints_used: get().hintsShown } } });
+            const entry = { code, completed: true, hints_used: get().hintsShown };
+            set({
+              progress: get().progressStorage === "client"
+                ? saveLocalProgress(lesson.id, entry)
+                : { ...get().progress, [lesson.id]: entry },
+            });
           }
         } else if (response.error) {
           set({ error: response.error });

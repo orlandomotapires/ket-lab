@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 from .content import ContentLibrary
-from .pool import WorkerPool
+from .pool import WorkerGroup, WorkerPool
 from .progress import ProgressStore, default_data_dir
 from .server import EngineServer
 
@@ -63,17 +63,28 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument("--content-dir", type=Path, default=None)
     parser.add_argument("--data-dir", type=Path, default=None)
     parser.add_argument("--job-timeout", type=float, default=5.0, help="segundos por execução")
+    parser.add_argument(
+        "--public",
+        action="store_true",
+        help="motor hospedado: sem token, Origin obrigatório, progresso no navegador (veja deploy/)",
+    )
+    parser.add_argument("--host", default="127.0.0.1", help="interface de rede (0.0.0.0 dentro de um contêiner)")
+    parser.add_argument("--workers", type=int, default=1, help="processos que executam código em paralelo")
+    parser.add_argument("--max-connections", type=int, default=0, help="teto de conexões simultâneas (0 = sem teto)")
     return parser.parse_args(argv)
 
 
 async def serve_forever(args: argparse.Namespace) -> None:
     token = args.token or secrets.token_urlsafe(32)
     content = ContentLibrary(args.content_dir or _default_content_dir())
-    progress = ProgressStore(args.data_dir or default_data_dir())
-    pool = WorkerPool(job_timeout=args.job_timeout)
+    progress = None if args.public else ProgressStore(args.data_dir or default_data_dir())
+    pool = WorkerGroup(args.workers, job_timeout=args.job_timeout) if args.workers > 1 else WorkerPool(job_timeout=args.job_timeout)
     pool.warm_up()
 
-    engine = EngineServer(content, progress, pool, token, tuple(args.allow_origin))
+    engine = EngineServer(
+        content, progress, pool, token, tuple(args.allow_origin),
+        public=args.public, max_connections=args.max_connections, host=args.host,
+    )
     server = await engine.start(args.port)
     port = server.sockets[0].getsockname()[1]
     print(json.dumps({"event": "ready", "port": port, "token": token}), flush=True)
@@ -83,7 +94,8 @@ async def serve_forever(args: argparse.Namespace) -> None:
     finally:
         server.close()
         pool.close()
-        progress.close()
+        if progress is not None:
+            progress.close()
 
 
 def main(argv=None) -> None:

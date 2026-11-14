@@ -123,7 +123,15 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
     <aside className={`panel visualizer${resultIsCurrent ? "" : " is-stale"}`} aria-label={t("viz.aria")}>
       {header}
       {lesson?.controls?.length ? <Controls lesson={lesson} /> : null}
-      <div className="stage">
+      {/* A cena 3D não é lida por leitores de tela: o mesmo estado, em texto. */}
+      <p id="state-description" className="sr-only">
+        {t("viz.stateDescription", {
+          qubits: snapshot.bloch
+            .map((v, q) => t("viz.qubitDescription", { q, x: fixed(v[0]), y: fixed(v[1]), z: fixed(v[2]), r: fixed(vectorLength(v)) }))
+            .join(" "),
+        })}
+      </p>
+      <div className="stage" aria-describedby="state-description">
         {!(sandboxTraining && view === "convergence") && <div className="stage-caption">
           <span>
             {current === 0 ? (
@@ -152,7 +160,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         </Suspense>
       </div>
 
-      <div className="panel-scroll">
+      <div className="panel-scroll" tabIndex={0}>
         {snapshot.amplitudes === null ? (
           <StatePurity value={snapshot.state_purity} />
         ) : (
@@ -219,7 +227,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
 function VariablesTable({ result, stale }: { result: RunResult | null; stale: boolean }) {
   const rows = result?.variables ?? [];
   return (
-    <div className={`panel-scroll variables${stale ? " is-stale" : ""}`}>
+    <div className={`panel-scroll variables${stale ? " is-stale" : ""}`} tabIndex={0}>
       {rows.length === 0 ? (
         <p className="muted">{t("viz.variablesEmpty")}</p>
       ) : (

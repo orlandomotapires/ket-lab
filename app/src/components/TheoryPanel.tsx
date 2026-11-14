@@ -117,7 +117,7 @@ export function TheoryPanel() {
           )}
         </section>
       </header>
-      <div className="panel-scroll">
+      <div className="panel-scroll" tabIndex={0}>
         <Markdown>{lesson.theory}</Markdown>
         {lesson.prediction && <PredictionCard key={lesson.id} prediction={lesson.prediction} />}
         {lesson.references?.length ? <References items={lesson.references} /> : null}

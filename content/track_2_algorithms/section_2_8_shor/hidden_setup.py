@@ -1,5 +1,8 @@
 # Setup oculto da lição 2.8: multiplicação controlada por 7^potência módulo 15
 # (registrador de trabalho nos qubits 4 a 7) e a QFT inversa.
+# Expõe também a base `a` e o número a fatorar `N`.
+a = 7
+N = 15
 
 
 def _criar_multiplicacao():

@@ -33,7 +33,20 @@ from fractions import Fraction
 Fraction(12 / 16).limit_denominator(15)   # 3/4, então r = 4
 ```
 
-Nem todo resultado serve: $m = 0$ não informa nada, e $m = 8$ dá $r = 2$, que revela só o fator $3$. Por isso o algoritmo combina várias medições.
+Nem todo resultado serve: $m = 0$ não informa nada, e $m = 8$ dá $r = 2$, que não é o período (confira: $7^2 \bmod 15 = 4 \neq 1$). Por isso a verificação `pow(a, r, N) == 1` vem antes de usar $r$, e o algoritmo combina várias medições.
+
+## Como escolher $a$ e quando falha
+
+Escolha $a$ ao acaso com $1 < a < N$. Se $\text{mdc}(a, N) \neq 1$, o próprio mdc já é um fator e não é preciso quântica. Caso contrário, uma tentativa falha quando:
+
+- $r$ é **ímpar**: não dá para dividir $a^r - 1$ em dois fatores;
+- $a^{r/2} \equiv -1 \pmod N$: então $a^{r/2} + 1$ é múltiplo de $N$ e os dois mdc valem $1$ e $N$. Exemplo: $a = 14 \equiv -1 \pmod{15}$ tem $r = 2$ e $14^1 \equiv -1$, e nada se aprende.
+
+Para um $a$ sorteado, cada execução acerta com probabilidade acima de 50%; se falhar, sorteia-se outro $a$ e repete-se.
+
+## O passo de frações contínuas
+
+O resultado $m$ aproxima $s/r$ por $m/2^t$. Para recuperar $r$, usa-se a expansão em fração contínua de $m/2^t$ e pega-se o convergente de denominador no máximo $N$. É o que `limit_denominator(N)` faz. Com $2^t \geq N^2$ (para $N = 15$, $t = 8$ qubits de contagem), o convergente certo é garantido; aqui, com $N = 15$ e 4 qubits, o problema é pequeno o bastante para funcionar assim mesmo.
 
 ## No laboratório
 

@@ -33,7 +33,20 @@ from fractions import Fraction
 Fraction(12 / 16).limit_denominator(15)   # 3/4, also r = 4
 ```
 
-Nicht jedes Ergebnis taugt: $m = 0$ liefert keine Information, und $m = 8$ ergibt $r = 2$, was nur den Faktor $3$ verrät. Deshalb kombiniert der Algorithmus mehrere Messungen.
+Nicht jedes Ergebnis taugt: $m = 0$ liefert keine Information, und $m = 8$ ergibt $r = 2$, was nicht die Periode ist (Probe: $7^2 \bmod 15 = 4 \neq 1$). Deshalb steht die Prüfung `pow(a, r, N) == 1` vor der Verwendung von $r$, und deshalb kombiniert der Algorithmus mehrere Messungen.
+
+## Wie man $a$ wählt und wann es scheitert
+
+Wähle $a$ zufällig mit $1 < a < N$. Gilt $\text{ggT}(a, N) \neq 1$, ist der ggT bereits ein Faktor, und es braucht keinen Quantenschritt. Andernfalls scheitert ein Versuch, wenn:
+
+- $r$ **ungerade** ist: $a^r - 1$ lässt sich nicht in zwei Faktoren zerlegen;
+- $a^{r/2} \equiv -1 \pmod N$ gilt: Dann ist $a^{r/2} + 1$ ein Vielfaches von $N$, und die beiden ggT sind $1$ und $N$. Beispiel: $a = 14 \equiv -1 \pmod{15}$ hat $r = 2$ und $14^1 \equiv -1$, man lernt nichts.
+
+Für ein zufällig gezogenes $a$ gelingt jeder Lauf mit Wahrscheinlichkeit über 50 %; scheitert er, zieht man ein neues $a$ und wiederholt.
+
+## Der Kettenbruch-Schritt
+
+Das Ergebnis $m$ nähert $s/r$ durch $m/2^t$ an. Um $r$ zurückzugewinnen, entwickelt man $m/2^t$ in einen Kettenbruch und nimmt den Näherungsbruch mit Nenner höchstens $N$. Genau das tut `limit_denominator(N)`. Mit $2^t \geq N^2$ ist der richtige Näherungsbruch garantiert (für $N = 15$ wären das $t = 8$ Zählqubits); hier, mit $N = 15$ und 4 Qubits, ist das Problem klein genug, dass es trotzdem funktioniert.
 
 ## Im Labor
 

@@ -118,6 +118,14 @@ def test_shor_finds_the_period_peaks_and_the_factors(library):
     distribution = simulator.register_distribution(execution.circuit, [0, 1, 2, 3])
     assert distribution == pytest.approx({"0000": 0.25, "0100": 0.25, "1000": 0.25, "1100": 0.25})
     assert execution.namespace["factors"] == [3, 5]
+    assert (execution.namespace["a"], execution.namespace["N"]) == (7, 15)
+
+
+def test_shor_post_processing_rejects_non_periods_and_the_minus_one_case(library):
+    solution = library.validation_bundle("2.8")["solution"]
+    # Com a = 14 (≡ -1 mod 15) a tentativa falha: nenhum fator aparece.
+    code = solution.replace("# a = 7 e N = 15 vêm do laboratório.", "a = 14")
+    assert run(library, "2.8", None, code).namespace["factors"] == []
 
 
 def test_hidden_gates_have_readable_labels(library):

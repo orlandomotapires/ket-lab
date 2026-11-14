@@ -3,6 +3,7 @@ from math import gcd
 
 from qiskit import QuantumCircuit
 
+# a = 7 und N = 15 stellt das Labor bereit.
 # Qubits 0 bis 3: Zählregister. Qubits 4 bis 7: Arbeitsregister. 4 Bits für die Messung.
 qc = QuantumCircuit(8, 4)
 

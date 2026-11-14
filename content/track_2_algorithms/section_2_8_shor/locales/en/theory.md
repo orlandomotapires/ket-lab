@@ -33,7 +33,20 @@ from fractions import Fraction
 Fraction(12 / 16).limit_denominator(15)   # 3/4, so r = 4
 ```
 
-Not every result works: $m = 0$ tells you nothing, and $m = 8$ gives $r = 2$, which reveals only the factor $3$. That is why the algorithm combines several measurements.
+Not every result works: $m = 0$ tells you nothing, and $m = 8$ gives $r = 2$, which is not the period (check: $7^2 \bmod 15 = 4 \neq 1$). That is why the check `pow(a, r, N) == 1` comes before using $r$, and why the algorithm combines several measurements.
+
+## How to choose $a$ and when it fails
+
+Pick $a$ at random with $1 < a < N$. If $\text{gcd}(a, N) \neq 1$, the gcd is already a factor and no quantum step is needed. Otherwise, an attempt fails when:
+
+- $r$ is **odd**: $a^r - 1$ cannot be split into two factors;
+- $a^{r/2} \equiv -1 \pmod N$: then $a^{r/2} + 1$ is a multiple of $N$ and the two gcds are $1$ and $N$. Example: $a = 14 \equiv -1 \pmod{15}$ has $r = 2$ and $14^1 \equiv -1$, so nothing is learned.
+
+For a randomly drawn $a$, each run succeeds with probability above 50%; if it fails, draw another $a$ and repeat.
+
+## The continued-fraction step
+
+The result $m$ approximates $s/r$ by $m/2^t$. To recover $r$, take the continued-fraction expansion of $m/2^t$ and pick the convergent with denominator at most $N$. That is what `limit_denominator(N)` does. With $2^t \geq N^2$ the right convergent is guaranteed (that needs $t = 8$ counting qubits for $N = 15$); here, with $N = 15$ and 4 qubits, the problem is small enough to work anyway.
 
 ## In the lab
 

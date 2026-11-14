@@ -5,7 +5,7 @@
   "hints": [
     "First, create a Bell pair between qubit 1 (Alice's) and qubit 2 (Bob's), as in the previous lesson: qc.h(1) and qc.cx(1, 2).",
     "Alice performs a Bell-basis measurement on qubits 0 and 1: qc.cx(0, 1), qc.h(0), then qc.measure(0, 0) and qc.measure(1, 1).",
-    "Bob corrects according to the bits he receives: X if bit 1 is 1, then Z if bit 0 is 1. Use with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the same with qc.clbits[0] and qc.z(2)."
+    "Bob corrects according to the bits he receives: X if bit 1 is 1, then Z if bit 0 is 1. Use with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the same with qc.clbits[0] and qc.z(2). The order of the two corrections does not matter: XZ = −ZX, and a global sign is not observable."
   ],
   "prediction": {
     "question": "After teleportation, what happens to the state that was in Alice's qubit?",

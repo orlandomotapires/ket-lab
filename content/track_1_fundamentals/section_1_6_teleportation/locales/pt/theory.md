@@ -35,6 +35,14 @@ with qc.if_test((qc.clbits[1], 1)):
 
 Sem os dois bits, Bob tem 25% de chance de cada um dos quatro estados, e essa mistura não carrega informação nenhuma sobre $|\psi\rangle$. O teletransporte depende da mensagem clássica, que viaja no máximo à velocidade da luz.
 
+## Medição adiada
+
+A mensagem clássica pode ser dispensada quando Alice e Bob **não** estão separados, isto é, quando é permitido atuar em ambos os qubits. As medições e as correções condicionais podem ser trocadas por portas controladas: `qc.cx(1, 2)` no lugar do $X$ condicionado ao bit do qubit 1 e `qc.cz(0, 2)` no lugar do $Z$ condicionado ao bit do qubit 0, aplicadas antes de qualquer medição. O resultado para Bob é o mesmo. Essa equivalência chama-se **princípio da medição adiada**. Nesta lição a separação é o ponto do protocolo, por isso as correções precisam usar os bits clássicos.
+
+## O que Bob vê sem os bits
+
+Antes de receber os dois bits, Bob não sabe qual dos quatro casos da tabela ocorreu. Para ele, qualquer que seja $|\psi\rangle$, medir o seu qubit dá $0$ ou $1$ com $50\%$ de chance cada: o estado médio é o mesmo para todo $|\psi\rangle$ e não carrega informação. Só depois da mensagem clássica ele sabe qual correção aplicar.
+
 ## No laboratório
 
 A aba **Alice × Bob** compara o estado original de Alice com o estado atual de Bob. Use a linha do tempo para acompanhar o protocolo passo a passo e "Sortear de novo" para ver outros resultados de medição: com as correções certas, Bob termina igual a Alice em todos eles.

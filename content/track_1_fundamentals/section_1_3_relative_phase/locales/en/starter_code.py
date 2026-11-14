@@ -1,6 +1,14 @@
 from qiskit import QuantumCircuit
 
 qc = QuantumCircuit(1)
-qc.h(0)  # prepares |+⟩, on the equator of the sphere
+prepare_input(qc)  # an unknown state on qubit 0
 
-# Your mission: rotate a quarter turn around Z, to the +Y point.
+# A sequence of gates has already been applied:
+qc.x(0)
+qc.h(0)
+qc.s(0)
+qc.t(0)
+qc.h(0)
+
+# Your mission: append gates so the qubit returns to its input state,
+# whatever that state is.

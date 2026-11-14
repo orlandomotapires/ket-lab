@@ -18,7 +18,21 @@
   "validation": {
     "type": "reduced_state",
     "qubit": 2,
-    "trials": 4,
+    "trials": 3,
+    "inputs": [
+      [
+        0,
+        0
+      ],
+      [
+        1.5707963267948966,
+        0
+      ],
+      [
+        1.5707963267948966,
+        1.5707963267948966
+      ]
+    ],
     "tolerance": 0.999,
     "allowed_gates": [
       "psi",

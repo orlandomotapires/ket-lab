@@ -1,5 +1,7 @@
 from qiskit import QuantumCircuit
 
-qc = QuantumCircuit(1)
+qc = QuantumCircuit(1, 1)
+prepare_unknown(qc)  # |+⟩ oder |−⟩, du weißt nicht welcher
 
-# Deine Aufgabe: |1⟩ erreichen, nur mit H und Phasengattern (Z, S, T, Rz).
+# Deine Aufgabe: Füge Gatter und eine Messung hinzu, sodass |+⟩ immer 0
+# und |−⟩ immer 1 liefert.

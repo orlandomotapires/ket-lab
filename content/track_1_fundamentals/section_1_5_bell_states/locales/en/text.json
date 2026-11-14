@@ -8,12 +8,12 @@
     "The solution is qc.h(0) followed by qc.cx(0, 1). With the cursor on the CNOT line, the Bloch vectors shrink to the center."
   ],
   "prediction": {
-    "question": "The two qubits are in |Φ⁺⟩ = (|00⟩ + |11⟩)/√2. You measure qubit 0 and get 1. What will come out when you measure qubit 1?",
+    "question": "The state (|00⟩ + |01⟩ − |10⟩ − |11⟩)/2 has four nonzero amplitudes. Is it entangled?",
     "options": [
-      "0 or 1, with a 50% chance each",
-      "Always 1",
-      "Always 0"
+      "Yes: with all four amplitudes nonzero, the qubits are mixed together",
+      "No: it is a separable state, since a₀₀a₁₁ = a₀₁a₁₀",
+      "You cannot tell without measuring both qubits"
     ],
-    "explanation": "In the state |Φ⁺⟩ only the terms |00⟩ and |11⟩ exist. If qubit 0 gave 1, only |11⟩ remains: qubit 1 gives 1 with certainty. The results are random, but always equal."
+    "explanation": "Here a₀₀a₁₁ = (1/2)(−1/2) = −1/4 and a₀₁a₁₀ = (1/2)(−1/2) = −1/4: the product test passes. Indeed, the state is |−⟩ on qubit 1 and |+⟩ on qubit 0. Having several nonzero amplitudes does not mean entanglement."
   }
 }

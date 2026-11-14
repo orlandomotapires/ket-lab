@@ -18,8 +18,16 @@ Messen enthüllt keinen Wert, der schon vorher da war. Die Messung **würfelt** 
 
 Deshalb ist ein Qubit in $|+\rangle$ mit anschließender Messung ein Zufallsbit-Generator. Der Zufall kommt nicht daher, dass uns irgendein Detail des Systems unbekannt ist: Er ist Teil der Theorie.
 
+## Statistische Schwankung
+
+Hat ein Ergebnis die Wahrscheinlichkeit $p$ und gibt es $N$ Wiederholungen, ist die erwartete Anzahl $N p$, die tatsächliche Anzahl schwankt aber mit der Standardabweichung $\sigma = \sqrt{N p (1-p)}$ darum herum. Für $N = 100$ und $p = \tfrac{1}{2}$ ist $\sigma = 5$: $56$ Nullen statt $50$ sind normal. Der relative Anteil schwankt wie $1/\sqrt{N}$, mit mehr Messungen kommt der Anteil also näher an $50\%$. Bei drei Qubits hat jedes der $8$ Ergebnisse die Wahrscheinlichkeit $\tfrac{1}{8}$, und die Zählungen schwanken ebenfalls von Lauf zu Lauf.
+
+## Anderer Eingang, andere Phase
+
+Das Hadamard-Gatter auf $|1\rangle$ liefert $|-\rangle$, mit denselben $50/50$-Wahrscheinlichkeiten wie $|+\rangle$. Der Unterschied ist nur das Vorzeichen der $|1\rangle$-Amplitude, das eine direkte Messung nicht sieht. Lektion 1.3 behandelt diese Phase.
+
 ## Im Labor
 
-- `QuantumCircuit(1, 1)` erzeugt 1 Qubit und 1 klassisches Bit, in dem das Messergebnis gespeichert wird.
+- `QuantumCircuit(3, 3)` erzeugt 3 Qubits und 3 klassische Bits, in denen die Messergebnisse gespeichert werden.
 - Mit dem Cursor in der Messzeile zeigt die Kugel **ein** ausgewürfeltes Ergebnis. Mit „Erneut würfeln“ siehst du ein anderes.
 - „1024 Messungen simulieren“ wiederholt den gesamten Schaltkreis 1024-mal und zeigt die Anzahl jedes Ergebnisses.

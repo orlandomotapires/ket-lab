@@ -1,19 +1,19 @@
 {
   "title": "Superposition and the Hadamard Gate",
   "summary": "The states |+⟩ and |−⟩ and a quantum random number generator.",
-  "mission": "Build a quantum random number generator: put qubit 0 in a uniform superposition and measure it into classical bit 0.",
+  "mission": "Build a 3-bit quantum random number generator: put all three qubits in a uniform superposition and measure each one into the classical bit with the same index. The 8 outcomes (000 to 111) must be equally likely.",
   "hints": [
-    "The Hadamard gate takes |0⟩ to the state |+⟩, on the equator of the sphere: qc.h(0).",
-    "To read the result, measure the qubit and store the value in a classical bit: qc.measure(qubit, bit).",
-    "The solution has two lines: qc.h(0) and then qc.measure(0, 0)."
+    "The Hadamard gate takes |0⟩ to the state |+⟩, on the equator of the sphere: qc.h(0). Each qubit needs its own Hadamard.",
+    "To read the result, measure each qubit and store the value in a classical bit: qc.measure(qubit, bit). That is three qubits and three bits.",
+    "The solution applies qc.h(0), qc.h(1) and qc.h(2), then qc.measure(0, 0), qc.measure(1, 1) and qc.measure(2, 2). A loop for q in range(3) avoids the repetition."
   ],
   "prediction": {
-    "question": "You prepare the state |+⟩ and measure. Then you repeat the experiment from scratch, 1000 times. What do you expect to see?",
+    "question": "You prepare |+⟩ and measure 100 times: you get 56 zeros and 44 ones. Is the generator biased?",
     "options": [
-      "Always 0",
-      "An intermediate value, such as 0.5, in every measurement",
-      "About 500 times 0 and 500 times 1"
+      "Yes: a fair generator would give exactly 50 zeros",
+      "No: it is normal statistical fluctuation, 56 is about 1.2 standard deviations from 50",
+      "It would only be biased if more than 60 zeros appeared"
     ],
-    "explanation": "Each measurement returns only 0 or 1, never an intermediate value. The superposition shows up in the statistics: each outcome half of the time."
+    "explanation": "With N = 100 and p = 1/2, the standard deviation is σ = √(N p (1−p)) = 5. Getting 56 zeros means being 6 above 50, about 1.2σ: quite common. A fair generator almost never gives exactly 50, and the relative gap shrinks as N grows."
   }
 }

@@ -2,7 +2,9 @@
 
 You are given a function $f:\{0,1\}^n \to \{0,1\}$ as a black box, with a promise: it is either **constant** (the same output for every input) or **balanced** (output $0$ for half of the inputs and $1$ for the other half). Which one is it?
 
-A classical algorithm needs, in the worst case, $2^{n-1} + 1$ queries: if the first $2^{n-1}$ give the same value, the function can still be balanced. The Deutsch-Jozsa algorithm answers with **a single query**.
+A classical algorithm needs, in the worst case, $2^{n-1} + 1$ queries: if the first $2^{n-1}$ give the same value, the function can still be balanced. The Deutsch-Jozsa algorithm answers with **a single query**, with no error.
+
+The separation is against *exact* classical algorithms. A **randomized** classical algorithm queries the function at a few random inputs: if all give the same value, it answers "constant". It errs only if the function is balanced and the $k$ queries all agree, with probability about $2^{1-k}$; after a few queries the error is negligible. The quantum advantage here is real, but it is an advantage over the deterministic case.
 
 ## The oracle
 

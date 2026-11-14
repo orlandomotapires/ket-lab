@@ -20,6 +20,12 @@ def _criar_oraculo(funcao):
                 circuito.cx(qubit, 3)
         if funcao.get("flip"):
             circuito.x(3)
+    elif funcao["kind"] == "majority":  # f(x) = maioria de x0, x1, x2: balanceada e não linear
+        circuito.ccx(0, 1, 3)
+        circuito.ccx(0, 2, 3)
+        circuito.ccx(1, 2, 3)
+    elif funcao["kind"] == "last":  # f(x) = x2: só o último qubit importa
+        circuito.cx(2, 3)
     else:  # f(x) = x0 ⊕ (x1 · x2): balanceada e não linear
         circuito.cx(0, 3)
         circuito.ccx(1, 2, 3)

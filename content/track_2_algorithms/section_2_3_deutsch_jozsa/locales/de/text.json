@@ -3,7 +3,7 @@
   "summary": "Konstant oder balanciert mit einer einzigen Abfrage.",
   "mission": "Mit einem einzigen Aufruf von oracle(qc) soll das Eingaberegister (Qubits 0 bis 2) in |000⟩ enden, wenn die geheime Funktion konstant ist, und mit Wahrscheinlichkeit null in |000⟩, wenn sie balanciert ist.",
   "prediction": {
-    "question": "Wie viele Abfragen braucht ein klassischer Algorithmus bei 3 Eingabebits im schlechtesten Fall, um sicher zu entscheiden, ob die Funktion konstant oder balanciert ist?",
+    "question": "Wie viele Abfragen braucht ein deterministischer (fehlerfreier) klassischer Algorithmus bei 3 Eingabebits im schlechtesten Fall, um zu entscheiden, ob die Funktion konstant oder balanciert ist?",
     "options": [
       "1",
       "5",

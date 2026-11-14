@@ -2,7 +2,9 @@
 
 Du bekommst eine Funktion $f:\{0,1\}^n \to \{0,1\}$ als Black Box, mit einer Zusicherung: Sie ist entweder **konstant** (dieselbe Ausgabe für alle Eingaben) oder **balanciert** (Ausgabe $0$ für die Hälfte der Eingaben und $1$ für die andere Hälfte). Welche von beiden?
 
-Ein klassischer Algorithmus braucht im schlechtesten Fall $2^{n-1} + 1$ Abfragen: Wenn die ersten $2^{n-1}$ denselben Wert liefern, kann die Funktion immer noch balanciert sein. Der Deutsch-Jozsa-Algorithmus antwortet mit **einer einzigen Abfrage**.
+Ein klassischer Algorithmus braucht im schlechtesten Fall $2^{n-1} + 1$ Abfragen: Wenn die ersten $2^{n-1}$ denselben Wert liefern, kann die Funktion immer noch balanciert sein. Der Deutsch-Jozsa-Algorithmus antwortet mit **einer einzigen Abfrage** und ohne Fehler.
+
+Die Trennung gilt gegenüber *exakten* klassischen Algorithmen. Ein **randomisierter** klassischer Algorithmus fragt die Funktion an wenigen zufälligen Eingaben ab: Liefern alle denselben Wert, antwortet er „konstant". Er irrt sich nur, wenn die Funktion balanciert ist und alle $k$ Abfragen übereinstimmen, mit Wahrscheinlichkeit etwa $2^{1-k}$; nach wenigen Abfragen ist der Fehler vernachlässigbar. Der Quantenvorteil ist hier echt, aber ein Vorteil gegenüber dem deterministischen Fall.
 
 ## Das Orakel
 

@@ -27,13 +27,13 @@
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
       "url": "https://doi.org/10.1017/CBO9780511976667",
-      "location": "Section 2.3, “Application: superdense coding”, starting on p. 97"
+      "location": "Section 2.3, “Application: superdense coding”, p. 97"
     },
     {
       "kind": "course",
       "title": "Entanglement in action: Superdense coding",
       "authors": "IBM Quantum Learning, Basics of quantum information",
-      "location": "TODO-VERIFY",
+      "location": "Sections “Protocol” and “Analysis”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/superdense-coding"
     }
   ]

@@ -22,18 +22,18 @@
   },
   "references": [
     {
-      "kind": "paper",
-      "title": "On the power of quantum computation",
-      "authors": "D. R. Simon",
-      "year": 1997,
-      "url": "https://doi.org/10.1137/S0097539796298637",
-      "location": "TODO-VERIFY: SIAM J. Comput. 26(5), 1474–1483; the problem statement and the algorithm"
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Figure 5.5, “Hidden subgroup problems”, p. 241, and Exercise 5.29, p. 242 (Simon’s problem as a hidden subgroup problem; the book has no section on the algorithm itself)"
     },
     {
       "kind": "course",
-      "title": "Quantum query algorithms: Simon's algorithm",
+      "title": "Quantum query algorithms: Simon’s algorithm",
       "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
-      "location": "TODO-VERIFY: page “Simon's algorithm” (problem, algorithm, analysis, classical lower bound)",
+      "location": "Sections “Simon’s problem”, “Algorithm description” and “Analysis” (subsections “Classical post-processing” and “Classical difficulty”)",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/simon-algorithm"
     }
   ]

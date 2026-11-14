@@ -20,21 +20,28 @@
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
       "url": "https://doi.org/10.1017/CBO9780511976667",
-      "location": "TODO-VERIFY: Section 10.5, “Stabilizer codes”"
+      "location": "Section 10.5.1, “The stabilizer formalism”, pp. 454–459 (in Section 10.5, “Stabilizer codes”, pp. 453–474)"
     },
     {
       "kind": "paper",
-      "title": "Stabilizer Codes and Quantum Error Correction",
+      "title": "Stabilizer Codes and Quantum Error Correction (PhD thesis)",
       "authors": "D. Gottesman",
       "year": 1997,
-      "url": "https://arxiv.org/abs/quant-ph/9705052",
-      "location": "TODO-VERIFY: Caltech PhD thesis, chapter on the stabilizer formalism (arXiv:quant-ph/9705052)"
+      "location": "Chapter 3, “Stabilizer Coding”; Section 3.2, “The General Stabilizer Code”, p. 18 (arXiv:quant-ph/9705052)",
+      "url": "https://arxiv.org/abs/quant-ph/9705052"
     },
     {
       "kind": "course",
-      "title": "The stabilizer formalism",
+      "title": "The stabilizer formalism: Pauli operations and observables",
       "authors": "IBM Quantum Learning, Foundations of quantum error correction",
-      "location": "TODO-VERIFY: sections “Pauli operations and observables” and “Stabilizer codes”",
+      "location": "Sections “Pauli operation basics” and “Pauli observables”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/stabilizer-formalism/pauli-operations-and-observables"
+    },
+    {
+      "kind": "course",
+      "title": "The stabilizer formalism: Stabilizer codes",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "Sections “Definition of stabilizer codes”, “Detecting errors” and “Correcting errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/stabilizer-formalism/stabilizer-codes"
     }
   ]

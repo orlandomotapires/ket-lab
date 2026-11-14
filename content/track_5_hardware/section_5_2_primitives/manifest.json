@@ -21,21 +21,21 @@
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
       "url": "https://doi.org/10.1017/CBO9780511976667",
-      "location": "Section 2.2.3, “Quantum measurement”, pp. 84–86; Section 2.2.5, “Projective measurements” (expectation value of an observable), pp. 87–90"
-    },
-    {
-      "kind": "tutorial",
-      "title": "Get started with Estimator",
-      "authors": "IBM Quantum Documentation, Primitives",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/docs/en/guides/get-started-with-primitives"
+      "location": "Section 2.2.3, “Quantum measurement”, pp. 84–86; Section 2.2.5, “Projective measurements”, pp. 87–90"
     },
     {
       "kind": "course",
-      "title": "Quantum computing in practice: Primitives",
-      "authors": "IBM Quantum Learning",
-      "location": "TODO-VERIFY",
-      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-computing-in-practice"
+      "title": "Running quantum circuits",
+      "authors": "IBM Quantum Learning, Quantum computing in practice",
+      "location": "Section “Designing a quantum circuit: Qiskit patterns”, subsection “Execute” (Sampler, Estimator)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-computing-in-practice/running-quantum-circuits"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Introduction to primitives",
+      "authors": "IBM Quantum Documentation",
+      "location": "Sections “What is a primitive?” and “Primitive definition and implementations”",
+      "url": "https://quantum.cloud.ibm.com/docs/en/qiskit/primitives"
     }
   ]
 }

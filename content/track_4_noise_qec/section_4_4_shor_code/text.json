@@ -1,6 +1,12 @@
 {
   "title": "The Shor Code",
   "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit.",
+  "objectives": [
+    "Build the nine-qubit Shor code by concatenating the phase-flip and bit-flip codes",
+    "Decode with majority votes inside each block and then across the block leaders",
+    "Show that correcting X, Y and Z on one qubit also corrects an arbitrary single-qubit error",
+    "Predict which two-qubit errors the code turns into a logical error"
+  ],
   "mission": "Protect qubit 0 against any error on a single qubit of the nine. Complete encode(): a phase-flip code on the block leaders 0, 3 and 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5) and (6, 7, 8). Complete decode(): undo the bit-flip codes with a majority vote in each block, then undo the phase-flip code with a majority vote on the leaders. Afterwards qubit 0 must hold the input state again after an X, Y or Z error on any one of the nine qubits, and after an arbitrary rotation on any one qubit, for any input state.",
   "prediction": {
     "question": "X errors hit qubits 0 and 1, both in the first block. What does the Shor code do?",

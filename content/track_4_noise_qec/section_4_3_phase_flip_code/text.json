@@ -1,6 +1,11 @@
 {
   "title": "The Three-Qubit Phase-Flip Code",
   "summary": "A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers.",
+  "objectives": [
+    "Encode a qubit into the three-qubit phase-flip code with CNOT and Hadamard gates",
+    "Detect a phase flip by comparing the qubits in the Hadamard basis, without measuring the data qubits",
+    "Correct a single Z error and predict that the code does not detect an X error"
+  ],
   "mission": "Protect qubit 0 against phase flips. Encode it into three qubits (encode), then detect and correct the flipped qubit with two ancillas and no measurement of the data qubits (recover). The recovery must leave the data qubits in the code space. The logical state must survive a Z error on any one of the three qubits, and no error, for any input state.",
   "prediction": {
     "question": "An X error hits qubit 0 of the phase-flip code. What does the code do?",

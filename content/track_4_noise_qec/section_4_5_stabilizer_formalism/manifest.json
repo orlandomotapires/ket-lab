@@ -1,0 +1,41 @@
+{
+  "id": "4.5",
+  "track": 4,
+  "estimated_minutes": 30,
+  "framework": "python",
+  "timeout": 10,
+  "num_qubits": 1,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "TODO-VERIFY: Section 10.5, “Stabilizer codes”"
+    },
+    {
+      "kind": "paper",
+      "title": "Stabilizer Codes and Quantum Error Correction",
+      "authors": "D. Gottesman",
+      "year": 1997,
+      "url": "https://arxiv.org/abs/quant-ph/9705052",
+      "location": "TODO-VERIFY: Caltech PhD thesis, chapter on the stabilizer formalism (arXiv:quant-ph/9705052)"
+    },
+    {
+      "kind": "course",
+      "title": "The stabilizer formalism",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "TODO-VERIFY: sections “Pauli operations and observables” and “Stabilizer codes”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/stabilizer-formalism/stabilizer-codes"
+    }
+  ]
+}

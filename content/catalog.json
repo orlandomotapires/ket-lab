@@ -186,27 +186,27 @@
         {
           "id": "4.3",
           "title": "The Three-Qubit Phase-Flip Code",
-          "summary": "To be written."
+          "summary": "A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers."
         },
         {
           "id": "4.4",
           "title": "The Shor Code",
-          "summary": "To be written."
+          "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit."
         },
         {
           "id": "4.5",
           "title": "The Stabilizer Formalism",
-          "summary": "To be written."
+          "summary": "Describe a code by commuting Pauli operators and read the syndrome from commutation with them."
         },
         {
           "id": "4.6",
           "title": "The Toric Code",
-          "summary": "To be written."
+          "summary": "A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops."
         },
         {
           "id": "4.7",
           "title": "The Threshold Theorem",
-          "summary": "To be written."
+          "summary": "Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold."
         }
       ]
     },

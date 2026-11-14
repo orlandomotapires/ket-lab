@@ -1,0 +1,33 @@
+{
+  "id": "4.6",
+  "track": 4,
+  "estimated_minutes": 35,
+  "framework": "python",
+  "timeout": 15,
+  "num_qubits": 1,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Fault-tolerant quantum computation by anyons",
+      "authors": "A. Yu. Kitaev",
+      "year": 2003,
+      "url": "https://doi.org/10.1016/S0003-4916(02)00018-0",
+      "location": "TODO-VERIFY: Ann. Phys. 303, 2–30, Sections 1 to 5 (arXiv:quant-ph/9707021)"
+    },
+    {
+      "kind": "course",
+      "title": "Toric code",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "TODO-VERIFY: page “Toric code”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/toric-code/toric-code"
+    }
+  ]
+}

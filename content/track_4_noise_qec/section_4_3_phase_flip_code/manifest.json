@@ -1,0 +1,59 @@
+{
+  "id": "4.3",
+  "track": 4,
+  "estimated_minutes": 30,
+  "framework": "pennylane",
+  "timeout": 10,
+  "num_qubits": 5,
+  "max_qubits": 5,
+  "qnode": {
+    "name": "circuit",
+    "args": []
+  },
+  "register": {
+    "qubits": [
+      4,
+      3
+    ]
+  },
+  "controls": [
+    {
+      "id": "error",
+      "options": [
+        "none",
+        "z0",
+        "z1",
+        "z2",
+        "z0z1",
+        "x0"
+      ],
+      "default": "z1"
+    }
+  ],
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "histogram"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 10.1.2, “The three qubit phase flip code”, p. 430"
+    },
+    {
+      "kind": "course",
+      "title": "Correcting quantum errors: Repetition codes",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "Section “Encoding qubits”, subsections “Phase-flip errors” and “Modified repetition code for phase-flip errors”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
+    }
+  ]
+}

@@ -270,6 +270,10 @@ As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`,
 
 ---
 
+Os próximos passos, em ordem de prioridade, estão em [roadmap.md](roadmap.md).
+
+---
+
 ## 7. Riscos e decisões em aberto
 
 1. **Hospedagem.** Hoje o motor roda na máquina do aluno (`npm run setup` + `npm run dev`). Para abrir a plataforma a qualquer pessoa, o motor precisa ser hospedado, com isolamento real do código do aluno (contêiner por sessão), já que a verificação estática não é uma sandbox.

@@ -296,6 +296,27 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "{first} And the answer in `{name}` is right: {value}.",
         "de": "{first} Und die Antwort in `{name}` stimmt: {value}.",
     },
+    # --- PennyLane -------------------------------------------------------------
+    "pl.no_qnode": {
+        "pt": "Nenhum circuito encontrado. Defina um QNode com `@qml.qnode(dev)`.",
+        "en": "No circuit found. Define a QNode with `@qml.qnode(dev)`.",
+        "de": "Kein Schaltkreis gefunden. Definiere einen QNode mit `@qml.qnode(dev)`.",
+    },
+    "pl.missing_argument": {
+        "pt": "A variável `{name}` ainda não existe: ela é usada para desenhar o circuito.",
+        "en": "The variable `{name}` does not exist yet: it is used to draw the circuit.",
+        "de": "Die Variable `{name}` existiert noch nicht: Sie wird zum Zeichnen des Schaltkreises gebraucht.",
+    },
+    "pl.unsupported": {
+        "pt": "A operação `{name}` ainda não é suportada na visualização.",
+        "en": "The operation `{name}` is not supported in the visualization yet.",
+        "de": "Die Operation `{name}` wird in der Darstellung noch nicht unterstützt.",
+    },
+    "pl.unknown_wire": {
+        "pt": "O fio `{wire}` não existe no dispositivo.",
+        "en": "The wire `{wire}` does not exist on the device.",
+        "de": "Der Draht `{wire}` existiert auf dem Gerät nicht.",
+    },
     # --- servidor e conteúdo ---------------------------------------------------
     "server.bad_code": {
         "pt": "Código ausente ou grande demais.",

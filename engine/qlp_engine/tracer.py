@@ -36,7 +36,7 @@ class UserCodeError(Exception):
 
 @dataclass
 class Execution:
-    circuit: QuantumCircuit
+    circuit: QuantumCircuit | None  # None em código PennyLane
     lines: list[int]  # linha de origem de cada instrução de circuit.data
     stdout: str = ""
     namespace: dict = field(default_factory=dict)
@@ -80,7 +80,14 @@ class _CircuitWatcher:
         return self._trace_module
 
 
-def execute(code: str, hidden_setup: str | None = None, inputs: dict | None = None) -> Execution:
+def execute(
+    code: str,
+    hidden_setup: str | None = None,
+    inputs: dict | None = None,
+    *,
+    trace: bool = True,
+    require_circuit: bool = True,
+) -> Execution:
     """Roda o código e devolve o circuito principal com a linha de cada instrução.
 
     `inputs` são variáveis colocadas no namespace antes do setup oculto: é assim
@@ -108,12 +115,14 @@ def execute(code: str, hidden_setup: str | None = None, inputs: dict | None = No
     previous_trace = sys.gettrace()
     try:
         with contextlib.redirect_stdout(stdout):
-            sys.settrace(watcher.trace)
+            # Sem rastreamento (lições PennyLane): laços de treino rodam sem custo extra.
+            sys.settrace(watcher.trace if trace else None)
             try:
                 exec(compiled, namespace)
             finally:
                 sys.settrace(previous_trace)
-                watcher.flush()
+                if trace:
+                    watcher.flush()
     except MemoryError:
         raise UserCodeError(t("run.memory"), watcher.current_line) from None
     except RecursionError:
@@ -121,6 +130,8 @@ def execute(code: str, hidden_setup: str | None = None, inputs: dict | None = No
     except Exception as exc:  # noqa: BLE001 - qualquer erro do aluno vira diagnóstico
         raise UserCodeError(_describe(exc), _user_line(exc) or watcher.current_line) from None
 
+    if not require_circuit and not watcher.seen:
+        return Execution(circuit=None, lines=[], stdout=stdout.getvalue()[:MAX_STDOUT_CHARS], namespace=namespace)
     circuit, lines = _pick_main_circuit(namespace, watcher)
     return Execution(
         circuit=circuit,

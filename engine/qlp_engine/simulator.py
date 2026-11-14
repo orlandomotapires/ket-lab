@@ -36,7 +36,7 @@ class SimulationError(Exception):
 
 @dataclass
 class Op:
-    kind: str  # gate | measure | reset | noop | conditional
+    kind: str  # gate | channel | measure | reset | noop | conditional
     name: str
     qubits: tuple[int, ...] = ()
     clbits: tuple[int, ...] = ()
@@ -44,6 +44,7 @@ class Op:
     params: tuple[float, ...] = ()
     num_ctrl: int = 0
     base: str | None = None  # nome da porta base, em portas controladas
+    kraus: list[np.ndarray] = field(default_factory=list)  # canais de ruído
     # conditional:
     condition: tuple[tuple[int, ...], int] | None = None  # (clbits, valor esperado)
     body: list["Op"] = field(default_factory=list)
@@ -63,7 +64,9 @@ class Trajectory:
     num_qubits: int
     num_clbits: int
     steps: list[StepRecord]
-    states: list[np.ndarray]  # states[0] = inicial; states[k] = após o passo k
+    # states[0] = inicial; states[k] = após o passo k. Vetores de estado, ou
+    # matrizes densidade quando o circuito tem canais de ruído.
+    states: list[np.ndarray]
     clbits: list[int]
 
 
@@ -253,6 +256,77 @@ def _run_ops(
             record.append(StepRecord(op, lines[position] if lines else 0, outcome, applied))
             states.append(state)
     return state
+
+
+MAX_DENSITY_QUBITS = 8
+
+
+def apply_to_density(rho: np.ndarray, matrices: list[np.ndarray], qubits: tuple[int, ...], n: int) -> np.ndarray:
+    """ρ -> Σ K ρ K†. Uma porta é o caso de um único K (unitário).
+
+    ρ é tratado como vetor de 2n qubits: os n bits altos indexam a linha e os n
+    baixos a coluna; K age nas linhas e K* nas colunas.
+    """
+    vector = rho.reshape(-1)
+    rows = tuple(q + n for q in qubits)
+    result = np.zeros_like(vector)
+    for k in matrices:
+        part = apply_matrix(vector, k, rows, 2 * n)
+        result += apply_matrix(part, k.conj(), qubits, 2 * n)
+    return result.reshape(2**n, 2**n)
+
+
+def _run_density(ops: list[Op], n: int, lines: list[int]) -> tuple[list[StepRecord], list[np.ndarray]]:
+    if n > MAX_DENSITY_QUBITS:
+        raise SimulationError(t("sim.too_many_qubits", count=n, limit=MAX_DENSITY_QUBITS))
+    rho = np.zeros((2**n, 2**n), dtype=complex)
+    rho[0, 0] = 1.0
+    steps: list[StepRecord] = []
+    states = [rho]
+    for position, op in enumerate(ops):
+        if op.kind == "gate":
+            rho = apply_to_density(rho, [op.matrix], op.qubits, n)
+        elif op.kind == "channel":
+            rho = apply_to_density(rho, op.kraus, op.qubits, n)
+        elif op.kind != "noop":
+            raise SimulationError(t("sim.unsupported", name=op.name))
+        steps.append(StepRecord(op, lines[position]))
+        states.append(rho)
+    return steps, states
+
+
+def run_ops_trajectory(
+    ops: list[Op],
+    lines: list[int],
+    num_qubits: int,
+    seed: int = 0,
+    max_qubits: int = DEFAULT_MAX_QUBITS,
+) -> Trajectory:
+    """Simula operações já compiladas (ex.: vindas de um circuito PennyLane).
+
+    Com canais de ruído, a simulação é feita com matriz densidade.
+    """
+    if num_qubits == 0:
+        raise SimulationError(t("sim.no_qubits"))
+    if num_qubits > max_qubits:
+        raise SimulationError(t("sim.too_many_qubits", count=num_qubits, limit=max_qubits))
+    if len(ops) > MAX_INSTRUCTIONS:
+        raise SimulationError(t("sim.too_many_instructions", count=len(ops), limit=MAX_INSTRUCTIONS))
+    if any(op.kind == "channel" for op in ops):
+        steps, states = _run_density(ops, num_qubits, lines)
+        return Trajectory(num_qubits, 0, steps, states, [])
+    state = initial_state(num_qubits)
+    steps: list[StepRecord] = []
+    states = [state]
+    _run_ops(ops, state, [], num_qubits, np.random.default_rng(seed), steps, states, lines)
+    return Trajectory(num_qubits, 0, steps, states, [])
+
+
+def state_probabilities(state: np.ndarray) -> np.ndarray:
+    """Probabilidades da base computacional, para vetor de estado ou matriz densidade."""
+    if state.ndim == 2:
+        return np.clip(np.real(np.diag(state)), 0.0, None)
+    return np.abs(state) ** 2
 
 
 def run_trajectory(

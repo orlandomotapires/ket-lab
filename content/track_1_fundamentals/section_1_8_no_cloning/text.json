@@ -1,0 +1,28 @@
+{
+  "title": "The No-Cloning Theorem",
+  "summary": "No unitary operation copies an unknown quantum state; the CNOT copier works only for basis states.",
+  "objectives": [
+    "Build a CNOT copier and verify that it copies |0⟩ and |1⟩.",
+    "Compute the fidelity between the output of the copier and the ideal copy |+⟩|+⟩.",
+    "Use linearity to explain why no unitary operation copies every state."
+  ],
+  "mission": "Copy qubit 0 onto qubit 1 with a single CNOT, so that |0⟩ and |1⟩ are copied exactly. The input in the editor is |+⟩. Store in `copy_fidelity` the fidelity between the final state of your circuit and the ideal copy |+⟩|+⟩.",
+  "hints": [
+    "Qubit 1 starts in |0⟩, so the copier is one gate: qc.cx(0, 1). For |0⟩ it leaves |00⟩ and for |1⟩ it leaves |11⟩.",
+    "Take the final state with output = Statevector(qc) and the ideal copy with Statevector.from_label(\"++\"). Then state_fidelity(output, ideal_copy) returns |⟨ideal copy|output⟩|².",
+    "By linearity, CNOT maps (|0⟩+|1⟩)|0⟩/√2 to (|00⟩+|11⟩)/√2, a Bell state. Its overlap with |++⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2 has amplitude 1/√2, so the fidelity is 1/2."
+  ],
+  "prediction": {
+    "question": "The CNOT copier receives |+⟩ on qubit 0 and |0⟩ on qubit 1. What is the output?",
+    "options": [
+      "|+⟩|+⟩, two copies of |+⟩",
+      "(|00⟩ + |11⟩)/√2, an entangled state",
+      "|00⟩ or |11⟩ with equal probability, as a classical mixture"
+    ],
+    "explanation": "The CNOT acts linearly on the two terms of |+⟩|0⟩ = (|00⟩ + |10⟩)/√2, sending |00⟩ to |00⟩ and |10⟩ to |11⟩. The result is a superposition of the two copied basis states, which is the Bell state |Φ⁺⟩, not the product |+⟩|+⟩. The output is a pure state, so it is not a classical mixture."
+  },
+  "comparison": {
+    "source_label": "Original, qubit 0 before the CNOT",
+    "target_label": "Copy, qubit 1 at the end"
+  }
+}

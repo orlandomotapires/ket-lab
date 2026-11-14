@@ -1,6 +1,11 @@
 {
   "title": "QAOA for Max-Cut",
   "summary": "Max-Cut on a 5-vertex graph with a two-layer QAOA.",
+  "objectives": [
+    "Build QAOA layers from a cost layer (IsingZZ on the edges) and a mixer layer (RX on every qubit)",
+    "Optimize the angles until the approximation ratio of the Max-Cut solution exceeds 0.85",
+    "Explain why one layer is not enough for this graph and more layers raise the best achievable ratio"
+  ],
   "mission": "Divide the 5 vertices of the graph into two groups so that as many edges as possible are cut. Build a QAOA circuit with cost layers (IsingZZ on the edges) and mixer layers (RX on every qubit), and optimize the angles until the approximation ratio exceeds 0.85.",
   "prediction": {
     "question": "With one layer (p = 1) and the best possible angles, does the approximation ratio for this graph exceed 0.85?",

@@ -1,6 +1,11 @@
 {
   "title": "Interference and Measurement in Other Bases",
   "summary": "HH = I, HZH = X and how the relative phase decides a measurement outcome.",
+  "objectives": [
+    "Measure a qubit in the X basis by applying a Hadamard gate before the measurement",
+    "Distinguish |+⟩ from |−⟩ with a single measurement",
+    "Predict how the order of two non-commuting gates, such as H and S, changes the final state"
+  ],
   "mission": "Qubit 0 was prepared in |+⟩ or |−⟩, and you do not know which. Add gates and a measurement that identify it: |+⟩ must always give 0 and |−⟩ must always give 1. This is a measurement in the X basis.",
   "hints": [
     "A measurement in the computational basis gives 0 or 1 with probability 50% for both |+⟩ and |−⟩. Before measuring, you need a gate that sends |+⟩ and |−⟩ to different poles.",

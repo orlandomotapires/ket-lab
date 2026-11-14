@@ -1,6 +1,11 @@
 {
   "title": "Phase Estimation",
   "summary": "Read an eigenvalue phase with controlled powers of U and an inverse QFT.",
+  "objectives": [
+    "Build a phase estimation circuit with controlled powers of U and an inverse QFT",
+    "Convert the measured counting register to an estimate θ = m / 2ⁿ",
+    "Read the measured bit string with Qiskit's qubit ordering"
+  ],
   "mission": "Estimate the phase θ of the operator U using 3 counting qubits, and store the estimate in the variable theta, a number between 0 and 1.",
   "prediction": {
     "question": "With 3 counting qubits, the register is measured as 101. What is the estimate of θ?",

@@ -1,6 +1,11 @@
 {
   "title": "Phase Kickback",
   "summary": "A controlled gate acting on an eigenstate of its target changes the control, not the target.",
+  "objectives": [
+    "Prepare the target qubit in |−⟩, an eigenstate of X",
+    "Predict which qubit of a CNOT changes when the target is an eigenstate",
+    "Identify the eigenvalue of the target as a relative phase of the control"
+  ],
   "mission": "Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, then apply a CNOT from qubit 0 to qubit 1. The target keeps its state; observe the control.",
   "prediction": {
     "question": "The target is in |−⟩, an eigenstate of X with eigenvalue −1. The control is in |+⟩ and you apply a CNOT. Which qubit changes state?",

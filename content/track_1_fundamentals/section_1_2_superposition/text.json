@@ -1,6 +1,11 @@
 {
   "title": "Superposition and the Hadamard Gate",
   "summary": "The states |+⟩ and |−⟩, measurement and a quantum random number generator.",
+  "objectives": [
+    "Prepare |+⟩ from |0⟩ with a Hadamard gate",
+    "Measure qubits in the computational basis into classical bits",
+    "Judge from the counts whether a measured distribution is consistent with a fair generator"
+  ],
   "mission": "Build a 3-bit quantum random number generator: put all three qubits in an equal superposition and measure each qubit into the classical bit with the same index. The 8 outcomes (000 to 111) must be equally likely.",
   "hints": [
     "The Hadamard gate takes |0⟩ to |+⟩, on the equator of the Bloch sphere: qc.h(0). Each qubit needs its own Hadamard.",

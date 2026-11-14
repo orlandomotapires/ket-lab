@@ -1,6 +1,11 @@
 {
   "title": "Quantum Teleportation",
   "summary": "Bell pair, mid-circuit measurement and classically controlled corrections.",
+  "objectives": [
+    "Build the teleportation circuit: a Bell pair, a Bell-basis measurement and classically controlled corrections",
+    "Apply the X and Z corrections on Bob's qubit according to Alice's two measurement bits",
+    "Explain why teleportation destroys the original state and does not violate the no-cloning theorem"
+  ],
   "mission": "Teleport the state of qubit 0 (Alice) to qubit 2 (Bob). Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
   "hints": [
     "First create a Bell pair on qubit 1 (Alice's half) and qubit 2 (Bob's half), as in lesson 1.5: qc.h(1) and qc.cx(1, 2).",

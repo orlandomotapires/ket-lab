@@ -1,6 +1,11 @@
 {
   "title": "The Variational Quantum Eigensolver",
   "summary": "Ground-state energy of H₂ with a variational circuit.",
+  "objectives": [
+    "Build a VQE ansatz that starts from the Hartree–Fock state and applies a double excitation",
+    "Optimize a circuit parameter by gradient descent until the energy reaches chemical accuracy",
+    "Use the variational principle to bound the energy of any prepared state from below by the ground-state energy"
+  ],
   "mission": "Find the ground-state energy of H₂ to chemical accuracy. Build an ansatz that starts from the Hartree–Fock state and applies a double excitation with angle theta, and optimize theta by gradient descent. Click Run to train.",
   "prediction": {
     "question": "By the variational principle, the energy ⟨ψ|H|ψ⟩ of any state the circuit prepares is…",

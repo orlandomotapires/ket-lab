@@ -1,6 +1,12 @@
 {
   "title": "The Three-Qubit Bit-Flip Code",
   "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold.",
+  "objectives": [
+    "Encode a qubit into the three-qubit bit-flip code with two CNOT gates",
+    "Store the syndrome in two ancilla qubits without measuring the data qubits",
+    "Correct a single bit flip with Toffoli gates controlled by the syndrome",
+    "Predict that the code fails when two qubits flip"
+  ],
   "mission": "Protect qubit 0 against bit flips. Encode it into three qubits (encode), store the syndrome in two ancillas without measuring the data qubits, and correct the flipped qubit (recover). The logical state must survive an X error on any one of the three qubits, for any input state.",
   "prediction": {
     "question": "An X error hits qubits 0 and 1 at the same time. What does the code do?",

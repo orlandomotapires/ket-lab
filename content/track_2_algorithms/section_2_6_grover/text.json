@@ -1,6 +1,11 @@
 {
   "title": "Grover's Algorithm",
   "summary": "Amplitude amplification by an oracle and inversion about the mean.",
+  "objectives": [
+    "Build the diffuser (inversion about the mean) from Hadamard, X and multi-controlled Z gates",
+    "Compute the number of Grover iterations from the number of items N and the number of marked items M",
+    "Predict how the number of marked items changes the best iteration count"
+  ],
   "mission": "Find the marked items among 16 possibilities. The variable num_marked holds the number M of items the oracle marks, which differs between tests. Compute the number of Grover iterations (oracle followed by the diffuser) from N and num_marked instead of fixing it. At the end, the marked items must have the highest probability this circuit can give.",
   "prediction": {
     "question": "With 4 of the 16 items marked, how many Grover iterations give the highest success probability?",

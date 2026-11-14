@@ -1,6 +1,11 @@
 {
   "title": "Relative Phase and Rotation Operators",
   "summary": "Z, S, T and Rz gates: same probabilities, different states.",
+  "objectives": [
+    "Undo a gate sequence by applying the inverse of each gate in reverse order",
+    "Use S† and T† as the inverses of the S and T gates",
+    "Compute how Z, S and T gates change the relative phase of a qubit"
+  ],
   "mission": "Qubit 0 receives an unknown input state and then the gates X, H, S, T, H. Append gates that undo this sequence, so that the qubit returns to its input state, whatever it is.",
   "hints": [
     "To undo a sequence, undo the last step first. Repeating the same gates in the same order does not work: invert each gate and apply them in reverse order.",

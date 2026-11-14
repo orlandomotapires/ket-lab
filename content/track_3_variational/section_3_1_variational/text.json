@@ -1,6 +1,11 @@
 {
   "title": "Variational Circuits and the Parameter-Shift Rule",
   "summary": "Ansatz, parameter-shift gradients and gradient descent.",
+  "objectives": [
+    "Implement the parameter-shift rule with two circuit evaluations",
+    "Minimize an expectation value with a gradient descent loop",
+    "Predict where gradient descent takes the Bloch vector for a simple cost"
+  ],
   "mission": "Implement parameter_shift(params, i), the derivative of the cost given by the parameter-shift rule, and use it in a gradient descent loop that brings ⟨Z⟩ close to −1. Click Run (or press Ctrl+Enter) to train.",
   "prediction": {
     "question": "The cost is ⟨Z⟩ after RX(θ₀) and RY(θ₁). Starting from θ = (0.3, 0.2), close to the maximum, where does gradient descent take the Bloch vector?",

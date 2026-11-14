@@ -42,7 +42,7 @@ def test_wrong_state_reports_fidelity():
 def test_phase_diagnosis():
     result = validation.validate(HEADER + "qc = QuantumCircuit(1)\nqc.h(0)\n", MINUS)
     assert result["code"] == "phase"
-    assert "fase relativa" in result["message"]
+    assert "relative phase" in result["message"]
 
 
 def test_forbidden_gate_blocks_shortcuts():
@@ -128,7 +128,7 @@ def test_teleport_reference_passes_with_varied_inputs():
     lesson = _teleport_lesson()
     result = validation.validate(lesson["solution"], lesson)
     assert result["passed"], result
-    assert "192 combinações" in result["message"]
+    assert "192 combinations" in result["message"]
 
 
 def test_teleport_with_one_correction_missing_is_partial():

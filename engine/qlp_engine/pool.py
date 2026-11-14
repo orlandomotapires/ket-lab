@@ -7,7 +7,7 @@ import multiprocessing
 import threading
 import time
 
-from .i18n import t
+from .messages import t
 from .worker import worker_main
 
 STARTUP_TIMEOUT_S = 120.0

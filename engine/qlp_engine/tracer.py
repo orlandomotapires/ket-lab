@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from qiskit import QuantumCircuit
 
 from . import guard
-from .i18n import t
+from .messages import t
 
 USER_FILENAME = "<aluno>"
 MAX_STDOUT_CHARS = 10_000

@@ -13,7 +13,7 @@ import ast
 import builtins
 from dataclasses import dataclass
 
-from .i18n import t
+from .messages import t
 
 ALLOWED_IMPORTS = frozenset(
     {

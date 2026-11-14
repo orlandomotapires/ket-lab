@@ -16,7 +16,7 @@ import sys
 
 import numpy as np
 
-from .i18n import t
+from .messages import t
 from .simulator import Op
 from .tracer import USER_FILENAME, UserCodeError
 

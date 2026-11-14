@@ -103,3 +103,15 @@ def _fields(template: str) -> set[str]:
     import string
 
     return {name for _, name, _, _ in string.Formatter().parse(template) if name}
+
+
+@pytest.mark.parametrize("lesson_id", LESSON_IDS)
+def test_every_lesson_has_theoretical_and_practical_references(library, lesson_id):
+    references = library.lesson(lesson_id).get("references") or []
+    kinds = {ref["kind"] for ref in references}
+    assert len(references) >= 2, f"{lesson_id}: pelo menos 2 referências"
+    assert kinds & {"book", "paper"}, f"{lesson_id}: falta uma referência teórica (livro ou artigo)"
+    assert kinds & {"course", "tutorial"}, f"{lesson_id}: falta uma referência prática (curso ou tutorial)"
+    urls = [ref["url"] for ref in references]
+    assert len(set(urls)) == len(urls), f"{lesson_id}: links repetidos"
+    assert all(url.startswith("https://") for url in urls)

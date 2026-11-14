@@ -27,5 +27,21 @@
       "mixed"
     ]
   },
-  "prediction_answer": 1
+  "prediction_answer": 1,
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "section": "4.5",
+      "url": "https://doi.org/10.1017/CBO9780511976667"
+    },
+    {
+      "kind": "course",
+      "title": "Circuits",
+      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/circuits"
+    }
+  ]
 }

@@ -101,3 +101,28 @@ for (const viewport of [{ width: 768, height: 1024 }, { width: 390, height: 844 
     expect(errors).toEqual([]);
   });
 }
+
+test("guia da primeira lição: aparece uma vez e reabre pelo botão", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page, { tour: true });
+  await openLessonBySearch(page, "computational basis", "1.1");
+  const card = page.locator(".tour-card");
+  await expect(card).toContainText("Your code runs as you type");
+  await expect(page.locator(".editor-panel")).toHaveClass(/tour-target/);
+  for (const title of ["Step through the circuit", "The mission", "Check your answer"]) {
+    await card.getByRole("button", { name: "Next" }).click();
+    await expect(card).toContainText(title);
+  }
+  await card.getByRole("button", { name: "Start" }).click();
+  await expect(card).toHaveCount(0);
+  // Não volta sozinho ao abrir outra lição.
+  await page.getByRole("button", { name: "Tracks" }).click();
+  await openLessonBySearch(page, "entanglement", "1.5");
+  await page.waitForTimeout(1200);
+  await expect(card).toHaveCount(0);
+  await page.getByRole("button", { name: "Show the guide" }).click();
+  await expect(card).toContainText("Your code runs as you type");
+  await page.keyboard.press("Escape");
+  await expect(card).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

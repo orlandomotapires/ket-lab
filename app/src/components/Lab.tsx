@@ -8,6 +8,7 @@ import { exampleCode, SANDBOX_EXAMPLES, type SandboxExample } from "../lib/examp
 import { OracleBar } from "./OracleBar";
 import { TheoryPanel } from "./TheoryPanel";
 import { Timeline } from "./Timeline";
+import { Tour } from "./Tour";
 import { Visualizer } from "./Visualizer";
 
 export function Lab() {
@@ -60,6 +61,7 @@ export function Lab() {
         <Visualizer key={key} lesson={lesson} />
       </div>
       <OracleBar />
+      <Tour />
     </div>
   );
 }

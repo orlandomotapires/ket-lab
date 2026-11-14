@@ -3,6 +3,7 @@ import { useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
 import { ArrowLeftIcon, LogoMark, MoonIcon, SunIcon } from "./icons";
 import { SearchBox } from "./SearchBox";
+import { openTour } from "./Tour";
 
 export function TopBar() {
   const theme = useTheme();
@@ -53,6 +54,11 @@ export function TopBar() {
           <span className="status-dot" aria-hidden="true" />
           {t(`topbar.engine.${connection}`)}
         </span>
+      )}
+      {view === "lab" && lesson && (
+        <button className="btn btn-ghost btn-icon btn-sm" onClick={openTour} aria-label={t("tour.open")} title={t("tour.open")}>
+          ?
+        </button>
       )}
       <button
         className="btn btn-ghost btn-icon btn-sm"

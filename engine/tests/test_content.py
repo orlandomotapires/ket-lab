@@ -97,11 +97,11 @@ def test_every_lesson_has_theoretical_and_practical_references(library, lesson_i
 @pytest.mark.parametrize(
     "query, expected",
     [
-        ("grover", "2.5"),
-        ("Kraus", "3.5"),
+        ("grover", "2.6"),
+        ("Kraus", "4.1"),
         ("entanglement", "1.5"),
         ("ENTANGLEMENT", "1.5"),
-        ("quantum fourier", "2.6"),  # duas palavras
+        ("quantum fourier", "2.7"),  # duas palavras
         ("teleportation", "1.6"),
         ("max-cut", "3.3"),
         ("deutsch-jozsa", "2.3"),  # hífen do teclado acha o título com traço (–)

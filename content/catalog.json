@@ -1,6 +1,33 @@
 {
   "tracks": [
     {
+      "id": 0,
+      "title": "Mathematical Toolkit",
+      "level": "Optional",
+      "sections": [
+        {
+          "id": "0.1",
+          "title": "Complex Numbers and Phases",
+          "summary": "To be written."
+        },
+        {
+          "id": "0.2",
+          "title": "Vectors and Inner Products",
+          "summary": "To be written."
+        },
+        {
+          "id": "0.3",
+          "title": "Matrices, Unitaries and Eigenvalues",
+          "summary": "To be written."
+        },
+        {
+          "id": "0.4",
+          "title": "Tensor Products",
+          "summary": "To be written."
+        }
+      ]
+    },
+    {
       "id": 1,
       "title": "Basics of Quantum Information",
       "level": "Beginner",
@@ -39,6 +66,21 @@
           "id": "1.7",
           "title": "Controlled Operations",
           "summary": "Build the controlled-S gate from CNOT and T gates, and identities between gates."
+        },
+        {
+          "id": "1.8",
+          "title": "The No-Cloning Theorem",
+          "summary": "To be written."
+        },
+        {
+          "id": "1.9",
+          "title": "Superdense Coding",
+          "summary": "To be written."
+        },
+        {
+          "id": "1.10",
+          "title": "The CHSH Game",
+          "summary": "To be written."
         }
       ]
     },
@@ -69,29 +111,39 @@
         },
         {
           "id": "2.5",
+          "title": "Simon's Algorithm",
+          "summary": "To be written."
+        },
+        {
+          "id": "2.6",
           "title": "Grover's Algorithm",
           "summary": "Amplitude amplification by an oracle and inversion about the mean."
         },
         {
-          "id": "2.6",
+          "id": "2.7",
           "title": "The Quantum Fourier Transform",
           "summary": "Moves the information about x from the basis states into the phases."
         },
         {
-          "id": "2.7",
+          "id": "2.8",
           "title": "Phase Estimation",
           "summary": "Read an eigenvalue phase with controlled powers of U and an inverse QFT."
         },
         {
-          "id": "2.8",
+          "id": "2.9",
           "title": "Shor's Algorithm",
           "summary": "Factor 15 by reducing the problem to order finding."
+        },
+        {
+          "id": "2.10",
+          "title": "Hamiltonian Simulation",
+          "summary": "To be written."
         }
       ]
     },
     {
       "id": 3,
-      "title": "Variational Algorithms, Noise and Error Correction",
+      "title": "Variational Algorithms",
       "level": "Advanced",
       "sections": [
         {
@@ -113,16 +165,75 @@
           "id": "3.4",
           "title": "Variational Quantum Classifiers",
           "summary": "Classify points in the plane with two qubits and data re-uploading."
-        },
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Quantum Noise and Error Correction",
+      "level": "Advanced",
+      "sections": [
         {
-          "id": "3.5",
+          "id": "4.1",
           "title": "Density Operators and Quantum Noise",
           "summary": "Density operators, Kraus operators, and the difference between error probability and wrong-answer probability."
         },
         {
-          "id": "3.6",
+          "id": "4.2",
           "title": "The Three-Qubit Bit-Flip Code",
           "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold."
+        },
+        {
+          "id": "4.3",
+          "title": "The Three-Qubit Phase-Flip Code",
+          "summary": "To be written."
+        },
+        {
+          "id": "4.4",
+          "title": "The Shor Code",
+          "summary": "To be written."
+        },
+        {
+          "id": "4.5",
+          "title": "The Stabilizer Formalism",
+          "summary": "To be written."
+        },
+        {
+          "id": "4.6",
+          "title": "The Toric Code",
+          "summary": "To be written."
+        },
+        {
+          "id": "4.7",
+          "title": "The Threshold Theorem",
+          "summary": "To be written."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Running on Quantum Hardware",
+      "level": "Advanced",
+      "sections": [
+        {
+          "id": "5.1",
+          "title": "Transpilation and Qubit Connectivity",
+          "summary": "To be written."
+        },
+        {
+          "id": "5.2",
+          "title": "The Qiskit Primitives",
+          "summary": "To be written."
+        },
+        {
+          "id": "5.3",
+          "title": "Noise on Real Devices",
+          "summary": "To be written."
+        },
+        {
+          "id": "5.4",
+          "title": "Error Mitigation",
+          "summary": "To be written."
         }
       ]
     }

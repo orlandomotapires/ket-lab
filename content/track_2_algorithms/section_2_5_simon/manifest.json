@@ -1,0 +1,40 @@
+{
+  "id": "2.5",
+  "track": 2,
+  "estimated_minutes": 35,
+  "num_qubits": 6,
+  "max_qubits": 6,
+  "default_visualizer": "histogram",
+  "available_visualizers": [
+    "histogram",
+    "amplitudes"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2
+    ]
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "On the power of quantum computation",
+      "authors": "D. R. Simon",
+      "year": 1997,
+      "url": "https://doi.org/10.1137/S0097539796298637",
+      "location": "TODO-VERIFY: SIAM J. Comput. 26(5), 1474–1483; the problem statement and the algorithm"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum query algorithms: Simon's algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "TODO-VERIFY: page “Simon's algorithm” (problem, algorithm, analysis, classical lower bound)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/simon-algorithm"
+    }
+  ]
+}

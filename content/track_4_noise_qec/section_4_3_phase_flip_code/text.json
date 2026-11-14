@@ -1,0 +1,39 @@
+{
+  "title": "The Three-Qubit Phase-Flip Code",
+  "summary": "A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers.",
+  "mission": "Protect qubit 0 against phase flips. Encode it into three qubits (encode), then detect and correct the flipped qubit with two ancillas and no measurement of the data qubits (recover). The recovery must leave the data qubits in the code space. The logical state must survive a Z error on any one of the three qubits, and no error, for any input state.",
+  "prediction": {
+    "question": "An X error hits qubit 0 of the phase-flip code. What does the code do?",
+    "options": [
+      "It detects the flip and corrects it",
+      "It detects the error but cannot tell which qubit was hit",
+      "It does not detect it: the syndrome is 00 and the logical state changes"
+    ],
+    "explanation": "X leaves |+⟩ unchanged and sends |−⟩ to −|−⟩. It therefore maps α|+++⟩ + β|−−−⟩ to α|+++⟩ − β|−−−⟩. Both code states are eigenstates of X⊗X on every pair, so the syndrome is 00. The error acts as a logical Z and the code does not correct it."
+  },
+  "hints": [
+    "Encode as for the bit-flip code and then rotate each qubit: qml.CNOT(wires=[0, 1]), qml.CNOT(wires=[0, 2]), then qml.Hadamard on wires 0, 1 and 2. This takes α|0⟩ + β|1⟩ to α|+++⟩ + β|−−−⟩.",
+    "Hadamard gates turn Z into X, so a phase flip becomes a bit flip. Start recover() with a Hadamard on each data qubit, and the bit-flip recovery of the previous lesson applies unchanged. Ancilla 3 stores the parity of qubits 0 and 1, and ancilla 4 the parity of qubits 1 and 2.",
+    "Correct with qml.Toffoli(wires=[3, 4, target]): ancillas 10 → qubit 0, 11 → qubit 1, 01 → qubit 2, using qml.PauliX on an ancilla before and after for a pattern with a 0. Finish recover() with a second Hadamard on each data qubit, or the data qubits stay in the bit-flip basis."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "z0": "Z on 0",
+        "z1": "Z on 1",
+        "z2": "Z on 2",
+        "z0z1": "Z on 0 and 1",
+        "x0": "X on 0"
+      }
+    }
+  },
+  "messages": {
+    "ok": "The logical state survives any single phase flip, for every input state tested.",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 5 qubits.",
+    "wrong_qubits": "The code uses 3 data qubits and 2 ancillas (5 in total), but the circuit has {count}.",
+    "encode_wrong": "Even with no error, the final state is not α|+++⟩ + β|−−−⟩ (fidelity {fidelity}). Check the encoding, and make sure the recovery returns to the code space and does not change an error-free state.",
+    "single_fail": "With the error {error}, the logical state was not recovered (fidelity {fidelity}). Check the basis change, the syndrome and which qubit each pattern corrects."
+  }
+}

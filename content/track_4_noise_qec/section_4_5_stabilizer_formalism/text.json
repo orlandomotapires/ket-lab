@@ -1,0 +1,38 @@
+{
+  "title": "The Stabilizer Formalism",
+  "summary": "Describe a code by commuting Pauli operators and read the syndrome from commutation with them.",
+  "objectives": [
+    "Decide whether two Pauli strings commute or anticommute.",
+    "Compute the syndrome of a Pauli error for any list of stabilizer generators.",
+    "Build the syndrome table of the bit-flip code and identify the errors it cannot detect.",
+    "Find logical operators: Pauli strings that commute with every generator but are not in the stabilizer group."
+  ],
+  "mission": "Pauli strings are written as text, for example \"ZZI\". Write commutes(a, b), which returns True when two Pauli strings of equal length commute. Write syndrome(error, stabilizers), which returns a tuple with one bit per generator: 0 if the error commutes with it, 1 if it anticommutes. Store in table the syndrome of each of the nine single-qubit errors (\"XII\", \"YII\", \"ZII\", \"IXI\", …) for the bit-flip code generators in STABILIZERS. Finally set logical_X and logical_Z to Pauli strings that act as X and Z on the encoded qubit.",
+  "prediction": {
+    "question": "For the generators Z₁Z₂ and Z₂Z₃, which single-qubit errors have syndrome (0, 0), so that the code cannot detect them?",
+    "options": [
+      "None: every single-qubit error changes at least one eigenvalue",
+      "Z on any of the three qubits",
+      "Y on the middle qubit"
+    ],
+    "explanation": "Z commutes with Z₁Z₂ and Z₂Z₃, so a Z error leaves both eigenvalues at +1. It is not a stabilizer element either, so it changes the encoded state: Z on any qubit acts as the logical Z. Y anticommutes with Z exactly as X does, so Y on the middle qubit gives syndrome (1, 1)."
+  },
+  "hints": [
+    "Compare the two strings position by position. Two single-qubit Paulis anticommute when both are different from I and they are different from each other (X and Z, X and Y, Y and Z). The strings commute when the number of anticommuting positions is even.",
+    "syndrome(error, stabilizers) is a tuple with one entry per generator g: 0 if commutes(error, g), 1 otherwise. Build the nine errors by placing X, Y or Z at one position of \"III\", and fill table with a dictionary comprehension over them.",
+    "A logical operator commutes with ZZI and IZZ but is not a product of them. XXX flips every qubit, so it maps |000⟩ to |111⟩. For the logical Z, a single Z on one qubit works, and it must anticommute with logical_X."
+  ],
+  "messages": {
+    "ok": "The syndrome table is correct and the logical operators are valid. {undetected} of the 9 single-qubit errors have syndrome (0, 0): they commute with every generator.",
+    "missing": "Store the result in the variable {name}.",
+    "missing_function": "Define the function {name}.",
+    "commutes_wrong": "commutes(\"{a}\", \"{b}\") should return {expected}.",
+    "syndrome_wrong": "For the generators {stabilizers}, the syndrome of the error {error} should be {expected}, but syndrome returned {got}.",
+    "table_wrong": "In table, the syndrome of {error} should be {expected}, but it is {got}.",
+    "table_keys": "table must have one entry for each of the nine single-qubit errors (\"XII\" to \"IIZ\"), and nothing else.",
+    "logical_format": "{name} must be a string of 3 letters chosen from I, X, Y and Z.",
+    "logical_syndrome": "{name} = {value} anticommutes with a generator, so it takes the state out of the code space. A logical operator must commute with every generator.",
+    "logical_trivial": "{name} = {value} is a product of generators (or the identity), so it acts as the identity on the code space.",
+    "logical_commute": "logical_X and logical_Z commute. The logical X and Z must anticommute, like X and Z on one qubit."
+  }
+}

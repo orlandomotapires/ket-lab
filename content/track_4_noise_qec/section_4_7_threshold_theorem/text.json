@@ -1,0 +1,37 @@
+{
+  "title": "The Threshold Theorem",
+  "summary": "Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold.",
+  "objectives": [
+    "Compute the logical error rate after k levels of concatenation of the three-qubit code.",
+    "Find the threshold as the fixed point of the error map, and say what happens above and below it.",
+    "Compute the number of levels and physical qubits needed to reach a target error rate.",
+    "Use the model p_L = (c p)^(2^k) / c and state the assumptions of the threshold theorem."
+  ],
+  "mission": "One level of the three-qubit bit-flip code, with perfect correction, maps a physical error probability p to f(p) = 3p² − 2p³. Write f(p), and concatenated(p, k), the error rate after k levels (f applied k times). Write generic_rate(p, c, k) = (c·p)^(2^k) / c. Write levels_needed(p, target), the smallest k with concatenated(p, k) ≤ target, or None if the error rate never gets that low. Set p_th to the threshold of f. For p = 0.01 and target = 1e-15, store the number of levels in k_needed and the number of physical qubits per logical qubit (3 per level, so 3^k) in qubits.",
+  "prediction": {
+    "question": "The physical error probability is p = 0.6, above the threshold of the map f(p) = 3p² − 2p³. What happens to the error rate as levels of concatenation are added?",
+    "options": [
+      "It decreases, more slowly than below the threshold",
+      "It stays at 0.6",
+      "It increases toward 1"
+    ],
+    "explanation": "For p above 1/2 the encoded qubit is wrong more often than a bare qubit: f(0.6) = 0.648, then f(0.648) ≈ 0.69, and so on toward 1. The majority vote of three unreliable qubits is worse than a single qubit when each is wrong more than half the time. Only p = 1/2 stays fixed."
+  },
+  "hints": [
+    "concatenated(p, k) applies f to p, k times: loop k times with p = f(p), then return p. For generic_rate use (c * p) ** (2 ** k) / c.",
+    "levels_needed: if p is not below p_th the error rate never decreases, so return None. Otherwise start at k = 0 and apply f until the value is at most target, counting the steps. The threshold is the fixed point f(p) = p with 0 < p < 1: solve 3p² − 2p³ = p, which gives 2p² − 3p + 1 = 0.",
+    "k_needed = levels_needed(0.01, 1e-15). Each level replaces every qubit by three, so level k uses 3**k physical qubits per logical qubit. Check your values by printing concatenated(0.01, k) for k = 0, 1, 2, ..."
+  ],
+  "messages": {
+    "ok": "All values match. From p = 0.01, {k} levels give an error rate of {rate} using {qubits} physical qubits per logical qubit. The threshold of this map is {p_th}.",
+    "missing": "Store the result in the variable {name}.",
+    "missing_function": "Define the function {name}.",
+    "f_wrong": "f({p}) should be {want}, but it returned {got}.",
+    "concatenated_wrong": "After k = {k} levels from p = {p}, the error rate should be {want}, but concatenated returned {got}.",
+    "generic_wrong": "generic_rate({p}, {c}, {k}) should be {want}, but it returned {got}.",
+    "levels_wrong": "For p = {p} and target = {target}, levels_needed should return {want}, but it returned {got}.",
+    "threshold_wrong": "p_th is {got}. The threshold is the value p with 0 < p < 1 where f(p) = p.",
+    "k_wrong": "k_needed is {got}, but concatenated(0.01, k) first falls to 1e-15 or below at k = {want}.",
+    "qubits_wrong": "qubits is {got}. With k_needed = {k} levels, each qubit is replaced by 3 per level, so 3^k = {want}."
+  }
+}

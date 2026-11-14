@@ -1,0 +1,70 @@
+{
+  "id": "4.4",
+  "track": 4,
+  "estimated_minutes": 40,
+  "framework": "pennylane",
+  "timeout": 15,
+  "num_qubits": 9,
+  "max_qubits": 9,
+  "qnode": {
+    "name": "circuit",
+    "args": []
+  },
+  "register": {
+    "qubits": [
+      0,
+      3,
+      6
+    ]
+  },
+  "controls": [
+    {
+      "id": "error",
+      "options": [
+        "none",
+        "x4",
+        "y4",
+        "z4",
+        "u4",
+        "x0x1",
+        "z0z3",
+        "x0z3"
+      ],
+      "default": "y4"
+    }
+  ],
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "histogram"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 10.2, “Shor code”, pp. 432–435"
+    },
+    {
+      "kind": "course",
+      "title": "Correcting quantum errors: The 9-qubit Shor code",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "TODO-VERIFY",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/shor-code"
+    },
+    {
+      "kind": "paper",
+      "title": "Scheme for reducing decoherence in quantum computer memory",
+      "authors": "P. W. Shor",
+      "year": 1995,
+      "location": "TODO-VERIFY",
+      "url": "https://doi.org/10.1103/PhysRevA.52.R2493"
+    }
+  ]
+}

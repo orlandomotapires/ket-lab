@@ -1,0 +1,41 @@
+{
+  "title": "The Shor Code",
+  "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit.",
+  "mission": "Protect qubit 0 against any error on a single qubit of the nine. Complete encode(): a phase-flip code on the block leaders 0, 3 and 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5) and (6, 7, 8). Complete decode(): undo the bit-flip codes with a majority vote in each block, then undo the phase-flip code with a majority vote on the leaders. Afterwards qubit 0 must hold the input state again after an X, Y or Z error on any one of the nine qubits, and after an arbitrary rotation on any one qubit, for any input state.",
+  "prediction": {
+    "question": "X errors hit qubits 0 and 1, both in the first block. What does the Shor code do?",
+    "options": [
+      "It corrects them, because the two flips are in the same block",
+      "It fails: the block decoding also flips qubit 2, and X on all three qubits of a block is a logical Z",
+      "It fails: the syndrome is 00, so the errors are not detected"
+    ],
+    "explanation": "Inside a block, two bit flips have the syndrome of a flip on the third qubit, so the block decoding applies X to qubit 2 and X⊗X⊗X is left acting on the block. This operator leaves |000⟩ + |111⟩ unchanged and multiplies |000⟩ − |111⟩ by −1. On the logical states it gives |0_L⟩ → |0_L⟩ and |1_L⟩ → −|1_L⟩, a logical Z. The code corrects any error on one qubit, not two."
+  },
+  "hints": [
+    "Encoding has two layers. First the phase-flip code on the leaders: qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]), then qml.Hadamard on wires 0, 3 and 6. Then, for each block (a, b, c), the bit-flip code: qml.CNOT(wires=[a, b]) and qml.CNOT(wires=[a, c]).",
+    "Decode in the reverse order. For each block (a, b, c): qml.CNOT(wires=[a, b]), qml.CNOT(wires=[a, c]), qml.Toffoli(wires=[b, c, a]). Afterwards the leader holds the block's bit with a bit flip corrected, and a phase flip anywhere in the block has become a phase flip of the leader.",
+    "The leaders 0, 3 and 6 now form a phase-flip code. Apply qml.Hadamard to each, then repeat the majority vote: qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]), qml.Toffoli(wires=[3, 6, 0]). Qubit 0 then holds |ψ⟩."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "x4": "X on 4",
+        "y4": "Y on 4",
+        "z4": "Z on 4",
+        "u4": "Arbitrary rotation on 4",
+        "x0x1": "X on 0 and 1",
+        "z0z3": "Z on 0 and 3",
+        "x0z3": "X on 0, Z on 3"
+      }
+    }
+  },
+  "messages": {
+    "ok": "Qubit 0 is recovered after any X, Y or Z error on a single qubit, and after an arbitrary rotation on a single qubit, for every input state tested.",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 9 qubits.",
+    "wrong_qubits": "The Shor code uses 9 qubits, but the circuit has {count}.",
+    "encode_wrong": "Even with no error, qubit 0 does not return to |ψ⟩ (fidelity {fidelity}). Check that decode() undoes encode().",
+    "single_fail": "With the error {error}, qubit 0 was not recovered (fidelity {fidelity}). Check the majority vote in each block and on the leaders."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "The Toric Code",
+  "summary": "A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops.",
+  "objectives": [
+    "Compute which plaquettes detect an X error chain on the torus.",
+    "Tell a contractible error loop (a product of stabilizers) from a non-contractible one (a logical operator).",
+    "Find the code distance of a small torus by searching for the shortest undetected logical chain.",
+    "Explain why a single error creates a pair of syndrome defects."
+  ],
+  "mission": "Edges of an L×L torus are tuples (\"h\", r, c) and (\"v\", r, c), and a chain is a set of edges carrying X errors. plaquette_edges(L, r, c) is given. Write defects(L, chain), which returns the list of plaquettes (r, c) whose Z-stabilizer anticommutes with the chain. Write logical_class(L, chain), which for a chain with no defects returns (a, b): the parities of the number of its edges in the row (\"h\", 0, c) and in the column (\"v\", r, 0). Then search all chains on the 3×3 torus by increasing size and store in distance the size of the smallest chain that has no defects and logical_class other than (0, 0).",
+  "prediction": {
+    "question": "A single X error acts on one edge of the torus. How many plaquette stabilizers anticommute with it?",
+    "options": [
+      "One, at the edge",
+      "Two, the plaquettes on either side of the edge",
+      "Four, the plaquettes at the corners of the edge"
+    ],
+    "explanation": "Every edge borders exactly two plaquettes, so X on that edge flips the eigenvalue of both. Defects always come in pairs for a chain with open ends, and extending the chain by one edge moves one of the two defects."
+  },
+  "hints": [
+    "A plaquette (r, c) fires when the chain contains an odd number of its four edges. Loop over all L² plaquettes, count with plaquette_edges(L, r, c), and keep those with odd count. A chain is a set, so \"edge in chain\" is a membership test.",
+    "logical_class counts edges of two fixed Z-loops: the row of horizontal edges (\"h\", 0, c) and the column of vertical edges (\"v\", r, 0). Each count is taken modulo 2. A product of stars gives (0, 0); a loop that wraps around the torus gives a non-zero class.",
+    "Use itertools.combinations(edges, w) for w = 1, 2, 3, … with edges = [(t, r, c) for t in \"hv\" for r in range(L) for c in range(L)]. For each chain (as a set), test that defects is empty and logical_class is not (0, 0). Stop at the first w that has one."
+  ],
+  "messages": {
+    "ok": "The defects and loop classes are correct. On the {L}×{L} torus the shortest undetected logical chain has {distance} edges, equal to L.",
+    "missing": "Store the result in the variable {name}.",
+    "missing_function": "Define the function {name}.",
+    "defects_wrong": "On the {L}×{L} torus, for the chain {chain}, the plaquettes with defects should be {expected}, but defects returned {got}.",
+    "class_wrong": "For the defect-free chain {chain} on the {L}×{L} torus, logical_class should return {expected}, but it returned {got}.",
+    "distance_wrong": "distance is {got}, which does not match a search over all chains on the 3×3 torus. Count only chains with no defects and a class other than (0, 0)."
+  }
+}

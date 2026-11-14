@@ -1,20 +1,20 @@
 {
-  "id": "2.2",
+  "id": "2.4",
   "track": 2,
-  "estimated_minutes": 20,
-  "num_qubits": 4,
-  "max_qubits": 4,
+  "estimated_minutes": 15,
+  "num_qubits": 5,
+  "max_qubits": 5,
   "default_visualizer": "amplitudes",
   "available_visualizers": [
     "amplitudes",
-    "qsphere",
     "bloch"
   ],
   "register": {
     "qubits": [
       0,
       1,
-      2
+      2,
+      3
     ]
   },
   "prediction_answer": 1,
@@ -23,7 +23,8 @@
     "register": [
       0,
       1,
-      2
+      2,
+      3
     ],
     "tolerance": 0.02,
     "allowed_gates": [
@@ -43,35 +44,10 @@
       "oracle"
     ],
     "cases": [
-      {
-        "kind": "constant",
-        "value": 0
-      },
-      {
-        "kind": "constant",
-        "value": 1
-      },
-      {
-        "kind": "balanced",
-        "mask": [
-          1,
-          1,
-          0
-        ],
-        "flip": 0
-      },
-      {
-        "kind": "balanced",
-        "mask": [
-          0,
-          1,
-          1
-        ],
-        "flip": 1
-      },
-      {
-        "kind": "and"
-      }
+      "0110",
+      "1101",
+      "0001",
+      "1011"
     ]
   }
 }

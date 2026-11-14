@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.2: o oráculo da função secreta.
+# Setup oculto da lição 2.3: o oráculo da função secreta.
 # O validador troca a função (via _QLP_INPUT) para testar vários oráculos.
 try:
     _funcao = _QLP_INPUT

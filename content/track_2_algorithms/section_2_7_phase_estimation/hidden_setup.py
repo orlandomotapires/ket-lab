@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.6: U = porta de fase com θ secreta, e a QFT inversa.
+# Setup oculto da lição 2.7: U = porta de fase com θ secreta, e a QFT inversa.
 # O validador troca θ (via _QLP_INPUT) para testar vários operadores.
 try:
     _theta = _QLP_INPUT

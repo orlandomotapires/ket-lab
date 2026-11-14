@@ -1,4 +1,4 @@
-# Setup oculto da lição 2.7: multiplicação controlada por 7^potência módulo 15
+# Setup oculto da lição 2.8: multiplicação controlada por 7^potência módulo 15
 # (registrador de trabalho nos qubits 4 a 7) e a QFT inversa.
 
 

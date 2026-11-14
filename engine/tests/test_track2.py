@@ -60,10 +60,22 @@ def test_bernstein_vazirani_recovers_the_secret(library, case, secret):
     assert distribution == pytest.approx({secret: 1.0})
 
 
-@pytest.mark.parametrize("marked", ["1011", "0110", "0000", "1111"])
-def test_grover_amplifies_the_marked_item(library, marked):
-    distribution = simulator.register_distribution(run(library, "2.5", marked).circuit, [0, 1, 2, 3])
-    assert distribution[marked] == pytest.approx(0.9613, abs=1e-3)
+@pytest.mark.parametrize(
+    "marked, iterations, success",
+    [
+        (["1011"], 3, 0.9613),
+        (["0110"], 3, 0.9613),
+        (["0000"], 3, 0.9613),
+        (["0001", "1110"], 2, 0.9453),
+        (["0011", "0101", "1010", "1111"], 1, 1.0),
+    ],
+)
+def test_grover_amplifies_the_marked_items(library, marked, iterations, success):
+    execution = run(library, "2.5", marked)
+    assert execution.namespace["num_marked"] == len(marked)
+    assert execution.namespace["iterations"] == iterations
+    distribution = simulator.register_distribution(execution.circuit, [0, 1, 2, 3])
+    assert sum(distribution.get(item, 0.0) for item in marked) == pytest.approx(success, abs=1e-3)
 
 
 @pytest.mark.parametrize("x", range(8))

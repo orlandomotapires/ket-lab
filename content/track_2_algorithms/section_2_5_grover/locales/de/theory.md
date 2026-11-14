@@ -1,6 +1,6 @@
 ## Unstrukturierte Suche
 
-Unter $N$ Elementen ist genau eines markiert, und nur ein Orakel weiß, welches. Ein klassischer Algorithmus muss im Mittel $N/2$ Elemente testen. Der Grover-Algorithmus findet das markierte mit etwa $\frac{\pi}{4}\sqrt{N}$ Abfragen: eine quadratische Beschleunigung.
+Unter $N$ Elementen sind einige markiert (insgesamt $M$), und nur ein Orakel weiß, welche. Ein klassischer Algorithmus muss im Mittel $N/2$ Elemente testen. Der Grover-Algorithmus findet das markierte mit etwa $\frac{\pi}{4}\sqrt{N}$ Abfragen: eine quadratische Beschleunigung.
 
 ## Das Phasenorakel
 
@@ -32,7 +32,25 @@ qc.h(3)
 
 ## Wie viele Iterationen
 
-Jede Iteration (Orakel und Diffusor) dreht den Zustand um einen Winkel $2\theta$ in Richtung $|\omega\rangle$, mit $\sin\theta = 1/\sqrt{N}$. Mit $N = 16$ ist das Ideal $\left\lfloor \frac{\pi}{4}\sqrt{16} \right\rfloor = 3$ Iterationen, und die Wahrscheinlichkeit des markierten Zustands erreicht $96{,}1\%$. Weiter zu iterieren schießt über das Ziel hinaus, und die Wahrscheinlichkeit sinkt.
+Bei $M$ markierten Elementen unter $N$ gilt $\sin\theta = \sqrt{M/N}$. Jede Iteration (Orakel und Diffusor) dreht den Zustand um den Winkel $2\theta$ in Richtung des Unterraums der markierten Elemente; nach $k$ Iterationen ist die Erfolgswahrscheinlichkeit $\sin^2\big((2k+1)\theta\big)$. Das beste $k$ ist
+
+$$
+k = \left\lfloor \frac{\pi}{4}\sqrt{\frac{N}{M}} \right\rfloor
+$$
+
+Für $N = 16$:
+
+| $M$ | $k$ | Erfolgswahrscheinlichkeit |
+| :-: | :-: | :-: |
+| 1 | 3 | $96{,}1\,\%$ |
+| 2 | 2 | $94{,}5\,\%$ |
+| 4 | 1 | $100\,\%$ |
+
+Mehr Iterationen als ideal schießen über das Ziel hinaus, und die Wahrscheinlichkeit sinkt wieder. Wer $M$ nicht kennt, muss es daher zuerst schätzen (etwa mit Quantenzählen, das die Phasenschätzung nutzt).
+
+## Grenzen
+
+Die Beschleunigung ist **quadratisch** ($\sqrt{N}$ gegen $N$), nicht exponentiell, und für unstrukturierte Suche optimal. Grover macht NP-vollständige Probleme auch **nicht** leicht: Dafür sind weiterhin $2^{n/2}$ Abfragen nötig, was in $n$ exponentiell bleibt.
 
 ## Im Labor
 

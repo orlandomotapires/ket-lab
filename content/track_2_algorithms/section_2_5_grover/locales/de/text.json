@@ -1,19 +1,19 @@
 {
   "title": "Grover-Suche",
   "summary": "Amplitudenverstärkung und Spiegelung am Mittelwert.",
-  "mission": "Finde das markierte Element unter 16 Möglichkeiten: Nach der idealen Anzahl von Grover-Iterationen (Orakel gefolgt vom Diffusor) muss der markierte Zustand eine Wahrscheinlichkeit von etwa 96 % haben.",
+  "mission": "Finde die markierten Elemente unter 16 Möglichkeiten. Die Variable num_marked enthält, wie viele Elemente das Orakel markiert (M, in jedem Test anders): Berechne die Anzahl der Grover-Iterationen (Orakel gefolgt vom Diffusor), statt sie festzuschreiben. Am Ende müssen die markierten Elemente die größtmögliche Wahrscheinlichkeit bündeln.",
   "prediction": {
-    "question": "Mit 3 Iterationen erreicht das markierte Element etwa 96 % Wahrscheinlichkeit. Und mit 4 Iterationen?",
+    "question": "Wie viele Grover-Iterationen sind ideal, wenn 4 der 16 Elemente markiert sind?",
     "options": [
-      "Es erreicht 100 %",
-      "Es fällt auf etwa 58 %",
-      "Es bleibt bei 96 %"
+      "1",
+      "2",
+      "3"
     ],
-    "explanation": "Jede Iteration ist eine Drehung um einen festen Winkel in Richtung des markierten Zustands. Nachdem sie ihn passiert hat, dreht sie weiter und entfernt sich wieder: Mit 4 Iterationen fällt die Wahrscheinlichkeit auf etwa 58 %."
+    "explanation": "Bei M markierten Elementen gilt sin θ = √(M/N) = 1/2, also θ = 30°. Jede Iteration dreht den Zustand um 2θ = 60°, und eine Iteration erreicht (2·1+1)θ = 90°: genau 100 % Wahrscheinlichkeit. 3 Iterationen wie im Fall mit einem Element würden darüber hinausschießen. Die ideale Anzahl ist ⌊π/4·√(N/M)⌋."
   },
   "hints": [
     "Schreibe den Diffusor als Funktion: Hadamard auf alle Qubits, X auf alle, mehrfach kontrolliertes Z (qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3)), X auf alle und Hadamard auf alle.",
     "Der Schaltkreis beginnt mit Hadamard auf den 4 Qubits; danach folgen die Iterationen, jede mit oracle(qc) gefolgt von diffuser(qc).",
-    "Mit N = 16 sind es 3 Iterationen: for _ in range(3): oracle(qc) und diffuser(qc)."
+    "Berechne iterations = floor(pi / 4 * sqrt(N / num_marked)) (floor, pi und sqrt aus math importieren) und wiederhole oracle(qc) und diffuser(qc) so oft."
   ]
 }

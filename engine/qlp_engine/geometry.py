@@ -120,6 +120,7 @@ _NAMES = {
     "singleexcitation": "G",
     "doubleexcitation": "G²",
     "rot": "Rot",
+    "kraus": "E",
     "bitflip": "BitFlip",
     "phaseflip": "PhaseFlip",
     "depolarizing": "Dep",

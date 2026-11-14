@@ -19,6 +19,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "jsonschema>=4.20"]
+# Execução em computadores quânticos reais da IBM (item 4.2 do roadmap).
+hardware = ["qiskit-ibm-runtime>=0.52,<0.53"]
 
 [project.scripts]
 qlp-engine = "qlp_engine.__main__:main"

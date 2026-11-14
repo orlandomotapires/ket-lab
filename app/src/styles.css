@@ -2132,3 +2132,37 @@ tr.is-zero {
   outline-offset: 2px;
   border-radius: var(--radius-lg);
 }
+
+.hw-form {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px;
+}
+.hw-form label:not(.check) {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.hw-form input[type="password"],
+.hw-form input[type="text"] {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: 13px var(--font-mono);
+}
+.hw-form .dialog-actions {
+  padding: 4px 0 16px;
+}
+.hw-job {
+  padding: 0 18px;
+}
+.hw-compare {
+  margin: 10px 0;
+}
+.hw-job .dialog-actions {
+  padding: 8px 0 16px;
+}

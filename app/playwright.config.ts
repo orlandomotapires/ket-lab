@@ -36,6 +36,8 @@ export default defineConfig({
     {
       command: `"${process.env.QLP_PYTHON ?? python}" -m qlp_engine --port ${ENGINE_PORT} --token e2e --allow-origin ${appUrl} --data-dir "${dataDir}"`,
       cwd: join(root, "engine"),
+      // IBM Quantum simulado: o teste do diálogo de hardware não faz chamadas de rede.
+      env: { QLP_FAKE_IBM: "1" },
       port: ENGINE_PORT,
       reuseExistingServer: false,
       timeout: 120_000,

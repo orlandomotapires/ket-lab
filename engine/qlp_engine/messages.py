@@ -73,6 +73,14 @@ MESSAGES: dict[str, str] = {
     "pl.missing_argument": "The variable `{name}` is not defined yet. It is needed to draw the circuit.",
     "pl.unsupported": "The operation `{name}` is not supported in the visualization yet.",
     "pl.unknown_wire": "The wire `{wire}` does not exist on the device.",
+    # --- hardware real (IBM) --------------------------------------------------
+    "hw.no_token": "Paste your IBM Quantum API key to run on real hardware.",
+    "hw.not_installed": "Running on hardware needs the qiskit-ibm-runtime package: pip install -e \"engine[hardware]\".",
+    "hw.login_failed": "IBM Quantum did not accept the API key or instance: {detail}",
+    "hw.bad_circuit": "The circuit could not be prepared for hardware: {detail}",
+    "hw.no_backend": "No real device with enough qubits is available to your account: {detail}",
+    "hw.no_job": "Job not found: {detail}",
+    "hw.public": "Running on hardware is only available when the engine runs on your own computer.",
     # --- servidor e conteúdo ---------------------------------------------------
     "server.bad_code": "Code is missing or too large.",
     "server.bad_request": "Invalid request: {detail}",

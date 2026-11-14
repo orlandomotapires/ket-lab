@@ -29,6 +29,12 @@ $$
 
 das auf das Ziel angewendet wird, wenn die Kontrolle $1$ ist.
 
+## Zwei Anmerkungen
+
+**Die abschließenden Swaps.** Ohne Schritt 4 berechnet der Schaltkreis die QFT mit den Ausgabequbits in umgekehrter Reihenfolge. Manche Texte lassen die Swaps weg und lesen das Ergebnis rückwärts oder überlassen die Umordnung den Nutzern. Hier bleiben sie im Schaltkreis, damit die Ausgabe in Qiskits Konvention mit der DFT übereinstimmt.
+
+**Hadamard und Fourier.** Die Hadamard-Transformation $H^{\otimes n}$ ist die Fourier-Transformation über der Gruppe $(\mathbb{Z}_2)^n$, deren „Charaktere" $(-1)^{s\cdot x}$ sind. Für ein einzelnes Qubit gilt $2^1 = 2$, und die QFT stimmt mit dem Hadamard überein. Darauf beruhte Bernstein-Vazirani; die QFT hier ist die Version über $\mathbb{Z}_{2^n}$ mit den Phasen $e^{2\pi i\,xk/2^n}$.
+
 ## Im Labor
 
 Die Funktion `prepare_input(qc)` bereitet die Eingabe $|x\rangle$ vor, hier $|101\rangle = |5\rangle$. Der Tab **Phasen** zeigt pro Zustand ein Zifferblatt: Die Größe zeigt die Wahrscheinlichkeit an und der Zeiger die Phase. Nach der QFT drehen sich die Zeiger um $5k/8$ einer Umdrehung, in gleichen Schritten von einem Zustand zum nächsten. Bei der Validierung wird der Schaltkreis mit mehreren Eingaben getestet, auch mit Superpositionen.

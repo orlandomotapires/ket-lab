@@ -1,19 +1,19 @@
 {
   "title": "Interferência e Medição em Outras Bases",
   "summary": "Amplitudes se somam e se cancelam: HH = I, HZH = X e o papel da fase.",
-  "mission": "Leve o qubit de |0⟩ a |1⟩ sem usar as portas X, Y ou rotações em torno de X e Y. Só estão liberadas a Hadamard e as portas de fase (Z, S, T, Rz).",
+  "mission": "O qubit 0 foi preparado em |+⟩ ou em |−⟩, e você não sabe qual. Acrescente portas e uma medição para descobrir: |+⟩ deve dar 0 e |−⟩ deve dar 1, sempre. Ou seja, meça na base X.",
   "hints": [
-    "Duas Hadamard seguidas se desfazem. O que precisa acontecer entre elas para o resultado mudar?",
-    "Uma porta de fase no meio do caminho troca qual resultado é cancelado. Aplique H, depois uma porta que inverta a fase, depois H de novo.",
-    "A sequência é qc.h(0), qc.z(0), qc.h(0). Isso mostra a identidade HZH = X."
+    "A medição comum separa |0⟩ de |1⟩ e dá 50% para cada resultado tanto em |+⟩ quanto em |−⟩. Antes de medir, você precisa de uma porta que leve |+⟩ e |−⟩ a polos diferentes da esfera.",
+    "A Hadamard faz isso: leva |+⟩ a |0⟩ e |−⟩ a |1⟩ (lembre que HH = I, e que H|1⟩ = |−⟩).",
+    "A solução é qc.h(0) seguida de qc.measure(0, 0)."
   ],
   "prediction": {
-    "question": "Uma Hadamard em |0⟩ cria uma superposição 50/50. E se você aplicar uma segunda Hadamard logo em seguida, o que a medição mostra?",
+    "question": "Aplicar H e depois S em |0⟩ dá o mesmo estado que aplicar S e depois H?",
     "options": [
-      "Continua 50% e 50%",
-      "Sempre 0",
-      "Sempre 1"
+      "Sim: a ordem das portas não importa",
+      "Não: H e depois S dá |+i⟩; S e depois H dá |+⟩",
+      "Não: H e depois S dá |+⟩; S e depois H dá |+i⟩"
     ],
-    "explanation": "Os dois caminhos que levam a |1⟩ chegam com sinais opostos e se cancelam; os que levam a |0⟩ se reforçam. O qubit volta a |0⟩ com certeza: HH = I."
+    "explanation": "H e depois S: |0⟩ vai a |+⟩ e o S gira o vetor um quarto de volta, até |+i⟩. S e depois H: o S não altera |0⟩ (só muda a fase de |1⟩), então a Hadamard o leva a |+⟩. Em geral, portas diferentes não comutam: a ordem importa."
   }
 }

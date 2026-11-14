@@ -14,6 +14,7 @@
   "hints": [
     "O autovetor de U é |1⟩: aplique qc.x(3). Os qubits de contagem (0 a 2) começam com Hadamard.",
     "No laço for j in range(3), chame apply_controlled_u(qc, j, 2**j). Depois aplique inverse_qft(qc, [0, 1, 2]) e meça os qubits 0 a 2 nos bits 0 a 2.",
+    "Nas chaves de run_shots, o qubit 0 é o caractere da direita (convenção do Qiskit): a string \"101\" tem qubit 0 = 1, qubit 1 = 0 e qubit 2 = 1. Por isso int(bits, 2) já lê o valor certo.",
     "counts = run_shots(qc) devolve um dicionário como {'101': 1024}. Converta o resultado mais frequente com int(bits, 2) / 8 e guarde em theta."
   ]
 }

@@ -27,6 +27,10 @@ which is exactly the QFT of the number $2^t\theta$. The inverse QFT gives that n
 
 With $t = 3$, the precision is $1/8$. When $\theta$ is not a multiple of $1/8$, the result spreads around the nearest value; more counting qubits narrow that peak.
 
+## What if the input is not an eigenvector?
+
+If qubit 3 starts in $|+\rangle = (|0\rangle + |1\rangle)/\sqrt{2}$ instead of $|1\rangle$, the input is a superposition of two eigenvectors of $U$: $|0\rangle$ (eigenvalue $1$, that is, $\theta = 0$) and $|1\rangle$ (eigenvalue $e^{2\pi i\theta}$). Phase estimation picks one of them at random: the register gives $0$ or $\theta$, with 50% each.
+
 ## In this lab
 
 $U$ is a phase gate, $U = \begin{pmatrix} 1 & 0 \\ 0 & e^{2\pi i\theta} \end{pmatrix}$, whose eigenvector is $|1\rangle$. The value of $\theta$ is secret. After measuring, `run_shots(qc)` runs the circuit 1024 times and returns the counts; use them to compute `theta` in Python. The **Register** tab shows the probability of each counting value, with the corresponding fraction.

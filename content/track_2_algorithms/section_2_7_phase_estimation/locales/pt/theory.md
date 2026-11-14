@@ -27,6 +27,10 @@ que é exatamente a QFT do número $2^t\theta$. A QFT inversa devolve esse núme
 
 Com $t = 3$, a precisão é de $1/8$. Quando $\theta$ não é múltiplo de $1/8$, o resultado se espalha em torno do valor mais próximo; mais qubits de contagem estreitam esse pico.
 
+## E se a entrada não for um autovetor?
+
+Se o qubit 3 começar em $|+\rangle = (|0\rangle + |1\rangle)/\sqrt{2}$ em vez de $|1\rangle$, a entrada é uma superposição de dois autovetores de $U$: $|0\rangle$ (autovalor $1$, ou seja, $\theta = 0$) e $|1\rangle$ (autovalor $e^{2\pi i\theta}$). A estimação de fase mede um deles ao acaso: o registrador dá $0$ ou $\theta$, com 50% cada.
+
 ## Neste laboratório
 
 $U$ é uma porta de fase, $U = \begin{pmatrix} 1 & 0 \\ 0 & e^{2\pi i\theta} \end{pmatrix}$, cujo autovetor é $|1\rangle$. O valor de $\theta$ é secreto. Depois de medir, `run_shots(qc)` executa o circuito 1024 vezes e devolve as contagens; com elas, calcule `theta` em Python. A aba **Registrador** mostra a probabilidade de cada valor da contagem, com a fração correspondente.

@@ -79,9 +79,29 @@ npm run desktop:run                                 # abre o build gerado
 
 Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um formato: `npm run desktop:build -- --bundles deb`. Para testar só o motor empacotado: `engine/.venv/bin/python engine/packaging/smoke_test.py`.
 
+### Instalar no Ubuntu (página de aplicativos)
+
+Na pasta do projeto, gere o pacote `.deb` e instale com o `apt`:
+
+```bash
+npm run desktop:build -- --bundles deb
+sudo apt install "./src-tauri/target/release/bundle/deb/Quantum Learning Platform_0.1.0_amd64.deb"
+```
+
+O primeiro comando empacota o motor e compila o app (leva alguns minutos); o segundo instala e pede a senha. Depois disso, o **Quantum Learning Platform** aparece na página de aplicativos e pode ser fixado na dock. Se o ícone não aparecer logo, saia da sessão e entre de novo.
+
+Para **atualizar** depois de mudanças no código, rode os mesmos dois comandos: a instalação nova substitui a antiga. Um `.deb` gerado antes das mudanças não as contém.
+
+Para **desinstalar**:
+
+```bash
+sudo apt remove quantum-learning-platform
+```
+
 ## Criar uma lição
 
 1. Crie `content/track_N_.../section_X_Y_nome/` com:
+
    - `manifest.json`: estrutura, sem texto;
    - `solution.py`;
    - opcional: `hidden_setup.py`;
@@ -91,13 +111,13 @@ Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um f
 2. O `id` precisa existir em `content/catalog.json`, com título e resumo nos três idiomas iguais aos de `text.json`.
 3. Rode `npm run test:engine`. O alvo é calculado a partir do `solution.py`; não é preciso digitá-lo.
 
-| Tipo de validação | Exemplo |
-| :-- | :-- |
-| `state_fidelity`: estado final | 1.1 |
-| `counts_distribution`: estatística das medições | 1.2, 2.8 |
-| `reduced_state`: estado de um qubit, para várias entradas e todos os ramos de medição | 1.6 |
-| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos | 2.2, 2.3, 2.5, 2.7 |
-| `state_cases`: estado final para várias entradas | 2.6 |
+| Tipo de validação                                                                        | Exemplo            |
+| :----------------------------------------------------------------------------------------- | :----------------- |
+| `state_fidelity`: estado final                                                           | 1.1                |
+| `counts_distribution`: estatística das medições                                       | 1.2, 2.8           |
+| `reduced_state`: estado de um qubit, para várias entradas e todos os ramos de medição | 1.6                |
+| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos       | 2.2, 2.3, 2.5, 2.7 |
+| `state_cases`: estado final para várias entradas                                        | 2.6                |
 
 O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
 

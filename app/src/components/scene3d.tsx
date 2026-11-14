@@ -7,7 +7,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import * as THREE from "three";
 import type { Complex, Vec3 } from "../engine/types";
-import { t } from "../i18n";
+import { t } from "../strings";
 import { phaseColor, phaseOf, probability, qspherePositions } from "../lib/quantum";
 import { PALETTES, useTheme, type Palette } from "../theme/theme";
 

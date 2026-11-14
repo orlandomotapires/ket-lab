@@ -1,6 +1,6 @@
 import type { Complex, ShotsResult } from "../engine/types";
 import { basisLabel, formatAmplitude, formatPercent, formatPhase, phaseColor, phaseOf, probability } from "../lib/quantum";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useTheme } from "../theme/theme";
 
 const MAX_ROWS = 32;
@@ -17,7 +17,6 @@ function PhaseDial({ phase, color }: { phase: number; color: string }) {
 }
 
 export function Probabilities({ amplitudes, numQubits }: { amplitudes: Complex[]; numQubits: number }) {
-  useLocale();
   const dark = useTheme() === "dark";
   const all = amplitudes.map((amplitude, index) => ({ amplitude, index, p: probability(amplitude) }));
   // Com poucos estados mostra todos; com muitos, só os que têm amplitude.
@@ -79,7 +78,6 @@ export function Probabilities({ amplitudes, numQubits }: { amplitudes: Complex[]
 
 /** Estados mistos não têm amplitudes: só probabilidades. */
 export function MixedProbabilities({ probabilities, numQubits }: { probabilities: number[]; numQubits: number }) {
-  useLocale();
   const rows = probabilities
     .map((p, index) => ({ p, index }))
     .filter((row) => probabilities.length <= 8 || row.p > EPSILON)

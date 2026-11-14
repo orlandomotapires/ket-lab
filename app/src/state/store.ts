@@ -12,14 +12,14 @@ import type {
   ShotsResult,
   ValidationResult,
 } from "../engine/types";
-import { onLocaleChange, t } from "../i18n";
+import { t } from "../strings";
 import { clampStep, stepForLine } from "../lib/steps";
 
 const RUN_DEBOUNCE_MS = 200;
 const SAVE_DEBOUNCE_MS = 1500;
 export const SANDBOX_ID = "sandbox";
 
-/** Código inicial do laboratório livre, com o comentário no idioma atual. */
+/** Código inicial do laboratório livre. */
 export function sandboxCode(): string {
   return `from qiskit import QuantumCircuit
 
@@ -179,31 +179,6 @@ export const useStore = create<State>((set, get) => {
     }
   }
 
-  /** Troca de idioma: recarrega catálogo e textos da lição. O código do aluno fica,
-   *  a menos que ainda seja o código inicial intocado (aí vem o do novo idioma). */
-  async function reloadForLocale(): Promise<void> {
-    if (get().connection !== "open") return;
-    await loadCatalog();
-    const current = get().lesson;
-    if (get().view !== "lab") return;
-    if (!current) {
-      if (get().code.startsWith("from qiskit import QuantumCircuit\n\n#") && get().code.endsWith("qc.cx(0, 1)\n")) {
-        set({ code: sandboxCode() });
-      }
-      scheduleRun(0);
-      return;
-    }
-    try {
-      const response = await engine().call<{ lesson: Lesson }>("lesson", { lesson_id: current.id });
-      if (!response.ok || get().lesson?.id !== current.id) return;
-      const pristine = get().code === current.starter_code;
-      set({ lesson: response.lesson, validation: null, ...(pristine ? { code: response.lesson.starter_code } : {}) });
-      scheduleRun(0); // mensagens de erro do motor também mudam de idioma
-    } catch {
-      // Sem conexão: os textos antigos ficam até a próxima troca.
-    }
-  }
-
   function scheduleRun(delay = RUN_DEBOUNCE_MS): void {
     window.clearTimeout(runTimer);
     // Um treino no laboratório livre pode levar minutos: só roda pelo botão.
@@ -289,7 +264,6 @@ export const useStore = create<State>((set, get) => {
         },
         (message) => set({ loadError: message }),
       );
-      onLocaleChange(() => void reloadForLocale());
       void client.connect().catch(() => undefined);
     },
 

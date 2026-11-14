@@ -1,4 +1,4 @@
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
 import { CodeEditor } from "./CodeEditor";
@@ -10,7 +10,6 @@ import { Timeline } from "./Timeline";
 import { Visualizer } from "./Visualizer";
 
 export function Lab() {
-  useLocale();
   const lesson = useStore((s) => s.lesson);
   const key = lesson?.id ?? "sandbox";
   return (

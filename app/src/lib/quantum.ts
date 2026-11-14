@@ -1,5 +1,7 @@
 import type { Complex, Step, Vec3 } from "../engine/types";
-import { formatNumber, t } from "../i18n";
+import { t } from "../strings";
+
+const fixed = (value: number, decimals: number) => value.toFixed(decimals);
 
 /** Rótulo do estado da base no padrão do Qiskit: |q_{n-1} ... q_0⟩ (qubit 0 à direita). */
 export function basisLabel(index: number, numQubits: number): string {
@@ -48,8 +50,8 @@ export function formatAmplitude([re, im]: Complex): string {
 
 export function formatPercent(p: number): string {
   const value = p * 100;
-  if (value > 0 && value < 0.1) return `<${formatNumber(0.1, 1)}%`;
-  return `${formatNumber(value, value >= 99.95 || value < 0.05 ? 0 : 1)}%`;
+  if (value > 0 && value < 0.1) return `<${fixed(0.1, 1)}%`;
+  return `${fixed(value, value >= 99.95 || value < 0.05 ? 0 : 1)}%`;
 }
 
 export function vectorLength([x, y, z]: Vec3): number {

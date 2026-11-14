@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { saveTextFile } from "../engine/client";
 import type { ExportFormat } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { ExportIcon } from "./icons";
 
@@ -12,7 +12,6 @@ const FORMATS: { id: ExportFormat; label: string }[] = [
 
 /** Botão do painel do circuito: abre a exportação em OpenQASM. */
 export function ExportButton() {
-  useLocale();
   const [open, setOpen] = useState(false);
   const offline = useStore((s) => s.connection !== "open");
   return (
@@ -29,7 +28,6 @@ export function ExportButton() {
 type Status = { kind: "idle" | "loading" | "copied" | "saved" } | { kind: "error"; message: string };
 
 function ExportDialog({ onClose }: { onClose: () => void }) {
-  useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
   const [format, setFormat] = useState<ExportFormat>("qasm3");
   const [text, setText] = useState<string | null>(null);

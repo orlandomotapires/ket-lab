@@ -1,7 +1,7 @@
 import * as monaco from "monaco-editor/esm/vs/editor/edcore.main";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import { t, type MessageKey } from "../i18n";
+import { t, type MessageKey } from "../strings";
 import { PALETTES, type ThemeName } from "../theme/theme";
 
 // O Monaco vem empacotado no aplicativo (nada é baixado de CDN: funciona offline).
@@ -51,7 +51,7 @@ interface GateDoc {
   signature: string;
 }
 
-// As descrições vêm do dicionário de idiomas (chaves gate.<nome>).
+// As descrições vêm de strings.ts (chaves gate.<nome>).
 const GATES: GateDoc[] = [
   { name: "x", signature: "x(${1:qubit})" },
   { name: "y", signature: "y(${1:qubit})" },

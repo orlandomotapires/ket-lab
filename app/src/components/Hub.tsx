@@ -1,5 +1,5 @@
 import type { CatalogSection, LessonProgress } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CheckIcon, ChevronRightIcon } from "./icons";
 
@@ -21,7 +21,6 @@ function Meter({ value }: { value: number }) {
 }
 
 export function Hub() {
-  useLocale();
   const catalog = useStore((s) => s.catalog);
   const progress = useStore((s) => s.progress);
   const loadError = useStore((s) => s.loadError);

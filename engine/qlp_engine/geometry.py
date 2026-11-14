@@ -117,6 +117,8 @@ _NAMES = {
     "ccz": "Z",
     "mcp": "P",
     "rzz": "RZZ",
+    "singleexcitation": "G",
+    "doubleexcitation": "G²",
     "rot": "Rot",
     "bitflip": "BitFlip",
     "phaseflip": "PhaseFlip",

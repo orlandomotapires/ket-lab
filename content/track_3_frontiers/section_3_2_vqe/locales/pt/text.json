@@ -1,0 +1,22 @@
+{
+  "title": "VQE para Química Quântica",
+  "summary": "Energia do estado fundamental da molécula de H₂.",
+  "mission": "Encontre a energia do estado fundamental do H₂ com precisão química: um ansatz que parte do estado de Hartree-Fock e aplica uma excitação dupla com ângulo theta, otimizado por gradiente descendente. Clique em Executar para treinar.",
+  "prediction": {
+    "question": "Pelo princípio variacional, a energia medida em qualquer estado que o circuito preparar é…",
+    "options": ["menor ou igual à do estado fundamental", "maior ou igual à do estado fundamental", "sempre igual à do estado fundamental"],
+    "explanation": "O estado fundamental tem, por definição, a menor energia possível. Qualquer outro estado tem energia maior ou igual, por isso minimizar ⟨H⟩ aproxima o estado fundamental por cima."
+  },
+  "hints": [
+    "O circuito começa com qml.BasisState(hf_state, wires=[0, 1, 2, 3]), o estado de Hartree-Fock, e aplica qml.DoubleExcitation(theta, wires=[0, 1, 2, 3]). Ele devolve qml.expval(H).",
+    "Comece com theta = np.array(0.0, requires_grad=True) e crie optimizer = qml.GradientDescentOptimizer(stepsize=0.4).",
+    "Num laço de cerca de 40 passos, faça theta = optimizer.step(circuit, theta) e guarde a energia em energies.append(float(circuit(theta)))."
+  ],
+  "messages": {
+    "ok": "Energia de {energy} Ha, a {error} Ha do valor exato ({exact} Ha): dentro da precisão química.",
+    "no_circuit": "Defina o QNode circuit(theta), que devolve qml.expval(H).",
+    "no_theta": "Guarde o ângulo otimizado na variável theta.",
+    "wrong_qubits": "O H₂ nesta base usa 4 qubits, mas o circuito tem {count}.",
+    "not_converged": "O estado preparado tem energia {energy} Ha, a {error} Ha do valor exato. A precisão química exige no máximo 0,0016 Ha: continue otimizando."
+  }
+}

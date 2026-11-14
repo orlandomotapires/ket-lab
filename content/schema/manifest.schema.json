@@ -569,7 +569,8 @@
         "convergence",
         "dissociation",
         "graph",
-        "boundary"
+        "boundary",
+        "threshold"
       ]
     }
   }

@@ -90,7 +90,7 @@ export interface Prediction {
 
 export type VisualizerKind =
   | "bloch" | "qsphere" | "compare" | "amplitudes" | "dials" | "histogram" | "modular"
-  | "landscape" | "convergence" | "dissociation" | "graph" | "boundary";
+  | "landscape" | "convergence" | "dissociation" | "graph" | "boundary" | "threshold";
 
 export interface LessonControl {
   id: string;

@@ -83,6 +83,16 @@ export interface CatalogSection {
   title: string;
   summary: string;
   available: boolean;
+  project?: boolean;
+  has_challenge?: boolean;
+}
+
+export interface GlossaryEntry {
+  term: string;
+  aliases?: string[];
+  definition: string;
+  /** Lição que apresenta o termo. */
+  lesson: string;
 }
 
 export interface CatalogTrack {
@@ -157,6 +167,10 @@ export interface Lesson {
   mission: string;
   /** O que o aluno saberá fazer ao fim da lição. */
   objectives: string[];
+  /** Desafio opcional, liberado depois da missão. */
+  challenge?: { mission: string; hints: string[] };
+  /** Projeto de fim de trilha. */
+  project?: boolean;
   prediction?: Prediction;
   hints: string[];
   theory: string;

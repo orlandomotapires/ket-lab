@@ -129,9 +129,10 @@ class EngineServer:
 
         if kind == "catalog":
             catalog = self.content.catalog()
+            glossary = self.content.glossary()
             if self.progress is None:
-                return {"ok": True, "catalog": catalog, "progress": {}, "progress_storage": "client"}
-            return {"ok": True, "catalog": catalog, "progress": self.progress.all(), "progress_storage": "engine"}
+                return {"ok": True, "catalog": catalog, "progress": {}, "progress_storage": "client", "glossary": glossary}
+            return {"ok": True, "catalog": catalog, "progress": self.progress.all(), "progress_storage": "engine", "glossary": glossary}
 
         if kind == "lesson":
             return {"ok": True, "lesson": self.content.lesson(message["lesson_id"])}
@@ -169,15 +170,17 @@ class EngineServer:
             job = {"type": kind, "code": code, "seed": message.get("seed", 0)}
 
             timeout = self.content.timeout(lesson_id)
+            challenge = bool(message.get("challenge"))
             if kind == "validate":
-                job["lesson"] = self.content.validation_bundle(lesson_id)
+                job["lesson"] = self.content.validation_bundle(lesson_id, challenge=challenge)
                 # Validar pode reexecutar o código várias vezes (casos secretos, treinos).
                 result = await self.pool.submit(job, timeout=timeout * 3 if timeout else None)
                 if result.get("passed") and self.progress is not None:
-                    self.progress.save(lesson_id, code=code, completed=True)
+                    # O desafio tem progresso próprio: "<id>:challenge".
+                    self.progress.save(f"{lesson_id}:challenge" if challenge else lesson_id, code=code, completed=True)
                 return result
 
-            job.update(self.content.run_context(lesson_id))
+            job.update(self.content.run_context(lesson_id, challenge=challenge))
             job["inputs"] = self.content.control_inputs(lesson_id, message.get("controls"))
             if kind == "export":
                 # Exportar reexecuta o código; um treino do laboratório precisa do tempo de treino.

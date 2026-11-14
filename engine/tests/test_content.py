@@ -121,3 +121,35 @@ def test_search_requires_every_word_and_ignores_empty_queries(library):
     assert library.search("grover xyzzy") == []
     snippet = library.search("Kraus")[0]["snippet"]
     assert "$" not in snippet and "Kraus" in snippet
+
+
+CHALLENGE_IDS = [
+    json.loads(p.read_text(encoding="utf-8"))["id"]
+    for p in MANIFESTS
+    if "challenge" in json.loads(p.read_text(encoding="utf-8"))
+]
+
+
+@pytest.mark.parametrize("lesson_id", LESSON_IDS)
+def test_challenge_text_and_rules_come_together(library, lesson_id):
+    folder = next(p for p in MANIFESTS if json.loads(p.read_text())["id"] == lesson_id).parent
+    manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    text = json.loads((folder / "text.json").read_text(encoding="utf-8"))
+    assert ("challenge" in manifest) == ("challenge" in text), lesson_id
+    if "challenge" in manifest:
+        assert (folder / "challenge_solution.py").is_file()
+        if manifest["challenge"]["validation"]["type"] == "custom":
+            assert (folder / "challenge_check.py").is_file()
+
+
+@pytest.mark.parametrize("lesson_id", CHALLENGE_IDS or ["-"])
+def test_challenge_is_solvable_and_harder_than_the_mission(library, lesson_id):
+    if lesson_id == "-":
+        pytest.skip("nenhuma lição com desafio ainda")
+    bundle = library.validation_bundle(lesson_id, challenge=True)
+    solved = validation.validate(bundle["solution"], bundle)
+    assert solved["passed"], (lesson_id, solved)
+    starter = validation.validate(library.starter_code(lesson_id), bundle)
+    assert not starter["passed"], lesson_id
+    mission_solution = library.validation_bundle(lesson_id)["solution"]
+    assert not validation.validate(mission_solution, bundle)["passed"], f"{lesson_id}: a solução da missão já resolve o desafio"

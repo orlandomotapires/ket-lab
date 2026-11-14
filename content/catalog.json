@@ -81,6 +81,11 @@
           "id": "1.10",
           "title": "The CHSH Game",
           "summary": "A shared Bell pair wins the CHSH game with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4."
+        },
+        {
+          "id": "1.11",
+          "title": "Project: Entanglement Swapping",
+          "summary": "To be written."
         }
       ]
     },
@@ -138,6 +143,11 @@
           "id": "2.10",
           "title": "Hamiltonian Simulation",
           "summary": "Approximate the evolution under a sum of terms with Trotter steps."
+        },
+        {
+          "id": "2.11",
+          "title": "Project: Design a Grover Oracle",
+          "summary": "To be written."
         }
       ]
     },
@@ -165,6 +175,11 @@
           "id": "3.4",
           "title": "Variational Quantum Classifiers",
           "summary": "Classify points in the plane with two qubits and data re-uploading."
+        },
+        {
+          "id": "3.5",
+          "title": "Project: A Variational Dissociation Curve",
+          "summary": "To be written."
         }
       ]
     },
@@ -207,6 +222,11 @@
           "id": "4.7",
           "title": "The Threshold Theorem",
           "summary": "Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold."
+        },
+        {
+          "id": "4.8",
+          "title": "Project: The Shor Code Under Noise",
+          "summary": "To be written."
         }
       ]
     },
@@ -234,6 +254,11 @@
           "id": "5.4",
           "title": "Error Mitigation",
           "summary": "Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction."
+        },
+        {
+          "id": "5.5",
+          "title": "Project: A Mitigated Estimate on a Noisy Device",
+          "summary": "To be written."
         }
       ]
     }

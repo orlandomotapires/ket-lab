@@ -4,6 +4,7 @@ import type {
   Catalog,
   EngineError,
   ExportFormat,
+  GlossaryEntry,
   ExportResult,
   Lesson,
   LessonProgress,
@@ -60,6 +61,7 @@ interface State {
   view: "hub" | "lab";
   catalog: Catalog | null;
   progress: Record<string, LessonProgress>;
+  glossary: GlossaryEntry[];
   /** "client": motor hospedado, o progresso fica neste navegador. */
   progressStorage: "engine" | "client";
   reloadProgress(): void;
@@ -78,6 +80,11 @@ interface State {
   validating: boolean;
   shots: ShotsResult | null;
   hintsShown: number;
+  /** Desafio opcional da lição (liberado depois da missão). */
+  challengeMode: boolean;
+  challengeHintsShown: number;
+  startChallenge(): void;
+  leaveChallenge(): void;
   /** Valores dos controles da lição (ex.: erro injetado). */
   controls: Record<string, string | number | null>;
   running: boolean;
@@ -126,11 +133,12 @@ export const useStore = create<State>((set, get) => {
         catalog: Catalog;
         progress: Record<string, LessonProgress>;
         progress_storage?: "engine" | "client";
+        glossary?: GlossaryEntry[];
       }>("catalog");
       if (response.ok) {
         const storage = response.progress_storage ?? "engine";
         const progress = storage === "client" ? loadLocalProgress() : response.progress;
-        set({ catalog: response.catalog, progress, progressStorage: storage, loadError: null });
+        set({ catalog: response.catalog, progress, progressStorage: storage, glossary: response.glossary ?? [], loadError: null });
       }
       else set({ loadError: response.error?.message ?? t("hub.loadCatalogFailed") });
     } catch {
@@ -144,7 +152,7 @@ export const useStore = create<State>((set, get) => {
     try {
       set({ running: true });
       const response = await engine()
-        .call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls })
+        .call<RunResult>("run", { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls, challenge: get().challengeMode })
         .finally(() => {
           if (token === runToken) set({ running: false });
         });
@@ -168,7 +176,7 @@ export const useStore = create<State>((set, get) => {
     try {
       const request = await engine().start<RunResult>(
         "run",
-        { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls, train: true },
+        { code, seed, lesson_id: lesson?.id ?? null, controls: get().controls, challenge: get().challengeMode, train: true },
         (event) => {
           if (token !== runToken) return;
           const series = { ...(get().training?.series ?? {}) };
@@ -249,6 +257,8 @@ export const useStore = create<State>((set, get) => {
       validation: null,
       shots: null,
       hintsShown,
+      challengeMode: false,
+      challengeHintsShown: 0,
       controls: defaultControls(lesson),
       running: false,
       training: null,
@@ -261,6 +271,7 @@ export const useStore = create<State>((set, get) => {
     view: "hub",
     catalog: null,
     progress: {},
+    glossary: [],
     progressStorage: "engine",
     hardwareAvailable: false,
     loadError: null,
@@ -277,6 +288,8 @@ export const useStore = create<State>((set, get) => {
     validating: false,
     shots: null,
     hintsShown: 0,
+    challengeMode: false,
+    challengeHintsShown: 0,
     controls: {},
     running: false,
     training: null,
@@ -363,7 +376,7 @@ export const useStore = create<State>((set, get) => {
 
     submitHardware({ token, instance, shots }) {
       const { code, lesson, controls } = get();
-      return engine().call<HardwareJob>("hardware.submit", { code, lesson_id: lesson?.id ?? null, controls, token, instance, shots });
+      return engine().call<HardwareJob>("hardware.submit", { code, lesson_id: lesson?.id ?? null, controls, token, instance, shots, challenge: get().challengeMode });
     },
 
     hardwareStatus({ jobId, token, instance }) {
@@ -372,7 +385,7 @@ export const useStore = create<State>((set, get) => {
 
     simulateCounts(shots) {
       const { code, lesson, controls } = get();
-      return engine().call<ShotsResult>("shots", { code, shots, seed: 0, lesson_id: lesson?.id ?? null, controls });
+      return engine().call<ShotsResult>("shots", { code, shots, seed: 0, lesson_id: lesson?.id ?? null, controls, challenge: get().challengeMode });
     },
 
     stopRun() {
@@ -381,7 +394,7 @@ export const useStore = create<State>((set, get) => {
 
     exportCircuit(format) {
       const { code, lesson, controls } = get();
-      return engine().call<ExportResult>("export", { code, format, lesson_id: lesson?.id ?? null, controls });
+      return engine().call<ExportResult>("export", { code, format, lesson_id: lesson?.id ?? null, controls, challenge: get().challengeMode });
     },
 
     async search(query) {
@@ -409,15 +422,18 @@ export const useStore = create<State>((set, get) => {
       if (!lesson) return;
       set({ validating: true });
       try {
-        const response = await engine().call<ValidationResult>("validate", { code, lesson_id: lesson.id });
+        const challenge = get().challengeMode;
+        const response = await engine().call<ValidationResult>("validate", { code, lesson_id: lesson.id, challenge });
         if (response.ok) {
           set({ validation: response });
           if (response.passed) {
-            const entry = { code, completed: true, hints_used: get().hintsShown };
+            // O desafio tem progresso próprio, na chave "<id>:challenge".
+            const key = challenge ? `${lesson.id}:challenge` : lesson.id;
+            const entry = { code, completed: true, hints_used: challenge ? get().challengeHintsShown : get().hintsShown };
             set({
               progress: get().progressStorage === "client"
-                ? saveLocalProgress(lesson.id, entry)
-                : { ...get().progress, [lesson.id]: entry },
+                ? saveLocalProgress(key, entry)
+                : { ...get().progress, [key]: entry },
             });
           }
         } else if (response.error) {
@@ -439,6 +455,7 @@ export const useStore = create<State>((set, get) => {
           seed: seed + Math.floor(Math.random() * 1e6),
           lesson_id: lesson?.id ?? null,
           controls: get().controls,
+          challenge: get().challengeMode,
         });
         if (response.ok) set({ shots: response });
         else if (response.error) set({ error: response.error });
@@ -447,8 +464,24 @@ export const useStore = create<State>((set, get) => {
       }
     },
 
+    startChallenge() {
+      set({ challengeMode: true, challengeHintsShown: 0, validation: null });
+      scheduleRun(0);
+    },
+
+    leaveChallenge() {
+      set({ challengeMode: false, validation: null });
+      scheduleRun(0);
+    },
+
     showNextHint() {
-      const { lesson, hintsShown } = get();
+      const { lesson, hintsShown, challengeMode, challengeHintsShown } = get();
+      if (challengeMode) {
+        if (lesson?.challenge && challengeHintsShown < lesson.challenge.hints.length) {
+          set({ challengeHintsShown: challengeHintsShown + 1 });
+        }
+        return;
+      }
       if (lesson && hintsShown < lesson.hints.length) {
         set({ hintsShown: hintsShown + 1 });
         scheduleSave();

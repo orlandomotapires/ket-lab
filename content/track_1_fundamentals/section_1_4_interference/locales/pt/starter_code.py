@@ -1,5 +1,7 @@
 from qiskit import QuantumCircuit
 
-qc = QuantumCircuit(1)
+qc = QuantumCircuit(1, 1)
+prepare_unknown(qc)  # |+⟩ ou |−⟩, você não sabe qual
 
-# Sua missão: chegar a |1⟩ usando apenas H e portas de fase (Z, S, T, Rz).
+# Sua missão: acrescente portas e uma medição para que |+⟩ dê sempre 0
+# e |−⟩ dê sempre 1.

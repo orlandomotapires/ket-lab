@@ -9,18 +9,35 @@
     "bloch"
   ],
   "validation": {
-    "type": "state_fidelity",
-    "tolerance": 0.999,
+    "type": "oracle_cases",
+    "register": [
+      0
+    ],
+    "tolerance": 0.05,
+    "required_gates": [
+      "measure"
+    ],
     "allowed_gates": [
-      "h",
+      "x",
+      "y",
       "z",
+      "h",
       "s",
       "sdg",
       "t",
       "tdg",
+      "rx",
+      "ry",
       "rz",
       "p",
-      "id"
+      "id",
+      "prepare_unknown",
+      "measure",
+      "barrier"
+    ],
+    "cases": [
+      "plus",
+      "minus"
     ]
   },
   "prediction_answer": 1

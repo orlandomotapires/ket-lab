@@ -58,8 +58,7 @@ export function selectManual(state: Pick<State, "lesson" | "code">): boolean {
 
 interface State {
   connection: ConnectionStatus;
-  view: "hub" | "lab" | "class";
-  openClassReport(): void;
+  view: "hub" | "lab";
   catalog: Catalog | null;
   progress: Record<string, LessonProgress>;
   glossary: GlossaryEntry[];
@@ -351,11 +350,6 @@ export const useStore = create<State>((set, get) => {
     trustShared() {
       set({ codeTrusted: true });
       scheduleRun(0);
-    },
-
-    openClassReport() {
-      window.clearTimeout(runTimer);
-      set({ view: "class" });
     },
 
     backToHub() {

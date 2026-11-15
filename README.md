@@ -19,7 +19,7 @@ O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diret
 - **Visualizações**: esferas de Bloch, Q-Sphere, amplitudes, fases, registrador, paisagens de custo, convergência, grafos, fronteiras de decisão, tabela de variáveis.
 - **Glossário** com 102 termos, em balões na teoria; **referências** com seção e páginas exatas (Nielsen & Chuang, Griffiths & Schroeter, cursos da IBM).
 - **Acessibilidade**: WCAG 2.1 AA verificado com axe, circuito navegável pelo teclado, descrição textual do estado; layout em abas em telas estreitas; guia da primeira lição.
-- **Progresso** em SQLite (motor local) ou no navegador (motor hospedado), com exportação e relatório da turma para professores.
+- **Progresso** em SQLite (motor local) ou no navegador (motor hospedado), com exportação como cópia de segurança.
 - **Web**: motor local (`npm run dev`) ou hospedado (`deploy/`).
 
 Só o Linux foi testado. Windows e macOS dependem do CI.

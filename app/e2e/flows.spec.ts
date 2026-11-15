@@ -208,32 +208,11 @@ test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ 
   expect(errors).toEqual([]);
 });
 
-test("relatório da turma: arquivos exportados viram uma tabela lição × aluno", async ({ page }) => {
+test("exportar o progresso como cópia", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
-  // A exportação também existe com o progresso no motor local.
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export progress" }).click();
   expect((await download).suggestedFilename()).toBe("quantum-learning-progress.json");
-
-  await page.getByRole("button", { name: "Class report (for teachers)" }).click();
-  const file = (name: string, progress: object) => ({
-    name,
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify({ format: "qlp-progress", version: 1, progress })),
-  });
-  await page.locator(".class-report input[type=file]").setInputFiles([
-    file("ana.json", { "1.1": { code: "x", completed: true, hints_used: 2 }, "1.2": { code: "y", completed: false, hints_used: 0 } }),
-    file("bruno.json", { "1.1": { code: "x", completed: true, hints_used: 0 } }),
-    { name: "notes.json", mimeType: "application/json", buffer: Buffer.from("{}") },
-  ]);
-  await expect(page.locator(".class-table tbody tr")).toHaveCount(2);
-  await expect(page.locator(".class-table tbody tr").first()).toContainText("ana");
-  await expect(page.locator(".notice-error")).toContainText("notes.json");
-  const col = await page.locator(".class-table thead th").allTextContents();
-  const index = col.indexOf("1.1");
-  await expect(page.locator(".class-table tfoot td").nth(index - 1)).toHaveText("100%");
-  await page.getByRole("button", { name: "Back to tracks" }).click();
-  await expect(page.locator(".section-row").first()).toBeVisible();
   expect(errors).toEqual([]);
 });

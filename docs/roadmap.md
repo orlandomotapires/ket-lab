@@ -1,5 +1,7 @@
 # Roadmap
 
+> Os próximos passos depois deste roadmap estão em [plano-de-revisao.md](plano-de-revisao.md).
+
 Prioritized plan for the next stages of the platform. Each item has a goal, the work, what "done" means and a rough effort (S ≤ 2 days, M ≤ 1 week, L ≤ 3 weeks, XL > 3 weeks, for one developer). Items within a phase can run in parallel unless a dependency is listed.
 
 The order follows one rule: protect what exists, decide how the platform reaches learners, then fill the curriculum, then polish and extend.

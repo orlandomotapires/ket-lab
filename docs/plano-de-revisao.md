@@ -128,6 +128,12 @@ Cada item traz o objetivo, o trabalho, o critério de pronto e o esforço (P ≤
 - **Trabalho:** dividir o `styles.css` por componente (um arquivo por área: hub, laboratório, visualizações, diálogos, referências), mantendo os tokens de tema num arquivo base; dividir o `store.ts` por assunto (motor e conexão, lição e execução, progresso, desafios, hardware).
 - **Pronto quando:** nenhum arquivo de estilo passa de ~400 linhas, o store está em fatias e todos os testes passam sem mudança de comportamento.
 
+### 4.3a Node 22 e as últimas vulnerabilidades de desenvolvimento (P)
+
+- **Objetivo:** o `npm audit` ainda aponta 3 vulnerabilidades (1 moderada, 2 críticas), todas no Vitest, o executor dos testes unitários: não chegam ao navegador nem ao motor. A versão corrigida (Vitest 4.1.12, com Vite 7 e Playwright atual) exige Node 20.19 ou mais novo, e a máquina de desenvolvimento usa o Node 18, sem suporte desde abril de 2025.
+- **Trabalho:** instalar o Node 22 LTS (por exemplo com nvm ou fnm); atualizar Vite para 7, `@vitejs/plugin-react` para 5, Vitest para 4 e o Playwright para a versão atual; declarar `engines.node` no `package.json`; usar Node 22 na CI.
+- **Pronto quando:** `npm audit` não aponta nada e todos os testes passam no Node 22.
+
 ### 4.3 Dados ocultos expostos ao código do aluno (P, prioridade baixa)
 
 - **Objetivo:** os casos secretos (`_QLP_INPUT`) e funções auxiliares do setup oculto (como o modelo de ruído da 5.5) podem ser lidos pelo próprio código do aluno.

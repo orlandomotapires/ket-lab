@@ -38,5 +38,10 @@
       "location": "Sections “CHSH game description”, “Limitation of classical strategies” and “CHSH game strategy”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

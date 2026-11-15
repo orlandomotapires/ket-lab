@@ -19,13 +19,29 @@
   "validation": {
     "type": "state_cases",
     "cases": [
-      [1.5707963267948966, 0],
-      [0, 0],
-      [3.141592653589793, 0],
-      [1.1, 0.7]
+      [
+        1.5707963267948966,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        3.141592653589793,
+        0
+      ],
+      [
+        1.1,
+        0.7
+      ]
     ],
     "tolerance": 0.999,
-    "allowed_gates": ["prepare_input", "cx", "barrier"],
+    "allowed_gates": [
+      "prepare_input",
+      "cx",
+      "barrier"
+    ],
     "gate_counts": {
       "cx": 1
     },
@@ -57,5 +73,10 @@
       "location": "Section “No-cloning theorem”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/limitations-on-quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

@@ -57,5 +57,39 @@
       "location": "Section “Projections and projective measurements”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "oracle_cases",
+      "register": [
+        0
+      ],
+      "tolerance": 0.05,
+      "required_gates": [
+        "measure"
+      ],
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "prepare_unknown",
+        "measure",
+        "barrier"
+      ],
+      "cases": [
+        "plusi",
+        "minusi"
+      ]
+    }
+  }
 }

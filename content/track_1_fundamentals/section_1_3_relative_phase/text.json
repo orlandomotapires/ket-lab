@@ -20,5 +20,13 @@
       "π"
     ],
     "explanation": "T adds π/4 to the phase and Z adds π, so φ = π/4 + π = 5π/4. Both are rotations about the Z axis, so their angles add and the order does not matter."
+  },
+  "challenge": {
+    "mission": "Repeat the mission with a smaller gate set: the only allowed gates are H and T (and prepare_input), and both must appear. The circuit must apply X, H, S, T, H to the input and then undo them, so that qubit 0 returns to its input state for every test input. You must write X, S, S† and T† in terms of H and T.",
+    "hints": [
+      "T has T⁸ = I, so T raised to the power 8 − k is the inverse of T raised to the power k. Calling qc.t(0) seven times is T†.",
+      "S = T² and Z = T⁴, so S† = T⁶. Z = T⁴ and the X gate is H Z H.",
+      "Write small helper functions for X, S, S† and T† that append H and T gates, then call them in the order of the original sequence and of its undoing."
+    ]
   }
 }

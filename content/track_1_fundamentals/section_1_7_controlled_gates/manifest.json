@@ -44,5 +44,32 @@
       "location": "Section “Unitary operations”, subsection “Controlled-unitary operations”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_cases",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "prepare_input",
+        "cx",
+        "ry",
+        "rz",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "barrier"
+      ],
+      "gate_counts": {
+        "cx": 1
+      },
+      "cases": [
+        0,
+        3,
+        "plus",
+        "minus_plus",
+        "mixed"
+      ]
+    }
+  }
 }

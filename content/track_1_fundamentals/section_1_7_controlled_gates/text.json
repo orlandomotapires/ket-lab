@@ -20,5 +20,13 @@
       "A SWAP gate"
     ],
     "explanation": "The Hadamard exchanges the X and Z bases. Conjugating a CNOT by H on both qubits exchanges control and target: (H⊗H) CNOT(0→1) (H⊗H) = CNOT(1→0)."
+  },
+  "challenge": {
+    "mission": "Build the controlled-Hadamard gate with control qubit 0 and target qubit 1, using a single CNOT and single-qubit gates (ry, rz, s, sdg, t, tdg). The built-in qc.ch is not allowed. It applies H to qubit 1 when qubit 0 is 1 and does nothing otherwise. The circuit must work for any input, including superpositions.",
+    "hints": [
+      "Find a single-qubit gate U with U X U† = H. Then (I ⊗ U) CNOT (I ⊗ U†) applies H to the target exactly when the control is 1.",
+      "H and X both have eigenvalues +1 and −1. A rotation about the Y axis takes the X axis to the axis (X + Z)/√2 of H, by an angle of 45°.",
+      "Apply ry(π/4) to qubit 1, then cx(0, 1), then ry(−π/4) to qubit 1. In circuit order the gate U† acts first, so check the sign of the angles against the input |11⟩ in the Q-sphere."
+    ]
   }
 }

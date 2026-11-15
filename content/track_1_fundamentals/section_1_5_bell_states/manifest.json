@@ -58,5 +58,37 @@
       "location": "Section “Quantum states”, subsections “Tensor products of quantum state vectors”, “Entangled states” and “Bell states”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_cases",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "cx",
+        "cz",
+        "cy",
+        "ch",
+        "swap"
+      ],
+      "cases": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  }
 }

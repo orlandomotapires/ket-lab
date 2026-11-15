@@ -2,6 +2,7 @@ import { useState } from "react";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
+import { Composer, composerSupported } from "./Composer";
 import { CodeEditor } from "./CodeEditor";
 import { ExportButton } from "./ExportDialog";
 import { HardwareButton } from "./HardwareDialog";
@@ -18,6 +19,9 @@ export function Lab() {
   const key = lesson?.id ?? "sandbox";
   // Lições sem circuito (kit de matemática) não têm painel de circuito.
   const hasCircuit = lesson?.framework !== "python";
+  const code = useStore((s) => s.code);
+  const canCompose = composerSupported(code, lesson?.framework);
+  const [composing, setComposing] = useState(false);
   // Telas estreitas: um painel por vez, escolhido nas abas (em telas largas as abas somem).
   const panes: Pane[] = lesson ? ["theory", "code", "state"] : ["code", "state"];
   const [chosen, setPane] = useState<Pane>(lesson ? "theory" : "code");
@@ -54,9 +58,20 @@ export function Lab() {
           <div className="panel-head">
             <h2>{t("lab.circuit")}</h2>
             <span className="grow" />
+            {canCompose && (
+              <button
+                className="btn btn-ghost btn-sm"
+                aria-pressed={composing}
+                onClick={() => setComposing(!composing)}
+                title={t("composer.toggleHint")}
+              >
+                {composing ? t("composer.close") : t("composer.open")}
+              </button>
+            )}
             <HardwareButton />
             <ExportButton />
           </div>
+          {composing && canCompose && <Composer />}
           <CircuitDiagram />
           <Timeline />
         </section>}

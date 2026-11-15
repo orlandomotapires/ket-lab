@@ -2251,3 +2251,53 @@ tr.is-zero {
   flex: 1;
   margin: 0;
 }
+
+/* Compositor de circuitos */
+.composer {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.composer-palette {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.composer-palette .grow {
+  flex: 1;
+}
+.composer-gate {
+  min-width: 34px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: 500 12.5px var(--font-mono);
+  cursor: pointer;
+}
+.composer-gate:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.composer-gate[aria-pressed="true"] {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--accent-contrast);
+}
+.composer-gate:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.composer-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  margin-top: 6px;
+}
+.composer-qubit {
+  font-family: var(--font-mono);
+}

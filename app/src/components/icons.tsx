@@ -89,3 +89,13 @@ export const ExportIcon = () => (
     <path d="M8 2v8M5 7l3 3 3-3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />
   </Icon>
 );
+export const BookIcon = () => (
+  <Icon>
+    <path d="M3 3.5A1.5 1.5 0 0 1 4.5 2H13v10H4.5A1.5 1.5 0 0 0 3 13.5zM3 13.5A1.5 1.5 0 0 0 4.5 15H13v-3" />
+  </Icon>
+);
+export const ImportIcon = () => (
+  <Icon>
+    <path d="M8 10V2M5 5l3-3 3 3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />
+  </Icon>
+);

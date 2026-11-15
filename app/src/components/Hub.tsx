@@ -4,7 +4,7 @@ import type { CatalogSection, LessonProgress } from "../engine/types";
 import { t } from "../strings";
 import { exportLocalProgress, importLocalProgress } from "../lib/localProgress";
 import { useStore } from "../state/store";
-import { CheckIcon, ChevronRightIcon } from "./icons";
+import { BookIcon, CheckIcon, ChevronRightIcon, ExportIcon, ImportIcon } from "./icons";
 
 type Status = "done" | "started" | "available" | "soon";
 
@@ -104,10 +104,7 @@ export function Hub() {
             })}
           </nav>
           {loadError && <p className="error-text">{loadError}</p>}
-          <ProgressBackup />
-          <button className="link small hub-references" onClick={() => useStore.getState().openReferences()}>
-            {t("bib.link")}
-          </button>
+          <HubExtras />
         </aside>
 
         <div className="hub-tracks">
@@ -181,7 +178,8 @@ export function Hub() {
 }
 
 /** Motor hospedado: o progresso fica no navegador, então o aluno pode guardá-lo e restaurá-lo. */
-function ProgressBackup() {
+/** Atalhos do painel lateral: referências e cópia do progresso, no estilo do índice de trilhas. */
+function HubExtras() {
   const storage = useStore((s) => s.progressStorage);
   const progress = useStore((s) => s.progress);
   const reloadProgress = useStore((s) => s.reloadProgress);
@@ -189,37 +187,52 @@ function ProgressBackup() {
   const input = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="hub-backup">
-      <p className="muted small">{storage === "client" ? t("hub.backupNote") : t("hub.backupNoteEngine")}</p>
-      <div className="hub-backup-actions">
-        <button className="btn btn-ghost btn-sm" onClick={() => saveTextFile(exportLocalProgress(progress), "quantum-learning-progress.json")}>
-          {t("hub.backupExport")}
+    <nav className="hub-extras" aria-label={t("hub.extras")}>
+      <button className="hub-index-item hub-extra" onClick={() => useStore.getState().openReferences()}>
+        <span className="hub-index-number" aria-hidden="true"><BookIcon /></span>
+        <span className="hub-index-text">
+          <span className="hub-index-title">{t("bib.title")}</span>
+          <span className="hub-index-level">{t("hub.referencesNote")}</span>
+        </span>
+      </button>
+      <button
+        className="hub-index-item hub-extra"
+        onClick={() => saveTextFile(exportLocalProgress(progress), "quantum-learning-progress.json")}
+      >
+        <span className="hub-index-number" aria-hidden="true"><ExportIcon /></span>
+        <span className="hub-index-text">
+          <span className="hub-index-title">{t("hub.backupExport")}</span>
+          <span className="hub-index-level">{storage === "client" ? t("hub.backupNote") : t("hub.backupNoteEngine")}</span>
+        </span>
+      </button>
+      {storage === "client" && (
+        <button className="hub-index-item hub-extra" onClick={() => input.current?.click()}>
+          <span className="hub-index-number" aria-hidden="true"><ImportIcon /></span>
+          <span className="hub-index-text">
+            <span className="hub-index-title">{t("hub.backupImport")}</span>
+            <span className="hub-index-level">{t("hub.importNote")}</span>
+          </span>
         </button>
-        {storage === "client" && (
-          <button className="btn btn-ghost btn-sm" onClick={() => input.current?.click()}>
-            {t("hub.backupImport")}
-          </button>
-        )}
-        <input
-          ref={input}
-          type="file"
-          accept="application/json,.json"
-          hidden
-          onChange={async (event) => {
-            const file = event.target.files?.[0];
-            event.target.value = "";
-            if (!file) return;
-            try {
-              const count = importLocalProgress(await file.text());
-              reloadProgress();
-              setStatus(t("hub.backupImported", { count }));
-            } catch {
-              setStatus(t("hub.backupInvalid"));
-            }
-          }}
-        />
-      </div>
-      {status && <p className="muted small" role="status">{status}</p>}
-    </div>
+      )}
+      <input
+        ref={input}
+        type="file"
+        accept="application/json,.json"
+        hidden
+        onChange={async (event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
+          if (!file) return;
+          try {
+            const count = importLocalProgress(await file.text());
+            reloadProgress();
+            setStatus(t("hub.backupImported", { count }));
+          } catch {
+            setStatus(t("hub.backupInvalid"));
+          }
+        }}
+      />
+      {status && <p className="muted small hub-extras-status" role="status">{status}</p>}
+    </nav>
   );
 }

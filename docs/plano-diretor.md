@@ -1,8 +1,8 @@
-# Quantum Learning Platform — Plano Diretor de Arquitetura e Produto
+# Quantum Learning Platform — Plano Diretor
 
-Versão revisada em 13/11/2026. Substitui o plano original e incorpora a revisão técnica feita antes do início do desenvolvimento. Onde o texto diz **[feito]**, o item já existe no repositório e é coberto por testes.
+Versão de 15/11/2026. Descreve a plataforma como ela é hoje: o que ensina, como funciona e por que foi feita assim. O histórico de desenvolvimento está resumido no fim; os próximos passos estão no [plano de revisão](plano-de-revisao.md).
 
-A plataforma é uma aplicação web para ensinar Computação Quântica, dos fundamentos de qubits até algoritmos e aplicações variacionais. O aluno escreve código Qiskit e vê o estado quântico mudar enquanto digita.
+A plataforma é uma aplicação web para **uma pessoa estudar Computação Quântica sozinha**, dos números complexos até correção de erros e execução em hardware real. O estudante escreve código Qiskit ou PennyLane e vê o estado quântico mudar a cada porta, enquanto digita. Cada lição tem teoria, uma missão validada matematicamente, dicas e referências com seção e páginas exatas. Não há professores, turmas nem contas.
 
 ---
 
@@ -12,187 +12,238 @@ A plataforma é uma aplicação web para ensinar Computação Quântica, dos fun
 
 | Camada | Tecnologia | Responsabilidade |
 | :-- | :-- | :-- |
-| Interface | React + TypeScript + Three.js (React Three Fiber) + Monaco | Teoria em Markdown/LaTeX, editor, visualizações. Roda no navegador. |
-| Motor | Python + Qiskit + PennyLane + NumPy + `websockets` | Roda localmente (`npm run dev`). Executa o código do aluno, simula, valida e guarda o progresso em SQLite. |
+| Interface (`app/`) | React, TypeScript, Zustand, Monaco, Three.js (React Three Fiber), KaTeX | Hub de trilhas, laboratório (teoria, editor, circuito, visualizações), páginas de referências. Roda no navegador. |
+| Motor (`engine/`) | Python, Qiskit 2.6, PennyLane 0.45, NumPy, `websockets` | Executa o código do estudante num processo isolado, simula (vetor de estado e matriz densidade), valida, busca, guarda o progresso. |
+| Conteúdo (`content/`) | JSON, Markdown com LaTeX, Python | Catálogo, lições, glossário, fontes. O motor carrega na inicialização. |
 
-Mudanças em relação ao plano original:
+Decisões que moldam a arquitetura:
 
-- **Sem FastAPI.** O motor só fala WebSocket; a biblioteca `websockets` basta e reduz o tamanho do pacote.
-- **O progresso fica no motor**, em SQLite da biblioteca padrão do Python.
-- **Só web.** Houve um shell desktop (Tauri, com o motor empacotado por PyInstaller); ele foi removido: numa plataforma de estudo, o navegador basta e simplifica tudo.
-- **PennyLane só entra na Fase 4.** As Trilhas 1 e 2 usam apenas Qiskit: um framework por vez para o aluno e um pacote menor. O protocolo de snapshots não depende do framework.
-- **Versões fixadas** em `engine/pyproject.toml`. A API do Qiskit muda entre versões maiores e as lições dependem dela.
+- **Só web.** Houve um shell desktop (Tauri, com o motor empacotado por PyInstaller); foi removido: para estudar, o navegador basta.
+- **O motor não roda no navegador.** Qiskit e rustworkx (dependência do PennyLane) não têm build WebAssembly; um substituto compatível afastaria o estudante do Qiskit real. Detalhes em [decisao-motor-web.md](decisao-motor-web.md).
+- **Simulador próprio.** Vetor de estado e matriz densidade em NumPy, alimentados pelas instruções do Qiskit e pelas operações de um QNode do PennyLane. Isso dá um snapshot por instrução, que é o que a interface mostra; o Qiskit Aer não é necessário.
+- **Sem FastAPI.** O motor só fala WebSocket; a biblioteca `websockets` basta.
+- **Versões fixadas** em `engine/pyproject.toml`: as lições dependem da API do Qiskit e do PennyLane.
+- **Só inglês** na interface, nas mensagens e no conteúdo. Os textos ficam centralizados (`app/src/strings.ts`, `engine/qlp_engine/messages.py`), então outros idiomas podem voltar depois.
 
-### 1.6 Idioma
+### 1.2 Dois modos do motor
 
-A plataforma é só em inglês: interface (`app/src/strings.ts`), mensagens do motor (`engine/qlp_engine/messages.py`) e lições. Houve uma versão em português, inglês e alemão; ela foi removida para simplificar o trabalho enquanto o conteúdo muda. Os textos continuam centralizados, então reintroduzir idiomas depois é possível. **[feito]**
-
-### 1.2 O ciclo em tempo real
-
-1. **Captura (interface).** 200 ms depois da última tecla, o editor envia o código inteiro. **[feito]**
-2. **Execução única com rastreamento (motor).** O código roda uma vez. Cada instrução adicionada ao circuito é registrada com a linha de nível de módulo que a originou. **[feito]**
-3. **Simulação por instrução.** O motor guarda o vetor de estado depois de *cada instrução* e devolve todos os snapshots de uma vez. **[feito]**
-4. **Tradução geométrica.** Para cada snapshot: amplitudes, vetor de Bloch $(x, y, z)$ e pureza de cada qubit, via estado reduzido $\rho_k = \mathrm{Tr}_{\neq k}(|\psi\rangle\langle\psi|)$. **[feito]**
-5. **Navegação local.** Mover o cursor ou a linha do tempo só troca o snapshot em exibição; não há ida e volta ao motor. **[feito]**
-6. **Interpolação visual.** O vetor gira sobre a esfera até o novo estado (e não em linha reta pelo centro, o que pareceria um estado misto). **[feito]**
-
-**Por que por instrução, e não por linha.** "O estado após a linha $k$" não é bem definido quando há laços, funções ou condicionais. A regra adotada: o cursor na linha $L$ seleciona a última instrução, na ordem de execução, cuja linha de origem é $\le L$. Instruções emitidas dentro de uma função pertencem à linha que chamou a função.
-
-**Medição no meio do circuito.** Um vetor de estado não representa "medir e seguir". O motor sorteia um ramo com gerador semeado: a mesma seed reproduz a mesma trajetória, e a interface oferece "sortear de novo". Portas condicionadas a bits clássicos (`if_test`) são executadas conforme o ramo sorteado. Estatísticas vêm de uma operação separada de *shots*, que repete trajetórias quando o circuito tem medições intermediárias. **[feito]**
-
-**Código inválido durante a digitação.** Com debounce de 200 ms o código está quebrado boa parte do tempo. A interface mantém o último estado válido, marcado como "desatualizado", e mostra o erro na linha correspondente. **[feito]**
-
-**Desempenho medido** (motor aquecido, nesta máquina): 0,3 ms para 1 qubit; 8 ms para 8 qubits e 23 portas, com 106 kB de resposta. O orçamento de 50 ms só se aplica à edição de código.
-
-### 1.3 Isolamento e segurança
-
-O modelo de ameaça real tem dois lados: código do aluno que trava ou esgota a máquina, e páginas web que tentam falar com o motor local.
-
-| Risco | Proteção | Estado |
+| | Local (`npm run dev`) | Hospedado (`deploy/`) |
 | :-- | :-- | :-- |
-| Laço infinito | O código roda em um processo worker; passou do tempo limite (5 s), o worker é morto e outro é criado. | feito |
-| Estouro de memória | Teto de qubits (10 por padrão, menor por lição) e limite de 4 GB de memória virtual no worker. | feito no Linux; no Windows e macOS vale só o teto de qubits |
-| Página web conectando ao motor | WebSocket não é protegido pela same-origin policy. O motor escuta só em `127.0.0.1`, em porta aleatória, exige token por sessão e recusa origens fora da lista. | feito |
-| Execuções obsoletas | Só a edição mais recente é executada; as ultrapassadas são descartadas. | feito |
-| Acidentes (`open`, `input`, `import os`) | Verificação estática com lista de módulos permitidos. | feito |
+| Onde roda | Na máquina do estudante, em 127.0.0.1 | Num servidor, atrás do site (nginx faz o proxy de `/engine`) |
+| Acesso | Token de sessão + lista de origens | Sem token; o Origin precisa ser o do site (`--public`) |
+| Progresso | SQLite no diretório de dados do usuário | No navegador (localStorage), com exportar e importar |
+| Paralelismo | Um worker | `--workers N`, com teto de conexões |
+| Hardware real da IBM | Disponível (extra `engine[hardware]`) | Desligado: um servidor compartilhado não recebe chaves de terceiros |
 
-A verificação estática por AST **não é uma sandbox**: é contornável e não detecta laço infinito. Ela existe para dar mensagens de erro claras. O aluno roda código próprio na própria máquina; o que precisa de cuidado no futuro é conteúdo de terceiros (lições ou arquivos de sandbox importados).
+O modo hospedado ainda não está pronto para o público: falta isolamento por sessão (gVisor ou microVM), revisão de segurança e teste de carga. Ver [deploy/README.md](../deploy/README.md).
 
-### 1.4 Convenção de ordem dos qubits
+### 1.3 O ciclo em tempo real
 
-O Qiskit é little-endian: o qubit 0 é o bit menos significativo e o rótulo de um estado da base é $|q_{n-1} \dots q_1 q_0\rangle$. A plataforma adota essa convenção em todo lugar (rótulos, vetores-alvo, diagramas) e a ensina explicitamente na seção 1.5. A interface lembra a ordem sempre que há mais de um qubit. **[feito]**
+1. **Captura.** 200 ms depois da última tecla, a interface envia o código inteiro.
+2. **Execução única com rastreamento.** O código roda uma vez; cada instrução adicionada ao circuito é registrada com a linha de nível de módulo que a originou. Num QNode do PennyLane, o rastreamento acontece dentro da função do QNode.
+3. **Simulação por instrução.** O motor guarda o estado depois de cada instrução e devolve todos os snapshots de uma vez.
+4. **Tradução geométrica.** Para cada snapshot: amplitudes (ou probabilidades, em estados mistos), vetor de Bloch e pureza de cada qubit, pelo estado reduzido.
+5. **Navegação local.** Mover o cursor ou a linha do tempo só troca o snapshot exibido.
+6. **Interpolação.** O vetor gira sobre a esfera até o novo estado.
 
-### 1.5 Protocolo
+**Por instrução, não por linha.** O cursor na linha $L$ seleciona a última instrução, na ordem de execução, cuja linha de origem é $\le L$. Instruções dentro de uma função pertencem à linha que a chamou.
 
-Mensagens JSON com `id`; cada requisição recebe uma resposta.
+**Medição no meio do circuito.** O motor sorteia um ramo com gerador semeado (a mesma seed reproduz a trajetória; "sortear de novo" troca o ramo). Portas com `if_test` seguem o ramo sorteado. Estatísticas vêm de uma operação separada de *shots*.
+
+**Código inválido.** A interface mantém o último estado válido, marcado como desatualizado, e mostra o erro na linha.
+
+**Treinos.** Código que chama `report(...)` (laboratório livre) e lições de treino (`live: false`) rodam só pelo botão Executar, com limite de 120 s. As métricas de `report` chegam em lotes enquanto o código roda e desenham a curva de convergência ao vivo; o botão Parar mata o worker.
+
+**Lições sem circuito** (`framework: "python"`, Trilha 0 e algumas das Trilhas 4 e 5): o motor executa o código e devolve a tabela de variáveis numéricas do estudante no lugar do estado.
+
+### 1.4 Isolamento e segurança
+
+| Risco | Proteção |
+| :-- | :-- |
+| Laço infinito | O código roda num processo worker; passou do tempo limite (5 s, ou o da lição), o worker é morto e outro é criado. |
+| Estouro de memória | Teto de qubits (10 por padrão, ajustável por lição) e limite de 4 GB de memória virtual no worker (Linux). |
+| Página web falando com o motor local | Escuta só em 127.0.0.1, token por sessão, lista de origens. |
+| Execuções obsoletas | Só a edição mais recente roda; as anteriores na fila são descartadas. |
+| Acidentes (`open`, `input`, `import os`) | Verificação estática com lista de módulos permitidos. Não é uma sandbox: existe para dar mensagens claras. |
+| Código vindo de um link de compartilhamento | Abre em modo de revisão: nada roda nem é salvo até o estudante confirmar. |
+| Chave da IBM | Vai em cada requisição, fica só na memória durante a chamada, nunca é registrada nem gravada no servidor; no navegador, só se o estudante pedir. |
+
+No modo local o estudante roda o próprio código na própria máquina. No modo hospedado o contêiner é a fronteira de segurança (usuário sem privilégios, FS somente leitura, sem capabilities, sem internet, limites de CPU, memória e PIDs).
+
+### 1.5 Convenção de ordem dos qubits
+
+A plataforma segue o Qiskit: qubit 0 é o bit menos significativo e o rótulo é $|q_{n-1} \dots q_1 q_0\rangle$, em todo lugar (rótulos, alvos, diagramas). Nielsen & Chuang usam a ordem inversa; as lições avisam onde isso importa (1.5, 2.3, 2.4, 2.7, 2.8) e a Trilha 0 ensina a convenção (0.4).
+
+### 1.6 Protocolo
+
+Mensagens JSON com `id` sobre WebSocket; cada requisição recebe uma resposta (o treino envia antes eventos `progress` com o mesmo `id`).
 
 | Requisição | Resposta |
 | :-- | :-- |
-| `catalog` | Currículo completo, com disponibilidade e progresso |
-| `lesson` | Teoria, código inicial, missão, dicas (nunca a solução) |
-| `run` | Passos (linha, porta, qubits) e todos os snapshots |
+| `catalog` | Currículo, progresso, onde o progresso fica (`engine` ou `client`) e o glossário |
+| `lesson` | Teoria, código inicial, objetivos, missão, dicas, desafio, referências (nunca a solução) |
+| `search` | Lições que contêm todas as palavras, com trecho |
+| `bibliography` | Todas as referências das lições, o material de aula e o software |
+| `run` | Passos e snapshots (ou variáveis); com `train`, eventos de progresso e limite maior |
 | `shots` | Contagens de 1024 execuções |
-| `validate` | Aprovado ou não, fidelidade e mensagem de diagnóstico |
-| `progress.save` | Salva código e dicas usadas |
+| `validate` | Aprovado ou não e a mensagem; com `challenge`, valida o desafio |
+| `export` | O circuito em OpenQASM 2 ou 3 |
+| `cancel` | Interrompe um treino em andamento |
+| `progress.save` | Código e dicas usadas (ignorado no modo hospedado) |
+| `hardware.available`, `hardware.submit`, `hardware.status` | Execução num computador quântico da IBM (só no modo local) |
 
 ---
 
-## 2. A tela de estudo
+## 2. A experiência de estudo
 
-### 2.1 Os cinco elementos
+### 2.1 Hub
 
-1. **Teoria e missão (esquerda).** Blocos curtos, intuição antes da fórmula. A missão fica fixa no rodapé do painel, sempre visível. **[feito]**
-2. **Editor (centro, acima).** Monaco servido junto com a interface (funciona offline), com autocompletar das portas e descrições. **[feito]**
-3. **Visualizador (direita).** Esfera de Bloch por qubit, leitura numérica $(x, y, z, |r|, \text{fase})$ e tabela de amplitudes. **[feito]** As demais visualizações entram por trilha (seção 2.3).
-4. **Circuito e linha do tempo (centro, abaixo).** Diagrama gerado a partir do código; clicar em uma porta leva a visualização àquele passo. **[feito]**
-5. **Barra do oráculo (rodapé).** Erros, resultado da validação e ações. **[feito]**
+Mapa das 6 trilhas com o progresso de cada uma, a próxima lição sugerida (fora da Trilha 0, que é opcional), o laboratório livre, a página de referências e a exportação do progresso como cópia. Lições marcam desafio e projeto; trilhas concluídas ganham uma marca. A busca da barra superior (Ctrl+K) encontra lições por palavra, sem acentos e tratando hífen e traço como iguais.
 
-**Previsão antes da revelação.** Antes da missão, a lição pode perguntar o que o aluno acha que vai acontecer. Comprometer-se com uma previsão ensina mais do que só assistir à animação. **[feito]**
+### 2.2 A tela da lição
 
-### 2.2 Direção visual
+1. **Teoria (esquerda).** No topo, fixos: título, objetivos de aprendizagem, missão e dicas (uma por vez); depois da missão, o desafio opcional. Abaixo, a teoria em Markdown com LaTeX, a pergunta de previsão e as referências com seção e páginas. Os termos do glossário aparecem sublinhados, com a definição em balão.
+2. **Editor (centro).** Monaco com autocompletar das portas e descrição de cada uma. Ctrl+Enter executa.
+3. **Circuito (centro, abaixo).** Diagrama gerado do código; clicar numa porta (ou usar as setas) leva ao passo. O compositor escreve portas no código por cliques. Exportar em OpenQASM e, no modo local, executar no hardware da IBM.
+4. **Estado (direita).** As visualizações da lição (seção 2.4), com as tabelas de vetores de Bloch e amplitudes.
+5. **Barra inferior.** Erros, resultado da validação e ações (restaurar código, simular medições, executar, Check, próxima lição).
 
-Sóbria e moderna, com cara de ferramenta científica: paleta neutra com um único acento azul-cobalto, painéis em cartões com cantos arredondados e sombras sutis, sem gradientes, brilhos, emojis ou vidro fosco. Tipografia IBM Plex (Sans para interface e teoria, Mono para código e números), servida junto com a interface para funcionar offline. Tema claro e escuro, seguindo o sistema por padrão. **[feito]**
+Em telas estreitas (abaixo de 1080 px), Teoria, Código e Estado viram abas. A primeira lição aberta mostra um guia de 4 passos, que reabre pelo botão "?".
 
-A fase nunca é comunicada só por cor: todo lugar que usa a roda de cores também mostra um ponteiro e o valor do ângulo. A roda é cíclica (0 = azul, $\pi$ = laranja). Animações respeitam a preferência de movimento reduzido do sistema. **[feito]**
+### 2.3 Laboratório livre
 
-### 2.3 Visualizações por trilha
+Código Qiskit ou PennyLane sem missão, com exemplos prontos (estado de Bell, treino variacional), treino com curva ao vivo, exportação e links de compartilhamento (o código vai no fragmento da URL).
 
-- **Trilha 1 (1 a 3 qubits).** Esferas de Bloch individuais (o vetor encolhe quando o qubit está emaranhado), Q-Sphere para o estado global, amplitudes com fase, comparador Alice × Bob no teletransporte. Medida de emaranhamento: concorrência só para 2 qubits; com 3 ou mais, pureza do estado reduzido.
-- **Trilha 2 (3 a 8 qubits).** **[feito]**
-  - **Amplitudes**: barras com sinal, cor de fase e linha tracejada da média (Deutsch-Jozsa, Bernstein-Vazirani, Grover). Mostra o estado do registrador de entrada mesmo com um qubit auxiliar, desde que este não esteja emaranhado.
-  - **Fases**: um mostrador por estado da base, com probabilidade e ponteiro de fase (QFT).
-  - **Registrador**: probabilidade de cada valor, rotulado também como fração (QPE e Shor). Depois que o registrador é medido, mostra o estado logo antes da medição, com um aviso.
-  - **Período**: a sequência $a^x \bmod N$ com o período destacado (Shor).
-- **Trilha 3.** Sliders de parâmetros, paisagem de custo 3D com trajetória do otimizador, grafo colorido (QAOA), fronteira de decisão (QNN), painel de síndromes (QEC).
+### 2.4 Visualizações
 
-Na cena 3D, todas as esferas ficam em um único canvas WebGL. **[feito]**
+| Visualização | Uso |
+| :-- | :-- |
+| Esferas de Bloch | Um vetor por qubit; encolhe quando o estado do qubit é misto (emaranhamento ou ruído) |
+| Q-Sphere | O estado global de até 5 qubits, com fase por cor e ponteiro |
+| Comparador | Qubit de origem × qubit de destino (teletransporte, no-cloning) |
+| Amplitudes | Barras com sinal, cor de fase e média (Deutsch–Jozsa, Bernstein–Vazirani, Grover) |
+| Fases | Um mostrador por estado da base (QFT) |
+| Registrador | Probabilidade de cada valor, também como fração (estimação de fase, Shor, códigos) |
+| Período | A sequência $a^x \bmod N$ com o período (Shor) |
+| Paisagem e Convergência | Custo em função dos parâmetros com a trajetória do otimizador; valor a cada passo (Trilha 3, laboratório livre) |
+| Dissociação | Energia × distância entre os átomos (VQE) |
+| Grafo | O corte mais provável (QAOA) |
+| Fronteira de decisão | Saída do classificador no plano (3.4) |
+| Limiar | Probabilidade de recuperar o estado × probabilidade de erro (4.2) |
+| Variáveis | Tabela das variáveis numéricas (lições sem circuito) |
+
+A fase nunca é comunicada só por cor: há sempre um ponteiro e o valor do ângulo.
+
+### 2.5 Direção visual e acessibilidade
+
+Sóbria e moderna, com cara de ferramenta científica: paleta neutra com um acento azul-cobalto, cartões com cantos arredondados e sombras sutis, sem gradientes, brilhos ou emojis. IBM Plex Sans e Mono, servidas com a interface. Tema claro e escuro.
+
+Contraste WCAG 2.1 AA em todos os textos (verificado com axe nos dois temas), áreas roláveis e circuito acessíveis pelo teclado, passo atual anunciado a leitores de tela, descrição textual da cena 3D e respeito ao movimento reduzido.
 
 ---
 
 ## 3. Currículo
 
-Cada seção tem teoria, uma missão de código, uma visualização e uma regra de validação. A Trilha 3 só deve ser detalhada depois de alunos reais usarem a Trilha 1.
+44 lições em 6 trilhas, cerca de 20 horas de estudo. Cada lição tem objetivos de aprendizagem, teoria, missão validada, 3 dicas progressivas e ao menos duas referências (um livro ou artigo e um curso ou tutorial) com o local exato de leitura. As Trilhas 1 e 2 têm desafios opcionais; cada trilha a partir da 1 termina com um projeto (rubrica de 5 ou 6 critérios). Os nomes seguem Nielsen & Chuang e os cursos da IBM Quantum Learning.
 
-### Trilha 1 — Fundamentos Quânticos (iniciante)
+### Trilha 0: Mathematical Toolkit (optional)
 
-| Seção | Missão | Visualização | Validação |
-| :-- | :-- | :-- | :-- |
-| **1.1 O Qubit e a Base Computacional** [feito] | Levar $|0\rangle$ a $|1\rangle$ com a porta X | Esfera de Bloch + probabilidades | Fidelidade de estado |
-| **1.2 Superposição e a Porta Hadamard** [feito] | Gerador de números aleatórios: H e medição | Esfera + histograma de shots convergindo | Distribuição de contagens (não o estado, que colapsa) |
-| **1.3 Fase Relativa e Rotações** [feito] | Levar $|+\rangle$ ao ponto $+Y$ do equador com S ou $R_z(\theta)$ | Esfera com cor e ponteiro de fase | Fidelidade, com diagnóstico de fase |
-| **1.4 Interferência e Medição em Outras Bases** *(nova)* [feito] | Chegar a $|1\rangle$ só com H e portas de fase ($HZH = X$) | Amplitudes com sinal se cancelando | Fidelidade de estado |
-| **1.5 Emaranhamento e Estados de Bell** [feito] | Construir $|\Phi^+\rangle$ com H e CNOT; convenção de ordem dos qubits | Q-Sphere + esferas colapsadas + concorrência | Fidelidade de estado |
-| **1.6 Teletransporte Quântico** [feito] | Protocolo de 3 qubits com medição e correções condicionais | Comparador Alice × Bob | Estado reduzido de Bob contra vários $|\psi\rangle$ aleatórios |
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **0.1 Complex Numbers and Phases** | Complex arithmetic, modulus, polar form and the difference between global and relative phase. | Python (sem circuito) | Própria (check.py) |  |
+| **0.2 Vectors and Inner Products** | Column vectors in C² and C⁴, the inner product with conjugation, normalization and the computational and ± bases. | Python (sem circuito) | Própria (check.py) |  |
+| **0.3 Matrices, Unitaries and Eigenvalues** | Matrix–vector products, the conjugate transpose, unitarity, the Pauli matrices, eigenvalues and expectation values of Hermitian matrices. | Python (sem circuito) | Própria (check.py) |  |
+| **0.4 Tensor Products** | The Kronecker product of vectors and matrices, product and entangled states, and Qiskit's qubit ordering. | Python (sem circuito) | Própria (check.py) |  |
 
-A seção 1.4 é nova: o plano original prometia interferência na lição de teletransporte e não a entregava. Ela é a base da Trilha 2.
+### Trilha 1: Basics of Quantum Information (beginner)
 
-### Trilha 2 — Algoritmos Quânticos (intermediário)
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **1.1 Qubits and the Computational Basis** | State vector, normalization and the X gate on the Bloch sphere. | Qiskit | Fidelidade de estado | Desafio |
+| **1.2 Superposition and the Hadamard Gate** | The states |+⟩ and |−⟩, measurement and a quantum random number generator. | Qiskit | Distribuição de medições | Desafio |
+| **1.3 Relative Phase and Rotation Operators** | Z, S, T and Rz gates: same probabilities, different states. | Qiskit | Várias entradas | Desafio |
+| **1.4 Interference and Measurement in Other Bases** | HH = I, HZH = X and how the relative phase decides a measurement outcome. | Qiskit | Oráculos secretos | Desafio |
+| **1.5 Entanglement and the Bell States** | Tensor products, the CNOT gate, Bell states and qubit ordering. | Qiskit | Fidelidade de estado | Desafio |
+| **1.6 Quantum Teleportation** | Bell pair, mid-circuit measurement and classically controlled corrections. | Qiskit | Estado reduzido por ramo | Desafio |
+| **1.7 Controlled Operations** | Build the controlled-S gate from CNOT and T gates, and identities between gates. | Qiskit | Várias entradas | Desafio |
+| **1.8 The No-Cloning Theorem** | No unitary operation copies an unknown quantum state; the CNOT copier works only for basis states. | Qiskit | Várias entradas | Desafio |
+| **1.9 Superdense Coding** | Two classical bits travel in one qubit when sender and receiver share a Bell pair. | Qiskit | Própria (check.py) | Desafio |
+| **1.10 The CHSH Game** | A shared Bell pair wins the CHSH game with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4. | Qiskit | Própria (check.py) | Desafio |
+| **1.11 Project: Entanglement Swapping** | Entangle two qubits that never interacted by measuring their partners in the Bell basis. | Qiskit | Própria (check.py) | Projeto |
 
-| Seção | Missão | Visualização | Validação |
-| :-- | :-- | :-- | :-- |
-| **2.1 Phase Kickback** *(nova)* [feito] | Controle em $|+\rangle$, alvo em $|-\rangle$, CNOT: quem muda é o controle | Esferas de Bloch | Fidelidade de estado, CNOT obrigatória |
-| **2.2 Algoritmo de Deutsch** *(nova)* [feito] | Uma consulta decide se $f$ de 1 bit é constante ou balanceada | Amplitudes com sinal | 4 funções secretas (2 constantes, $x$ e NOT $x$) |
-| **2.3 Oráculos e Deutsch-Jozsa** [feito] | Constante ou balanceada com uma consulta (contra $2^{n-1}+1$ clássicas determinísticas) | Amplitudes com sinal | Oráculos secretos (constantes, balanceados lineares e não lineares) |
-| **2.4 Bernstein-Vazirani** *(nova)* [feito] | Recuperar a string secreta de 4 bits em uma consulta | Amplitudes concentrando na resposta | 4 strings secretas |
-| **2.5 Busca de Grover** [feito] | Difusor para $N = 16$, 3 iterações | Amplitudes com linha da média; 96,1% na 3ª iteração | 4 itens marcados secretos |
-| **2.6 Transformada Quântica de Fourier** [feito] | QFT de 3 qubits com H, `cp` e `swap` | Fases | 5 entradas de teste, incluindo superposições com fase |
-| **2.7 Estimação de Fase Quântica** [feito] | 3 qubits de contagem + 1 de autovetor; calcular `theta` com `run_shots` | Registrador | 4 fases secretas + valor de `theta` |
-| **2.8 Algoritmo de Shor** [feito] | Fatorar 15 com $a = 7$: achar o período e pós-processar | Registrador (picos em 0, 4, 8, 12) e Período | Distribuição + `factors == [3, 5]` |
+### Trilha 2: Fundamentals of Quantum Algorithms (intermediate)
 
-Shor fatora números **compostos** em primos. A exponenciação modular vem pronta no `hidden_setup.py`: o salto de QPE para Shor já é grande sem ela.
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **2.1 Phase Kickback** | A controlled gate acting on an eigenstate of its target changes the control, not the target. | Qiskit | Fidelidade de estado | Desafio |
+| **2.2 Deutsch's Algorithm** | One query decides whether a one-bit function is constant or balanced. | Qiskit | Oráculos secretos | Desafio |
+| **2.3 The Deutsch–Jozsa Algorithm** | Decide constant or balanced for an n-bit function with one query. | Qiskit | Oráculos secretos | Desafio |
+| **2.4 The Bernstein–Vazirani Algorithm** | Find a whole secret string with one query. | Qiskit | Oráculos secretos | Desafio |
+| **2.5 Simon's Algorithm** | Recover a hidden XOR mask from outcomes that are orthogonal to it. | Qiskit | Própria (check.py) | Desafio |
+| **2.6 Grover's Algorithm** | Amplitude amplification by an oracle and inversion about the mean. | Qiskit | Oráculos secretos | Desafio |
+| **2.7 The Quantum Fourier Transform** | Moves the information about x from the basis states into the phases. | Qiskit | Várias entradas | Desafio |
+| **2.8 Phase Estimation** | Read an eigenvalue phase with controlled powers of U and an inverse QFT. | Qiskit | Oráculos secretos | Desafio |
+| **2.9 Shor's Algorithm** | Factor 15 by reducing the problem to order finding. | Qiskit | Distribuição de medições | Desafio |
+| **2.10 Hamiltonian Simulation** | Approximate the evolution under a sum of terms with Trotter steps. | Qiskit | Própria (check.py) | Desafio |
+| **2.11 Project: Design a Grover Oracle** | Build the oracle for a three-variable Boolean formula, then search its solutions with Grover's algorithm. | Qiskit | Própria (check.py) | Projeto |
 
-### Trilha 3 — Fronteiras e Aplicações (avançado) [feito]
+### Trilha 3: Variational Algorithms (advanced)
 
-Escrita em **PennyLane**; o ruído usa o dispositivo `default.mixed`. As lições de treino rodam pelo botão Executar (Ctrl+Enter), e não a cada tecla.
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **3.1 Variational Circuits and the Parameter-Shift Rule** | Ansatz, parameter-shift gradients and gradient descent. | PennyLane | Própria (check.py) |  |
+| **3.2 The Variational Quantum Eigensolver** | Ground-state energy of H₂ with a variational circuit. | PennyLane | Própria (check.py) |  |
+| **3.3 QAOA for Max-Cut** | Max-Cut on a 5-vertex graph with a two-layer QAOA. | PennyLane | Própria (check.py) |  |
+| **3.4 Variational Quantum Classifiers** | Classify points in the plane with two qubits and data re-uploading. | PennyLane | Própria (check.py) |  |
+| **3.5 Project: A Variational Dissociation Curve** | Compute the H₂ ground-state energy with VQE at several bond lengths and locate the equilibrium distance. | PennyLane | Própria (check.py) | Projeto |
 
-| Seção | Missão | Visualização | Validação |
-| :-- | :-- | :-- | :-- |
-| **3.1 Circuitos Variacionais** | Implementar a regra de parameter-shift e um laço de gradiente descendente | Paisagem de custo com a trajetória; convergência | Gradiente contra o do PennyLane, exatamente 2 execuções por derivada, custo ≤ −0,99, `history` verdadeiro |
-| **3.2 VQE para Química Quântica** | Hartree-Fock + excitação dupla para o $H_2$ | Convergência com faixa de precisão química; curva de dissociação | Energia recalculada no estado do aluno, precisão química (1,6 mHa), só o ansatz químico |
-| **3.3 QAOA e Max-Cut** | $p = 2$ camadas no grafo do curso (corte máximo 5) | Grafo com o corte mais provável; convergência; registrador | Razão de aproximação ≥ 0,85 (uma camada fica em ≈ 0,82) |
-| **3.4 Redes Neurais Quânticas** | Classificador de 2 qubits e 3 camadas com data re-uploading | Fronteira de decisão; perda | Acurácia ≥ 92% num conjunto de teste que o aluno não vê |
-| **3.5 Matrizes Densidade e Ruído** *(nova)* | Canal de Kraus no circuito H, T, erro, T†, H | Esfera de Bloch encolhendo; pureza | $
-ho$ para três pares de probabilidades; resposta errada (30%) ≠ erro (40%) |
-| **3.6 Correção de Erros Quânticos** | Código de bit flip de 3 qubits com 2 ancillas | Botões de erro; síndrome no registrador; curva de limiar | Três estados × quatro erros; fidelidade com ruído = $1 - 3p^2 + 2p^3$ |
+### Trilha 4: Quantum Noise and Error Correction (advanced)
 
-Notas técnicas da Trilha 3:
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **4.1 Density Operators and Quantum Noise** | Density operators, Kraus operators, and the difference between error probability and wrong-answer probability. | PennyLane | Própria (check.py) |  |
+| **4.2 The Three-Qubit Bit-Flip Code** | The three-qubit bit-flip code, syndrome measurement and the threshold. | PennyLane | Própria (check.py) |  |
+| **4.3 The Three-Qubit Phase-Flip Code** | A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers. | PennyLane | Própria (check.py) |  |
+| **4.4 The Shor Code** | Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit. | PennyLane | Própria (check.py) |  |
+| **4.5 The Stabilizer Formalism** | Describe a code by commuting Pauli operators and read the syndrome from commutation with them. | Python (sem circuito) | Própria (check.py) |  |
+| **4.6 The Toric Code** | A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops. | Python (sem circuito) | Própria (check.py) |  |
+| **4.7 The Threshold Theorem** | Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold. | Python (sem circuito) | Própria (check.py) |  |
+| **4.8 Project: The Shor Code Under Noise** | Build the nine-qubit Shor code, compute its logical failure probability under depolarizing noise exactly, and find the physical error rate below which encoding helps. | PennyLane | Própria (check.py) | Projeto |
 
-- **VQE.** $-1{,}137$ Ha é a energia total do estado fundamental do $H_2$ na base STO-3G, não a energia de ligação. O Hamiltoniano é **pré-calculado** e distribuído como JSON (termos de Pauli por distância de ligação): calculá-lo em tempo de execução exigiria o PySCF, historicamente problemático no Windows.
-- **QAOA e QNN.** Os limiares do plano original (0,85 e 92% em 50 épocas) precisam ser calibrados contra a solução de referência, com seeds fixas. Um grafo de 5 vértices pode exigir $p \ge 2$.
-- **QEC.** Ruído exige simulação por matriz densidade (Aer ou canais de Kraus em NumPy). É uma dependência nova, a decidir na Fase 4.
+### Trilha 5: Running on Quantum Hardware (advanced)
+
+| Lição | Conteúdo | Framework | Validação | Extra |
+| :-- | :-- | :-- | :-- | :-- |
+| **5.1 Transpilation and Qubit Connectivity** | Basis gates, coupling maps, SWAP insertion, and why the number of two-qubit gates is the cost of a circuit on hardware. | Qiskit | Própria (check.py) |  |
+| **5.2 The Qiskit Primitives** | Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots. | Qiskit | Própria (check.py) |  |
+| **5.3 Noise on Real Devices** | T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence. | PennyLane | Própria (check.py) |  |
+| **5.4 Error Mitigation** | Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction. | Python (sem circuito) | Própria (check.py) |  |
+| **5.5 Project: A Mitigated Estimate on a Noisy Device** | Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty. | Python (sem circuito) | Própria (check.py) | Projeto |
+
 
 ---
 
 ## 4. O oráculo de validação
 
-A validação compara matemática, não texto: soluções equivalentes (como $HZH$ no lugar de $X$) são aceitas.
+A validação compara matemática, não texto: soluções equivalentes são aceitas.
 
-**O alvo vem da solução de referência.** Cada lição tem um `solution.py`. O estado alvo é calculado executando esse arquivo, em vez de ser digitado no manifest. O gabarito nunca fica dessincronizado. **[feito]**
+- **O alvo vem da solução de referência.** Cada lição tem um `solution.py`; o alvo é calculado executando esse arquivo.
+- **Contra atalhos.** `allowed_gates`, `max_gates`, `gate_counts` e `forbidden_pairs` impedem, por exemplo, resolver com `qc.initialize(alvo)` ou ligar qubits que deveriam estar separados; `required_gates` exige a porta que é o assunto da lição.
+- **Variáveis.** `expected_variables` confere valores que o estudante calcula depois de executar o circuito (com `run_shots`).
+- **Casos secretos.** O setup oculto (`hidden_setup.py`) recebe cada caso em `_QLP_INPUT`: oráculos, entradas, mensagens. Os helpers aparecem no diagrama como portas opacas (`U_f`, `QFT†`).
 
-**Contra atalhos.** `allowed_gates` e `max_gates` no manifest impedem resolver qualquer missão com `qc.initialize(alvo)`; `required_gates` exige a porta que é o assunto da lição (a CNOT no phase kickback, a multiplicação modular no Shor). **[feito]**
+| Tipo | Uso |
+| :-- | :-- |
+| `state_fidelity` | $F \ge 0{,}999$, invariante a fase global; se só a fase relativa está errada, a mensagem diz isso |
+| `counts_distribution` | Distribuição das medições contra a da solução (distância de variação total) |
+| `reduced_state` | Estado de um qubit ao final, para várias entradas e todos os ramos de medição (teletransporte) |
+| `oracle_cases` | Distribuição de um registrador contra vários oráculos secretos |
+| `state_cases` | Estado final para várias entradas, inclusive superposições com fase |
+| `custom` | `check.py` da lição: `check(ns, run_case)` com mensagens próprias (treinos, lições sem circuito, desafios e projetos) |
 
-**Variáveis.** `expected_variables` confere valores que o aluno calcula em Python depois de executar o circuito com `run_shots(qc)`, como `theta` na QPE e `factors` no Shor. **[feito]**
+**Desafios.** `manifest.challenge.validation` com `challenge_solution.py` (e, se preciso, `challenge_check.py` e `challenge_hidden_setup.py`). A suíte exige que a solução do desafio passe e que o código inicial e a solução da missão não passem. O progresso do desafio fica na chave `<id>:challenge`.
 
-### Nível 1 — Estado (Trilha 1)
-
-| Tipo | Uso | Estado |
-| :-- | :-- | :-- |
-| `state_fidelity` | $F = |\langle\psi_\text{alvo}|\psi_\text{aluno}\rangle|^2 \ge 0{,}999$, invariante a fase global. Se as probabilidades coincidem mas $F$ é baixo, a mensagem aponta especificamente para a fase relativa. | feito |
-| `counts_distribution` | Lições com medição final (1.2): compara a distribuição dos resultados com a da solução, por distância de variação total. A distribuição é exata quando as medições são só no final; com medições intermediárias, é amostrada. | feito |
-| `reduced_state` | Teletransporte (1.6): o estado de um qubit ao final, comparado com o da solução para 4 estados de entrada e 32 sorteios de medição cada. O setup oculto recebe a entrada em `_QLP_INPUT`. A regra `forbidden_pairs` proíbe portas entre os qubits de Alice e de Bob. | feito |
-
-### Nível 2 — Vários casos secretos (Trilha 2)
-
-| Tipo | Uso | Estado |
-| :-- | :-- | :-- |
-| `oracle_cases` | O circuito do aluno e a solução são executados contra vários oráculos secretos (entrada em `_QLP_INPUT`); a distribuição do registrador precisa coincidir em todos. Garante que a solução é geral e não foi escrita para um caso. Diz quantos casos passaram. | feito |
-| `state_cases` | O estado final precisa coincidir com o da solução para várias entradas, incluindo superposições com fase. Equivale a conferir a operação inteira, sem exigir que o circuito seja só unitário. Substitui a fidelidade de processo prevista no plano original. | feito |
-
-Os oráculos e helpers (`oracle`, `prepare_input`, `apply_controlled_u`, `inverse_qft`, `apply_controlled_mod_mult`) vêm do `hidden_setup.py` como portas opacas: o diagrama mostra `U_f`, `U_ω`, `QFT†`, sem revelar o conteúdo. Testes independentes conferem a física de cada lição (por exemplo, a QFT da solução contra a matriz da DFT e a multiplicação modular contra $7y \bmod 15$).
-
-### Nível 3 — Convergência (Trilha 3)
-
-Precisão química no VQE; razão de aproximação no QAOA; acurácia em teste na QNN. Limiares calibrados e seeds fixas.
+**Projetos.** `manifest.project: true`; a validação é uma rubrica num `check.py` que relata o primeiro critério que falha, cada um com sua mensagem.
 
 ---
 
@@ -200,85 +251,48 @@ Precisão química no VQE; razão de aproximação no QAOA; acurácia em teste n
 
 ```text
 /content
-  catalog.json                    # currículo completo, com títulos e resumos
-  /schema/manifest.schema.json    # JSON Schema do manifest
-  /schema/text.schema.json        # JSON Schema dos textos de cada lição
-  /track_1_fundamentals
-    /section_1_1_qubit
-      manifest.json               # estrutura: visualizações, regras do oráculo (sem texto)
-      solution.py                 # solução de referência (define o alvo)
-      hidden_setup.py             # opcional: preparação oculta, oráculos
-      text.json                   # título, resumo, missão, previsão, dicas
-      theory.md                   # teoria em Markdown com LaTeX
-      starter_code.py             # código inicial
+  catalog.json                  # trilhas e lições: títulos, níveis, resumos
+  glossary.json                 # termos, definição e a lição que os apresenta
+  sources.json                  # material de aula e software usados no desenvolvimento
+  /schema                       # JSON Schema do manifest e dos textos
+  /track_N_.../section_N_M_.../
+    manifest.json               # estrutura: framework, visualizações, validação, desafio, referências (sem texto)
+    text.json                   # título, resumo, objetivos, missão, dicas, previsão, desafio, mensagens
+    theory.md                   # teoria em Markdown com LaTeX
+    starter_code.py             # código inicial
+    solution.py                 # solução de referência (define o alvo)
+    hidden_setup.py             # opcional: oráculos, entradas, helpers
+    check.py, analysis.py       # opcionais: validação própria; dados das visualizações de treino
+    challenge_*.py              # opcionais: solução, validação e setup do desafio
 ```
 
-Uma seção aparece como "Em breve" no mapa enquanto não tiver pasta de conteúdo. Nenhuma trilha é bloqueada: quem já sabe o básico pode ir direto ao que interessa.
+Regras de escrita em [guia-de-escrita.md](guia-de-escrita.md); referências só de [referencias-verificadas.md](referencias-verificadas.md).
 
-**Suíte de conteúdo.** Para toda lição, os testes verificam: o manifest e os textos seguem os schemas; textos, teoria e código inicial existem; a solução de referência passa no oráculo; o código inicial executa sem passar; a resposta enviada à interface não contém a solução. **[feito]**
-
----
-
-## 6. Roteiro
-
-### Fase 1 — Fatia vertical
-
-O objetivo é uma lição completa de ponta a ponta, não um protótipo de cada peça.
-
-| Item | Estado |
-| :-- | :-- |
-| Motor: rastreamento por instrução, simulador com medição e controle clássico, shots | feito |
-| Motor: worker isolado, timeout, limite de memória, WebSocket autenticado | feito |
-| Oráculo Nível 1 (`state_fidelity`) e suíte de conteúdo | feito |
-| Interface: mapa de trilhas, laboratório, Esfera de Bloch, amplitudes, circuito, linha do tempo, temas | feito |
-| Laboratório livre (sandbox) | feito |
-| Lição 1.1 completa | feito |
-| CI: motor nos três sistemas e interface | escrito |
-
-### Fase 2 — Trilha 1 completa
-
-| Item | Estado |
-| :-- | :-- |
-| Validação `counts_distribution` | feito |
-| Lições 1.2, 1.3 e 1.4 | feito |
-| Lição 1.5: Q-Sphere e medidor de emaranhamento | feito |
-| Lição 1.6: validação `reduced_state` e comparador Alice × Bob | feito |
-
-Testar com alunos reais antes de seguir para a Trilha 2.
-
-### Fase 3 — Trilha 2 completa e idiomas
-
-| Item | Estado |
-| :-- | :-- |
-| Validadores `oracle_cases` e `state_cases`; regras `required_gates` e `expected_variables`; `run_shots` no código do aluno | feito |
-| Visualizações Amplitudes, Fases, Registrador e Período | feito |
-| Lições 2.1 a 2.8 | feito |
-| Interface, motor e conteúdo em português, inglês e alemão | feito; depois reduzido a só inglês |
-
-### Fase 4 — Trilha 3 e revisão com as aulas
-
-| Item | Estado |
-| :-- | :-- |
-| PennyLane no motor: rastreamento de QNodes, simulação com matriz densidade e canais de Kraus | feito |
-| Lições de treino: execução por botão, `analysis.py`, `check.py`, controles de experimento | feito |
-| Visualizações Paisagem, Convergência, Dissociação, Grafo, Fronteira e Limiar | feito |
-| Lições 3.1 a 3.6 | feito |
-| Revisão das três trilhas com as aulas de Müller e de Jülich: lições novas 1.7, 2.2 e 3.5, missões e validações mais rigorosas | feito |
-| Treinamento com streaming de épocas e exportação de circuitos no laboratório livre: `report(...)` envia métricas ao vivo, botão Parar, exportação em OpenQASM 2 e 3 (Qiskit e PennyLane) | feito |
-
-As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`, `lecture (1)/`): são material de terceiros. As lições usam as ideias e os exemplos trabalhados, com texto próprio.
+**Suíte de conteúdo** (para toda lição): schemas; textos, teoria, código inicial e objetivos presentes; título igual ao do catálogo; solução passa; código inicial executa sem passar; desafio solucionável e mais difícil que a missão; referências com local verificado (sem `TODO`) e links https sem repetição; a resposta à interface não contém a solução. Há ainda testes de física independentes por trilha, testes do glossário e da bibliografia, e testes ponta a ponta no navegador (Playwright), inclusive abrindo as 44 lições.
 
 ---
 
-Os próximos passos, em ordem de prioridade, estão em [roadmap.md](roadmap.md).
+## 6. Histórico
+
+| Etapa | O que entrou |
+| :-- | :-- |
+| Fatia vertical | Motor com rastreamento por instrução, worker isolado, WebSocket autenticado, lição 1.1, laboratório livre |
+| Trilhas 1 e 2 | Validadores de estado, distribuição, estado reduzido, oráculos e entradas; visualizações de amplitudes, fases, registrador e período |
+| Trilha 3 original | PennyLane, matriz densidade e canais de Kraus, lições de treino, paisagens e convergência |
+| Revisão com as aulas | Exercícios revistos com as aulas de Wegewijs e Müller (Quantum Information 2025) e de Willsch (Quantum Computing: Concepts and Algorithms, Jülich 2026) |
+| Simplificação | Saem o app desktop e os idiomas português e alemão; textos reescritos (didáticos e concisos) e nomes alinhados a Nielsen & Chuang e à IBM |
+| [Roadmap](roadmap.md) | CI e testes ponta a ponta, motor hospedado, Trilhas 0, 4 e 5, novas lições nas Trilhas 1 e 2, objetivos, desafios, projetos, glossário, acessibilidade, compositor, links, hardware real, página de referências |
+
+As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`, `lecture (1)/`): são material de terceiros. As lições usam as ideias e os exemplos, com texto próprio.
 
 ---
 
 ## 7. Riscos e decisões em aberto
 
-1. **Hospedagem.** Hoje o motor roda na máquina do aluno (`npm run setup` + `npm run dev`). Para abrir a plataforma a qualquer pessoa, o motor precisa ser hospedado, com isolamento real do código do aluno (contêiner por sessão), já que a verificação estática não é uma sandbox.
-2. **Limite de memória fora do Linux.** No Windows a solução é um Job Object; no macOS, o teto de qubits pode ser suficiente.
-3. **Escopo.** São cerca de 15 visualizações sob medida. As Trilhas 1 e 2 são o produto; a Trilha 3 é uma expansão.
-4. **Motor no navegador.** O Qiskit tem extensões nativas e não roda em Pyodide sem trabalho adicional; por isso o motor é um processo Python.
-5. **Idioma.** O texto em inglês foi traduzido do português original por agentes de IA, com glossário e testes estruturais. Falta uma revisão por um falante nativo.
-6. **Conteúdo de terceiros.** Lições e arquivos de sandbox importados executam código. Antes de permitir compartilhamento, é preciso um modelo de confiança.
+1. **Hospedagem pública.** Exige isolamento por sessão, revisão de segurança e teste de carga. Para uso pessoal, o modo local basta.
+2. **Instalação.** O modo local pede Python e Node; um caminho só com Docker está no plano de revisão (item 2.2).
+3. **Limite de memória fora do Linux.** No Windows e no macOS vale só o teto de qubits.
+4. **Profundidade desigual.** A Trilha 3 é a mais curta (5 lições).
+5. **Revisão humana.** 28 lições foram escritas com agentes de IA e passam nos testes de física e validação; falta uma leitura humana do ritmo didático e uma revisão do inglês por falante nativo.
+6. **Dados ocultos.** O código do estudante consegue ler os casos secretos; como o estudo é individual, só prejudica quem trapaceia.
+7. **CI fora do Linux.** Windows e macOS só são testados quando as branches forem enviadas ao GitHub.

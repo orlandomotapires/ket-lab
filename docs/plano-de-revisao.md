@@ -15,7 +15,7 @@ Cada item traz o objetivo, o trabalho, o critério de pronto e o esforço (P ≤
 | Pacote da interface | `index.js` com 4,0 MB (1,0 MB comprimido); `scene3d.js` com 0,8 MB, já carregado à parte |
 | Código | `styles.css` com 2.478 linhas num arquivo só; `store.ts` com 545 linhas |
 | Texto | Nenhum travessão nas teorias; um "just" em 44 lições |
-| Documentação | `plano-diretor.md` ainda descreve a antiga Trilha 3 "Fronteiras" e as lições 2.1 a 2.8 |
+| Documentação | `plano-diretor.md` reescrito em 15/11/2026; README a conferir |
 | Git | As branches `trilha-3` e `roadmap` nunca passaram pela CI; Windows e macOS sem teste |
 
 ---
@@ -29,6 +29,8 @@ Cada item traz o objetivo, o trabalho, o critério de pronto e o esforço (P ≤
 - **Pronto quando:** a CI está verde nos três sistemas e a `main` tem a plataforma atual.
 
 ### 1.2 Documentação coerente (P)
+
+> **Andamento:** o `plano-diretor.md` foi reescrito em 15/11/2026 (plataforma atual, 44 lições, dois modos do motor, protocolo, validação e riscos). Falta conferir o README contra o que existe.
 
 - **Objetivo:** que os documentos descrevam a plataforma de hoje.
 - **Trabalho:** reescrever o `plano-diretor.md` como "como a plataforma funciona" (arquitetura, motor, validação, conteúdo, trilhas atuais); mover o histórico de fases para uma seção curta de histórico; deixar o `roadmap.md` como registro do que foi feito; este plano como próximo passo. Conferir o README contra o que existe.

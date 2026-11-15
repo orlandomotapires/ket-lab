@@ -66,5 +66,39 @@
       "location": "Section “Quantum Fourier transform”, subsections “Definition of the quantum Fourier transform” and “Circuit implementation of the QFT”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_cases",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "prepare_input",
+        "cp",
+        "crz",
+        "swap",
+        "cx",
+        "cz"
+      ],
+      "cases": [
+        5,
+        1,
+        6,
+        3,
+        "mixed"
+      ]
+    }
+  }
 }

@@ -38,5 +38,10 @@
       "location": "Sections “1. Introduction” (Trotterization), “2.1 Defining the transverse-field Ising Hamiltonian” and “3. Exercise 1” (second-order Suzuki–Trotter)",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/quantum-simulation"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

@@ -79,5 +79,52 @@
       "location": "Section “The Bernstein–Vazirani problem” (on the Deutsch–Jozsa page)",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "oracle_cases",
+      "register": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "tolerance": 0.02,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "phase_oracle"
+      ],
+      "cases": [
+        "0110",
+        "1101",
+        "0001",
+        "1011",
+        {
+          "s": "0110",
+          "b": 1
+        },
+        {
+          "s": "1011",
+          "b": 1
+        },
+        "0000",
+        "1000"
+      ],
+      "gate_counts": {
+        "phase_oracle": 1
+      }
+    }
+  }
 }

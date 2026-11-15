@@ -62,5 +62,10 @@
       "location": "Sections “Warm-up: approximating phases with low precision” and “General procedure and analysis”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/phase-estimation-procedure"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

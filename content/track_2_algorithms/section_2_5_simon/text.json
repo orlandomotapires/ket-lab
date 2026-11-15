@@ -30,5 +30,23 @@
     "wrong_distribution": "With the hidden string {secret}, the input register gave outcomes that are not orthogonal to it (for example {bad}). The outcomes must be uniform over the strings y with y·s = 0. Check the Hadamard gates before and after the query.",
     "variable_missing": "Store the result in the variable s_found, as a bit string such as \"110\".",
     "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep the nonzero strings orthogonal to every outcome; if none remains, s is 000."
+  },
+  "challenge": {
+    "mission": "Simon's problem with a compact oracle. The function f takes 3 bits to 2 bits and satisfies f(x) = f(y) if and only if y = x or y = x ⊕ s, for a hidden nonzero string s (s is never 000, because a function with 2 output bits cannot be one-to-one on 8 inputs). Use a circuit qc with 5 qubits (input register: qubits 0 to 2, output register: qubits 3 and 4) and 3 classical bits, call oracle(qc) once, measure the input register into bits 0 to 2, and store in s_found the string s computed from the outcomes. Qubit 0 is the last character of every string.",
+    "hints": [
+      "The output register needs only n − 1 = 2 qubits here, so the circuit has 5 qubits, not 6.",
+      "The procedure is the same: Hadamard gates, one query, Hadamard gates, measure qubits 0 to 2.",
+      "Every outcome y satisfies y·s = 0 (mod 2). With a nonzero s the outcomes span a 2-dimensional space, so exactly one nonzero string is orthogonal to all of them."
+    ],
+    "messages": {
+      "ok": "All {total} hidden strings were recovered. For each one, every outcome satisfied y·s = 0 and s_found equaled s.",
+      "no_circuit": "Define the circuit qc with 5 qubits and 3 classical bits.",
+      "wrong_qubits": "The circuit needs 3 input qubits and 2 output qubits (5 in total), but it has {count}.",
+      "queries": "Call oracle(qc) exactly once. The circuit calls it {count} times.",
+      "no_measurement": "Measure the input register into the classical bits, with qc.measure([0, 1, 2], [0, 1, 2]).",
+      "wrong_distribution": "With the hidden string {secret}, the input register gave outcomes that are not orthogonal to it (for example {bad}). Check the Hadamard gates before and after the query.",
+      "variable_missing": "Store the result in the variable s_found, as a bit string such as \"110\".",
+      "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep the nonzero strings orthogonal to every outcome."
+    }
   }
 }

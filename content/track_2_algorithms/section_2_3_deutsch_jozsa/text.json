@@ -20,5 +20,13 @@
     "Prepare the auxiliary qubit in |−⟩ as in the phase kickback lesson: qc.x(3), then qc.h(3).",
     "Apply a Hadamard to qubits 0, 1 and 2 before the oracle, and again after it.",
     "qc.x(3), qc.h(3), Hadamard on qubits 0 to 2, oracle(qc), Hadamard on qubits 0 to 2."
-  ]
+  ],
+  "challenge": {
+    "mission": "Run Deutsch–Jozsa without an auxiliary qubit. Build a circuit qc with 3 qubits (the input register only) and apply the phase oracle of f(x) = x0 ⊕ x1·x2 yourself, as the diagonal operation |x⟩ → (−1)^f(x)|x⟩ made of z and cz gates, between two layers of Hadamard gates. The final state must equal the one the algorithm gives for this balanced function (fidelity at least 0.999). The gates h, x, z and cz are allowed, and cz is required.",
+    "hints": [
+      "A phase oracle needs no auxiliary qubit: (−1)^(x0 ⊕ x1·x2) = (−1)^x0 · (−1)^(x1·x2).",
+      "(−1)^x0 is a Z on qubit 0. (−1)^(x1·x2) is a controlled-Z between qubits 1 and 2.",
+      "Hadamard on qubits 0 to 2, qc.z(0), qc.cz(1, 2), Hadamard on qubits 0 to 2."
+    ]
+  }
 }

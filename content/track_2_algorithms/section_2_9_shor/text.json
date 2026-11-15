@@ -20,5 +20,21 @@
     "This is the phase estimation circuit: Hadamard on qubits 0 to 3, the work register in |1⟩ with qc.x(4), and in a loop for j in range(4), apply_controlled_mod_mult(qc, j, 2**j).",
     "Finish with inverse_qft(qc, [0, 1, 2, 3]) and measure qubits 0 to 3 into bits 0 to 3. Then counts = run_shots(qc).",
     "For each result: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Use r only if pow(a, r, N) == 1 and r is even, and set half = pow(a, r // 2, N). If half == N - 1, discard the result. Otherwise compute gcd(half - 1, N) and gcd(half + 1, N), and store in factors the values other than 1 and N, without repeats."
-  ]
+  ],
+  "challenge": {
+    "mission": "The base a is now secret: apply_controlled_mod_mult(qc, control, power) multiplies the work register by a^power modulo N = 15 (a is one of 2, 4, 7, 8, 11, 13, and changes between tests). Use phase estimation with 4 counting qubits (qubits 0 to 3, measured into bits 0 to 3) and the work register in qubits 4 to 7, then store in the variable order the order r of a modulo 15, computed from the measurement results alone: the smallest r > 0 with a^r ≡ 1 (mod 15).",
+    "hints": [
+      "The work register starts in |1⟩ (qc.x(4)). Each measured outcome y satisfies y/16 = s/r for some integer s.",
+      "Write y/16 in lowest terms with Fraction. The denominator divides r, and different outcomes may give different divisors of r.",
+      "The order is the least common multiple of all the denominators: order = lcm of Fraction(int(bits, 2), 16).denominator over the outcomes."
+    ],
+    "messages": {
+      "ok": "The order was found for all {total} bases.",
+      "no_circuit": "Define the circuit qc with 8 qubits and 4 classical bits.",
+      "wrong_qubits": "The circuit needs 4 counting qubits and 4 work qubits (8 in total), but it has {count}.",
+      "gates": "Use apply_controlled_mod_mult and inverse_qft in the circuit.",
+      "variable_missing": "Store the result in the variable order, as an integer.",
+      "wrong_order": "The order of one of the hidden bases is wrong (the last base tried gave order = {found}). Each outcome y gives y/16 = s/r; combine the denominators of all outcomes."
+    }
+  }
 }

@@ -20,5 +20,13 @@
     "Start with the most significant qubit, qubit 2: qc.h(2), then qc.cp(pi / 2, 1, 2) and qc.cp(pi / 4, 0, 2). pi comes from the math module.",
     "Repeat for qubit 1 (qc.h(1), qc.cp(pi / 2, 0, 1)) and finish with qc.h(0).",
     "The output qubits are in reverse order, so end with qc.swap(0, 2)."
-  ]
+  ],
+  "challenge": {
+    "mission": "Build the inverse 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩. The final state is compared with the exact inverse QFT of the input, for several inputs.",
+    "hints": [
+      "The inverse QFT is the QFT circuit read backwards, with every gate inverted: Hadamard gates stay, phase angles change sign.",
+      "Start with the swap of qubits 0 and 2, then go through the qubits 0, 1, 2: for each qubit apply its controlled phases with angle −π/2^k from the earlier qubits, then its Hadamard.",
+      "qc.swap(0, 2), qc.h(0), qc.cp(−π/2, 0, 1), qc.h(1), qc.cp(−π/4, 0, 2), qc.cp(−π/2, 1, 2), qc.h(2)."
+    ]
+  }
 }

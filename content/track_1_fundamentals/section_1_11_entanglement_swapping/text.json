@@ -1,0 +1,36 @@
+{
+  "title": "Project: Entanglement Swapping",
+  "summary": "Entangle two qubits that never interacted by measuring their partners in the Bell basis.",
+  "objectives": [
+    "Combine two Bell pairs and a Bell-basis measurement to entangle qubits that share no gate",
+    "Choose the classically controlled corrections that give the same final state in every measurement branch",
+    "Quantify entanglement with the concurrence before and after the protocol"
+  ],
+  "mission": "Qubits 0 and 3 start in separate Bell pairs, (0, 1) and (2, 3). Entangle them without any gate acting on both: measure qubits 1 and 2 in the Bell basis and apply classically controlled corrections to qubit 3 so that qubits 0 and 3 end in |Φ⁺⟩ for every measurement result. Record c_before and c_after, the concurrence of qubits 0 and 3 after creating the pairs and at the end of the circuit.",
+  "hints": [
+    "Create the pairs with qc.h(0), qc.cx(0, 1) and qc.h(2), qc.cx(2, 3). The Bell measurement on qubits 1 and 2 is the one from lesson 1.6: qc.cx(1, 2), qc.h(1), then qc.measure(1, 0) and qc.measure(2, 1).",
+    "The corrections are those of teleportation with qubit 3 as Bob's: apply X to qubit 3 if the bit from qubit 2 is 1, then Z if the bit from qubit 1 is 1, each inside with qc.if_test((qc.clbits[k], 1)): block.",
+    "Record c_before = float(concurrence(partial_trace(final_state(qc), [1, 2]))) right after creating the pairs, and the same expression again at the end for c_after. partial_trace removes qubits 1 and 2 and leaves the state of qubits 0 and 3."
+  ],
+  "prediction": {
+    "question": "Qubits 0 and 3 never interact, yet they end up entangled. What gives them this correlation?",
+    "options": [
+      "A gate that the Bell measurement applies to qubits 0 and 3",
+      "The Bell measurement on qubits 1 and 2 projects the four-qubit state onto a state in which qubits 0 and 3 are entangled",
+      "The classically controlled corrections, which send the measured bits to qubit 0"
+    ],
+    "explanation": "The measurement acts only on qubits 1 and 2, but it projects the four-qubit state, and each result leaves qubits 0 and 3 in one of the four Bell states. The corrections on qubit 3 turn that state into |Φ⁺⟩. Nothing is sent to qubit 0, so its reduced state before the corrections is already maximally mixed and no signal can be read from it."
+  },
+  "messages": {
+    "ok": "Qubits 0 and 3 end in |Φ⁺⟩ in all {total} sampled runs (with {outcomes} different measurement results), with concurrence {before} before and {after} after.",
+    "wrong_size": "Create the circuit as `qc = QuantumCircuit(4, 2)`: four qubits and two classical bits.",
+    "forbidden_pair": "A gate acts on qubits 0 and 3 together. The two ends may not interact: use only gates on (0, 1), (2, 3) and (1, 2), and corrections on a single qubit.",
+    "measured_end": "Qubit {qubit} is measured. Measure only the middle qubits 1 and 2, so that qubits 0 and 3 keep their state.",
+    "no_measurement": "The circuit has no measurement. Measure qubits 1 and 2 in the Bell basis (after qc.cx(1, 2) and qc.h(1)) and store the results in classical bits.",
+    "branch_wrong": "Qubits 0 and 3 are not in |Φ⁺⟩ in any of {total} sampled runs (worst fidelity {fidelity}). Check the pairs and the Bell measurement before the corrections.",
+    "branch_partial": "Qubits 0 and 3 are in |Φ⁺⟩ in only {good} of {total} sampled runs (worst fidelity {fidelity}). The corrections must cover every measurement result: X on qubit 3 for the bit of qubit 2, Z for the bit of qubit 1.",
+    "no_record": "Store the concurrences in the numbers `c_before` and `c_after`.",
+    "before_wrong": "c_before = {value}, but before the measurement qubits 0 and 3 are in a product state, so their concurrence is 0. Compute it right after creating the pairs.",
+    "after_wrong": "c_after = {value}, but the final state of qubits 0 and 3 is |Φ⁺⟩, with concurrence 1. Compute it from the final circuit, after the corrections."
+  }
+}

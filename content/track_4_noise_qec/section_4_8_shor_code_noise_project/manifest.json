@@ -1,0 +1,63 @@
+{
+  "id": "4.8",
+  "track": 4,
+  "estimated_minutes": 60,
+  "framework": "pennylane",
+  "timeout": 20,
+  "num_qubits": 9,
+  "max_qubits": 9,
+  "qnode": {
+    "name": "circuit",
+    "args": []
+  },
+  "register": {
+    "qubits": [
+      0,
+      3,
+      6
+    ]
+  },
+  "controls": [
+    {
+      "id": "error",
+      "options": [
+        "none",
+        "x4",
+        "y4",
+        "z4",
+        "u4",
+        "x0x1",
+        "z0z3",
+        "x0z3"
+      ],
+      "default": "y4"
+    }
+  ],
+  "default_visualizer": "histogram",
+  "available_visualizers": [
+    "histogram",
+    "bloch"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 10.2, “The Shor code”, pp. 432–435; Section 8.3.4, “Depolarizing channel”, pp. 378–380; Section 10.6.1, “Fault-tolerance: the big picture”, pp. 475–482"
+    },
+    {
+      "kind": "course",
+      "title": "Correcting quantum errors: The 9-qubit Shor code",
+      "authors": "IBM Quantum Learning, Foundations of quantum error correction",
+      "location": "Sections “Code description”, “Correcting bit-flip and phase-flip errors” and “Error reduction for random errors”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/shor-code"
+    }
+  ],
+  "project": true
+}

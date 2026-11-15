@@ -85,7 +85,7 @@
         {
           "id": "1.11",
           "title": "Project: Entanglement Swapping",
-          "summary": "To be written."
+          "summary": "Entangle two qubits that never interacted by measuring their partners in the Bell basis."
         }
       ]
     },
@@ -147,7 +147,7 @@
         {
           "id": "2.11",
           "title": "Project: Design a Grover Oracle",
-          "summary": "To be written."
+          "summary": "Build the oracle for a three-variable Boolean formula, then search its solutions with Grover's algorithm."
         }
       ]
     },
@@ -179,7 +179,7 @@
         {
           "id": "3.5",
           "title": "Project: A Variational Dissociation Curve",
-          "summary": "To be written."
+          "summary": "Compute the H₂ ground-state energy with VQE at several bond lengths and locate the equilibrium distance."
         }
       ]
     },
@@ -226,7 +226,7 @@
         {
           "id": "4.8",
           "title": "Project: The Shor Code Under Noise",
-          "summary": "To be written."
+          "summary": "Build the nine-qubit Shor code, compute its logical failure probability under depolarizing noise exactly, and find the physical error rate below which encoding helps."
         }
       ]
     },
@@ -258,7 +258,7 @@
         {
           "id": "5.5",
           "title": "Project: A Mitigated Estimate on a Noisy Device",
-          "summary": "To be written."
+          "summary": "Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty."
         }
       ]
     }

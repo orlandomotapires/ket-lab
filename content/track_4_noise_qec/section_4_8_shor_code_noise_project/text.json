@@ -1,0 +1,50 @@
+{
+  "title": "Project: The Shor Code Under Noise",
+  "summary": "Build the nine-qubit Shor code, compute its logical failure probability under depolarizing noise exactly, and find the physical error rate below which encoding helps.",
+  "objectives": [
+    "Implement and verify a Shor-code decoder against every single-qubit Pauli error",
+    "Compute the logical failure probability exactly by enumerating Pauli error patterns with their probabilities",
+    "Compare the encoded qubit with an unprotected qubit and locate the crossover p*"
+  ],
+  "mission": "Part 1: complete encode() and decode() as in lesson 4.4, so that qubit 0 returns to |ψ⟩ after an X, Y or Z error on any one of the nine qubits. Part 2: define logical_pauli(error), which takes a list of nine letters from I, X, Y, Z (error[q] acts on qubit q, applied between encoding and decoding) and returns the Pauli that is left on the logical qubit after majority-vote decoding. Part 3: define logical_failure(p), the probability that the logical Pauli is not I when every qubit independently suffers the depolarizing channel with probability p (I with probability 1 − p; X, Y, Z with probability p/3 each), and bare_failure(p) for one unprotected qubit. Part 4: store in p_star the smallest p > 0 at which logical_failure(p) = bare_failure(p), to within 0.003.",
+  "prediction": {
+    "question": "For small p, how does the logical failure probability of the Shor code scale?",
+    "options": [
+      "Proportional to p, with a smaller coefficient than the bare qubit",
+      "Proportional to p², because the smallest failing pattern has two errors",
+      "Proportional to p³, because the code has distance 3"
+    ],
+    "explanation": "The code corrects every single-qubit error, so a failure needs at least two errors, and some pairs do fail: two X errors in one block leave a logical Z. The failure probability is therefore about N p² with N the number of failing pairs weighted by 1/9 (each of the two errors is an X or a Y with probability 2p/3), which beats the bare qubit only when p is small. The distance of the code is 3, but the Shor code does not correct every pair of errors, so the leading term is p², not p³."
+  },
+  "hints": [
+    "Encode and decode exactly as in lesson 4.4: the phase-flip code on the leaders 0, 3, 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5), (6, 7, 8). Decode with CNOT, CNOT, Toffoli in each block, then Hadamard on the leaders and the same vote.",
+    "Work block by block. In a block, the inner vote flips the leader when at least two of the three qubits carry X or Y. The leader picks up a Z when an odd number of qubits carry Y or Z. Across blocks: the logical qubit gets an X when at least two blocks have an odd Z count, and a Z when an odd number of blocks had the inner vote fail. Both together make Y.",
+    "Each block has 4³ = 64 patterns, each with probability (1 − p)^(#I) (p/3)^(#X,Y,Z). Add these into four outcomes per block: (vote fails or not) × (Z parity odd or even). Combine three blocks (4³ = 64 combinations) and add the probability of every combination whose logical Pauli is not I. For p_star, evaluate logical_failure(p) − p on a grid or bisect: it is negative just above 0 and positive after the crossover."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "x4": "X on 4",
+        "y4": "Y on 4",
+        "z4": "Z on 4",
+        "u4": "Arbitrary rotation on 4",
+        "x0x1": "X on 0 and 1",
+        "z0z3": "Z on 0 and 3",
+        "x0z3": "X on 0, Z on 3"
+      }
+    }
+  },
+  "messages": {
+    "ok": "All criteria met: decoder, logical Pauli model, p_L(p) values, p_L < p for small p, and p* = {p_star} (reference {reference}).",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 9 qubits.",
+    "wrong_qubits": "The Shor code uses 9 qubits, but the circuit has {count}.",
+    "decoder": "Criterion 1, decoder: with the error {error} on one qubit, qubit 0 was not recovered (fidelity {fidelity}). Check the majority vote in each block and on the leaders.",
+    "missing": "Define {name} as described in the mission.",
+    "model": "Criterion 2, logical Pauli: for the error pattern {pattern} logical_pauli returned {actual}, but the decoder leaves {expected}. Recall: an X on the leader after the block vote is a logical Z, and an odd Z count in at least two blocks is a logical X.",
+    "values": "Criterion 3, p_L(p): at p = {p}, logical_failure returned {actual}, but the exact value is {expected} (tolerance 1e-6). Check the probabilities of the 64 patterns of a block and the combination of the three blocks.",
+    "below": "Criterion 4: at p = {p} the logical failure {actual} is not below the bare failure {bare}. For small p the encoded qubit must do better.",
+    "crossover": "Criterion 5, crossover: p_star is {actual}, but logical_failure(p) = p at p ≈ {expected} (tolerance 0.003). Look for the smallest p > 0 where logical_failure(p) − p changes sign."
+  }
+}

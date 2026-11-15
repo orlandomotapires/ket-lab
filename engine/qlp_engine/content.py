@@ -71,6 +71,22 @@ class ContentLibrary:
             ]
         }
 
+    def bibliography(self) -> dict:
+        """Todas as referências das lições (sem repetição, com as lições que as citam),
+        mais o material de aula e o software usados no desenvolvimento (content/sources.json)."""
+        entries: dict[str, dict] = {}
+        for lesson_id, folder in self._lessons.items():
+            for ref in _read_json(folder / "manifest.json").get("references", []):
+                key = ref["url"] if ref["kind"] != "book" else ref["title"]  # um livro, várias seções
+                entry = entries.setdefault(key, {k: ref[k] for k in ("kind", "title", "authors", "url")} | {"year": ref.get("year"), "lessons": []})
+                if lesson_id not in entry["lessons"]:
+                    entry["lessons"].append(lesson_id)
+        for entry in entries.values():
+            entry["lessons"].sort(key=lambda lesson_id: tuple(int(part) for part in lesson_id.split(".")))
+        works = sorted(entries.values(), key=lambda e: (e["kind"], e["authors"].lower(), e["title"].lower()))
+        sources = _read_json(self.root / "sources.json") if (self.root / "sources.json").exists() else {}
+        return {"works": works, "lectures": sources.get("lectures", []), "software": sources.get("software", [])}
+
     def glossary(self) -> list[dict]:
         """Termos do glossário (content/glossary.json), se existir."""
         path = self.root / "glossary.json"

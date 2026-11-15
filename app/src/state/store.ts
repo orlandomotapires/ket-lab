@@ -14,6 +14,7 @@ import type {
   ValidationResult,
 } from "../engine/types";
 import { t } from "../strings";
+import type { BibliographyData } from "../components/Bibliography";
 import { loadLocalProgress, saveLocalProgress } from "../lib/localProgress";
 import { clampStep, stepForLine } from "../lib/steps";
 
@@ -58,7 +59,9 @@ export function selectManual(state: Pick<State, "lesson" | "code">): boolean {
 
 interface State {
   connection: ConnectionStatus;
-  view: "hub" | "lab";
+  view: "hub" | "lab" | "references";
+  openReferences(): void;
+  loadBibliography(): Promise<BibliographyData | null>;
   catalog: Catalog | null;
   progress: Record<string, LessonProgress>;
   glossary: GlossaryEntry[];
@@ -350,6 +353,20 @@ export const useStore = create<State>((set, get) => {
     trustShared() {
       set({ codeTrusted: true });
       scheduleRun(0);
+    },
+
+    openReferences() {
+      window.clearTimeout(runTimer);
+      set({ view: "references" });
+    },
+
+    async loadBibliography() {
+      try {
+        const response = await engine().call<BibliographyData>("bibliography");
+        return response.ok ? response : null;
+      } catch {
+        return null;
+      }
     },
 
     backToHub() {

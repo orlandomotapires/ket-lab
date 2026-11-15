@@ -153,3 +153,16 @@ def test_challenge_is_solvable_and_harder_than_the_mission(library, lesson_id):
     assert not starter["passed"], lesson_id
     mission_solution = library.validation_bundle(lesson_id)["solution"]
     assert not validation.validate(mission_solution, bundle)["passed"], f"{lesson_id}: a solução da missão já resolve o desafio"
+
+
+def test_bibliography_gathers_every_reference_once(library):
+    data = library.bibliography()
+    works = data["works"]
+    cited = {(ref["url"] if ref["kind"] != "book" else ref["title"])
+             for lesson_id in library.lesson_ids for ref in library.lesson(lesson_id)["references"]}
+    keys = [(w["url"] if w["kind"] != "book" else w["title"]) for w in works]
+    assert sorted(keys) == sorted(cited)  # todas, sem repetição
+    nc = next(w for w in works if w["title"].startswith("Quantum Computation and Quantum Information"))
+    assert "1.5" in nc["lessons"] and nc["lessons"] == sorted(nc["lessons"], key=lambda i: tuple(map(int, i.split("."))))
+    assert data["lectures"] and data["software"]
+    assert all(s.get("url", "https://").startswith("https://") for s in data["lectures"] + data["software"])

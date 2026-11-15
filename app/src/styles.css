@@ -2301,3 +2301,48 @@ tr.is-zero {
 .composer-qubit {
   font-family: var(--font-mono);
 }
+
+/* Página de referências */
+.bibliography {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+}
+.bibliography h1 {
+  margin: 10px 0 6px;
+  font-size: 22px;
+}
+.bibliography h2 {
+  margin: 26px 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.bibliography h3 {
+  margin: 14px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.bib-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.bib-list a {
+  color: var(--accent-text);
+}
+.bib-cited {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.bib-cited .link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.hub-references {
+  display: block;
+  margin-top: 12px;
+}

@@ -1,8 +1,18 @@
 # Quantum Learning Platform — Plano Diretor
 
-Versão de 15/11/2026. Descreve a plataforma como ela é hoje: o que ensina, como funciona e por que foi feita assim. O histórico de desenvolvimento está resumido no fim; os próximos passos estão no [plano de revisão](plano-de-revisao.md).
+Versão de 15/11/2026. **Documento único do projeto**: descreve a plataforma como ela é hoje, registra o que foi feito e diz o que vem a seguir. Substitui os antigos `roadmap.md` e `plano-de-revisao.md`.
 
 A plataforma é uma aplicação web para **uma pessoa estudar Computação Quântica sozinha**, dos números complexos até correção de erros e execução em hardware real. O estudante escreve código Qiskit ou PennyLane e vê o estado quântico mudar a cada porta, enquanto digita. Cada lição tem teoria, uma missão validada matematicamente, dicas e referências com seção e páginas exatas. Não há professores, turmas nem contas.
+
+| Parte | Conteúdo |
+| :-- | :-- |
+| [1 a 5](#1-arquitetura) | A plataforma hoje: arquitetura, experiência de estudo, currículo, validação e estrutura do conteúdo |
+| [6](#6-histórico) | Histórico, com o roadmap de novembro de 2026 item a item |
+| [7](#7-situação-atual) | Situação atual em números |
+| [8](#8-riscos-e-decisões-em-aberto) | Riscos e decisões em aberto |
+| [9](#9-próximos-passos) | Próximos passos, com objetivo, trabalho, critério de pronto e esforço de cada item |
+
+Documentos de apoio: [guia de escrita](guia-de-escrita.md), [referências verificadas](referencias-verificadas.md), [decisão sobre o motor na web](decisao-motor-web.md) e o [guia de deploy](../deploy/README.md).
 
 ---
 
@@ -278,21 +288,242 @@ Regras de escrita em [guia-de-escrita.md](guia-de-escrita.md); referências só 
 | :-- | :-- |
 | Fatia vertical | Motor com rastreamento por instrução, worker isolado, WebSocket autenticado, lição 1.1, laboratório livre |
 | Trilhas 1 e 2 | Validadores de estado, distribuição, estado reduzido, oráculos e entradas; visualizações de amplitudes, fases, registrador e período |
-| Trilha 3 original | PennyLane, matriz densidade e canais de Kraus, lições de treino, paisagens e convergência |
-| Revisão com as aulas | Exercícios revistos com as aulas de Wegewijs e Müller (Quantum Information 2025) e de Willsch (Quantum Computing: Concepts and Algorithms, Jülich 2026) |
-| Simplificação | Saem o app desktop e os idiomas português e alemão; textos reescritos (didáticos e concisos) e nomes alinhados a Nielsen & Chuang e à IBM |
-| [Roadmap](roadmap.md) | CI e testes ponta a ponta, motor hospedado, Trilhas 0, 4 e 5, novas lições nas Trilhas 1 e 2, objetivos, desafios, projetos, glossário, acessibilidade, compositor, links, hardware real, página de referências |
+| Trilha 3 original | PennyLane, matriz densidade e canais de Kraus, lições de treino, paisagens e convergência; treino com curva ao vivo e exportação OpenQASM no laboratório livre |
+| Revisão com as aulas | Exercícios revistos com as aulas de Wegewijs e Müller (Quantum Information 2025) e de Willsch (Quantum Computing: Concepts and Algorithms, Jülich 2026); lições novas 1.7, 2.2 e a de matrizes densidade |
+| Simplificação | Saem o app desktop e os idiomas português e alemão; textos reescritos (didáticos e concisos) e nomes alinhados a Nielsen & Chuang e à IBM; referências com local exato |
+| Roadmap de novembro de 2026 | Ver a tabela abaixo |
+| Depois do roadmap | Sai o relatório da turma (a plataforma é para estudo individual); página de referências com guia de leitura dos livros; painel lateral do hub refeito; dependências da interface atualizadas (de 9 para 3 vulnerabilidades, só em ferramentas de teste) |
 
 As aulas de referência ficam no disco, fora do repositório (`Lecture Muller/`, `lecture (1)/`): são material de terceiros. As lições usam as ideias e os exemplos, com texto próprio.
 
+### 6.1 Roadmap de novembro de 2026, item a item
+
+Feito na branch `roadmap`, em fases: rede de segurança, forma de entrega, currículo, design, hardware real, prática e recursos extras.
+
+| Item | Situação | Notas |
+| :-- | :-- | :-- |
+| 0.1 CI no trabalho atual | Feito no repositório, ainda não executado | A CI passou a rodar em pushes de qualquer branch (antes, só em `main` e pull requests). Windows e macOS só são testados quando a branch for enviada (ver P1.1). |
+| 0.2 Testes ponta a ponta | Feito | Playwright: fluxos de lições, oráculos, treino, exportação, temas, telas estreitas, acessibilidade, guia, links, compositor, hardware, exportação do progresso e referências, mais o modo hospedado; as 44 lições abertas no navegador. Job na CI. |
+| 1.1 Spike do motor no navegador (Pyodide) | Feito: inviável | Qiskit e rustworkx (PennyLane) não têm build WebAssembly. Números em [decisao-motor-web.md](decisao-motor-web.md). |
+| 1.2a Versão web estática | Não se aplica | Descartada pelo 1.1. |
+| 1.2b Motor hospedado | Feito até o deploy | Modo `--public`, vários workers, progresso no navegador, `deploy/` (Dockerfiles, nginx, compose endurecido). Falta o que exige infraestrutura real: gVisor no servidor, um sandbox por sessão, revisão de segurança e teste de carga (ver P5.1). |
+| 1.3 Contas e sincronização | Não feito | Exige um provedor de login (OAuth) e banco de dados no servidor. Exportar e importar o progresso cobre a troca de dispositivo (ver P5.2). |
+| 2.1 Objetivos de aprendizagem | Feito | Obrigatórios em toda lição. Lacunas encontradas (tema da teoria que a missão não exercita) em P3.1. |
+| 2.2 Novas lições da Trilha 1 | Feito | 1.8 no-cloning, 1.9 superdense coding, 1.10 jogo CHSH. |
+| 2.3 Algoritmo de Simon | Feito | 2.5. |
+| 2.4 Divisão da Trilha 3 | Feito | Trilha 3, Variational Algorithms; Trilha 4, Quantum Noise and Error Correction (4.1 a 4.7). |
+| 2.5 Simulação hamiltoniana | Feito | 2.10. |
+| 2.6 Trilha 0, kit de matemática | Feito | 0.1 a 0.4, lições sem circuito (tabela de variáveis). |
+| 3.1 Layout responsivo | Feito | Abas abaixo de 1080 px; testado em 768 e 390 px. |
+| 3.2 Acessibilidade | Feito (automático) | axe WCAG 2.1 A/AA sem violações graves nos dois temas; circuito pelo teclado; descrição textual do estado. Falta o teste manual com leitor de tela (ver P4.5). |
+| 3.3 Guia da primeira lição | Feito | |
+| 4.1 Trilha de hardware | Feito | Trilha 5 (5.1 a 5.4), com o transpilador e as primitivas do próprio Qiskit; ruído de dispositivo simulado por matriz densidade, sem Qiskit Aer. |
+| 4.2 Execução num computador da IBM | Feito, sem execução real | Testado com um serviço IBM simulado; uma execução real precisa da chave do estudante. Só com o motor local. |
+| 5.1 Desafios | Feito nas Trilhas 1 e 2 | 20 desafios. |
+| 5.2 Projetos de fim de trilha | Feito | 1.11 troca de emaranhamento, 2.11 oráculo de Grover, 3.5 curva de dissociação, 4.8 código de Shor com ruído, 5.5 estimativa mitigada; cada um com rubrica de 5 ou 6 critérios e mensagens próprias. A Trilha 0 não tem (é opcional). |
+| 5.3 Glossário | Feito | 102 termos. |
+| 6.1 Compositor de circuitos | Feito | Por cliques (funciona pelo teclado), com as portas da Trilha 1; 1.1, 1.2 e 1.5 resolvidas só com ele. |
+| 6.2 Links de compartilhamento | Feito | Código no fragmento do link; abre em modo de revisão e só roda depois de confirmado. |
+| 6.3 Modo turma | Removido | Fora do escopo: a plataforma é para uma pessoa estudar sozinha, não para professores e turmas. |
+
 ---
 
-## 7. Riscos e decisões em aberto
+## 7. Situação atual
 
-1. **Hospedagem pública.** Exige isolamento por sessão, revisão de segurança e teste de carga. Para uso pessoal, o modo local basta.
-2. **Instalação.** O modo local pede Python e Node; um caminho só com Docker está no plano de revisão (item 2.2).
-3. **Limite de memória fora do Linux.** No Windows e no macOS vale só o teto de qubits.
-4. **Profundidade desigual.** A Trilha 3 é a mais curta (5 lições).
-5. **Revisão humana.** 28 lições foram escritas com agentes de IA e passam nos testes de física e validação; falta uma leitura humana do ritmo didático e uma revisão do inglês por falante nativo.
-6. **Dados ocultos.** O código do estudante consegue ler os casos secretos; como o estudo é individual, só prejudica quem trapaceia.
-7. **CI fora do Linux.** Windows e macOS só são testados quando as branches forem enviadas ao GitHub.
+| Aspecto | Situação |
+|---|---|
+| Conteúdo | 44 lições em 6 trilhas, cerca de 20 h de estudo; 20 desafios (Trilhas 1 e 2); 5 projetos; glossário de 102 termos; referências com seção e páginas |
+| Profundidade por trilha | Trilha 0: 4 lições, ~1.600 palavras de teoria. Trilha 1: 11, ~4.800. Trilha 2: 11, ~4.700. **Trilha 3: 5, ~1.900**. Trilha 4: 8, ~4.500. Trilha 5: 5, ~2.200 |
+| Testes | 628 do motor, 21 da interface, 19 fluxos ponta a ponta e o modo hospedado; todos passam |
+| Validação mais lenta | 3.5 (5,4 s), 3.3 (1,5 s), 4.8 (1,1 s); as demais abaixo de 1 s |
+| Pacote da interface | `index.js` com 4,0 MB (1,0 MB comprimido); `scene3d.js` com 0,8 MB, já carregado à parte |
+| Código | `styles.css` com 2.478 linhas num arquivo só; `store.ts` com 545 linhas |
+| Texto | Nenhum travessão nas teorias; um "just" em 44 lições |
+| Documentação | Este documento único, mais os documentos de apoio citados no início |
+| Dependências | 3 vulnerabilidades, todas no Vitest (executor de testes, só em desenvolvimento); a correção exige Node 20.19+ (ver P4.3) |
+| Git | As branches `trilha-3` e `roadmap` nunca passaram pela CI; Windows e macOS sem teste |
+
+---
+
+## 8. Riscos e decisões em aberto
+
+Cada risco aponta para o item dos próximos passos que o resolve.
+
+1. **Hospedagem pública.** Exige isolamento por sessão, revisão de segurança e teste de carga. Para uso pessoal, o modo local basta (P5.1).
+2. **Instalação.** O modo local pede Python e Node, a maior barreira para quem estuda sozinho (P2.2).
+3. **Limite de memória fora do Linux.** No Windows e no macOS vale só o teto de qubits; no Windows, a solução seria um Job Object.
+4. **Profundidade desigual.** A Trilha 3 é a mais curta: 5 lições e ~1.900 palavras de teoria (P3.2).
+5. **Revisão humana.** 28 lições foram escritas com agentes de IA e passam nos testes de física e validação; falta uma leitura humana do ritmo didático (P3.3) e uma revisão do inglês por falante nativo (P3.4).
+6. **Dados ocultos.** O código do estudante consegue ler os casos secretos; como o estudo é individual, só prejudica quem trapaceia (P4.4).
+7. **CI fora do Linux.** Windows e macOS só são testados quando as branches forem enviadas ao GitHub (P1.1).
+8. **Hardware real nunca executado.** A integração com a IBM foi testada com um serviço simulado; a primeira execução real vai exigir uma chave e pode revelar diferenças de API.
+
+---
+
+## 9. Próximos passos
+
+Cada item traz o objetivo, o trabalho, o critério de pronto e o esforço (P ≤ 2 dias, M ≤ 1 semana, G ≤ 3 semanas). Os itens se chamam P1.1, P2.1… para não confundir com os ids das lições.
+
+### Fase 1: Fechar o que existe
+
+#### P1.1 Enviar as branches e rodar a CI (P)
+
+- **Objetivo:** validar o trabalho nos três sistemas e consolidar a `main`.
+- **Trabalho:** `git push` de `trilha-3` e `roadmap` (exige o seu ok, é uma ação externa); acompanhar os jobs `engine` (Linux, Windows, macOS), `app` e `e2e`; corrigir o que falhar fora do Linux (caminhos, `resource`/limite de memória no Windows, tempo dos testes); abrir o pull request `roadmap → main` e fazer o merge.
+- **Pronto quando:** a CI está verde nos três sistemas e a `main` tem a plataforma atual.
+
+#### P1.2 Documentação coerente (P)
+
+- **Situação: feito.** Os três documentos (plano diretor, roadmap e plano de revisão) viraram este, sem informação repetida; o README aponta para ele.
+
+---
+
+### Fase 2: Experiência de quem estuda sozinho
+
+#### P2.1 Ver a solução quando travar (M)
+
+- **Objetivo:** hoje, depois das 3 dicas, quem continua errando não tem saída.
+- **Trabalho:**
+  - Depois de abrir todas as dicas e de algumas tentativas de Check sem sucesso (por exemplo, 3), aparece "Show a solution", com confirmação ("Tente de novo antes; a solução tira o desafio da lição").
+  - A solução vem comentada: cada passo com uma linha explicando a ideia, não só o código. Isso exige escrever `solution_explained.md` (ou comentários na `solution.py`) para as 44 lições.
+  - O progresso registra que a solução foi vista; a lição pode ser concluída mesmo assim, mas o hub mostra "concluída com solução".
+  - Desafios e projetos seguem a mesma regra, com o próprio texto.
+- **Pronto quando:** toda lição tem solução comentada, o botão só aparece nas condições acima e há teste ponta a ponta.
+
+#### P2.2 Começar sem instalar Python e Node (M)
+
+- **Objetivo:** tirar a maior barreira de entrada (`npm run setup` + `npm run dev`).
+- **Trabalho:**
+  - Um modo local do `deploy/`: `docker compose -f deploy/local.yml up` sobe motor e interface em `http://localhost:8080`, com progresso num volume do Docker (em vez do navegador) e sem o modo público.
+  - Imagem publicada (GitHub Container Registry) para quem não quer construir: `docker run -p 8080:8080 …`.
+  - README com dois caminhos: "só usar" (Docker) e "desenvolver" (setup atual).
+- **Pronto quando:** numa máquina só com Docker, um comando abre a plataforma e o progresso sobrevive a reiniciar o contêiner.
+
+#### P2.3 Progresso mais completo no hub (P)
+
+- **Objetivo:** que o hub mostre o que já foi feito e quanto falta.
+- **Trabalho:** contar desafios concluídos por trilha ("7/11 lições, 3/10 desafios"); tempo restante estimado por trilha (soma de `estimated_minutes` das lições não concluídas); marcar a trilha concluída com desafios incluídos de forma distinta.
+- **Pronto quando:** o hub mostra lições, desafios e tempo restante por trilha.
+
+#### P2.4 Revisão ao fim de cada trilha (M)
+
+- **Objetivo:** fixar os conceitos antes de avançar, sem depender de código.
+- **Trabalho:** um questionário curto por trilha (8 a 12 perguntas de múltipla escolha com explicação), reaproveitando as previsões das lições e perguntas conceituais novas; aparece no fim da trilha e pode ser refeito; mostra quais lições revisar a partir das erradas.
+- **Pronto quando:** as Trilhas 1 a 5 têm revisão, com testes de conteúdo (resposta correta existe, explicação presente, lição de origem existe).
+
+---
+
+### Fase 3: Conteúdo
+
+#### P3.1 Lacunas entre objetivos e missões (P)
+
+- **Objetivo:** que cada lição cobre o que a teoria ensina.
+- **Trabalho:**
+
+  | Lição | O que a teoria ensina e a missão não cobra | Proposta |
+  |---|---|---|
+  | 1.1 | Normalização; coordenadas na esfera de Bloch | Previsão sobre normalizar um vetor, ou desafio que pede `theta` e `phi` de um estado |
+  | 1.2 | \|−⟩ e HH = I | Desafio ou previsão com \|−⟩ e H aplicado duas vezes |
+  | 1.3 | R_z (está no título e no resumo) | Missão ou desafio com `rz` e a relação R_z = e^{−iθ/2}P |
+  | 1.5 | O aviso de ordem dos qubits (\|Φ⁺⟩ é simétrico e não testa isso) | Pedir um estado assimétrico, como \|01⟩ + \|10⟩ com sinal, ou um produto \|+⟩\|0⟩ |
+  | 4.2 | O limiar (checado pelo controle de erro, mas fora da missão) | Mencionar o limiar na missão e nas dicas, ou tirá-lo do resumo |
+
+- **Pronto quando:** os objetivos dessas lições incluem o tema e a validação o exercita.
+
+#### P3.2 Aprofundar a Trilha 3 (G)
+
+- **Objetivo:** a trilha mais curta (5 lições, ~1.900 palavras) cobre pouco do curso *Variational algorithm design* da IBM.
+- **Trabalho:** lições candidatas, todas com referência verificada:
+  - ansätze e variational forms (expressividade, emaranhamento, número de parâmetros);
+  - otimizadores (gradiente, SPSA, COBYLA) e o custo em número de avaliações;
+  - barren plateaus (gradientes que somem com a profundidade; já citados na página "Optimization loops" da IBM);
+  - VQE com mais de um parâmetro (por exemplo, LiH ou H₂ com ansatz geral).
+- **Pronto quando:** a Trilha 3 tem pelo menos 8 lições e teoria comparável às Trilhas 1 e 2.
+
+#### P3.3 Leitura humana das lições escritas por agentes (M)
+
+- **Objetivo:** as 28 lições novas passam nos testes (física, validação, formato), mas os testes não garantem ritmo didático nem coerência entre lições.
+- **Trabalho:** ler cada trilha de ponta a ponta (você ou alguém da área), anotando saltos de dificuldade, repetições, termos usados antes de definidos e exemplos fracos; corrigir em lote por trilha.
+- **Pronto quando:** cada trilha foi lida inteira e as anotações foram resolvidas.
+
+#### P3.4 Revisão do inglês (P a M)
+
+- **Objetivo:** o texto veio de tradução e reescrita automáticas.
+- **Trabalho:** revisão por falante nativo (ou leitura cuidadosa com foco em naturalidade), começando pela Trilha 1 e pela interface (`strings.ts`).
+- **Pronto quando:** a Trilha 1 e a interface foram revisadas; as demais na sequência.
+
+---
+
+### Fase 4: Qualidade técnica
+
+#### P4.1 Carregamento mais leve (M)
+
+- **Objetivo:** o pacote inicial de 4 MB pesa na primeira visita, principalmente no modo hospedado.
+- **Trabalho:** carregar sob demanda o editor Monaco (só no laboratório), o KaTeX (só na teoria), as visualizações de treino e o compositor; medir com o relatório do build; manter o hub leve.
+- **Pronto quando:** o pacote inicial fica abaixo de 1,5 MB e o hub abre sem baixar o editor.
+
+#### P4.2 Organização do código (M)
+
+- **Objetivo:** reduzir o risco de mudanças quebrarem partes distantes (nesta sessão, substituir um bloco do `styles.css` apagou os estilos do hub).
+- **Trabalho:** dividir o `styles.css` por componente (um arquivo por área: hub, laboratório, visualizações, diálogos, referências), mantendo os tokens de tema num arquivo base; dividir o `store.ts` por assunto (motor e conexão, lição e execução, progresso, desafios, hardware).
+- **Pronto quando:** nenhum arquivo de estilo passa de ~400 linhas, o store está em fatias e todos os testes passam sem mudança de comportamento.
+
+#### P4.3 Node 22 e as últimas vulnerabilidades de desenvolvimento (P)
+
+- **Objetivo:** o `npm audit` ainda aponta 3 vulnerabilidades (1 moderada, 2 críticas), todas no Vitest, o executor dos testes unitários: não chegam ao navegador nem ao motor. A versão corrigida (Vitest 4.1.12, com Vite 7 e Playwright atual) exige Node 20.19 ou mais novo, e a máquina de desenvolvimento usa o Node 18, sem suporte desde abril de 2025.
+- **Trabalho:** instalar o Node 22 LTS (por exemplo com nvm ou fnm); atualizar Vite para 7, `@vitejs/plugin-react` para 5, Vitest para 4 e o Playwright para a versão atual; declarar `engines.node` no `package.json`; usar Node 22 na CI.
+- **Pronto quando:** `npm audit` não aponta nada e todos os testes passam no Node 22.
+
+#### P4.4 Dados ocultos expostos ao código do aluno (P, prioridade baixa)
+
+- **Objetivo:** os casos secretos (`_QLP_INPUT`) e funções auxiliares do setup oculto (como o modelo de ruído da 5.5) podem ser lidos pelo próprio código do aluno.
+- **Trabalho:** guardar o estado do setup oculto num fecho (closure) ou objeto sem nome acessível; o guard recusa nomes que começam com `_QLP`.
+- **Pronto quando:** um teste mostra que o código do aluno não consegue ler o segredo de nenhuma lição de oráculo.
+- **Nota:** como a pessoa estuda sozinha, ler o segredo só prejudica quem o faz; por isso a prioridade é baixa.
+
+#### P4.5 Teste manual com leitor de tela (P)
+
+- **Objetivo:** a auditoria automática (axe) passa, mas não substitui o uso real.
+- **Trabalho:** percorrer uma lição com NVDA (Windows) ou VoiceOver (macOS): hub, teoria, editor, circuito pelo teclado, Check, dicas e desafio.
+- **Pronto quando:** os problemas encontrados estão anotados e corrigidos.
+
+---
+
+### Fase 5: Só se a plataforma for publicada
+
+#### P5.1 Hospedagem pública (G)
+
+- **Objetivo:** abrir a plataforma a qualquer pessoa pela internet.
+- **Trabalho:** os pendentes do [deploy/README.md](../deploy/README.md): gVisor no servidor, um sandbox por sessão (o código do aluno roda no servidor), revisão de segurança, teste de carga e limites de uso por IP.
+- **Pronto quando:** a revisão de segurança passa e o teste de carga aguenta o número esperado de pessoas.
+- **Nota:** para uso pessoal (local ou com o Docker do item P2.2), nada disso é necessário.
+
+#### P5.2 Contas e sincronização do progresso (M, opcional)
+
+- **Objetivo:** que o progresso acompanhe o estudante entre dispositivos sem exportar e importar arquivos.
+- **Trabalho:** login (OAuth com GitHub ou Google), progresso guardado no servidor, migração do SQLite local.
+- **Pronto quando:** o progresso aparece igual em dois dispositivos com a mesma conta.
+- **Depende de:** P5.1. Para uso pessoal, exportar e importar o progresso já resolve.
+
+---
+
+### Ordem recomendada
+
+| Ordem | Item | Esforço | Por quê |
+| :-- | :-- | :-- | :-- |
+| 1 | P1.1 Enviar as branches e rodar a CI | P | Valida tudo o que já foi feito, nos três sistemas |
+| 2 | P2.1 Ver a solução quando travar | M | É o que mais falta para quem estuda sem ajuda |
+| 3 | P2.2 Começar sem instalar Python e Node | M | Tira a maior barreira de entrada |
+| 4 | P3.1 Lacunas entre objetivos e missões | P | Correções concretas e pequenas |
+| 5 | P4.1 Carregamento mais leve | M | Primeira impressão e modo hospedado |
+| 6 | P4.3 Node 22 e vulnerabilidades de desenvolvimento | P | Fecha as últimas vulnerabilidades; depende de instalar o Node 22 |
+| 7 | P2.3 Progresso mais completo no hub | P |  |
+| 8 | P4.2 Organização do código | M |  |
+| 9 | P3.2 Aprofundar a Trilha 3 | G |  |
+| 10 | P2.4 Revisão ao fim de cada trilha | M |  |
+| 11 | P3.3 Leitura humana das lições novas | M | Depende de você ou de alguém da área |
+| 12 | P3.4 Revisão do inglês | P a M | Depende de um revisor |
+| 13 | P4.5 Teste com leitor de tela | P |  |
+| 14 | P4.4 Dados ocultos | P | Prioridade baixa |
+| 15 | P5.1 Hospedagem pública | G | Só se decidir publicar |
+| 16 | P5.2 Contas e sincronização | M | Opcional, depois de P5.1 |

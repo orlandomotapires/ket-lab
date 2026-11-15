@@ -173,3 +173,36 @@ test("link de compartilhamento: abre em revisão e só roda depois de aceito", a
   await expect(other.locator(".circuit .gate")).toHaveCount(2);
   expect(errors).toEqual([]);
 });
+
+test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  const compose = async (gate: string, ...qubits: string[]) => {
+    await page.locator(".composer-gate", { hasText: new RegExp(`^${gate}$`) }).click();
+    for (const q of qubits) await page.locator(".composer-qubit", { hasText: q }).click();
+  };
+  const solveWith = async (query: string, id: string, steps: [string, ...string[]][]) => {
+    await openLessonBySearch(page, query, id);
+    await page.getByRole("button", { name: "Compose" }).click();
+    for (const [gate, ...qubits] of steps) await compose(gate, ...qubits);
+    await expect(page.locator(".circuit .gate")).toHaveCount(steps.length);
+    await pressButton(page, "Check");
+    await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+    await page.getByRole("button", { name: "Tracks" }).click();
+  };
+  await solveWith("computational basis", "1.1", [["X", "q0"]]);
+  await solveWith("Hadamard", "1.2", [["H", "q0"], ["H", "q1"], ["H", "q2"], ["Measure", "q0"], ["Measure", "q1"], ["Measure", "q2"]]);
+  await solveWith("entanglement", "1.5", [["H", "q0"], ["CNOT", "q0", "q1"]]);
+
+  // Remover: seleciona a porta no circuito e apaga a linha correspondente.
+  await openLessonBySearch(page, "computational basis", "1.1");
+  await pressButton(page, "Reset code"); // a lição volta com a solução salva acima
+  await expect(page.locator(".circuit .gate")).toHaveCount(0);
+  await page.getByRole("button", { name: "Compose" }).click();
+  await compose("H", "q0");
+  await expect(page.locator(".circuit .gate")).toHaveCount(1);
+  await page.locator(".circuit .gate .gate-box").first().click();
+  await page.getByRole("button", { name: "Remove selected gate" }).click();
+  await expect(page.locator(".circuit .gate")).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

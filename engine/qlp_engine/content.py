@@ -73,7 +73,12 @@ class ContentLibrary:
 
     def bibliography(self) -> dict:
         """Todas as referências das lições (sem repetição, com as lições que as citam),
-        mais o material de aula e o software usados no desenvolvimento (content/sources.json)."""
+        mais o material de aula e o software usados no desenvolvimento (content/sources.json).
+
+        Livros viram um guia de leitura: cada trecho citado (seção, título, páginas), na
+        ordem do livro, com as lições que o citam. Artigos ficam em ordem de sobrenome do
+        primeiro autor; páginas de curso, na ordem em que o currículo as usa.
+        """
         entries: dict[str, dict] = {}
         for lesson_id, folder in self._lessons.items():
             for ref in _read_json(folder / "manifest.json").get("references", []):
@@ -81,11 +86,35 @@ class ContentLibrary:
                 entry = entries.setdefault(key, {k: ref[k] for k in ("kind", "title", "authors", "url")} | {"year": ref.get("year"), "lessons": []})
                 if lesson_id not in entry["lessons"]:
                     entry["lessons"].append(lesson_id)
+                if ref["kind"] == "book":
+                    sections = entry.setdefault("sections", {})
+                    for part in _split_location(ref["location"]):
+                        cited = sections.setdefault(part, [])
+                        if lesson_id not in cited:
+                            cited.append(lesson_id)
         for entry in entries.values():
-            entry["lessons"].sort(key=lambda lesson_id: tuple(int(part) for part in lesson_id.split(".")))
-        works = sorted(entries.values(), key=lambda e: (e["kind"], e["authors"].lower(), e["title"].lower()))
+            entry["lessons"].sort(key=_lesson_key)
+            if "sections" in entry:
+                entry["sections"] = sorted(
+                    ({"location": part, "lessons": sorted(ids, key=_lesson_key)} for part, ids in entry["sections"].items()),
+                    key=lambda section: _location_key(section["location"]),
+                )
+        works = list(entries.values())
+        books = sorted((w for w in works if w["kind"] == "book"), key=lambda w: _surname(w["authors"]))
+        papers = sorted((w for w in works if w["kind"] == "paper"), key=lambda w: (_surname(w["authors"]), w.get("year") or 0))
+        # Cursos e tutoriais: na ordem do currículo (a primeira lição que os cita, fora da
+        # Trilha 0, que é opcional e citaria as páginas fora da ordem do curso).
+        def by_use(work: dict) -> tuple:
+            main = [lesson for lesson in work["lessons"] if not lesson.startswith("0.")] or work["lessons"]
+            return (_lesson_key(main[0]), work["title"])
+        courses = sorted((w for w in works if w["kind"] == "course"), key=by_use)
+        tutorials = sorted((w for w in works if w["kind"] == "tutorial"), key=by_use)
         sources = _read_json(self.root / "sources.json") if (self.root / "sources.json").exists() else {}
-        return {"works": works, "lectures": sources.get("lectures", []), "software": sources.get("software", [])}
+        return {
+            "works": books + papers + courses + tutorials,
+            "lectures": sources.get("lectures", []),
+            "software": sources.get("software", []),
+        }
 
     def glossary(self) -> list[dict]:
         """Termos do glossário (content/glossary.json), se existir."""
@@ -250,6 +279,48 @@ class ContentLibrary:
 
 
 _DASHES = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-", "\u2212": "-"})
+
+
+def _lesson_key(lesson_id: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in lesson_id.split("."))
+
+
+def _surname(authors: str) -> str:
+    """Sobrenome do primeiro autor ("A. Yu. Kitaev" -> "kitaev"), sem acentos."""
+    first = authors.split(",")[0].strip()
+    return _fold(first.split()[-1] if first else "")
+
+
+def _split_location(location: str) -> list[str]:
+    """Separa "Section 1.3.6, …, pp. 25–26; Section 2.2.8, …" nos trechos, sem quebrar
+    os parênteses (que às vezes têm ponto e vírgula dentro)."""
+    parts, depth, current = [], 0, ""
+    for char in location:
+        depth += char == "("
+        depth -= char == ")"
+        if char == ";" and depth == 0:
+            parts.append(current.strip())
+            current = ""
+        else:
+            current += char
+    parts.append(current.strip())
+    pieces = []
+    for part in parts:
+        # "…, pp. 447–449, and Section 12.2, …": cada seção é um trecho próprio.
+        pieces += re.split(r",? and (?=(?:Sections? |Figure |Exercise |Box ))", part)
+    # As notas entre parênteses são de cada lição; o trecho do livro é o mesmo.
+    # (Números como "(1.50)" ficam: só sai o que tem texto, com espaços.)
+    cleaned = (re.sub(r"\s*\((?=[^)]*\s)[^)]*\)", "", piece).strip(" ,") for piece in pieces)
+    return [piece[0].upper() + piece[1:] for piece in cleaned if piece]
+
+
+def _location_key(location: str) -> tuple:
+    """Ordem do livro: pela primeira página citada; sem página, pelo número da seção."""
+    page = re.search(r"\bpp?\. (\d+)", location)
+    if page:
+        return (0, int(page.group(1)))
+    number = re.search(r"(\d+(?:\.\d+)*)", location)
+    return (1, tuple(int(n) for n in number.group(1).split("."))) if number else (2, location)
 
 
 def _fold(text: str) -> str:

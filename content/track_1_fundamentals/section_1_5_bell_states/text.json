@@ -20,5 +20,13 @@
       "It cannot be decided without measuring both qubits"
     ],
     "explanation": "Here a₀₀a₁₁ = (1/2)(−1/2) = −1/4 and a₀₁a₁₀ = (1/2)(−1/2) = −1/4, so the product test is satisfied. The state is |−⟩ on qubit 1 and |+⟩ on qubit 0. Having several nonzero amplitudes does not imply entanglement."
+  },
+  "challenge": {
+    "mission": "The variable `bell` is defined for you and takes a value from 0 to 3. Prepare the Bell state it selects on qubits 0 and 1: 0 for |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, 1 for |Φ⁻⟩ = (|00⟩ − |11⟩)/√2, 2 for |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2, 3 for |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2. The circuit is tested with all four values, so it must use `bell` and not a fixed choice.",
+    "hints": [
+      "Start from the circuit that creates |Φ⁺⟩ and decide which single-qubit gate turns it into each of the other three.",
+      "Z on one qubit of |Φ⁺⟩ changes the sign of |11⟩, giving |Φ⁻⟩. X on one qubit exchanges |00⟩ with |10⟩ and |11⟩ with |01⟩, giving |Ψ⁺⟩.",
+      "Use the two bits of `bell`: if bell & 1 apply Z, if bell & 2 apply X. For bell = 3 both are applied and the result is |Ψ⁻⟩ up to a global phase."
+    ]
   }
 }

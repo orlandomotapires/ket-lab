@@ -28,5 +28,22 @@
     "alice_local": "Between the two CNOT gates only Alice acts, and Alice owns qubit 1. A gate on another qubit uses a qubit that Alice does not hold.",
     "protocol_fixed": "For the message {message}, the pair creation or Bob's decoding differs from the other messages. Only Alice's gates may depend on the message.",
     "wrong_message": "For the message {message}, Bob reads {observed}."
+  },
+  "challenge": {
+    "mission": "The shared pair is now |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2 instead of |Φ⁺⟩: the circuit up to and including its first two-qubit gate must prepare it. Keep Bob's decoding (CNOT from 1 to 0, then H on qubit 1). Alice still acts only on qubit 1, and her gates, chosen from `message`, must make the final state |q1 q0⟩ equal to the message for all four messages.",
+    "hints": [
+      "The four Bell states are mapped to the four messages by Bob's decoding: |Φ⁺⟩ to 00, |Φ⁻⟩ to 10, |Ψ⁺⟩ to 01, |Ψ⁻⟩ to 11. Alice's gates must turn |Ψ⁻⟩ into the Bell state of her message.",
+      "To prepare |Ψ⁻⟩, start with X on both qubits to get |11⟩, then H on qubit 0 and a CNOT from 0 to 1.",
+      "With |Ψ⁻⟩ and no gate from Alice, Bob reads 11. Z on qubit 1 turns |Ψ⁻⟩ into |Ψ⁺⟩, and X turns it into |Φ⁻⟩. Work out which of the four combinations gives each message."
+    ],
+    "messages": {
+      "ok": "All four messages arrive using the pair |Ψ⁻⟩.",
+      "wrong_size": "The variable `qc` must be a QuantumCircuit with 2 qubits, for every message.",
+      "gate_count": "The circuit must contain exactly two two-qubit gates, the one that creates the pair and the one that starts the decoding; it has {count}.",
+      "alice_local": "Between the two two-qubit gates, Alice may act only on qubit 1.",
+      "protocol_fixed": "The pair and Bob's decoding must not depend on the message; they differ for the message {message}.",
+      "wrong_pair": "After the first two-qubit gate the state is not |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2.",
+      "wrong_message": "For the message {message} the decoded result is {observed}."
+    }
   }
 }

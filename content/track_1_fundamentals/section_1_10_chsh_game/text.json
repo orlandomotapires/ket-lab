@@ -31,5 +31,25 @@
     "low": "The winning probability is {probability}. A value of at least {threshold} is needed.",
     "variable_missing": "Set `win_probability`. The exact value of your strategy is {probability}.",
     "variable_wrong": "`win_probability` is {reported}, but the strategy wins with probability {probability}."
+  },
+  "challenge": {
+    "mission": "Bob's strategy is now fixed: he applies exactly Ry(π/3) when y = 0 and Ry(−π/6) when y = 1, and no other gate on qubit 1. Find Alice's two angles so that the winning probability is at least 0.85, and store it in `win_probability`. The other rules are unchanged: one two-qubit gate, Alice's rotation depends only on x.",
+    "hints": [
+      "For the pair |Φ⁺⟩ and Ry rotations α (Alice) and β (Bob), the answers agree with probability cos²((α − β)/2), so the correlation is cos(α − β).",
+      "Alice wants a = b (correlation near +1) for x = 0 with both of Bob's angles. For x = 1 she wants correlation near +1 for y = 0 and near −1 for y = 1. Bob's angles are 90° apart.",
+      "For x = 0 put α halfway between Bob's two angles. For x = 1 put α a quarter turn (π/4) from the first angle on the side that is farther from the second. Alternatively, loop over a grid of angles and keep the best."
+    ],
+    "messages": {
+      "ok": "Winning probability {probability}: above the classical limit of 3/4.",
+      "no_play": "Define a function `play(x, y)` that returns the circuit for the questions x and y.",
+      "wrong_size": "play(x, y) must return a QuantumCircuit with 2 qubits.",
+      "gate_count": "play(x, y) must contain exactly one two-qubit gate, the CNOT that creates the pair; it has {count}. Alice and Bob do not communicate afterwards.",
+      "alice_local": "Alice's gates on qubit 0 depend on y. Her rotation may depend only on her question x.",
+      "bob_local": "Bob's gates on qubit 1 depend on x. His rotation may depend only on his question y.",
+      "low": "The winning probability is {probability}. A value of at least {threshold} is needed.",
+      "variable_missing": "Set `win_probability`. The exact value of your strategy is {probability}.",
+      "variable_wrong": "`win_probability` is {reported}, but the strategy wins with probability {probability}.",
+      "bob_fixed": "Bob's rotation is fixed: Ry(π/3) for y = 0 and Ry(−π/6) for y = 1, and nothing else on qubit 1."
+    }
   }
 }

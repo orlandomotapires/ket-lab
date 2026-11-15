@@ -51,5 +51,19 @@
       "location": "Section “Quantum state vectors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_fidelity",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "h",
+        "z"
+      ],
+      "required_gates": [
+        "h",
+        "z"
+      ]
+    }
+  }
 }

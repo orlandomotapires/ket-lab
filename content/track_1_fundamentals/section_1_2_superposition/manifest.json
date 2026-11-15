@@ -53,5 +53,28 @@
       "location": "Subsection “Simulating measurements using Statevector”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/qiskit-implementation"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "counts_distribution",
+      "shots": 4096,
+      "tolerance": 0.05,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "measure"
+      ]
+    }
+  }
 }

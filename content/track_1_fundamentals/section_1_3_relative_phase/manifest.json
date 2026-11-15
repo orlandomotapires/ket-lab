@@ -65,5 +65,28 @@
       "location": "Section “Unitary operations”, subsection “Examples of unitary operations on qubits”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_cases",
+      "tolerance": 0.999,
+      "required_gates": [
+        "h",
+        "t"
+      ],
+      "allowed_gates": [
+        "h",
+        "t",
+        "prepare_input",
+        "barrier"
+      ],
+      "cases": [
+        0,
+        1,
+        "plus",
+        "plusi",
+        "generic"
+      ]
+    }
+  }
 }

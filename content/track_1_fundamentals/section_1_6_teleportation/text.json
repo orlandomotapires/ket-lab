@@ -24,5 +24,13 @@
   "comparison": {
     "source_label": "Alice, original state",
     "target_label": "Bob, current state"
+  },
+  "challenge": {
+    "mission": "Teleport the state of qubit 0 to qubit 2 again, without measurements or classical bits. Measurements and the classically controlled corrections are replaced by controlled gates on Bob's qubit (deferred measurement). Qubit 2 must end in the input state for every test input. The circuit must contain exactly 2 H, 3 CNOT and 1 CZ gates, and no measurement.",
+    "hints": [
+      "A correction applied if a measured bit is 1 is the same as a controlled gate with the measured qubit as control, when the measurement is moved to the end.",
+      "The correction X on Bob's qubit depended on Alice's qubit 1, and Z depended on qubit 0. Use cx(1, 2) and cz(0, 2).",
+      "Build the Bell pair on 1 and 2, apply cx(0, 1) and h(0), and finish with cx(1, 2) and cz(0, 2). Nothing is measured, so qubits 0 and 1 end in a state that carries no information about the input."
+    ]
   }
 }

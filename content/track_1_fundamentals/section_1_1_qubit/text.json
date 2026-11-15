@@ -19,5 +19,13 @@
       "At the north pole, in |0⟩"
     ],
     "explanation": "A half turn around a horizontal axis exchanges the poles, so X|0⟩ = |1⟩ and X|1⟩ = |0⟩."
+  },
+  "challenge": {
+    "mission": "Take qubit 0 from |0⟩ to |1⟩ again, but only the gates H and Z are allowed, and both must appear. Remove the X gate. The final state must be |1⟩ up to a global phase.",
+    "hints": [
+      "Z does not move |0⟩ or |1⟩, it only changes the sign of the |1⟩ amplitude. Alone it cannot take the qubit away from the north pole.",
+      "H takes |0⟩ to |+⟩ on the equator. There Z is a half turn about the Z axis and takes |+⟩ to |−⟩.",
+      "Apply H, then Z, then H. Since H Z H = X, the sequence acts as an X gate."
+    ]
   }
 }

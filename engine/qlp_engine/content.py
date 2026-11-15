@@ -134,6 +134,8 @@ class ContentLibrary:
                 continue
             score = sum(weights[name] * text.count(term) for name, text in folded.items() for term in terms)
             score += 20 * sum(term in folded["title"] for term in terms) + (5 if lesson_id.startswith(query.strip()) else 0)
+            if lesson.get("project"):  # quem busca um conceito quer a lição que o ensina, não o projeto
+                score *= 0.5
             source = next((name for name in ("summary", "mission", "theory", "hints") if terms[0] in folded[name]), "summary")
             results.append({
                 "id": lesson_id,

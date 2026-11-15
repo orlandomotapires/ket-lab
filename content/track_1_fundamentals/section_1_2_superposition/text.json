@@ -20,5 +20,13 @@
       "It would be biased only if more than 60 zeros appeared"
     ],
     "explanation": "For N = 100 and p = 1/2, the standard deviation is σ = √(N p (1−p)) = 5. A count of 56 is 6 above 50, about 1.2σ, which is common. A fair generator rarely gives exactly 50, and the relative deviation shrinks as N grows."
+  },
+  "challenge": {
+    "mission": "Build biased bits. Measure each qubit into the classical bit with the same index so that bit 0 is 1 with probability 1/4, while bits 1 and 2 are 0 or 1 with probability 1/2, all three independent. The distribution of the 8 outcomes must match this product distribution within a total variation distance of 0.05.",
+    "hints": [
+      "A qubit in cos(θ/2)|0⟩ + sin(θ/2)|1⟩ gives 1 with probability sin²(θ/2). The gate ry(θ) prepares this state from |0⟩.",
+      "Solve sin²(θ/2) = 1/4 for qubit 0. Qubits 1 and 2 keep the Hadamard gate.",
+      "sin(θ/2) = 1/2 gives θ = π/3, so use qc.ry(pi / 3, 0). Import pi from math."
+    ]
   }
 }

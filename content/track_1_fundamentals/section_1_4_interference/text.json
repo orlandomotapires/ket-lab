@@ -20,5 +20,13 @@
       "No: H then S gives |+⟩, and S then H gives |+i⟩"
     ],
     "explanation": "H then S: H takes |0⟩ to |+⟩, and S rotates it by a quarter turn about Z to |+i⟩. S then H: S leaves |0⟩ unchanged (it only changes the phase of |1⟩), so H gives |+⟩. In general gates do not commute, so the order matters."
+  },
+  "challenge": {
+    "mission": "Qubit 0 is now prepared in |+i⟩ = (|0⟩ + i|1⟩)/√2 or |−i⟩ = (|0⟩ − i|1⟩)/√2, and you do not know which. Add gates and a measurement so that |+i⟩ always gives 0 and |−i⟩ always gives 1. This is a measurement in the Y basis.",
+    "hints": [
+      "Measuring in the computational basis, or after H alone, gives 0 and 1 with probability 1/2 for both states: they lie on the equator at ±Y.",
+      "The measurement is in the computational basis, so a gate must rotate the Y axis onto the Z axis. First bring the states to ±X, which H then maps to the poles.",
+      "S takes |+⟩ to |+i⟩, so S† takes |+i⟩ to |+⟩ and |−i⟩ to |−⟩. Apply S†, then H, then measure."
+    ]
   }
 }

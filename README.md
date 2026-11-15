@@ -2,7 +2,7 @@
 
 Plataforma web para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. A interface e as lições estão em inglês.
 
-O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diretor.md](docs/plano-diretor.md).
+Tudo sobre o projeto (arquitetura, currículo, histórico e próximos passos) está num documento só: [docs/plano-diretor.md](docs/plano-diretor.md).
 
 ## Estado atual
 

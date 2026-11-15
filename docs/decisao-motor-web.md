@@ -1,6 +1,6 @@
-# Decision: where the engine runs on the web (roadmap item 1.1)
+# Decision: where the engine runs on the web (item 1.1 of the November 2026 roadmap; history in plano-diretor.md, section 6.1)
 
-**Decision: no-go for running the whole engine in the browser. The web version uses a hosted engine (roadmap 1.2b).**
+**Decision: no-go for running the whole engine in the browser. The web version uses a hosted engine (item 1.2b of the same roadmap; see docs/plano-diretor.md).**
 
 ## What was measured
 

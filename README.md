@@ -6,14 +6,21 @@ O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diret
 
 ## Estado atual
 
-- **Três trilhas completas, 21 lições**: Fundamentos (7), Algoritmos (8, do algoritmo de Deutsch ao de Shor) e Fronteiras (6: circuitos variacionais, VQE, QAOA, redes neurais quânticas, ruído e correção de erros).
-- **Qiskit nas Trilhas 1 e 2, PennyLane na Trilha 3**, com simulação de ruído por matriz densidade.
-- **Exercícios revisados** a partir das aulas de Müller e de Jülich: missões, previsões e validações mais rigorosas.
-- **Roda no navegador**, com o motor Python local (WebSocket em 127.0.0.1).
-- **Visualizações**: esferas de Bloch, Q-Sphere, comparador Alice × Bob, medidor de emaranhamento, amplitudes com sinal e média, mostradores de fase, histograma de registrador e função periódica.
-- **Validação matemática**: fidelidade de estado, distribuição de medições, estado reduzido, oráculos secretos e entradas de teste.
-- **Interface, mensagens e conteúdo em inglês**; tema claro e escuro.
-- **Progresso** salvo em SQLite.
+- **Seis trilhas, 44 lições** (inclui 5 projetos de fim de trilha):
+  - Trilha 0 (opcional), kit de matemática: complexos, vetores, matrizes, produto tensorial.
+  - Trilha 1, *Basics of Quantum Information*: do qubit ao teletransporte, no-cloning, superdense coding e o jogo CHSH.
+  - Trilha 2, *Fundamentals of Quantum Algorithms*: de Deutsch a Shor, com Simon e simulação hamiltoniana.
+  - Trilha 3, *Variational Algorithms*: parameter-shift, VQE, QAOA e classificadores.
+  - Trilha 4, *Quantum Noise and Error Correction*: matriz densidade, códigos de bit flip, phase flip e Shor, estabilizadores, código tórico e limiar.
+  - Trilha 5, *Running on Quantum Hardware*: transpilação, primitivas, T1/T2 e mitigação de erros.
+- **Objetivos de aprendizagem** em cada lição e **desafios opcionais** nas Trilhas 1 e 2, liberados depois da missão.
+- **Qiskit e PennyLane**, com simulação de ruído por matriz densidade; lições numéricas sem circuito no kit de matemática.
+- **Laboratório**: código que roda ao digitar, compositor de circuitos por cliques, exportação OpenQASM 2/3, treinos com curva ao vivo, links de compartilhamento (com revisão antes de rodar) e execução num computador quântico real da IBM (com a chave do aluno; extra `engine[hardware]`).
+- **Visualizações**: esferas de Bloch, Q-Sphere, amplitudes, fases, registrador, paisagens de custo, convergência, grafos, fronteiras de decisão, tabela de variáveis.
+- **Glossário** com 102 termos, em balões na teoria; **referências** com seção e páginas exatas (Nielsen & Chuang, Griffiths & Schroeter, cursos da IBM).
+- **Acessibilidade**: WCAG 2.1 AA verificado com axe, circuito navegável pelo teclado, descrição textual do estado; layout em abas em telas estreitas; guia da primeira lição.
+- **Progresso** em SQLite (motor local) ou no navegador (motor hospedado), com exportação e relatório da turma para professores.
+- **Web**: motor local (`npm run dev`) ou hospedado (`deploy/`).
 
 Só o Linux foi testado. Windows e macOS dependem do CI.
 

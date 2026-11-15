@@ -180,21 +180,24 @@ export function Hub() {
 /** Motor hospedado: o progresso fica no navegador, então o aluno pode guardá-lo e restaurá-lo. */
 function ProgressBackup() {
   const storage = useStore((s) => s.progressStorage);
+  const progress = useStore((s) => s.progress);
   const reloadProgress = useStore((s) => s.reloadProgress);
+  const openClassReport = useStore((s) => s.openClassReport);
   const [status, setStatus] = useState<string | null>(null);
   const input = useRef<HTMLInputElement>(null);
-  if (storage !== "client") return null;
 
   return (
     <div className="hub-backup">
-      <p className="muted small">{t("hub.backupNote")}</p>
+      <p className="muted small">{storage === "client" ? t("hub.backupNote") : t("hub.backupNoteEngine")}</p>
       <div className="hub-backup-actions">
-        <button className="btn btn-ghost btn-sm" onClick={() => saveTextFile(exportLocalProgress(), "quantum-learning-progress.json")}>
+        <button className="btn btn-ghost btn-sm" onClick={() => saveTextFile(exportLocalProgress(progress), "quantum-learning-progress.json")}>
           {t("hub.backupExport")}
         </button>
-        <button className="btn btn-ghost btn-sm" onClick={() => input.current?.click()}>
-          {t("hub.backupImport")}
-        </button>
+        {storage === "client" && (
+          <button className="btn btn-ghost btn-sm" onClick={() => input.current?.click()}>
+            {t("hub.backupImport")}
+          </button>
+        )}
         <input
           ref={input}
           type="file"
@@ -215,6 +218,7 @@ function ProgressBackup() {
         />
       </div>
       {status && <p className="muted small" role="status">{status}</p>}
+      <button className="link small" onClick={openClassReport}>{t("hub.classReport")}</button>
     </div>
   );
 }

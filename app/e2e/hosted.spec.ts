@@ -4,7 +4,7 @@ import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, s
 test("modo hospedado: progresso no navegador, com exportação e importação", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
-  await expect(page.locator(".hub-backup")).toBeVisible();
+  await expect(page.locator(".hub-extras")).toBeVisible();
 
   await openLessonBySearch(page, "computational basis", "1.1");
   await replaceCode(page, solutionOf("1.1"));
@@ -24,8 +24,8 @@ test("modo hospedado: progresso no navegador, com exportação e importação", 
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await expect(page.locator(".section-row.is-done")).toHaveCount(0);
-  await page.locator(".hub-backup input[type=file]").setInputFiles(file!);
-  await expect(page.locator(".hub-backup [role=status]")).toContainText("Progress imported");
+  await page.locator(".hub-extras input[type=file]").setInputFiles(file!);
+  await expect(page.locator(".hub-extras [role=status]")).toContainText("Progress imported");
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
   expect(errors).toEqual([]);
 });

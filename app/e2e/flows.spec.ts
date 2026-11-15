@@ -220,7 +220,7 @@ test("exportar o progresso como cópia", async ({ page }) => {
 test("página de referências: todas as fontes, e cada lição citada abre", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
-  await page.getByRole("button", { name: "References used in this platform" }).click();
+  await page.getByRole("button", { name: /^References/ }).click();
   await expect(page.locator(".bibliography h1")).toHaveText("References");
   for (const heading of ["Books", "Papers", "Courses", "Documentation and tutorials", "Lecture notes used to design the exercises", "Software"]) {
     await expect(page.locator(".bibliography h2", { hasText: heading })).toBeVisible();

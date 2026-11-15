@@ -183,6 +183,7 @@ test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ 
   };
   const solveWith = async (query: string, id: string, steps: [string, ...string[]][]) => {
     await openLessonBySearch(page, query, id);
+    await pressButton(page, "Reset code"); // outros testes podem ter salvo uma solução nesta lição
     await page.getByRole("button", { name: "Compose" }).click();
     for (const [gate, ...qubits] of steps) await compose(gate, ...qubits);
     await expect(page.locator(".circuit .gate")).toHaveCount(steps.length);

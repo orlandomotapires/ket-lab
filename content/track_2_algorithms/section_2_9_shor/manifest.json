@@ -52,5 +52,10 @@
       "location": "Sections “The order-finding problem”, “Order finding through phase estimation” and “Factoring by order finding”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/shor-algorithm"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

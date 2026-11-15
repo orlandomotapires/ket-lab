@@ -99,5 +99,20 @@
       "location": "Section “The Deutsch–Jozsa problem”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-jozsa-algorithm"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_fidelity",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "x",
+        "z",
+        "h",
+        "cz"
+      ],
+      "required_gates": [
+        "cz"
+      ]
+    }
+  }
 }

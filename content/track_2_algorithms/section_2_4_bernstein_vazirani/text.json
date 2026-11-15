@@ -20,5 +20,13 @@
     "The circuit is the Deutsch–Jozsa circuit with 4 input qubits and the auxiliary qubit on qubit 4.",
     "Prepare the auxiliary qubit in |−⟩ with qc.x(4) and qc.h(4). Apply Hadamards to qubits 0 to 3 before and after the oracle.",
     "Use for qubit in range(4): qc.h(qubit), once before and once after oracle(qc)."
-  ]
+  ],
+  "challenge": {
+    "mission": "Solve Bernstein–Vazirani with 4 qubits and no auxiliary qubit. The hidden oracle is now a phase oracle, phase_oracle(qc), which maps |x⟩ to (−1)^(s·x ⊕ b)|x⟩ on qubits 0 to 3 (the bias b only contributes a global phase). Call it once in a circuit qc with 4 qubits so that the register ends in |s⟩, with qubit 0 as the last character of s. The function oracle(qc) is not available.",
+    "hints": [
+      "The phase oracle already writes the phase (−1)^(s·x), so the auxiliary qubit in |−⟩ is not needed.",
+      "Hadamard on every qubit, phase_oracle(qc), Hadamard on every qubit.",
+      "qc = QuantumCircuit(4); for q in range(4): qc.h(q); phase_oracle(qc); for q in range(4): qc.h(q)."
+    ]
+  }
 }

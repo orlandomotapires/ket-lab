@@ -20,5 +20,13 @@
     "Phase kickback needs the auxiliary qubit in |−⟩, so that the query writes (−1)^f(x) on the input.",
     "Put the input in |+⟩ with a Hadamard before the query, and apply a Hadamard to it again after the query.",
     "qc.x(1), qc.h(1), qc.h(0), oracle(qc), qc.h(0)."
-  ]
+  ],
+  "challenge": {
+    "mission": "Build the oracle yourself. The list table = [f(0), f(1)] holds the truth table of the hidden function, and there is no oracle(qc) to call. Write a 2-qubit circuit qc (qubit 0: input, qubit 1: auxiliary) that implements U_f, |x⟩|y⟩ → |x⟩|y ⊕ f(x)⟩, with x and cx gates chosen from table, and place it inside Deutsch's circuit. Qubit 0 must end in |0⟩ if f is constant and in |1⟩ if f is balanced, for all four tables.",
+    "hints": [
+      "A constant function is |x⟩|y⟩ → |x⟩|y ⊕ c⟩: an X on the auxiliary qubit if c = 1, nothing if c = 0.",
+      "A balanced function copies x into the auxiliary qubit with a CNOT; if f(0) = 1, flip the auxiliary qubit with an X as well.",
+      "Use plain Python on table: if f0 == f1: (x on qubit 1 if f0) else: cx(0, 1), then x(1) if f0. Put it between the two Hadamards of the input."
+    ]
+  }
 }

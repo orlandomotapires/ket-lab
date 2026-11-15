@@ -20,5 +20,13 @@
     "The target must be in |−⟩: apply X to take it to |1⟩, then a Hadamard.",
     "The control in |+⟩ needs a Hadamard on qubit 0. Apply the CNOT last.",
     "qc.x(1), qc.h(1), qc.h(0), qc.cx(0, 1)."
-  ]
+  ],
+  "challenge": {
+    "mission": "Kick back a phase of i. Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |1⟩, an eigenstate of the S gate with eigenvalue i. Then apply a controlled phase gate (cp) from qubit 0 to qubit 1 that acts as a controlled-S. The target stays in |1⟩ and the control must end in (|0⟩ + i|1⟩)/√2. Only x, y, z, h, cx, cz and cp are allowed, so the phase i has to come from the cp angle.",
+    "hints": [
+      "A controlled-S multiplies the |1⟩|1⟩ component by i. The S gate is the phase gate with angle π/2.",
+      "Prepare the target with X, the control with a Hadamard, then use qc.cp(angle, 0, 1) with angle = π/2.",
+      "qc.x(1), qc.h(0), qc.cp(pi / 2, 0, 1), with `from math import pi`."
+    ]
+  }
 }

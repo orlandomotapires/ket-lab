@@ -227,7 +227,14 @@ test("página de referências: todas as fontes, e cada lição citada abre", asy
   }
   await expect(page.locator(".bibliography")).toContainText("Quantum Computation and Quantum Information");
   await expect(page.locator(".bibliography")).toContainText("Wegewijs");
-  await page.locator(".bib-list li", { hasText: "Entanglement in action: CHSH game" }).getByRole("button", { name: "1.10" }).click();
+  // Livros: guia de leitura por seção, na ordem do livro.
+  await expect(page.locator(".bib-book").first().locator(".bib-sections li").first()).toBeVisible();
+  // Filtro por trilha: só o que a Trilha 4 usa.
+  await page.locator(".bib-filter select").selectOption("4");
+  await expect(page.locator(".bibliography")).toContainText("The Shor code");
+  await expect(page.locator(".bibliography")).not.toContainText("Deutsch’s algorithm");
+  await page.locator(".bib-filter select").selectOption("");
+  await page.locator(".bib-list li", { hasText: "Entanglement in action: CHSH game" }).getByRole("button", { name: /1\.10/ }).click();
   await expect(page.locator(".crumb-id")).toHaveText("1.10");
   expect(errors).toEqual([]);
 });

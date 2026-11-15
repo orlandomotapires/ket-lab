@@ -182,7 +182,6 @@ function ProgressBackup() {
   const storage = useStore((s) => s.progressStorage);
   const progress = useStore((s) => s.progress);
   const reloadProgress = useStore((s) => s.reloadProgress);
-  const openClassReport = useStore((s) => s.openClassReport);
   const [status, setStatus] = useState<string | null>(null);
   const input = useRef<HTMLInputElement>(null);
 
@@ -218,7 +217,6 @@ function ProgressBackup() {
         />
       </div>
       {status && <p className="muted small" role="status">{status}</p>}
-      <button className="link small" onClick={openClassReport}>{t("hub.classReport")}</button>
     </div>
   );
 }

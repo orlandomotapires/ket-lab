@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ClassReport } from "./components/ClassReport";
 import { Hub } from "./components/Hub";
 import { Lab } from "./components/Lab";
 import { TopBar } from "./components/TopBar";
@@ -40,7 +39,7 @@ export function App() {
           {connection === "closed" ? t("banner.closed") : t("banner.connecting")}
         </div>
       )}
-      {view === "hub" ? <Hub /> : view === "class" ? <ClassReport /> : <Lab />}
+      {view === "hub" ? <Hub /> : <Lab />}
     </div>
   );
 }

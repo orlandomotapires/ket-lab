@@ -10,7 +10,7 @@ The order follows one rule: protect what exists, decide how the platform reaches
 | Item | Status | Notes |
 |---|---|---|
 | 0.1 CI on current work | Done in the repo, not yet run | CI now runs on pushes to any branch (it only ran on `main` and PRs). Windows and macOS can only be checked when the branch is pushed. |
-| 0.2 End-to-end tests | Done | Playwright: 18 flows (lessons, oracles, training, export, themes, narrow screens, accessibility, guide, sharing, composer, hardware, class report) plus the hosted mode; all 44 lessons opened in the browser. CI job included. |
+| 0.2 End-to-end tests | Done | Playwright: 18 flows (lessons, oracles, training, export, themes, narrow screens, accessibility, guide, sharing, composer, hardware, progress export) plus the hosted mode; all 44 lessons opened in the browser. CI job included. |
 | 1.1 Pyodide spike | Done: no-go | `docs/decisao-motor-web.md`: Qiskit and rustworkx (PennyLane) have no WebAssembly build. |
 | 1.2a Static web version | Not applicable | Ruled out by 1.1. |
 | 1.2b Hosted engine | Done up to deployment | `--public` mode, worker group, progress in the browser, `deploy/` (Dockerfiles, nginx, hardened compose). Not done, because it needs real infrastructure: gVisor on the host, one sandbox per session, security review and load test (`deploy/README.md`). |
@@ -31,7 +31,7 @@ The order follows one rule: protect what exists, decide how the platform reaches
 | 5.3 Glossary | Done | 102 terms. |
 | 6.1 Circuit composer | Done | Click-based (keyboard friendly), Track 1 gate set; 1.1, 1.2 and 1.5 solvable with it alone. |
 | 6.2 Shareable snippets | Done | Code in the link fragment; opens in review mode and runs only after confirmation. |
-| 6.3 Classroom mode | Partly | Class report built from exported progress files (no server). Live class tracking needs accounts (1.3). |
+| 6.3 Classroom mode | Removed | Out of scope: the platform is for one person studying on their own, not for teachers and classes. |
 
 ---
 
@@ -207,11 +207,6 @@ Valuable, but not needed for learning the current content. Each needs a decision
 - **Work:** share a free-lab circuit by link. Needs the trust model listed in the master plan's open risks (shared code executes on someone else's engine); trivial with the browser engine (1.2a), serious with a server engine.
 - **Depends on:** Phase 1 decision.
 
-### 6.3 Classroom mode (L)
-
-- **Work:** a teacher creates a class; sees each student's progress, hints used and failed checks per lesson.
-- **Depends on:** 1.3 (accounts).
-
 ---
 
 ## Summary
@@ -239,6 +234,5 @@ Valuable, but not needed for learning the current content. Each needs a decision
 | 19 | 5.3 Glossary | S | |
 | 20 | 6.1 Circuit composer | L | |
 | 21 | 6.2 Shareable snippets | M | 1.2 |
-| 22 | 6.3 Classroom mode | L | 1.3 |
 
-Phases 0–3 make the platform complete for its current scope and reachable without installing anything; Phases 4–6 extend it toward real hardware and teaching at scale.
+Phases 0–3 make the platform complete for its current scope and reachable without installing anything; Phases 4–6 extend it toward real hardware and deeper independent practice.

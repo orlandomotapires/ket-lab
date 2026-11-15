@@ -6,6 +6,7 @@ import { CodeEditor } from "./CodeEditor";
 import { ExportButton } from "./ExportDialog";
 import { HardwareButton } from "./HardwareDialog";
 import { exampleCode, SANDBOX_EXAMPLES, type SandboxExample } from "../lib/examples";
+import { shareLink } from "../lib/share";
 import { OracleBar } from "./OracleBar";
 import { TheoryPanel } from "./TheoryPanel";
 import { Timeline } from "./Timeline";
@@ -42,8 +43,10 @@ export function Lab() {
           <div className="panel-head">
             <h2>{t("lab.code")}</h2>
             <span className="grow" />
+            {!lesson && <ShareButton />}
             {!lesson && <ExamplePicker />}
           </div>
+          <SharedCodeNotice />
           {/* A chave recria o editor ao trocar de lição (cursor e histórico de desfazer). */}
           <CodeEditor key={key} />
         </section>
@@ -69,6 +72,43 @@ export function Lab() {
 }
 
 type Pane = "theory" | "code" | "state";
+
+/** Copia um link com o código do laboratório livre. */
+function ShareButton() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      className="btn btn-ghost btn-sm"
+      title={t("share.hint")}
+      onClick={async () => {
+        const link = await shareLink(useStore.getState().code);
+        try {
+          await navigator.clipboard.writeText(link);
+        } catch {
+          window.prompt(t("share.copyManually"), link);
+        }
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+      }}
+    >
+      {copied ? t("share.copied") : t("share.button")}
+    </button>
+  );
+}
+
+/** Código aberto por link: não roda até o aluno ler e confirmar. */
+function SharedCodeNotice() {
+  const trusted = useStore((s) => s.codeTrusted);
+  if (trusted) return null;
+  return (
+    <div className="shared-notice" role="alert">
+      <p>{t("share.review")}</p>
+      <button className="btn btn-primary btn-sm" onClick={() => useStore.getState().trustShared()}>
+        {t("share.run")}
+      </button>
+    </div>
+  );
+}
 
 /** Laboratório livre: troca o código por um exemplo pronto (circuito ou treino). */
 function ExamplePicker() {

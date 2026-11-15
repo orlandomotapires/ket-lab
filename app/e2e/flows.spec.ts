@@ -147,3 +147,29 @@ test("hardware real (IBM simulado): envia, acompanha e compara com a simulação
   expect(await page.evaluate(() => localStorage.getItem("qlp.ibm.key"))).toBeNull();
   expect(errors).toEqual([]);
 });
+
+test("link de compartilhamento: abre em revisão e só roda depois de aceito", async ({ page, context }) => {
+  const errors = collectErrors(page);
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await openHub(page);
+  await page.getByRole("button", { name: "Free lab" }).click();
+  await page.locator(".example-picker select").selectOption("bell");
+  await expect(page.locator(".circuit .gate")).toHaveCount(2);
+  await page.getByRole("button", { name: "Share" }).click();
+  await expect(page.getByRole("button", { name: "Link copied" })).toBeVisible();
+  const link = await page.evaluate(() => navigator.clipboard.readText());
+  expect(link).toContain("#lab=");
+
+  const other = await context.newPage();
+  await other.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
+  await other.goto(link);
+  await expect(other.locator(".shared-notice")).toBeVisible();
+  await expect(other.locator(".editor .view-lines")).toContainText("qc.cx(0,");
+  await other.waitForTimeout(1500);
+  await expect(other.locator(".circuit .gate")).toHaveCount(0); // nada rodou
+  expect(other.url()).not.toContain("#lab=");
+  await other.getByRole("button", { name: "Run this code" }).click();
+  await expect(other.locator(".shared-notice")).toHaveCount(0);
+  await expect(other.locator(".circuit .gate")).toHaveCount(2);
+  expect(errors).toEqual([]);
+});

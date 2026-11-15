@@ -2236,3 +2236,18 @@ tr.is-zero {
   color: var(--muted);
   font-size: 12px;
 }
+
+.shared-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--warn-soft);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text);
+}
+.shared-notice p {
+  flex: 1;
+  margin: 0;
+}

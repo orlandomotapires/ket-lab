@@ -3,6 +3,7 @@ import { Hub } from "./components/Hub";
 import { Lab } from "./components/Lab";
 import { TopBar } from "./components/TopBar";
 import { t } from "./strings";
+import { readSharedCode } from "./lib/share";
 import { useStore } from "./state/store";
 
 export function App() {
@@ -11,6 +12,15 @@ export function App() {
   const init = useStore((s) => s.init);
 
   useEffect(() => init(), [init]);
+
+  // Link de compartilhamento (#lab=…): abre o laboratório em modo de revisão.
+  useEffect(() => {
+    void readSharedCode().then((code) => {
+      if (code === null) return;
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      useStore.getState().openShared(code);
+    });
+  }, []);
 
   // "Conectando" só vira aviso se demorar: na abertura normal leva milissegundos.
   const [slow, setSlow] = useState(false);

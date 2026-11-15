@@ -103,6 +103,11 @@ interface State {
   setControl(id: string, value: string | number | null): void;
   openLesson(id: string): Promise<void>;
   openSandbox(): void;
+  /** Código vindo de um link: abre no laboratório sem executar até o aluno confirmar. */
+  openShared(code: string): void;
+  trustShared(): void;
+  /** false enquanto o código de um link não foi revisado e aceito. */
+  codeTrusted: boolean;
   backToHub(): void;
   setCode(code: string): void;
   resetCode(): void;
@@ -216,10 +221,13 @@ export const useStore = create<State>((set, get) => {
     window.clearTimeout(runTimer);
     // Um treino no laboratório livre pode levar minutos: só roda pelo botão.
     if (!get().lesson && usesReport(get().code)) return;
+    // Código de um link roda na máquina de quem abre: só depois de revisado.
+    if (!get().codeTrusted) return;
     runTimer = window.setTimeout(() => void run(), delay);
   }
 
   function scheduleSave(): void {
+    if (!get().codeTrusted) return; // código de um link só é salvo depois de aceito
     const lessonId = get().lesson?.id ?? SANDBOX_ID;
     window.clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => {
@@ -242,8 +250,9 @@ export const useStore = create<State>((set, get) => {
     return !selectManual(get());
   }
 
-  function enterLab(lesson: Lesson | null, code: string, hintsShown: number): void {
+  function enterLab(lesson: Lesson | null, code: string, hintsShown: number, trusted = true): void {
     set({
+      codeTrusted: trusted,
       view: "lab",
       lesson,
       code,
@@ -273,6 +282,7 @@ export const useStore = create<State>((set, get) => {
     progress: {},
     glossary: [],
     progressStorage: "engine",
+    codeTrusted: true,
     hardwareAvailable: false,
     loadError: null,
     lesson: null,
@@ -333,6 +343,15 @@ export const useStore = create<State>((set, get) => {
       enterLab(null, get().progress[SANDBOX_ID]?.code ?? sandboxCode(), 0);
     },
 
+    openShared(code) {
+      enterLab(null, code, 0, false);
+    },
+
+    trustShared() {
+      set({ codeTrusted: true });
+      scheduleRun(0);
+    },
+
     backToHub() {
       window.clearTimeout(runTimer);
       set({ view: "hub" });
@@ -367,6 +386,7 @@ export const useStore = create<State>((set, get) => {
     },
 
     runNow() {
+      if (!get().codeTrusted) return;
       if (selectManual(get())) {
         // Uma execução ao vivo (de antes de o código virar treino) pode estar em andamento: o treino a substitui.
         if (!get().training?.active) void train();
@@ -448,6 +468,7 @@ export const useStore = create<State>((set, get) => {
 
     async runShots() {
       const { code, lesson, seed } = get();
+      if (!get().codeTrusted) return;
       try {
         const response = await engine().call<ShotsResult>("shots", {
           code,

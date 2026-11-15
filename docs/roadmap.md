@@ -4,6 +4,35 @@ Prioritized plan for the next stages of the platform. Each item has a goal, the 
 
 The order follows one rule: protect what exists, decide how the platform reaches learners, then fill the curriculum, then polish and extend.
 
+
+## Status (branch `roadmap`)
+
+| Item | Status | Notes |
+|---|---|---|
+| 0.1 CI on current work | Done in the repo, not yet run | CI now runs on pushes to any branch (it only ran on `main` and PRs). Windows and macOS can only be checked when the branch is pushed. |
+| 0.2 End-to-end tests | Done | Playwright: 18 flows (lessons, oracles, training, export, themes, narrow screens, accessibility, guide, sharing, composer, hardware, class report) plus the hosted mode; all 44 lessons opened in the browser. CI job included. |
+| 1.1 Pyodide spike | Done: no-go | `docs/decisao-motor-web.md`: Qiskit and rustworkx (PennyLane) have no WebAssembly build. |
+| 1.2a Static web version | Not applicable | Ruled out by 1.1. |
+| 1.2b Hosted engine | Done up to deployment | `--public` mode, worker group, progress in the browser, `deploy/` (Dockerfiles, nginx, hardened compose). Not done, because it needs real infrastructure: gVisor on the host, one sandbox per session, security review and load test (`deploy/README.md`). |
+| 1.3 Accounts and sync | Not done | Needs an OAuth provider and a server database. Progress export/import covers moving between devices. |
+| 2.1 Learning objectives | Done | Required in every lesson. Gaps found (topic in the theory but not exercised by the mission): 1.1 normalization and Bloch coordinates; 1.2 \|−⟩ and HH = I; 1.3 R_z; 1.5 the qubit-ordering warning (\|Φ⁺⟩ is symmetric); 4.2 the threshold (checked through the control but not mentioned in the mission). |
+| 2.2 Track 1 additions | Done | 1.8 no-cloning, 1.9 superdense coding, 1.10 CHSH game. |
+| 2.3 Simon's algorithm | Done | 2.5. |
+| 2.4 Split Track 3 | Done | Track 3 Variational Algorithms; Track 4 Quantum Noise and Error Correction (4.1–4.7). |
+| 2.5 Hamiltonian simulation | Done | 2.10. |
+| 2.6 Track 0, math toolkit | Done | 0.1–0.4, lessons without a circuit (variables table). |
+| 3.1 Responsive layout | Done | Tabs below 1080 px; tested at 768 and 390 px. |
+| 3.2 Accessibility | Done (automated) | axe WCAG 2.1 A/AA with no serious violations in both themes; keyboard circuit; text description of the state. A manual screen-reader test (NVDA, VoiceOver) is still to do. |
+| 3.3 First-run guide | Done | |
+| 4.1 Running on hardware track | Done | Track 5 (5.1–5.4), with Qiskit's own transpiler and primitives; device noise simulated with density matrices, so no Qiskit Aer is needed. |
+| 4.2 Run on a real IBM device | Done, not run against IBM | Tested with a simulated IBM service; a real run needs the learner's API key. Local engine only. |
+| 5.1 Challenge missions | Done for Tracks 1 and 2 | 20 challenges. |
+| 5.2 Track projects | Done | 1.11 entanglement swapping, 2.11 Grover oracle, 3.5 dissociation curve, 4.8 Shor code under noise, 5.5 mitigated estimate; each a rubric of 5–6 criteria with its own messages. Track 0 has none (optional track). |
+| 5.3 Glossary | Done | 102 terms. |
+| 6.1 Circuit composer | Done | Click-based (keyboard friendly), Track 1 gate set; 1.1, 1.2 and 1.5 solvable with it alone. |
+| 6.2 Shareable snippets | Done | Code in the link fragment; opens in review mode and runs only after confirmation. |
+| 6.3 Classroom mode | Partly | Class report built from exported progress files (no server). Live class tracking needs accounts (1.3). |
+
 ---
 
 ## Phase 0: Safety net

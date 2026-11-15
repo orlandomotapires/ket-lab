@@ -19,7 +19,7 @@ test("todas as lições abrem, rodam o código inicial e não geram erros", asyn
     await expect(page.locator(".lesson-title")).not.toBeEmpty();
     await expect(page.locator(".objectives li").first()).toBeVisible();
     // O código inicial executa sem erro (lições de treino só rodam pelo botão, então não há erro a mostrar).
-    await expect(page.locator(".oracle")).not.toHaveClass(/is-error/, { timeout: 20_000 });
+    await expect(page.locator(".oracle"), `lição ${id}: o código inicial mostrou erro`).not.toHaveClass(/is-error/, { timeout: 20_000 });
     await expect(page.locator(".visualizer")).toBeVisible();
     await page.getByRole("button", { name: "Tracks" }).click();
     await expect(page.locator(".section-row").first()).toBeVisible();

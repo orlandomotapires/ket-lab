@@ -25,9 +25,19 @@ export function saveLocalProgress(lessonId: string, patch: Partial<LessonProgres
   return all;
 }
 
-/** Arquivo para o aluno guardar ou levar para outro navegador. */
-export function exportLocalProgress(): string {
-  return JSON.stringify({ format: "qlp-progress", version: 1, progress: loadLocalProgress() }, null, 2);
+/** Arquivo para o aluno guardar, levar para outro navegador ou entregar ao professor. */
+export function exportLocalProgress(progress: Record<string, LessonProgress> = loadLocalProgress()): string {
+  const slim = Object.fromEntries(
+    Object.entries(progress).map(([id, entry]) => [id, { code: entry.code, completed: entry.completed, hints_used: entry.hints_used }]),
+  );
+  return JSON.stringify({ format: "qlp-progress", version: 1, progress: slim }, null, 2);
+}
+
+/** Lê um arquivo exportado sem gravar nada (relatório da turma). */
+export function parseProgressFile(text: string): Record<string, LessonProgress> {
+  const data = JSON.parse(text);
+  if (data?.format !== "qlp-progress" || typeof data.progress !== "object") throw new Error("invalid file");
+  return data.progress as Record<string, LessonProgress>;
 }
 
 /** Importa um arquivo exportado; devolve o número de lições lidas ou lança erro. */

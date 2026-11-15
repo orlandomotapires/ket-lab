@@ -216,3 +216,18 @@ test("exportar o progresso como cópia", async ({ page }) => {
   expect((await download).suggestedFilename()).toBe("quantum-learning-progress.json");
   expect(errors).toEqual([]);
 });
+
+test("página de referências: todas as fontes, e cada lição citada abre", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await page.getByRole("button", { name: "References used in this platform" }).click();
+  await expect(page.locator(".bibliography h1")).toHaveText("References");
+  for (const heading of ["Books", "Papers", "Courses", "Documentation and tutorials", "Lecture notes used to design the exercises", "Software"]) {
+    await expect(page.locator(".bibliography h2", { hasText: heading })).toBeVisible();
+  }
+  await expect(page.locator(".bibliography")).toContainText("Quantum Computation and Quantum Information");
+  await expect(page.locator(".bibliography")).toContainText("Wegewijs");
+  await page.locator(".bib-list li", { hasText: "Entanglement in action: CHSH game" }).getByRole("button", { name: "1.10" }).click();
+  await expect(page.locator(".crumb-id")).toHaveText("1.10");
+  expect(errors).toEqual([]);
+});

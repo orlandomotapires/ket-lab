@@ -137,6 +137,9 @@ class EngineServer:
         if kind == "lesson":
             return {"ok": True, "lesson": self.content.lesson(message["lesson_id"])}
 
+        if kind == "bibliography":
+            return {"ok": True, **self.content.bibliography()}
+
         if kind == "search":
             query = str(message.get("query", ""))[:100]
             return {"ok": True, "results": self.content.search(query)}

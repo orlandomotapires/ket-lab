@@ -105,6 +105,9 @@ export function Hub() {
           </nav>
           {loadError && <p className="error-text">{loadError}</p>}
           <ProgressBackup />
+          <button className="link small hub-references" onClick={() => useStore.getState().openReferences()}>
+            {t("bib.link")}
+          </button>
         </aside>
 
         <div className="hub-tracks">

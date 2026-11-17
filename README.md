@@ -1,109 +1,91 @@
 # Quantum Learning Platform
 
-Plataforma web para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. A interface e as lições estão em inglês.
+A web platform for learning quantum computing by writing Qiskit code and watching the quantum state change as you type. The interface and the lessons are in English.
 
-Tudo sobre o projeto (arquitetura, currículo, histórico e próximos passos) está num documento só: [docs/plano-diretor.md](docs/plano-diretor.md).
+Everything about the project (architecture, curriculum, history and next steps) is in a single document: [docs/master-plan.md](docs/master-plan.md).
 
-## Estado atual
+## Current state
 
-- **Seis trilhas, 44 lições** (inclui 5 projetos de fim de trilha):
-  - Trilha 0 (opcional), kit de matemática: complexos, vetores, matrizes, produto tensorial.
-  - Trilha 1, *Basics of Quantum Information*: do qubit ao teletransporte, no-cloning, superdense coding e o jogo CHSH.
-  - Trilha 2, *Fundamentals of Quantum Algorithms*: de Deutsch a Shor, com Simon e simulação hamiltoniana.
-  - Trilha 3, *Variational Algorithms*: parameter-shift, VQE, QAOA e classificadores.
-  - Trilha 4, *Quantum Noise and Error Correction*: matriz densidade, códigos de bit flip, phase flip e Shor, estabilizadores, código tórico e limiar.
-  - Trilha 5, *Running on Quantum Hardware*: transpilação, primitivas, T1/T2 e mitigação de erros.
-- **Objetivos de aprendizagem** em cada lição e **desafios opcionais** nas Trilhas 1 e 2, liberados depois da missão.
-- **Qiskit e PennyLane**, com simulação de ruído por matriz densidade; lições numéricas sem circuito no kit de matemática.
-- **Laboratório**: código que roda ao digitar, compositor de circuitos por cliques, exportação OpenQASM 2/3, treinos com curva ao vivo, links de compartilhamento (com revisão antes de rodar) e execução num computador quântico real da IBM (com a chave do aluno; extra `engine[hardware]`).
-- **Visualizações**: esferas de Bloch, Q-Sphere, amplitudes, fases, registrador, paisagens de custo, convergência, grafos, fronteiras de decisão, tabela de variáveis.
-- **Glossário** com 102 termos, em balões na teoria; **referências** com seção e páginas exatas (Nielsen & Chuang, Griffiths & Schroeter, cursos da IBM).
-- **Acessibilidade**: WCAG 2.1 AA verificado com axe, circuito navegável pelo teclado, descrição textual do estado; layout em abas em telas estreitas; guia da primeira lição.
-- **Progresso** em SQLite (motor local) ou no navegador (motor hospedado), com exportação como cópia de segurança.
-- **Web**: motor local (`npm run dev`) ou hospedado (`deploy/`).
+- **Seven tracks, 53 lessons** (including 6 end-of-track projects):
+  - Track 0 (optional), math kit: complex numbers, vectors, matrices, tensor product.
+  - Track 1, *Basics of Quantum Information*: from the qubit to teleportation, no-cloning, superdense coding and the CHSH game.
+  - Track 2, *Fundamentals of Quantum Algorithms*: from Deutsch to Shor, with Simon and Hamiltonian simulation.
+  - Track 3, *Variational Algorithms*: parameter-shift, VQE, QAOA, classifiers, ansatz design, optimizers (SPSA), barren plateaus and a hardware-efficient VQE.
+  - Track 4, *Quantum Noise and Error Correction*: density matrix, bit-flip, phase-flip and Shor codes, stabilizers, toric code and threshold.
+  - Track 5, *Running on Quantum Hardware*: transpilation, primitives, T1/T2 and error mitigation.
+  - Track 6, *Adiabatic Computing and Quantum Annealing*: Ising models and QUBO, the adiabatic theorem, the anneal as a circuit, embedding and the limits of annealers.
+- **Learning objectives** in every lesson and **34 optional challenges** across Tracks 1 to 6, unlocked after the mission.
+- **Qiskit and PennyLane**, with density-matrix noise simulation; numerical lessons without a circuit in the math kit.
+- **Lab**: code that runs as you type, a click-based circuit composer, OpenQASM 2/3 export, training runs with a live curve, share links (with a review step before running) and execution on a real IBM quantum computer (with the learner's own key; extra `engine[hardware]`).
+- **Visualizations**: Bloch spheres, Q-Sphere, amplitudes, phases, register, cost landscapes, convergence, graphs, decision boundaries, variable table.
+- **Notes**: a drawer in the lab for the open lesson and a notes page on the hub, saved as you type, searchable and part of the backup.
+- **Review** at the end of Tracks 1 to 6: multiple-choice questions that point back to the lessons to revisit.
+- **Glossary** with 141 terms, shown as tooltips in the theory and on a page of its own, with a filter; **references** with exact section and pages (Nielsen & Chuang, Griffiths & Schroeter, IBM courses).
+- **Accessibility**: WCAG 2.1 AA checked with axe, circuit navigable by keyboard, text description of the state; tabbed layout on narrow screens; first-lesson guide.
+- **Progress** in SQLite (local engine) or in the browser (hosted engine), with export and import as a backup; the local engine also keeps a dated copy of its database.
+- **Web**: local engine (`npm run dev`) or hosted engine (`deploy/`).
 
-Só o Linux foi testado. Windows e macOS dependem do CI.
+Only Linux has been tested. Windows and macOS depend on CI.
 
-## Estrutura
+## Structure
 
 ```text
-app/        Interface (React + TypeScript + Three.js + Monaco); textos em app/src/strings.ts
-engine/     Motor Python (Qiskit): execução, simulação, validação, progresso, mensagens
-content/    Lições (manifest, textos, teoria, código inicial, solução, setup oculto) e catálogo
-scripts/    dev.mjs: sobe o motor e a interface juntos
-docs/       Plano diretor
+app/        Interface (React + TypeScript + Three.js + Monaco); texts in app/src/strings.ts
+engine/     Python engine (Qiskit): execution, simulation, validation, progress, messages
+content/    Lessons (manifest, texts, theory, starter code, solution, hidden setup) and catalog
+scripts/    dev.mjs: starts the engine and the interface together
+docs/       Master plan, writing guide, how to add a lesson, verified references
 ```
 
-## Pré-requisitos
+## Prerequisites
 
-- Python 3.11 ou mais novo
-- Node.js 18 ou mais novo (20+ recomendado)
+- Python 3.11 or newer
+- Node.js 22 or newer (Vite 7 does not run on older versions; install it with nvm or fnm)
 
-## Como rodar
+## How to run
 
 ```bash
-npm run setup   # uma vez: cria engine/.venv e instala as dependências
-npm run dev     # motor + interface; abra http://localhost:5173
+npm run setup   # once: creates engine/.venv and installs the dependencies
+npm run dev     # engine + interface; open http://localhost:5173
 ```
 
-A interface recarrega a cada alteração. O motor carrega as lições na inicialização, então lições novas ou alteradas só aparecem depois de reiniciar o `npm run dev`.
+The interface reloads on every change. The engine loads the lessons at startup, so new or changed lessons only appear after restarting `npm run dev`.
 
-No Windows, crie o ambiente manualmente: `python -m venv engine\.venv`, `engine\.venv\Scripts\pip install -e "engine[dev]"`, `npm install` e `npm --prefix app install`.
+`npm run setup` checks the Node and Python versions before installing anything, and works on Linux, macOS and Windows.
 
-O progresso fica no diretório de dados do usuário (`~/.local/share/quantum-learning-platform` no Linux). Para isolar uma sessão, defina `QLP_DATA_DIR=/algum/caminho`. Com `QLP_LOG=1`, o motor registra no terminal cada conexão e requisição.
+Progress is kept in the user's data directory (`~/.local/share/quantum-learning-platform` on Linux). To isolate a session, set `QLP_DATA_DIR=/some/path`. With `QLP_LOG=1`, the engine logs every connection and request to the terminal.
 
-## Publicar na web
+## Just use it (Docker)
 
-A versão web roda o motor num servidor, atrás do site (`deploy/`): `SITE_ORIGIN=https://… docker compose -f deploy/docker-compose.yml up --build`. Leia [deploy/README.md](deploy/README.md) antes: o código dos alunos roda no servidor, e o que falta para abrir ao público está listado lá. O motivo de não rodar no navegador está em [docs/decisao-motor-web.md](docs/decisao-motor-web.md).
+To study without installing Python or Node: `docker compose -f deploy/local.yml up`, then open http://localhost:8080. Progress is kept in a Docker volume. This path has not been verified yet (see P2.2 in [docs/master-plan.md](docs/master-plan.md)).
 
-## Testes
+## Publish on the web
+
+The web version runs the engine on a server, behind the site (`deploy/`): `SITE_ORIGIN=https://… docker compose -f deploy/docker-compose.yml up --build`. Read [deploy/README.md](deploy/README.md) first: learner code runs on the server, and what is still missing before opening to the public is listed there. The reason it does not run in the browser is in [docs/web-engine-decision.md](docs/web-engine-decision.md).
+
+## Tests
 
 ```bash
-npm test             # motor (pytest) + interface (tipos e vitest)
+npm test             # engine (pytest) + interface (types and vitest)
 npm run test:engine
 npm run test:app
-npm run test:e2e     # ponta a ponta (Playwright, usa o Chrome do sistema)
+npm run test:e2e     # end to end (Playwright; needs Google Chrome installed)
 ```
 
-A suíte do motor inclui:
+The engine suite includes:
 
-- **suíte de conteúdo**: em cada lição, a solução passa no oráculo e o código inicial executa sem passar;
-- **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções;
-- **testes do PennyLane**: o estado de cada QNode é comparado com o do próprio PennyLane, inclusive com ruído.
+- **content suite**: in every lesson, the solution passes the oracle and the starter code runs without passing;
+- **Track 2 physics tests**: results checked independently of the solutions;
+- **PennyLane tests**: the state of each QNode is compared with PennyLane's own, including with noise.
 
-## Criar uma lição
+## Create a lesson
 
-1. Crie `content/track_N_.../section_X_Y_nome/` com:
+See [docs/adding-a-lesson.md](docs/adding-a-lesson.md): the files of a lesson, the validation types and a checklist. The text follows the [writing guide](docs/writing-guide.md).
 
-   - `manifest.json`: estrutura, sem texto;
-   - `solution.py`;
-   - opcional: `hidden_setup.py`;
-   - `text.json`, `theory.md` e `starter_code.py`.
+## How the interface and the engine talk
 
-   Use uma lição existente como modelo.
+`npm run dev` starts the engine (`python -m qlp_engine`) on a fixed port (8765) with a session token, and Vite passes these values to the interface (`VITE_ENGINE_PORT`, `VITE_ENGINE_TOKEN`). The interface opens a WebSocket at `ws://127.0.0.1:8765`; the engine only accepts connections with the right token and from the allowed origins (`--allow-origin`). Learner code runs in a separate process, with time and memory limits.
 
-   O texto segue o [guia de escrita](docs/guia-de-escrita.md). As referências (`references` no manifest) indicam onde ler com precisão em `location`: seção, título e páginas de um livro (Nielsen & Chuang, 10ª edição de aniversário; Griffiths & Schroeter, 3ª edição) ou aula e seção de um curso da IBM.
-2. O `id` precisa existir em `content/catalog.json`, com título e resumo iguais aos de `text.json`.
-3. Rode `npm run test:engine`. O alvo é calculado a partir do `solution.py`; não é preciso digitá-lo.
+## License
 
-| Tipo de validação                                                                        | Exemplo            |
-| :----------------------------------------------------------------------------------------- | :----------------- |
-| `state_fidelity`: estado final                                                           | 1.1                |
-| `counts_distribution`: estatística das medições                                       | 1.2, 2.8           |
-| `reduced_state`: estado de um qubit, para várias entradas e todos os ramos de medição | 1.6                |
-| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos       | 2.2, 2.3, 2.5, 2.7 |
-| `state_cases`: estado final para várias entradas                                        | 2.6                |
-
-O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
-
-**Lições PennyLane** (Trilha 3) declaram `framework: "pennylane"` e qual QNode desenhar (`qnode`). Com `live: false`, o código roda pelo botão Executar. Elas podem trazer:
-
-- um `check.py`, com validação própria e mensagens em `messages` no `text.json`;
-- um `analysis.py`, que alimenta as visualizações de treino;
-- `controls`, botões que passam valores ao setup oculto, como o erro injetado na 4.2.
-
-A lição 4.2 (código de bit flip) é o exemplo mais completo.
-
-## Como a interface e o motor conversam
-
-O `npm run dev` inicia o motor (`python -m qlp_engine`) numa porta fixa (8765) com um token de sessão, e o Vite passa esses dados à interface (`VITE_ENGINE_PORT`, `VITE_ENGINE_TOKEN`). A interface abre um WebSocket em `ws://127.0.0.1:8765`; o motor só aceita conexões com o token certo e vindas das origens permitidas (`--allow-origin`). O código do aluno roda num processo separado, com limite de tempo e de memória.
+[MIT](LICENSE). The software and fonts it depends on are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and changes are recorded in [CHANGELOG.md](CHANGELOG.md). The lecture notes used as background during development are third-party material and are not part of this repository.

@@ -8,13 +8,16 @@ engine/build/
 engine/dist/
 .DS_Store
 
-# Material de referência de cursos (terceiros, grande): fica só no disco, fora do repositório.
+# Third-party course reference material (large): stays on disk only, outside the repository.
 /Lecture Muller/
 /lecture (1)/
 
-# Worktrees e estado local do Claude Code
+# Claude Code worktrees and local state
 /.claude/
 
 # Playwright
 test-results/
 playwright-report/
+
+# TypeScript incremental build cache
+*.tsbuildinfo

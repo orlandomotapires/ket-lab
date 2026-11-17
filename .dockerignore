@@ -1,0 +1,11 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/dist
+**/*.egg-info
+.git
+.claude
+Lecture Muller
+lecture (1)
+app/test-results
+app/playwright-report

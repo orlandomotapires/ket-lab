@@ -1,0 +1,104 @@
+/* Track review screen and its row in the hub.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour, review, notes. */
+.review {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+}
+.review h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 6px 0 10px;
+}
+.review h1:focus {
+  outline: none;
+}
+.review-eyebrow {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.review-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.review-progress .meter {
+  flex: 1;
+}
+.review-card {
+  margin-top: 14px;
+  padding: 20px 22px;
+}
+.review-card .review-question {
+  font-size: 17px;
+  line-height: 1.45;
+  margin: 0;
+}
+.review-card .options {
+  margin-top: 16px;
+}
+.review-card .option {
+  font-size: 14.5px;
+  padding: 11px 14px;
+}
+.option-text {
+  flex: 1;
+  min-width: 0;
+}
+.option-tag {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.option[aria-disabled="true"] {
+  cursor: default;
+}
+.option[aria-disabled="true"]:hover {
+  border-color: var(--line-strong);
+}
+.option.is-correct[aria-disabled="true"]:hover {
+  border-color: var(--success);
+}
+.option.is-wrong[aria-disabled="true"]:hover {
+  border-color: var(--error);
+}
+.review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.review-sub {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 24px 0 2px;
+}
+.review-lessons {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.review-lessons .section-row {
+  grid-template-columns: minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+@media (max-width: 560px) {
+  .review {
+    padding: 16px 16px 40px;
+  }
+  .review-card {
+    padding: 16px;
+  }
+}

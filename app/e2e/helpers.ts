@@ -1,23 +1,24 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, type Page } from "@playwright/test";
 
 const CONTENT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "content");
 
-/** Solução de referência de uma lição, pelo id do manifest. */
+/** Reference solution of a lesson, by manifest id. */
 export function solutionOf(lessonId: string): string {
   for (const track of readdirSync(CONTENT).filter((name) => name.startsWith("track_"))) {
     for (const section of readdirSync(join(CONTENT, track))) {
       const folder = join(CONTENT, track, section);
+      if (!existsSync(join(folder, "manifest.json"))) continue; // review.json and the like
       const manifest = JSON.parse(readFileSync(join(folder, "manifest.json"), "utf-8"));
       if (manifest.id === lessonId) return readFileSync(join(folder, "solution.py"), "utf-8");
     }
   }
-  throw new Error(`lição ${lessonId} não encontrada`);
+  throw new Error(`lesson ${lessonId} not found`);
 }
 
-/** Erros de página e de console, para conferir no fim de cada teste. */
+/** Page and console errors, to check at the end of each test. */
 export function collectErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -28,13 +29,13 @@ export function collectErrors(page: Page): string[] {
 }
 
 export async function openHub(page: Page, { tour = false } = {}): Promise<void> {
-  // O guia da primeira lição cobriria botões nos outros testes; ele tem um teste próprio.
+  // The first-lesson guide would cover buttons in the other tests; it has its own test.
   if (!tour) await page.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
   await page.goto("/");
   await expect(page.locator(".section-row").first()).toBeVisible();
 }
 
-/** Abre uma lição pela busca da barra superior. */
+/** Opens a lesson via the top bar search. */
 export async function openLessonBySearch(page: Page, query: string, lessonId: string): Promise<void> {
   await page.locator(".search input").fill(query);
   const result = page.locator(".search-result", { has: page.locator(".search-result-id", { hasText: lessonId }) });
@@ -43,20 +44,51 @@ export async function openLessonBySearch(page: Page, query: string, lessonId: st
   await expect(page.locator(".editor .view-lines")).toBeAttached();
 }
 
-/** Troca todo o código do editor. Cola pela área de transferência: digitar faria o
- *  Monaco reindentar cada linha e quebraria a indentação do Python. */
+/** Replaces all the editor code. Pastes via the clipboard: typing would make
+ *  Monaco reindent each line and break Python's indentation. */
 export async function replaceCode(page: Page, code: string): Promise<void> {
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.evaluate((text) => navigator.clipboard.writeText(text), code);
   await page.locator(".editor .view-lines").click();
   await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.press("ControlOrMeta+V");
-  // O Monaco desenha espaços como espaços não separáveis: confere um trecho sem espaços da última linha.
+  // Monaco renders spaces as non-breaking spaces: checks a span without spaces from the last line.
   const lastLine = code.trim().split("\n").pop() ?? "";
   const marker = lastLine.split(/\s+/).sort((x, y) => y.length - x.length)[0] ?? "";
   await expect(page.locator(".editor .view-lines")).toContainText(marker);
 }
 
+/** "Reset code" lives in the More menu and asks for confirmation. */
+export async function resetCode(page: Page): Promise<void> {
+  const bar = page.locator(".oracle-actions");
+  await bar.getByRole("button", { name: "More", exact: true }).click();
+  await bar.getByRole("button", { name: "Reset code", exact: true }).click();
+  await bar.getByRole("button", { name: "Reset code", exact: true }).click();
+}
+
 export async function pressButton(page: Page, name: string): Promise<void> {
+  if (name === "Reset code") return resetCode(page);
   await page.locator(".oracle-actions").getByRole("button", { name, exact: true }).click();
+}
+
+/** Opens the notes drawer of the open lesson from the top bar. */
+export async function openNotesDrawer(page: Page): Promise<void> {
+  await page.locator(".topbar").getByRole("button", { name: "Notes" }).click();
+  await expect(page.locator(".notes-drawer")).toBeVisible();
+}
+
+/** Empties every note, so a test starts without notes (the engine data is shared). */
+export async function clearNotes(page: Page): Promise<void> {
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  await expect(page.locator(".notes-page")).toBeVisible();
+  const fields = page.locator(".notes-page .note-field");
+  let changed = false;
+  for (let i = (await fields.count()) - 1; i >= 0; i--) {
+    if ((await fields.nth(i).inputValue()) === "") continue;
+    await fields.nth(i).fill("");
+    changed = true;
+  }
+  if (changed) await expect(page.locator(".note-status")).toHaveText("Saved");
+  await page.getByRole("button", { name: "Back to tracks" }).click();
+  await expect(page.locator(".section-row").first()).toBeVisible();
 }

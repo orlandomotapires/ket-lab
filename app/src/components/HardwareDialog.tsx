@@ -20,11 +20,11 @@ function write(key: string, value: string | null): void {
     if (value === null) localStorage.removeItem(key);
     else localStorage.setItem(key, value);
   } catch {
-    // sem armazenamento: vale só nesta sessão
+    // no storage: valid only for this session
   }
 }
 
-/** Botão do painel do circuito: só aparece com o motor local e o pacote de hardware instalado. */
+/** Circuit panel button: only shows up with the local engine and the hardware package installed. */
 export function HardwareButton() {
   const available = useStore((s) => s.hardwareAvailable);
   const offline = useStore((s) => s.connection !== "open");
@@ -68,7 +68,7 @@ function HardwareDialog({ onClose }: { onClose: () => void }) {
     if (dialog.current && !dialog.current.open) dialog.current.showModal();
   }, []);
 
-  // Acompanha o job salvo até terminar (a fila de um computador real pode levar minutos).
+  // Follows the saved job until it finishes (a real computer's queue can take minutes).
   useEffect(() => {
     if (!saved || !token) return;
     let stopped = false;
@@ -141,6 +141,10 @@ function HardwareDialog({ onClose }: { onClose: () => void }) {
             void submit();
           }}
         >
+          <details className="hw-about">
+            <summary>{t("hw.aboutKey")}</summary>
+            <p className="muted small">{t("hw.keyNote")}</p>
+          </details>
           <label>
             <span>{t("hw.key")}</span>
             <input type="password" autoComplete="off" value={token} onChange={(event) => setToken(event.target.value)} required />
@@ -183,7 +187,7 @@ function HardwareDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Frequências medidas no hardware ao lado das simuladas, por resultado. */
+/** Frequencies measured on hardware next to the simulated ones, per outcome. */
 function Comparison({ hardware, simulated }: { hardware: Record<string, number>; simulated: Record<string, number> | null }) {
   const outcomes = [...new Set([...Object.keys(hardware), ...Object.keys(simulated ?? {})])].sort();
   const total = (counts: Record<string, number>) => Object.values(counts).reduce((a, b) => a + b, 0) || 1;

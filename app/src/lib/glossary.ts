@@ -1,6 +1,6 @@
 import type { GlossaryEntry } from "../engine/types";
 
-/** Nó hast mínimo (o suficiente para o plugin abaixo). */
+/** Minimal hast node (enough for the plugin below). */
 interface HastNode {
   type: string;
   tagName?: string;
@@ -16,11 +16,11 @@ function escapeRegExp(text: string): string {
 }
 
 /**
- * Plugin rehype: marca a primeira ocorrência de cada termo do glossário no texto
- * da teoria (fora de código, títulos, links e fórmulas) com <glossary-term>.
+ * Rehype plugin: marks the first occurrence of each glossary term in the theory
+ * text (outside code, headings, links and formulas) with <glossary-term>.
  */
 export function rehypeGlossary(entries: GlossaryEntry[]) {
-  // Termos mais longos primeiro: "Bell states" antes de "state".
+  // Longest terms first: "Bell states" before "state".
   const names = entries
     .flatMap((entry) => [entry.term, ...(entry.aliases ?? [])].map((name) => ({ name, term: entry.term })))
     .sort((a, b) => b.name.length - a.name.length);
@@ -46,7 +46,7 @@ export function rehypeGlossary(entries: GlossaryEntry[]) {
         while (match) {
           const term = termOf(match[1]);
           if (!term || used.has(term)) {
-            // Já marcado nesta lição: segue procurando depois deste trecho.
+            // Already marked in this lesson: keeps searching after this span.
             const cut = match.index + match[1].length;
             next.push({ type: "text", value: rest.slice(0, cut) });
             rest = rest.slice(cut);

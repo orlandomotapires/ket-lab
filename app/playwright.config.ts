@@ -1,4 +1,4 @@
-// Testes ponta a ponta: sobem um motor e um Vite isolados (portas e dados próprios).
+// End-to-end tests: start an isolated engine and Vite (own ports and data).
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -11,7 +11,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const python = process.platform === "win32"
   ? join(root, "engine", ".venv", "Scripts", "python.exe")
   : join(root, "engine", ".venv", "bin", "python");
-// Progresso zerado a cada execução.
+// Progress reset on every run.
 const dataDir = mkdtempSync(join(tmpdir(), "qlp-e2e-"));
 const appUrl = `http://127.0.0.1:${APP_PORT}`;
 
@@ -27,7 +27,7 @@ export default defineConfig({
   use: {
     baseURL: appUrl,
     viewport: { width: 1600, height: 900 },
-    // Localmente usa o Chrome do sistema; na CI, o Chromium instalado pelo Playwright.
+    // Locally uses the system Chrome; on CI, the Chromium installed by Playwright.
     channel: process.env.CI ? undefined : "chrome",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
@@ -36,7 +36,7 @@ export default defineConfig({
     {
       command: `"${process.env.QLP_PYTHON ?? python}" -m qlp_engine --port ${ENGINE_PORT} --token e2e --allow-origin ${appUrl} --data-dir "${dataDir}"`,
       cwd: join(root, "engine"),
-      // IBM Quantum simulado: o teste do diálogo de hardware não faz chamadas de rede.
+      // IBM Quantum simulated: the hardware dialog test makes no network calls.
       env: { QLP_FAKE_IBM: "1" },
       port: ENGINE_PORT,
       reuseExistingServer: false,

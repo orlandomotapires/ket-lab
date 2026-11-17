@@ -1,0 +1,113 @@
+/* Glossary page */
+.glossary-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+}
+.glossary-page h1 {
+  margin: 10px 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+.glossary-filter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 10px;
+}
+.glossary-filter input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.glossary-filter input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.glossary-count {
+  flex: none;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.glossary-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.glossary-letters a {
+  min-width: 26px;
+  padding: 3px 0;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+}
+.glossary-letters a:hover,
+.glossary-letters a:focus-visible {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.glossary-letter {
+  margin: 26px 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  scroll-margin-top: 12px;
+}
+.glossary-list {
+  margin: 0;
+}
+.glossary-entry {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 16px;
+  outline: none;
+}
+.glossary-entry.is-focus {
+  margin: 0 -12px;
+  padding: 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.glossary-entry.is-focus + .glossary-entry {
+  border-top-color: transparent;
+}
+.glossary-entry dt {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.glossary-entry dd {
+  margin: 4px 0 0;
+}
+.glossary-entry dd p {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.glossary-entry .glossary-aliases {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+@media (max-width: 560px) {
+  .glossary-page {
+    padding: 16px 16px 40px;
+  }
+  .glossary-filter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+}

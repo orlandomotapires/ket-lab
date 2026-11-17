@@ -1,12 +1,12 @@
 import type { Step } from "../engine/types";
 
 /**
- * Quantos passos já foram executados quando o cursor está na linha dada.
+ * How many steps have already been executed when the cursor is on the given line.
  *
- * A unidade de passo é a instrução. O cursor seleciona a ÚLTIMA instrução, na
- * ordem de execução, cuja linha de origem é menor ou igual à do cursor. Em
- * código sem laços isso equivale a "o estado depois da linha do cursor".
- * Devolve um índice de snapshot: 0 = estado inicial, k = após o k-ésimo passo.
+ * The step unit is the instruction. The cursor selects the LAST instruction, in
+ * execution order, whose source line is less than or equal to the cursor's. In
+ * code without loops this equals "the state after the cursor line".
+ * Returns a snapshot index: 0 = initial state, k = after the k-th step.
  */
 export function stepForLine(steps: readonly Step[], line: number): number {
   let last = 0;
@@ -20,7 +20,7 @@ export function clampStep(step: number, stepCount: number): number {
   return Math.max(0, Math.min(step, stepCount));
 }
 
-/** Linha de origem do passo atual (para destacar no editor). */
+/** Source line of the current step (to highlight in the editor). */
 export function lineForStep(steps: readonly Step[], step: number): number | null {
   return step > 0 && step <= steps.length ? steps[step - 1].line : null;
 }

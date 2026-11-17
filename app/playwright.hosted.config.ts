@@ -1,4 +1,4 @@
-// Modo hospedado: motor com --public atrás de um proxy em /engine (como em deploy/).
+// Hosted mode: engine with --public behind a proxy at /engine (as in deploy/).
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "@playwright/test";

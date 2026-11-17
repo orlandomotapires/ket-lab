@@ -10,7 +10,7 @@ const FORMATS: { id: ExportFormat; label: string }[] = [
   { id: "qasm2", label: "OpenQASM 2" },
 ];
 
-/** Botão do painel do circuito: abre a exportação em OpenQASM. */
+/** Circuit panel button: opens the OpenQASM export. */
 export function ExportButton() {
   const [open, setOpen] = useState(false);
   const offline = useStore((s) => s.connection !== "open");
@@ -93,9 +93,9 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
       <div className="dialog-head">
         <h2 id="export-title">{t("export.title")}</h2>
         <span className="grow" />
-        <div className="segmented" role="tablist" aria-label={t("export.format")}>
+        <div className="segmented" role="group" aria-label={t("export.format")}>
           {FORMATS.map((option) => (
-            <button key={option.id} role="tab" aria-selected={format === option.id} onClick={() => setFormat(option.id)}>
+            <button key={option.id} aria-pressed={format === option.id} onClick={() => setFormat(option.id)}>
               {option.label}
             </button>
           ))}

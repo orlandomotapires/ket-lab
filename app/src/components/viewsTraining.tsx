@@ -1,6 +1,6 @@
 /**
- * Visualizações de treino (Trilha 3). Os dados vêm do analysis.py da lição,
- * calculados no motor depois de executar o código do aluno.
+ * Training visualizations (Track 3). The data comes from the lesson's analysis.py,
+ * computed in the engine after running the learner's code.
  */
 import { t, type MessageKey } from "../strings";
 
@@ -9,7 +9,7 @@ const fixed = (value: number, decimals: number) => value.toFixed(decimals);
 const W = 600;
 const H = 260;
 
-/** Rampa sequencial perceptualmente uniforme (viridis), legível nos dois temas. */
+/** Perceptually uniform sequential ramp (viridis), legible in both themes. */
 const RAMP = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
 
 function rampColor(value: number): string {
@@ -28,7 +28,7 @@ function niceNumber(value: number): string {
 }
 
 // --------------------------------------------------------------------------- //
-// Paisagem de custo
+// Cost landscape
 // --------------------------------------------------------------------------- //
 
 export interface LandscapeData {
@@ -99,7 +99,7 @@ export function LandscapeView({ data }: { data: LandscapeData }) {
 }
 
 // --------------------------------------------------------------------------- //
-// Convergência
+// Convergence
 // --------------------------------------------------------------------------- //
 
 export interface ConvergenceData {
@@ -163,7 +163,7 @@ export function ConvergenceView({ data, note }: { data: ConvergenceData; note?: 
 }
 
 // --------------------------------------------------------------------------- //
-// Curva de dissociação
+// Dissociation curve
 // --------------------------------------------------------------------------- //
 
 export interface DissociationData {
@@ -173,13 +173,13 @@ export interface DissociationData {
   point?: [number, number] | null;
   x_label?: string;
   y_label?: string;
-  /** Chaves de tradução da legenda das duas curvas e da nota (padrão: exata e Hartree-Fock). */
+  /** Translation keys for the legend of the two curves and the note (default: exact and Hartree-Fock). */
   legend?: [MessageKey, MessageKey];
   note?: MessageKey;
   point_label?: MessageKey;
 }
 
-/** Duas curvas e um ponto destacado: curva de dissociação (3.2) e curva de limiar (3.6). */
+/** Two curves and a highlighted point: dissociation curve (3.2) and threshold curve (3.6). */
 export function DissociationView({ data, label }: { data: DissociationData; label?: string }) {
   const [firstLegend, secondLegend] = data.legend ? data.legend.map((key) => t(key)) : [t("viz.exact"), "Hartree-Fock"];
   const all = [...data.exact, ...(data.hartree_fock ?? []), ...(data.point ? [data.point[1]] : [])];
@@ -235,7 +235,7 @@ export function DissociationView({ data, label }: { data: DissociationData; labe
 }
 
 // --------------------------------------------------------------------------- //
-// Grafo (Max-Cut)
+// Graph (Max-Cut)
 // --------------------------------------------------------------------------- //
 
 export interface GraphData {
@@ -270,7 +270,7 @@ export function GraphView({ data }: { data: GraphData }) {
           const p = at(node.id);
           return (
             <g key={node.id}>
-              {/* Forma e cor distinguem os grupos (não só a cor). */}
+              {/* Shape and color tell the groups apart (not color alone). */}
               {node.side ? (
                 <rect className="graph-node is-b" x={p.x - 15} y={p.y - 15} width={30} height={30} rx={6} />
               ) : (
@@ -302,7 +302,7 @@ export function GraphView({ data }: { data: GraphData }) {
 }
 
 // --------------------------------------------------------------------------- //
-// Fronteira de decisão (classificador)
+// Decision boundary (classifier)
 // --------------------------------------------------------------------------- //
 
 export interface BoundaryData {
@@ -313,7 +313,7 @@ export interface BoundaryData {
   train_accuracy: number;
 }
 
-/** Divergente: azul (classe +1) ↔ laranja (classe −1), mais claro perto da fronteira. */
+/** Diverging: blue (class +1) ↔ orange (class −1), lighter near the boundary. */
 function divergingColor(value: number): string {
   const v = Math.max(-1, Math.min(1, value));
   const [r, g, b] = v >= 0 ? [47, 91, 211] : [214, 120, 30];

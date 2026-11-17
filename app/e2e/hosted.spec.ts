@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, solutionOf } from "./helpers";
 
-test("modo hospedado: progresso no navegador, com exportação e importação", async ({ page }) => {
+test("hosted mode: progress in the browser, with export and import", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await expect(page.locator(".hub-extras")).toBeVisible();
@@ -11,21 +11,30 @@ test("modo hospedado: progresso no navegador, com exportação e importação", 
   await pressButton(page, "Check");
   await expect(page.locator(".mission")).toHaveClass(/is-done/);
 
-  // O progresso sobrevive a recarregar a página: está no localStorage, não no motor.
+  // A note written in the lesson stays in the browser too.
+  await page.getByRole("button", { name: "Notes", exact: true }).click();
+  await page.getByLabel(/^Note for lesson 1\.1/).fill("hosted note");
+  await expect(page.locator(".note-status")).toHaveText("Saved");
+  expect(await page.evaluate(() => localStorage.getItem("qlp.notes.v1"))).toContain("hosted note");
+
+  // Progress survives a page reload: it is in localStorage, not in the engine.
   await page.reload();
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("qlp.progress.v1") ?? "{}"));
   expect(saved["1.1"].completed).toBe(true);
 
-  // Exporta, apaga e importa de volta.
+  // Exports, deletes and imports back.
+  await page.getByRole("button", { name: /^Backup/ }).click();
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export progress" }).click();
   const file = await (await download).path();
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await expect(page.locator(".section-row.is-done")).toHaveCount(0);
-  await page.locator(".hub-extras input[type=file]").setInputFiles(file!);
-  await expect(page.locator(".hub-extras [role=status]")).toContainText("Progress imported");
+  await page.getByRole("button", { name: /^Backup/ }).click();
+  await page.locator(".backup-dialog input[type=file]").setInputFiles(file!);
+  await expect(page.locator(".backup-dialog [role=status]")).toContainText("Imported");
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("qlp.notes.v1"))).toContain("hosted note");
   expect(errors).toEqual([]);
 });

@@ -1,11 +1,21 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import type { SearchResult } from "../engine/types";
+import { Fragment, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import type { GlossaryEntry, NoteHit, SearchResult } from "../engine/types";
+import { filterTerms } from "../lib/glossarySearch";
+import { modKey } from "../lib/platform";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 
 const DEBOUNCE_MS = 120;
 
-/** Minúsculas e sem acentos, preservando o comprimento (para achar as posições no original). */
+type Entry =
+  | { kind: "lesson"; id: string; result: SearchResult }
+  | { kind: "note"; id: string; note: NoteHit }
+  | { kind: "term"; id: string; term: GlossaryEntry };
+
+/** Glossary terms shown in the search: only matches in the name, and only a few. */
+const MAX_TERMS = 4;
+
+/** Lowercase and without accents, preserving the length (to find positions in the original). */
 function fold(text: string): string {
   return text
     .toLowerCase()
@@ -14,7 +24,7 @@ function fold(text: string): string {
     .replace(/[\u2010-\u2014\u2212]/g, "-");
 }
 
-/** Destaca no trecho as palavras buscadas, ignorando acentos e maiúsculas. */
+/** Highlights the searched words in the snippet, ignoring accents and case. */
 function highlight(text: string, query: string): ReactNode {
   const terms = fold(query).split(/\s+/).filter(Boolean);
   const folded = fold(text);
@@ -47,12 +57,23 @@ export function SearchBox() {
   const openLesson = useStore((s) => s.openLesson);
   const connection = useStore((s) => s.connection);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [found, setFound] = useState<{ results: SearchResult[]; notes: NoteHit[] }>({ results: [], notes: [] });
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const input = useRef<HTMLInputElement>(null);
+  const glossary = useStore((s) => s.glossary);
+  // The query the lesson results belong to: glossary terms wait for them, so the list never
+  // shows a term first and then pushes it down when the lessons arrive.
+  const [answered, setAnswered] = useState("");
+  const terms = answered === query && query.trim().length >= 2 ? filterTerms(glossary, query, { names: true }).slice(0, MAX_TERMS) : [];
+  // One list for the keyboard: lessons first, then notes, then glossary terms.
+  const entries: Entry[] = [
+    ...found.results.map((result): Entry => ({ kind: "lesson", id: `search-${result.id}`, result })),
+    ...found.notes.map((note): Entry => ({ kind: "note", id: `search-note-${note.key.replace(/[^\w-]/g, "_")}`, note })),
+    ...terms.map((term): Entry => ({ kind: "term", id: `search-term-${term.term.replace(/[^\w-]/g, "_")}`, term })),
+  ];
 
-  // Ctrl+K (ou Cmd+K) e "/" abrem a busca de qualquer tela.
+  // Ctrl+K (or Cmd+K) and "/" open the search from any screen.
   useEffect(() => {
     const onKey = (event: globalThis.KeyboardEvent) => {
       const shortcut = (event.key === "k" && (event.ctrlKey || event.metaKey)) || (event.key === "/" && !isTyping(event.target));
@@ -63,21 +84,22 @@ export function SearchBox() {
         input.current?.select();
       }
     };
-    // Fase de captura: o editor Monaco usa Ctrl+K como início de atalhos e consumiria a tecla.
+    // Capture phase: the Monaco editor uses Ctrl+K to start shortcuts and would swallow the key.
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   }, []);
 
   useEffect(() => {
     if (!query.trim()) {
-      setResults([]);
+      setFound({ results: [], notes: [] });
       return;
     }
     let cancelled = false;
     const timer = window.setTimeout(async () => {
-      const found = await search(query);
+      const response = await search(query);
       if (!cancelled) {
-        setResults(found);
+        setFound(response);
+        setAnswered(query);
         setActive(0);
       }
     }, DEBOUNCE_MS);
@@ -87,24 +109,33 @@ export function SearchBox() {
     };
   }, [query, search]);
 
-  const choose = (result: SearchResult | undefined) => {
-    if (!result) return;
+  const choose = (entry: Entry | undefined) => {
+    if (!entry) return;
     setQuery("");
     setOpen(false);
     input.current?.blur();
-    void openLesson(result.id);
+    if (entry.kind === "lesson") {
+      void openLesson(entry.result.id);
+    } else if (entry.kind === "term") {
+      useStore.getState().openGlossary(entry.term.term);
+    } else if (entry.note.lesson_id) {
+      // The note opens beside its lesson.
+      void openLesson(entry.note.lesson_id).then(() => useStore.getState().setNotesOpen(true));
+    } else {
+      useStore.getState().openNotesPage();
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActive((i) => Math.min(i + 1, results.length - 1));
+      setActive((i) => Math.min(i + 1, entries.length - 1));
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
     } else if (event.key === "Enter") {
       event.preventDefault();
-      choose(results[active]);
+      choose(entries[active]);
     } else if (event.key === "Escape") {
       setOpen(false);
       input.current?.blur();
@@ -127,7 +158,7 @@ export function SearchBox() {
         aria-label={t("search.label")}
         aria-expanded={showPanel}
         aria-controls="search-results"
-        aria-activedescendant={showPanel && results[active] ? `search-${results[active].id}` : undefined}
+        aria-activedescendant={showPanel && entries[active] ? entries[active].id : undefined}
         role="combobox"
         disabled={connection !== "open"}
         onChange={(event) => {
@@ -138,30 +169,58 @@ export function SearchBox() {
         onBlur={() => window.setTimeout(() => setOpen(false), 120)}
         onKeyDown={onKeyDown}
       />
-      {!query && <kbd className="search-kbd">Ctrl K</kbd>}
+      {!query && <kbd className="search-kbd">{modKey} K</kbd>}
       {showPanel && (
         <div className="search-panel" id="search-results" role="listbox">
-          {results.length === 0 ? (
+          {entries.length === 0 ? (
             <p className="search-empty">{t("search.empty", { query })}</p>
           ) : (
-            results.map((result, index) => (
-              <button
-                key={result.id}
-                id={`search-${result.id}`}
-                role="option"
-                aria-selected={index === active}
-                className={`search-result${index === active ? " is-active" : ""}`}
-                onMouseDown={(event) => event.preventDefault()}
-                onMouseEnter={() => setActive(index)}
-                onClick={() => choose(result)}
-              >
-                <span className="search-result-id">{result.id}</span>
-                <span className="search-result-text">
-                  <span className="search-result-title">{highlight(result.title, query)}</span>
-                  <span className="search-result-snippet">{highlight(result.snippet, query)}</span>
-                </span>
-              </button>
-            ))
+            <>
+              {entries.map((entry, index) => {
+                const common = {
+                  id: entry.id,
+                  role: "option" as const,
+                  "aria-selected": index === active,
+                  className: `search-result${index === active ? " is-active" : ""}`,
+                  onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
+                  onMouseEnter: () => setActive(index),
+                  onClick: () => choose(entry),
+                };
+                const heading = entry.kind !== "lesson" && (index === 0 || entries[index - 1].kind !== entry.kind) && (
+                  <div className="search-group" role="presentation">{t(entry.kind === "note" ? "search.notes" : "search.glossary")}</div>
+                );
+                return (
+                  <Fragment key={entry.id}>
+                    {heading}
+                    {entry.kind === "lesson" ? (
+                      <button {...common}>
+                        <span className="search-result-id">{entry.result.id}</span>
+                        <span className="search-result-text">
+                          <span className="search-result-title">{highlight(entry.result.title, query)}</span>
+                          <span className="search-result-snippet">{highlight(entry.result.snippet, query)}</span>
+                        </span>
+                      </button>
+                    ) : entry.kind === "term" ? (
+                      <button {...common}>
+                        <span className="search-result-id">{entry.term.lesson}</span>
+                        <span className="search-result-text">
+                          <span className="search-result-title">{highlight(entry.term.term, query)}</span>
+                          <span className="search-result-snippet">{entry.term.definition}</span>
+                        </span>
+                      </button>
+                    ) : (
+                      <button {...common}>
+                        <span className="search-result-id">{entry.note.lesson_id ?? t("search.noteGeneral")}</span>
+                        <span className="search-result-text">
+                          <span className="search-result-title">{entry.note.title ?? t("notes.general")}</span>
+                          <span className="search-result-snippet">{highlight(entry.note.snippet, query)}</span>
+                        </span>
+                      </button>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </>
           )}
         </div>
       )}

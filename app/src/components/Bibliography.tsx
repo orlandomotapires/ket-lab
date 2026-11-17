@@ -10,7 +10,7 @@ interface Work {
   year?: number | null;
   url: string;
   lessons: string[];
-  /** Livros: cada trecho citado (seção, título, páginas), na ordem do livro. */
+  /** Books: each cited passage (section, title, pages), in book order. */
   sections?: { location: string; lessons: string[] }[];
 }
 
@@ -28,8 +28,10 @@ export interface BibliographyData {
   software: Source[];
 }
 
-/** Até este número de lições, cada uma aparece com o título; acima, só o número. */
-const SPELL_OUT = 3;
+/** Up to this number of lessons, each one shows with its title; above it, only the number. */
+const SPELL_OUT = 2;
+/** Chips shown before the "+N" button. */
+const CHIPS_SHOWN = 2;
 
 function ExternalLink({ url, children }: { url: string; children: string }) {
   return (
@@ -48,23 +50,31 @@ function ExternalLink({ url, children }: { url: string; children: string }) {
   );
 }
 
-/** Lições que citam a obra; cada uma abre a lição (o título aparece no balão ou por extenso). */
+/** Lessons that cite the work; each opens the lesson (the title shows in the tooltip or in full). */
 function Lessons({ ids, titles }: { ids: string[]; titles: Map<string, string> }) {
   const openLesson = useStore((s) => s.openLesson);
+  const [expanded, setExpanded] = useState(false);
   const spell = ids.length <= SPELL_OUT;
+  const hidden = ids.length - CHIPS_SHOWN;
+  const visible = expanded || hidden <= 0 ? ids : ids.slice(0, CHIPS_SHOWN);
   return (
     <span className="bib-lessons">
-      {ids.map((id) => (
+      {visible.map((id) => (
         <button key={id} className="bib-lesson" title={titles.get(id)} onClick={() => void openLesson(id)}>
           <span className="mono">{id}</span>
           {spell && titles.get(id) ? <span className="bib-lesson-title">{titles.get(id)}</span> : null}
         </button>
       ))}
+      {hidden > 0 && (
+        <button className="bib-lesson bib-more" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          {expanded ? t("bib.fewer") : t("bib.more", { n: hidden })}
+        </button>
+      )}
     </span>
   );
 }
 
-/** Página com todas as referências da plataforma, agrupadas por tipo. */
+/** Page with every reference of the platform, grouped by type. */
 export function Bibliography() {
   const backToHub = useStore((s) => s.backToHub);
   const loadBibliography = useStore((s) => s.loadBibliography);
@@ -81,7 +91,7 @@ export function Bibliography() {
     [catalog],
   );
 
-  // Filtro por trilha: só as lições daquela trilha (e, nos livros, só os trechos que ela usa).
+  // Track filter: only the lessons of that track (and, in books, only the passages it uses).
   const inTrack = (id: string) => track === null || id.split(".")[0] === String(track);
   const works = useMemo(() => {
     if (!data) return [];
@@ -133,7 +143,7 @@ export function Bibliography() {
           </nav>
           <label className="bib-filter">
             <span className="muted small">{t("bib.filter")}</span>
-            <select className="select" value={track ?? ""} onChange={(event) => setTrack(event.target.value === "" ? null : Number(event.target.value))}>
+            <select className="select" aria-label={t("bib.filter")} value={track ?? ""} onChange={(event) => setTrack(event.target.value === "" ? null : Number(event.target.value))}>
               <option value="">{t("bib.allTracks")}</option>
               {(catalog?.tracks ?? []).map((tr) => (
                 <option key={tr.id} value={tr.id}>{t("hub.track", { id: tr.id })}: {tr.title}</option>

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test, type Page } from "@playwright/test";
-import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, resetCode, solutionOf } from "./helpers";
+import { collectErrors, openHub, openLessonBySearch, openLessonFromHub, pressButton, replaceCode, resetCode, solutionOf } from "./helpers";
 
 const catalog = JSON.parse(
   readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "content", "catalog.json"), "utf-8"),
@@ -34,7 +34,7 @@ test("1366x768: every lesson shows its mission and the hint button without scrol
   await page.setViewportSize({ width: 1366, height: 768 });
   await openHub(page);
   for (const id of ids) {
-    await page.locator(".section-row", { has: page.locator(".section-id", { hasText: new RegExp(`^${id.replace(".", "\\.")}$`) }) }).click();
+    await openLessonFromHub(page, id);
     await expect(page.locator(".crumb-id")).toHaveText(id);
     await expect(page.locator(".mission .mission-text")).toBeVisible();
     await expectMissionVisible(page, `lesson ${id}`);

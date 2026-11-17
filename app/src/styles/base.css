@@ -175,6 +175,21 @@ button {
   font-size: 14.5px;
   letter-spacing: -0.005em;
 }
+/* "Ket Lab – Learn Quantum Computing": the tagline is quieter, after an en dash, and drops on small screens. */
+.brand-tagline {
+  margin-left: -4px;
+  font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.brand-tagline::before {
+  content: "– ";
+}
+@media (max-width: 900px) {
+  .brand-tagline {
+    display: none;
+  }
+}
 .brand-mark {
   color: var(--accent);
   flex: none;
@@ -328,7 +343,7 @@ button {
 .meter {
   height: 6px;
   border-radius: 99px;
-  background: var(--surface-3);
+  background: var(--line-strong); /* visible even at 0% */
   overflow: hidden;
 }
 .meter > span {

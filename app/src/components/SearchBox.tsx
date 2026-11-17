@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState, type KeyboardEvent, type ReactNo
 import type { GlossaryEntry, NoteHit, SearchResult } from "../engine/types";
 import { filterTerms } from "../lib/glossarySearch";
 import { modKey } from "../lib/platform";
+import { PHONE, useMediaQuery } from "../lib/useMediaQuery";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 
@@ -57,6 +58,7 @@ export function SearchBox() {
   const openLesson = useStore((s) => s.openLesson);
   const connection = useStore((s) => s.connection);
   const [query, setQuery] = useState("");
+  const phone = useMediaQuery(PHONE);
   const [found, setFound] = useState<{ results: SearchResult[]; notes: NoteHit[] }>({ results: [], notes: [] });
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -154,7 +156,7 @@ export function SearchBox() {
         ref={input}
         type="search"
         value={query}
-        placeholder={t("search.placeholder")}
+        placeholder={phone ? t("search.placeholderShort") : t("search.placeholder")}
         aria-label={t("search.label")}
         aria-expanded={showPanel}
         aria-controls="search-results"

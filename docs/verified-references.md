@@ -111,6 +111,7 @@ Base URL `https://quantum.cloud.ibm.com/learning/en/courses/`. Cite the page and
 | fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/shor-algorithm | Shor's algorithm | The order-finding problem; Order finding through phase estimation; Factoring by order finding |
 | variational-algorithm-design/optimization-loops | Optimization loops | Local and Global Optimizers; Gradient-Based and Gradient-Free Optimizers; Barren Plateaus |
 | variational-algorithm-design/examples-and-applications | Examples and applications | Custom VQE; Optimization: max-cut |
+| variational-algorithm-design/ansaetze-and-variational-forms | Ansatze and variational forms (the URL spells "ansaetze") | Parameterized Quantum Circuits; Variational Form and Ansatz; Heuristic ansaetze and trade-offs (N-local circuits; Efficient SU2); Problem-specific ansaetze |
 | quantum-chem-with-vqe/hamiltonian-construction | Building a chemical Hamiltonian | Preparing Hamiltonians for Quantum Chemistry |
 | quantum-machine-learning/qvc-qnn | QVCs and QNNs | Variational quantum classifier: a first attempt |
 | general-formulation-of-quantum-information/density-matrices/density-matrix-basics | Density matrix basics | Definition; Connection to quantum state vectors |
@@ -128,6 +129,8 @@ Course structure (pages not yet verified individually): *Basics of quantum infor
 | Peruzzo et al., "A variational eigenvalue solver on a photonic quantum processor", Nat. Commun. 5, 4213 (2014) | 10.1038/ncomms5213 | whole article |
 | Farhi, Goldstone, Gutmann, "A Quantum Approximate Optimization Algorithm" (2014) | arXiv:1411.4028 | §II Fixed p Algorithm; §V MaxCut on 3-Regular Graphs |
 | Pérez-Salinas, Cervera-Lierta, Gil-Fuster, Latorre, "Data re-uploading for a universal quantum classifier", Quantum 4, 226 (2020) | 10.22331/q-2020-02-06-226 | whole article |
+| Kandala et al., "Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets", Nature 549, 242–246 (2017) | 10.1038/nature23879 | whole article (short Letter; arXiv:1704.05018) |
+| Spall, "Multivariate stochastic approximation using a simultaneous perturbation gradient approximation", IEEE Trans. Autom. Control 37, 332–341 (1992) | 10.1109/9.119632 | whole article |
 
 ### Added after the second verification
 
@@ -151,3 +154,23 @@ Course structure (pages not yet verified individually): *Basics of quantum infor
 IBM Quantum Documentation (`https://quantum.cloud.ibm.com/docs/en/`): `qiskit/transpiler-stages` (Layout stage; Routing stage), `qiskit/primitives` (What is a primitive?; Primitive definition and implementations), `guides/error-mitigation-and-suppression-techniques` (TREX; Zero-noise extrapolation).
 
 Papers: Gottesman, PhD thesis, arXiv:quant-ph/9705052 (Ch. 3 "Stabilizer Coding", §3.2 p. 18; Ch. 6 "Concatenated Coding", p. 60, §6.2 p. 62). Kitaev, Ann. Phys. 303, 2 (2003), DOI 10.1016/S0003-4916(02)00018-0 (§1 "Toric codes and the corresponding Hamiltonians"). Temme, Bravyi, Gambetta, PRL 119, 180509 (2017), DOI 10.1103/PhysRevLett.119.180509 (paragraph "Extrapolation to the zero noise limit"). DOIs verified (content not read): Simon 1997 10.1137/S0097539796298637; Bennett–Wiesner 1992 10.1103/PhysRevLett.69.2881; CHSH 1969 10.1103/PhysRevLett.23.880; Wootters–Zurek 1982 10.1038/299802a0; Shor 1995 10.1103/PhysRevA.52.R2493; Lloyd 1996 10.1126/science.273.5278.1073.
+
+### Track 6, adiabatic computing and quantum annealing (checked on 16 Nov 2026)
+
+How each entry was checked is stated, because not every publisher page could be opened.
+
+| Citation | DOI / URL | Where to read | How it was checked |
+|---|---|---|---|
+| Lucas, "Ising formulations of many NP problems", Front. Phys. 2:5 (2014) | 10.3389/fphy.2014.00005 | §2.1 "Number partitioning" (inside §2 "Partitioning problems") | Full-text page opened; title, author, journal and section headings seen |
+| Farhi, Goldstone, Gutmann, Sipser, "Quantum Computation by Adiabatic Evolution" (2000) | arXiv:quant-ph/0001106 | §2.1 "The Adiabatic Theorem"; §2.6 "The Size of the Minimum Gap and the Required Evolution Time"; §3.1 "One Qubit" | Abstract page and PDF opened; section headings read from the PDF |
+| Albash, Lidar, "Adiabatic Quantum Computing", Rev. Mod. Phys. 90, 015002 (2018) | 10.1103/RevModPhys.90.015002 | §II "Adiabatic Theorems": II.A "Approximate versions", II.B.2 "Rigorous inverse gap squared" (arXiv:1611.04471 numbering) | arXiv abstract page and PDF contents list; the publisher page was not opened |
+| Kadowaki, Nishimori, "Quantum annealing in the transverse Ising model", Phys. Rev. E 58, 5355–5363 (1998) | 10.1103/PhysRevE.58.5355 | Whole article | Bibliographic record (Crossref) only; section names not checked |
+| Kirkpatrick, Gelatt, Vecchi, "Optimization by Simulated Annealing", Science 220, 671–680 (1983) | 10.1126/science.220.4598.671 | Whole article | Bibliographic record (Crossref) only; the publisher page refused access |
+| Choi, "Minor-embedding in adiabatic quantum computation: I. The parameter setting problem", Quantum Inf. Process. 7, 193 (2008) | arXiv:0804.4884 | §3 "Minor-Embedding" (Definition 3.1); §4 "Parameter Requirement for the Embedded Ising Hamiltonian" | Abstract page and PDF opened; both sections read |
+| Rønnow et al., "Defining and detecting quantum speedup", Science 345, 420 (2014) | arXiv:1401.2910 | Abstract and main text | arXiv abstract page opened |
+| Lucas, "Ising formulations of many NP problems", Front. Phys. 2:5 (2014), for lesson 6.5 | 10.3389/fphy.2014.00005 | §4.2 "Set packing" (and §4.3 "Vertex cover"): a constraint as a penalty, with the condition on the two weights | Full-text page opened; section list and the statement on the weights read |
+| Albash, Lidar, "Demonstration of a scaling advantage for a quantum annealer over simulated annealing", Phys. Rev. X 8, 031016 (2018) | 10.1103/PhysRevX.8.031016 | Abstract | Search results only; the article itself was not opened |
+
+Tutorials and documentation: D-Wave documentation, `https://docs.dwavequantum.com/en/latest/concepts/models.html` ("Binary Quadratic Model": "Ising Model", "QUBO") and `…/quantum_research/embedding_intro.html` ("Chains", "Chain Strength"), both pages opened; and `…/concepts/penalty.html` ("Penalty Models": "Descriptive Example", "Code Example"), page opened. PennyLane demo "Exploring Trotterization", `https://pennylane.ai/demos/exploring_trotterization` ("The commutation problem", "Implementing the Trotter method", "Trotter error"), page opened. QuTiP Julia tutorial "Adiabatic sweep (with QuantumObjectEvolution)", `https://qutip.org/qutip-julia-tutorials/QuantumToolbox.jl/time_evolution/adiabatic.html` ("Model", "Code demonstration"), page opened; it is a community tutorial, used because no official course page on adiabatic sweeps was found.
+
+Statements about annealing hardware in lesson 6.4 (superconducting flux qubits, more than 5,000 qubits, 15 couplers per qubit) come from the manufacturer's material as returned by a web search, not from a page opened in full.

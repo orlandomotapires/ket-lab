@@ -225,5 +225,5 @@ def test_shor_solution_fails_for_two_phase_flips_in_different_blocks():
 
 def test_prediction_answers_match_the_physics():
     for folder, expected in [("section_4_3_phase_flip_code", 2), ("section_4_4_shor_code", 2)]:
-        manifest = json.loads((CONTENT_DIR / "track_4_noise_qec" / folder / "manifest.json").read_text())
+        manifest = json.loads((CONTENT_DIR / "track_4_noise_qec" / folder / "manifest.json").read_text(encoding="utf-8"))
         assert manifest["prediction_answer"] == expected

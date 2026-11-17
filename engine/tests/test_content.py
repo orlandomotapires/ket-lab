@@ -28,7 +28,7 @@ def test_manifest_matches_schema(path):
 
 @pytest.mark.parametrize("lesson_id", LESSON_IDS)
 def test_every_lesson_has_its_text(library, lesson_id):
-    folder = next(p for p in MANIFESTS if json.loads(p.read_text())["id"] == lesson_id).parent
+    folder = next(p for p in MANIFESTS if json.loads(p.read_text(encoding="utf-8"))["id"] == lesson_id).parent
     for name in ("text.json", "theory.md", "starter_code.py"):
         assert (folder / name).is_file(), f"{lesson_id}: falta {name}"
 
@@ -132,7 +132,7 @@ CHALLENGE_IDS = [
 
 @pytest.mark.parametrize("lesson_id", LESSON_IDS)
 def test_challenge_text_and_rules_come_together(library, lesson_id):
-    folder = next(p for p in MANIFESTS if json.loads(p.read_text())["id"] == lesson_id).parent
+    folder = next(p for p in MANIFESTS if json.loads(p.read_text(encoding="utf-8"))["id"] == lesson_id).parent
     manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
     text = json.loads((folder / "text.json").read_text(encoding="utf-8"))
     assert ("challenge" in manifest) == ("challenge" in text), lesson_id

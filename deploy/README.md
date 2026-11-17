@@ -1,6 +1,6 @@
 # Hosted deployment
 
-The web version runs the real engine on a server (see `docs/decisao-motor-web.md` for why it cannot run in the browser). Two containers:
+The web version runs the real engine on a server (see `docs/web-engine-decision.md` for why it cannot run in the browser). Two containers:
 
 - **web**: nginx with the built interface; proxies `/engine` (WebSocket) to the engine.
 - **engine**: `python -m qlp_engine --public`, on an internal network with no internet access.
@@ -42,4 +42,4 @@ Required before opening to the public (not done, and not testable on the develop
 3. **Security review** of the sandbox and a **load test** sized for the expected number of learners.
 4. **Abuse limits** per IP beyond connections (requests per minute), and monitoring.
 
-For a class or a trusted group, the compose setup as it is (ideally with gVisor) is a reasonable start.
+For yourself or a small group you trust, the compose setup as it is (ideally with gVisor) is a reasonable start.

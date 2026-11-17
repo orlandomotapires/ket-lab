@@ -1,0 +1,25 @@
+# Weekly dependency updates, grouped so one pull request covers each area.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+    groups:
+      interface:
+        patterns: ["*"]
+  - package-ecosystem: pip
+    directory: /engine
+    schedule:
+      interval: weekly
+    # Qiskit and PennyLane are pinned on purpose: the lessons depend on their APIs.
+    ignore:
+      - dependency-name: qiskit
+      - dependency-name: pennylane
+    groups:
+      engine:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

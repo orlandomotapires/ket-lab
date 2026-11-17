@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "setup": "python3 -m venv engine/.venv && engine/.venv/bin/pip install -e \"engine[dev]\" && npm install && npm --prefix app install",
+    "setup": "node scripts/setup.mjs",
     "dev": "node scripts/dev.mjs",
     "test": "npm run test:engine && npm run test:app",
     "test:engine": "cd engine && .venv/bin/python -m pytest -q",
     "test:app": "npm --prefix app run typecheck && npm --prefix app test",
     "build:app": "npm --prefix app run build",
     "test:e2e": "npm --prefix app run e2e"
-  }
+  },
+  "license": "MIT"
 }

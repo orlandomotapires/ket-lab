@@ -1,4 +1,4 @@
-"""Lições 4.5 a 4.7: verificações independentes dos números e das regras ensinadas."""
+"""Lessons 4.5 to 4.7: independent checks of the numbers and rules taught."""
 
 import itertools
 import runpy
@@ -22,7 +22,7 @@ def validate(library, lesson_id, code):
     return validation.validate(code, library.validation_bundle(lesson_id))
 
 
-# ---- 4.5: formalismo dos estabilizadores -----------------------------------
+# ---- 4.5: stabilizer formalism -----------------------------------
 
 P = {
     "I": np.eye(2),
@@ -38,16 +38,16 @@ def op(s):
 
 def test_bit_flip_syndrome_table_is_the_known_one():
     table = solution("section_4_5_stabilizer_formalism")["table"]
-    expected = {(0, 0, 1): (1, 0), (0, 1, 1): (1, 1), (1, 0, 1): (0, 1)}  # (posição, tipo) abaixo
+    expected = {(0, 0, 1): (1, 0), (0, 1, 1): (1, 1), (1, 0, 1): (0, 1)}  # (position, type) below
     for i, pauli in itertools.product(range(3), "XYZ"):
         error = "I" * i + pauli + "I" * (2 - i)
         want = (0, 0) if pauli == "Z" else [(1, 0), (1, 1), (0, 1)][i]
         assert tuple(table[error]) == want, error
-    assert expected  # tabela de 4.2: X0 → 10, X1 → 11, X2 → 01
+    assert expected  # table from 4.2: X0 → 10, X1 → 11, X2 → 01
 
 
 def test_syndrome_matches_the_eigenvalues_on_the_code_space():
-    """O erro leva |000⟩ a um autoestado de cada gerador com autovalor (−1)^s."""
+    """The error takes |000⟩ to an eigenstate of each generator with eigenvalue (−1)^s."""
     ns = solution("section_4_5_stabilizer_formalism")
     zero = np.zeros(8)
     zero[0] = 1
@@ -76,14 +76,14 @@ def test_logical_operators_of_the_bit_flip_code():
     assert np.allclose(op(ns["logical_X"]) @ op(ns["logical_Z"]), -op(ns["logical_Z"]) @ op(ns["logical_X"]))
 
 
-# ---- 4.6: código tórico ------------------------------------------------------
+# ---- 4.6: toric code ------------------------------------------------------
 
 def test_single_edge_error_lights_two_plaquettes_and_chain_moves_one_end():
     ns = solution("section_4_6_toric_code")
     for L in (3, 4):
         for t, r, c in itertools.product("hv", range(L), range(L)):
             assert len(ns["defects"](L, {(t, r, c)})) == 2
-    # cadeia vertical de duas arestas na mesma linha: defeitos só nas pontas
+    # vertical chain of two edges in the same line: defects only at the ends
     assert ns["defects"](3, {("v", 0, 1), ("v", 0, 2)}) == [(0, 0), (0, 2)]
 
 
@@ -115,7 +115,7 @@ def test_toric_distance_equals_L_for_L_2_and_3():
     assert ns["distance"] == 3
 
 
-# ---- 4.7: teorema do limiar -------------------------------------------------
+# ---- 4.7: threshold theorem -------------------------------------------------
 
 def test_threshold_is_one_half_and_is_a_repelling_fixed_point():
     f = solution("section_4_7_threshold_theorem")["f"]
@@ -144,7 +144,7 @@ def test_generic_model_matches_exact_map_for_small_p():
         assert ns["generic_rate"](p, 3, 3) == pytest.approx(ns["concatenated"](p, 3), rel=0.05)
 
 
-# ---- validadores: o que a solução passa, uma resposta errada não ------------
+# ---- validators: what the solution passes, a wrong answer does not ------------
 
 @pytest.mark.parametrize(
     "lesson_id, folder, old, new",

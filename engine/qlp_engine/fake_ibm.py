@@ -1,7 +1,7 @@
-"""Serviço IBM Quantum simulado, só para testes (variável QLP_FAKE_IBM=1).
+"""Simulated IBM Quantum service, for tests only (variable QLP_FAKE_IBM=1).
 
-Aceita a chave "test-key", usa um backend genérico de 5 qubits e devolve um job
-já concluído com contagens fixas. Não faz nenhuma chamada de rede.
+Accepts the key "test-key", uses a generic 5-qubit backend and returns a job
+that is already finished with fixed counts. It makes no network calls.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
-"""Ponto de entrada do motor: `python -m qlp_engine` (o `npm run dev` o inicia).
+"""Engine entry point: `python -m qlp_engine` (`npm run dev` starts it).
 
-Ao ficar pronto, imprime UMA linha JSON no stdout com a porta e o token:
+When ready, prints ONE JSON line to stdout with the port and the token:
     {"event": "ready", "port": 51234, "token": "..."}
 """
 
@@ -24,11 +24,11 @@ def _default_content_dir() -> Path:
 
 
 class _TolerantStream:
-    """Envolve stdout/stderr para que escrever num pipe fechado não derrube o motor.
+    """Wraps stdout/stderr so that writing to a closed pipe does not bring down the engine.
 
-    Se o processo que lê a saída do motor morrer, qualquer aviso impresso (do
-    próprio motor ou de uma biblioteca) levantaria BrokenPipeError no meio de
-    uma requisição.
+    If the process that reads the engine's output dies, any warning printed (by the
+    engine itself or by a library) would raise BrokenPipeError in the middle of
+    a request.
     """
 
     def __init__(self, stream):
@@ -51,39 +51,46 @@ class _TolerantStream:
 
 
 def parse_args(argv=None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(prog="qlp-engine", description="Motor da Quantum Learning Platform")
-    parser.add_argument("--port", type=int, default=0, help="porta local (0 = aleatória)")
-    parser.add_argument("--token", default=None, help="token de sessão (padrão: aleatório)")
+    parser = argparse.ArgumentParser(prog="qlp-engine", description="Quantum Learning Platform engine")
+    parser.add_argument("--port", type=int, default=0, help="local port (0 = random)")
+    parser.add_argument("--token", default=None, help="session token (default: random)")
     parser.add_argument(
         "--allow-origin",
         action="append",
         default=[],
-        help="origem adicional permitida (ex.: http://localhost:5173 em desenvolvimento)",
+        help="additional allowed origin (e.g. http://localhost:5173 in development)",
     )
     parser.add_argument("--content-dir", type=Path, default=None)
     parser.add_argument("--data-dir", type=Path, default=None)
-    parser.add_argument("--job-timeout", type=float, default=5.0, help="segundos por execução")
+    parser.add_argument("--job-timeout", type=float, default=5.0, help="seconds per run")
     parser.add_argument(
         "--public",
         action="store_true",
-        help="motor hospedado: sem token, Origin obrigatório, progresso no navegador (veja deploy/)",
+        help="hosted engine: no token, Origin required, progress kept in the browser (see deploy/)",
     )
-    parser.add_argument("--host", default="127.0.0.1", help="interface de rede (0.0.0.0 dentro de um contêiner)")
-    parser.add_argument("--workers", type=int, default=1, help="processos que executam código em paralelo")
-    parser.add_argument("--max-connections", type=int, default=0, help="teto de conexões simultâneas (0 = sem teto)")
+    parser.add_argument(
+        "--single-user",
+        action="store_true",
+        help="local container: no token and Origin required, but with progress kept on the server (see deploy/local.yml)",
+    )
+    parser.add_argument("--static-dir", type=Path, default=None, help="built interface to serve on the same port (WebSocket at /engine)")
+    parser.add_argument("--host", default="127.0.0.1", help="network interface (0.0.0.0 inside a container)")
+    parser.add_argument("--workers", type=int, default=1, help="processes that run code in parallel")
+    parser.add_argument("--max-connections", type=int, default=0, help="cap on simultaneous connections (0 = no cap)")
     return parser.parse_args(argv)
 
 
 async def serve_forever(args: argparse.Namespace) -> None:
     token = args.token or secrets.token_urlsafe(32)
     content = ContentLibrary(args.content_dir or _default_content_dir())
-    progress = None if args.public else ProgressStore(args.data_dir or default_data_dir())
+    progress = None if args.public and not args.single_user else ProgressStore(args.data_dir or default_data_dir(), lesson_keys=content.lesson_keys)
     pool = WorkerGroup(args.workers, job_timeout=args.job_timeout) if args.workers > 1 else WorkerPool(job_timeout=args.job_timeout)
     pool.warm_up()
 
     engine = EngineServer(
         content, progress, pool, token, tuple(args.allow_origin),
         public=args.public, max_connections=args.max_connections, host=args.host,
+        single_user=args.single_user, static_dir=args.static_dir,
     )
     server = await engine.start(args.port)
     port = server.sockets[0].getsockname()[1]

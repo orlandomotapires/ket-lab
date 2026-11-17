@@ -1,4 +1,4 @@
-"""Física da Trilha 2, verificada de forma independente das soluções de referência."""
+"""Physics of Track 2, verified independently of the reference solutions."""
 
 import numpy as np
 import pytest
@@ -123,8 +123,8 @@ def test_shor_finds_the_period_peaks_and_the_factors(library):
 
 def test_shor_post_processing_rejects_non_periods_and_the_minus_one_case(library):
     solution = library.validation_bundle("2.9")["solution"]
-    # Com a = 14 (≡ -1 mod 15) a tentativa falha: nenhum fator aparece.
-    code = solution.replace("# a = 7 e N = 15 vêm do laboratório.", "a = 14")
+    # With a = 14 (≡ -1 mod 15) the attempt fails: no factor appears.
+    code = solution.replace("# a = 7 and N = 15 are provided by the lab.", "a = 14")
     assert run(library, "2.9", None, code).namespace["factors"] == []
 
 

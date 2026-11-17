@@ -1,5 +1,5 @@
-"""Física das lições 2.5 (Simon) e 2.10 (simulação hamiltoniana), verificada de forma
-independente das soluções de referência."""
+"""Physics of lessons 2.5 (Simon) and 2.10 (Hamiltonian simulation), verified independently
+of the reference solutions."""
 
 import numpy as np
 import pytest
@@ -38,7 +38,7 @@ def test_simon_postprocessing_recovers_the_secret(library, secret):
 
 @pytest.mark.parametrize("secret", SECRETS)
 def test_simon_oracle_is_two_to_one_with_period_s(library, secret):
-    """O oráculo oculto realmente implementa f(x) = f(x ⊕ s) e nenhuma outra colisão."""
+    """The hidden oracle really implements f(x) = f(x ⊕ s) and no other collision."""
     from qiskit import QuantumCircuit
 
     s = int(secret, 2)
@@ -113,7 +113,7 @@ def test_reference_solution_reaches_the_target_fidelity(library):
 
 
 def test_circuit_matches_the_numpy_trotter_product(library):
-    """A solução implementa exatamente o produto de Trotter de primeira ordem com n = 10."""
+    """The solution implements exactly the first-order Trotter product with n = 10."""
     state = simulator.run_trajectory(run(library, "2.10").circuit, seed=0).states[-1]
     assert abs(np.vdot(trotter_state(10), state)) ** 2 == pytest.approx(1.0, abs=1e-9)
 

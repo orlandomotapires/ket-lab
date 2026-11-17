@@ -1,4 +1,4 @@
-"""Mensagens do motor (em inglês, o idioma da plataforma)."""
+"""Engine messages (in English, the platform's language)."""
 
 from __future__ import annotations
 
@@ -12,17 +12,21 @@ def percent(value: float, decimals: int = 1) -> str:
 
 
 MESSAGES: dict[str, str] = {
-    # --- verificação estática ------------------------------------------------
+    # --- static check ------------------------------------------------
     "guard.relative_import": "Relative imports are not allowed here.",
     "guard.forbidden_name": "`{name}` is not available in the lab.",
     "guard.dunder": "Access to internal attributes (`{name}`) is not allowed in the lab.",
+    "guard.private": "`{name}` starts with an underscore, which marks it as internal to a library, so the lab does not allow it. Use the library's public functions instead.",
+    "guard.files": "`{name}` reads or writes files, which the lab does not allow.",
     "guard.module": "The module `{name}` is not available in the lab. Available: {allowed}.",
     "guard.module_short": "The module `{name}` is not available in the lab.",
-    # --- execução ------------------------------------------------------------
+    # --- execution ------------------------------------------------------------
     "run.syntax": "Syntax error: {detail}",
     "run.memory": "The code tried to use too much memory. Reduce the size of the circuit or the data.",
     "run.recursion": "Infinite recursion detected.",
     "run.no_circuit": "No circuit found. Create one with `qc = QuantumCircuit(1)`.",
+    "run.reduced": "This circuit is large ({steps} steps on {qubits} qubits), so amplitudes and probabilities are kept for {kept} evenly spaced steps and the last one. The Bloch spheres are shown for every step.",
+    "run.shots_heavy": "Sampling the shots took longer than {seconds} s and was stopped. Measuring in the middle of a circuit (or using `reset`) means simulating the whole circuit once per shot, so try fewer shots or fewer qubits. If your code has a loop that never ends, fix that first.",
     "run.cancelled": "Execution stopped.",
     "export.unsupported": "This circuit cannot be exported to {format}: {detail}",
     "export.noise": "Noise channels (density matrix) do not exist in OpenQASM. Export the circuit without noise.",
@@ -30,9 +34,10 @@ MESSAGES: dict[str, str] = {
     "run.crash": "The simulation engine stopped unexpectedly, probably out of memory. It has been restarted.",
     "run.engine_closed": "The engine has been shut down.",
     "run.engine_start": "The simulation engine did not start in time.",
+    "run.exit": "The code tried to exit the program (`exit()`, `quit()` or `raise SystemExit`). Remove that line: the lab stops by itself when the code ends.",
     "run.internal": "Internal engine error: {detail}",
     "run.unknown_job": "Unknown job type: {kind}",
-    # --- simulador -----------------------------------------------------------
+    # --- simulator -----------------------------------------------------------
     "sim.no_qubits": "The circuit has no qubits. Use, for example, `QuantumCircuit(1)`.",
     "sim.too_many_qubits": "The circuit has {count} qubits; the limit here is {limit}. Each extra qubit doubles the memory needed to simulate it.",
     "sim.too_many_instructions": "The circuit has {count} instructions; the limit is {limit}.",
@@ -41,7 +46,7 @@ MESSAGES: dict[str, str] = {
     "sim.expr_condition": "Conditions with classical expressions are not supported yet. Use `qc.if_test((classical_bit, 1))`.",
     "sim.bad_condition": "Unrecognized classical condition in `if_test`.",
     "sim.no_matrix": "Could not compute the matrix of gate `{name}` (symbolic parameters without a value?).",
-    # --- validação -----------------------------------------------------------
+    # --- validation -----------------------------------------------------------
     "val.unsupported": "Validation type `{kind}` is not implemented yet.",
     "val.forbidden_gate": "This mission does not allow {names}. Try to solve it with the gates from the lesson.",
     "val.required_gate": "The mission requires using {names} in the circuit.",
@@ -73,18 +78,28 @@ MESSAGES: dict[str, str] = {
     "pl.missing_argument": "The variable `{name}` is not defined yet. It is needed to draw the circuit.",
     "pl.unsupported": "The operation `{name}` is not supported in the visualization yet.",
     "pl.unknown_wire": "The wire `{wire}` does not exist on the device.",
-    # --- hardware real (IBM) --------------------------------------------------
+    # --- real hardware (IBM) --------------------------------------------------
     "hw.no_token": "Paste your IBM Quantum API key to run on real hardware.",
     "hw.not_installed": "Running on hardware needs the qiskit-ibm-runtime package: pip install -e \"engine[hardware]\".",
     "hw.login_failed": "IBM Quantum did not accept the API key or instance: {detail}",
     "hw.bad_circuit": "The circuit could not be prepared for hardware: {detail}",
     "hw.no_backend": "No real device with enough qubits is available to your account: {detail}",
     "hw.no_job": "Job not found: {detail}",
+    "hw.timeout": "IBM Quantum did not answer within {seconds} s while {what}. Check your connection and try again; the job, if one was sent, keeps running on IBM's side.",
     "hw.public": "Running on hardware is only available when the engine runs on your own computer.",
-    # --- servidor e conteúdo ---------------------------------------------------
+    # --- server and content ---------------------------------------------------
     "server.bad_code": "Code is missing or too large.",
     "server.bad_request": "Invalid request: {detail}",
     "server.unknown_type": "Unknown message type: {kind}",
+    "server.internal": "Something went wrong inside the engine. Try again; if it keeps happening, restart the engine.",
+    "server.bad_field": "The request has an invalid `{field}`.",
+    "server.unavailable": "{what} is kept in your browser on this server, not by the engine.",
+    "notes.bad_key": "A note key must be \"general\" or \"lesson:<lesson id>\".",
+    "notes.bad_body": "A note must be text.",
+    "notes.too_long": "A note can be at most {limit} KB long.",
+    "import.bad_file": "That file is not a progress backup from this platform.",
+    "import.too_big": "That backup is too large to import.",
     "content.unknown_lesson": "Unknown lesson: {lesson_id}",
     "content.no_challenge": "Lesson {lesson_id} has no challenge.",
+    "content.no_review": "Track {track} has no review.",
 }

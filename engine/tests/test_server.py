@@ -9,7 +9,7 @@ from qlp_engine.pool import WorkerPool
 from qlp_engine.progress import ProgressStore
 from qlp_engine.server import EngineServer
 
-TOKEN = "segredo-de-teste"
+TOKEN = "test-secret"
 GOOD = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)\n"
 
 
@@ -89,7 +89,7 @@ def test_catalog_lesson_run_validate_and_progress(library):
 
             failed = await client.call(type="validate", code=lesson["starter_code"], lesson_id="1.1")
             assert failed["passed"] is False
-            assert "1.1" not in progress.all()
+            assert progress.all()["1.1"]["attempts"] == 1 and not progress.all()["1.1"]["completed"]
 
             passed = await client.call(type="validate", code=GOOD, lesson_id="1.1")
             assert passed["passed"] is True
@@ -169,9 +169,9 @@ def test_training_streams_progress_before_the_result(library):
             assert result["ok"] is True, result
             series = result["training"]["series"]
             assert len(series["cost"]) == 150 and len(series["accuracy"]) == 150
-            assert len(events) >= 2, "a curva precisa chegar em lotes durante o treino"
+            assert len(events) >= 2, "the curve must arrive in batches during training"
             streamed = [v for event in events for v in event["series"]["cost"]]
-            assert streamed == series["cost"], "os lotes somados dão a série inteira"
+            assert streamed == series["cost"], "the summed batches give the whole series"
 
     with_server(test, library=library)
 
@@ -221,7 +221,7 @@ def test_export_to_openqasm(library):
             assert qasm2["ok"] and qasm2["text"].startswith("OPENQASM 2.0;") and "cx q[0],q[1];" in qasm2["text"]
             qasm3 = await client.call(type="export", code=bell, format="qasm3")
             assert qasm3["text"].startswith("OPENQASM 3.0;") and "cx q[0], q[1];" in qasm3["text"]
-            # PennyLane: o QNode é desenhado com a variável `params` do código.
+            # PennyLane: the QNode is drawn with the code's `params` variable.
             from_pl = await client.call(type="export", code=pennylane, format="qasm3")
             assert from_pl["ok"], from_pl
             assert "ry(0.5) q[0];" in from_pl["text"]
@@ -253,13 +253,13 @@ def with_public_server(test, library, max_connections=0, workers=1):
 
 def test_public_mode_requires_the_site_origin_and_keeps_progress_in_the_browser(library):
     async def test(url):
-        with pytest.raises(InvalidStatus):  # sem Origin: não é o site
+        with pytest.raises(InvalidStatus):  # no Origin: it is not the site
             async with connect(url):
                 pass
         with pytest.raises(InvalidStatus):
             async with connect(url, origin="https://outro.example"):
                 pass
-        async with connect(url, origin="https://quantum.example") as websocket:  # sem token
+        async with connect(url, origin="https://quantum.example") as websocket:  # no token
             client = Client(websocket)
             catalog = await client.call(type="catalog")
             assert catalog["ok"] and catalog["progress_storage"] == "client" and catalog["progress"] == {}
@@ -322,4 +322,123 @@ def test_progress_is_migrated_to_the_new_lesson_ids(tmp_path):
     assert set(saved) == {"2.6", "2.9", "4.1", "1.1"}
     assert saved["2.6"]["code"] == "code 2.5" and saved["4.1"]["code"] == "code 3.5"
     store.close()
-    assert set(ProgressStore(tmp_path).all()) == {"2.6", "2.9", "4.1", "1.1"}  # roda uma vez só
+    assert set(ProgressStore(tmp_path).all()) == {"2.6", "2.9", "4.1", "1.1"}  # runs only once
+
+
+def test_solution_is_given_on_request_and_marks_the_progress(library):
+    """P2.1: unsuccessful attempts count; the solution is only shown on request and is recorded."""
+
+    async def test(url, progress):
+        async with connect(f"{url}/?token={TOKEN}") as websocket:
+            client = Client(websocket)
+            starter = (await client.call(type="lesson", lesson_id="1.1"))["lesson"]["starter_code"]
+            for _ in range(2):
+                assert not (await client.call(type="validate", code=starter, lesson_id="1.1"))["passed"]
+            assert progress.all()["1.1"]["attempts"] == 2
+            assert not progress.all()["1.1"]["solution_seen"]
+
+            solution = await client.call(type="solution", lesson_id="1.1")
+            assert solution["ok"] and "#" in solution["code"]
+            assert progress.all()["1.1"]["solution_seen"] and not progress.all()["1.1"]["completed"]
+
+            assert (await client.call(type="validate", code=solution["code"], lesson_id="1.1"))["passed"]
+            entry = (await client.call(type="catalog"))["progress"]["1.1"]
+            assert entry["completed"] and entry["with_solution"]
+
+            # Completing first and viewing the solution afterwards does not mark "with solution".
+            code = library.validation_bundle("1.2")["solution"]
+            assert (await client.call(type="validate", code=code, lesson_id="1.2"))["passed"]
+            await client.call(type="solution", lesson_id="1.2")
+            entry = progress.all()["1.2"]
+            assert entry["solution_seen"] and not entry["with_solution"]
+
+            challenge = await client.call(type="solution", lesson_id="1.1", challenge=True)
+            assert challenge["ok"] and progress.all()["1.1:challenge"]["solution_seen"]
+            assert not (await client.call(type="solution", lesson_id="0.1", challenge=True))["ok"]
+
+    with_server(test, library=library)
+
+
+def test_review_questions_and_catalog_flags(library):
+    async def test(url, progress):
+        async with connect(f"{url}/?token={TOKEN}") as websocket:
+            client = Client(websocket)
+            catalog = (await client.call(type="catalog"))["catalog"]
+            tracks = {track["id"]: track for track in catalog["tracks"]}
+            assert tracks[0]["review"] is False and tracks[1]["review"] is True
+            assert tracks[1]["sections"][0]["estimated_minutes"] > 0
+            review = await client.call(type="review", track=1)
+            assert review["ok"] and 8 <= len(review["questions"]) <= 12
+            assert not (await client.call(type="review", track=0))["ok"]
+            assert not (await client.call(type="review", track="x"))["ok"]
+            # The score is kept in the progress, under the key "review:<track>".
+            await client.call(type="progress.save", lesson_id="review:1", code="9/12", completed=True)
+            assert progress.all()["review:1"]["code"] == "9/12"
+
+    with_server(test, library=library)
+
+
+def test_project_progress_follows_the_renumbering_of_track_3(tmp_path):
+    store = ProgressStore(tmp_path)
+    store.save("3.5", code="curve", completed=True)
+    store._db.execute("PRAGMA user_version = 1")
+    store._db.commit()
+    store.close()
+    saved = ProgressStore(tmp_path).all()
+    assert "3.5" not in saved and saved["3.9"]["code"] == "curve"
+
+
+def test_single_user_mode_serves_the_interface_and_keeps_progress(library, tmp_path):
+    """P2.2 (local container): interface and engine on the same port, no token, progress on the server."""
+    import urllib.error
+    import urllib.request
+
+    site = tmp_path / "web"
+    (site / "assets").mkdir(parents=True)
+    (site / "index.html").write_text("<!doctype html><title>qlp</title>", encoding="utf-8")
+    (site / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
+    (tmp_path / "secret.txt").write_text("outside the folder", encoding="utf-8")
+
+    async def scenario():
+        pool = WorkerPool()
+        progress = ProgressStore(tmp_path / "data")
+        engine = EngineServer(
+            library, progress, pool, "nao-usado", ("http://localhost:8080",), single_user=True, static_dir=site
+        )
+        server = await engine.start(0)
+        port = server.sockets[0].getsockname()[1]
+
+        def get(path):
+            try:
+                with urllib.request.urlopen(f"http://127.0.0.1:{port}{path}", timeout=5) as response:
+                    return response.status, response.headers, response.read()
+            except urllib.error.HTTPError as error:
+                return error.code, error.headers, error.read()
+
+        try:
+            status, headers, body = await asyncio.to_thread(get, "/")
+            assert status == 200 and b"<title>qlp</title>" in body and headers["Content-Type"].startswith("text/html")
+            status, headers, body = await asyncio.to_thread(get, "/assets/app.js")
+            assert status == 200 and body == b"console.log(1)" and "immutable" in headers["Cache-Control"]
+            assert (await asyncio.to_thread(get, "/assets/missing.js"))[0] == 404
+            assert b"<title>qlp</title>" in (await asyncio.to_thread(get, "/some/route"))[2]  # SPA
+            for escape in ("/../secret.txt", "/%2e%2e/secret.txt", "/assets/../../secret.txt"):
+                assert b"outside the folder" not in (await asyncio.to_thread(get, escape))[2]
+
+            url = f"ws://127.0.0.1:{port}/engine"
+            with pytest.raises(InvalidStatus):  # another browser page does not get in
+                async with connect(url, origin="https://outro.example"):
+                    pass
+            async with connect(url, origin="http://localhost:8080") as websocket:
+                client = Client(websocket)
+                assert (await client.call(type="catalog"))["progress_storage"] == "engine"
+                assert (await client.call(type="validate", code=GOOD, lesson_id="1.1"))["passed"]
+            assert progress.all()["1.1"]["completed"]
+        finally:
+            server.close()
+            await server.wait_closed()
+            pool.close()
+            progress.close()
+
+    asyncio.run(scenario())
+    assert ProgressStore(tmp_path / "data", lesson_keys=library.lesson_keys).all()["1.1"]["completed"]  # survives a restart

@@ -1,6 +1,5 @@
-"""Verificações físicas independentes das lições 1.8, 1.9 e 1.10."""
+"""Independent physics checks of lessons 1.8, 1.9 and 1.10."""
 
-import json
 import math
 
 import numpy as np
@@ -54,7 +53,7 @@ def test_cnot_does_not_copy_plus():
 
 
 def test_no_cloning_inner_product_argument():
-    # Um copiador unitário preservaria ⟨ψ|φ⟩ = ⟨ψ|φ⟩², o que só vale para 0 ou 1.
+    # A unitary copier would preserve ⟨ψ|φ⟩ = ⟨ψ|φ⟩², which only holds for 0 or 1.
     pre = QuantumCircuit(1)
     pre.h(0)
     overlap_inputs = abs(np.vdot(Statevector.from_label("0").data, Statevector.from_label("+").data))
@@ -62,8 +61,8 @@ def test_no_cloning_inner_product_argument():
     out_zero = copier(QuantumCircuit(1)).data
     overlap_outputs = abs(np.vdot(out_zero, out_plus))
     assert overlap_inputs == pytest.approx(1 / math.sqrt(2))
-    assert overlap_outputs == pytest.approx(overlap_inputs)  # CNOT é unitário
-    assert overlap_outputs != pytest.approx(overlap_inputs**2)  # a cópia ideal exigiria isto
+    assert overlap_outputs == pytest.approx(overlap_inputs)  # CNOT is unitary
+    assert overlap_outputs != pytest.approx(overlap_inputs**2)  # an ideal copy would require this
 
 
 def test_solution_1_8_copy_fidelity():
@@ -82,7 +81,7 @@ def test_superdense_decoding(message):
         {"_QLP_INPUT": message},
     )
     state = Statevector(ns["qc"])
-    probabilities = state.probabilities_dict()  # rótulo |q1 q0⟩
+    probabilities = state.probabilities_dict()  # label |q1 q0⟩
     assert probabilities.get(message, 0.0) == pytest.approx(1.0)
 
 
@@ -95,7 +94,7 @@ def test_superdense_bob_alone_sees_nothing():
             qc.z(1)
         if message[1] == "1":
             qc.x(1)
-        # Antes do envio, a probabilidade de Bob (qubit 0) obter 1 é 1/2.
+        # Before sending, the probability that Bob (qubit 0) gets 1 is 1/2.
         assert Statevector(qc).probabilities([0])[1] == pytest.approx(0.5)
 
 

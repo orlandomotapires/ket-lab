@@ -1,4 +1,4 @@
-"""Projetos de fim de trilha 4.8 e 5.5: cálculos independentes da rubrica."""
+"""End-of-track projects 4.8 and 5.5: calculations independent of the rubric."""
 
 import itertools
 import time
@@ -14,14 +14,14 @@ SHOR = CONTENT_DIR / "track_4_noise_qec" / "section_4_8_shor_code_noise_project"
 MITIGATION = CONTENT_DIR / "track_5_hardware" / "section_5_5_mitigated_estimate_project"
 
 
-# ---------- 4.8: referência independente (matriz densidade de 9 qubits, sem a regra por blocos) ----------
+# ---------- 4.8: independent reference (9-qubit density matrix, without the per-block rule) ----------
 
 PAULI = {"I": np.eye(2), "X": np.array([[0, 1], [1, 0]]), "Y": np.array([[0, -1j], [1j, 0]]), "Z": np.diag([1, -1])}
 
 
 def circuit_logical_pauli(library, pattern):
-    """Pauli lógico medido no circuito da solução: aplica o padrão, decodifica e compara
-    <X>, <Y>, <Z> do qubit 0 com os do estado de entrada."""
+    """Logical Pauli measured in the solution's circuit: applies the pattern, decodes and compares
+    <X>, <Y>, <Z> of qubit 0 with those of the input state."""
     bundle = library.validation_bundle("4.8")
     errors = "".join(f"{c.lower()}{q}" for q, c in enumerate(pattern) if c != "I") or "none"
     bloch_in = []
@@ -30,7 +30,7 @@ def circuit_logical_pauli(library, pattern):
         ns = validation.tracer.execute(
             bundle["solution"], bundle.get("hidden_setup"), {"_QLP_INPUT": {"input": [theta, phi], "error": errors}},
             trace=False, require_circuit=False,
-        ).namespace
+        ).full_namespace()
         ops, lines, n = pl.trace_qnode(ns["circuit"], [])
         state = simulator.run_ops_trajectory(ops, lines, n).states[-1]
         if state.ndim == 2:
@@ -46,8 +46,8 @@ def circuit_logical_pauli(library, pattern):
 
 
 def enumerate_failure(p):
-    """p_L por enumeração dos 4^9 padrões, com o Pauli lógico vindo da regra dos blocos
-    escrita aqui de forma vetorizada."""
+    """p_L by enumerating the 4^9 patterns, with the logical Pauli coming from the per-block rule
+    written here in vectorized form."""
     letters = np.array(list(itertools.product(range(4), repeat=9)), dtype=np.int8)  # 0 I, 1 X, 2 Y, 3 Z
     x = (letters == 1) | (letters == 2)
     z = (letters == 2) | (letters == 3)
@@ -84,7 +84,7 @@ def test_model_agrees_with_the_decoder_circuit(library):
 
 def solution_logical_pauli(code, pattern):
     scope = {"prepare_input": lambda: None, "inject_error": lambda: None}
-    # executa só as definições puras da solução (sem rodar o dispositivo)
+    # run only the solution's pure definitions (without running the device)
     header = code.split("@qml.qnode")[0]
     tail = code.split("def block_effect", 1)[1].split("def logical_failure", 1)[0]
     exec(header + "def block_effect" + tail, scope)
@@ -114,7 +114,7 @@ def test_crossover_from_enumeration(shor_bundle):
     assert 0.05 < p_star < 0.09
     from qlp_engine import tracer
 
-    ns = tracer.execute(shor_bundle["solution"], shor_bundle.get("hidden_setup"), None, trace=False, require_circuit=False).namespace
+    ns = tracer.execute(shor_bundle["solution"], shor_bundle.get("hidden_setup"), None, trace=False, require_circuit=False).full_namespace()
     assert ns["p_star"] == pytest.approx(p_star, abs=1e-6)
 
 
@@ -156,7 +156,7 @@ def mit_bundle(library):
 def device_namespace(bundle):
     from qlp_engine import tracer
 
-    return tracer.execute("", bundle["hidden_setup"], None, trace=False, require_circuit=False).namespace
+    return tracer.execute("", bundle["hidden_setup"], None, trace=False, require_circuit=False).full_namespace()
 
 
 SIGN = np.array([(-1) ** (int(format(i, "03b")[0]) + int(format(i, "03b")[2])) for i in range(8)])
@@ -167,7 +167,7 @@ def exact_zz(ns, gates, noisy=True):
 
 
 def test_noisy_device_is_consistent_with_a_density_matrix_simulation(mit_bundle):
-    """Reimplementação independente: depolarizing em Kraus de Pauli (15 Paulis) + leitura."""
+    """Independent reimplementation: depolarizing as Pauli Kraus operators (15 Paulis) + readout."""
     ns = device_namespace(mit_bundle)
     h = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     eye, x = np.eye(2), np.array([[0, 1], [1, 0]])
@@ -218,8 +218,8 @@ def test_mitigation_improves_the_estimate_by_the_claimed_factor(mit_bundle):
     values = [float(SIGN @ (a_inv @ ns["_probabilities"](fold(s)))) for s in (1, 3, 5)]
     zne = np.polyval(np.polyfit([1, 3, 5], values, 1), 0)
     assert abs(1 - raw) > 0.15
-    assert abs(1 - zne) < abs(1 - raw) / 10  # a rubrica exige só 1/5
-    assert abs(1 - values[0]) > abs(1 - zne)  # só a leitura não basta
+    assert abs(1 - zne) < abs(1 - raw) / 10  # the rubric only requires 1/5
+    assert abs(1 - values[0]) > abs(1 - zne)  # readout alone is not enough
 
 
 def test_mitigation_project_runtime(mit_bundle):

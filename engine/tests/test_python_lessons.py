@@ -1,4 +1,4 @@
-"""Lições sem circuito (framework "python"): execução e tabela de variáveis."""
+"""Lessons without a circuit ("python" framework): execution and variables table."""
 
 from qlp_engine import worker
 
@@ -20,7 +20,7 @@ def test_python_run_returns_the_learner_variables():
     assert result["ok"], result
     assert result["steps"] == [] and result["snapshots"] == [] and result["stdout"] == "ok\n"
     rows = {row["name"]: row for row in result["variables"]}
-    assert list(rows) == ["z", "v", "M", "n"]  # sem módulos, funções, privadas ou arrays grandes
+    assert list(rows) == ["z", "v", "M", "n"]  # no modules, functions, private names or large arrays
     assert rows["z"]["value"] == "1.+2.j" and rows["z"]["type"] == "complex"
     assert rows["v"]["type"] == "array 2" and "0.6" in rows["v"]["value"]
     assert rows["M"]["type"] == "array 2×2"

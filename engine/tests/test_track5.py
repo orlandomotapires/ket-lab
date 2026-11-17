@@ -1,4 +1,4 @@
-"""Trilha 5: conferências independentes das soluções (física e números), sem passar pelos check.py."""
+"""Track 5: independent checks of the solutions (physics and numbers), without going through check.py."""
 
 import numpy as np
 import pytest

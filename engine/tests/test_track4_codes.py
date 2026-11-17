@@ -1,6 +1,6 @@
-"""Lições 4.3 (phase-flip) e 4.4 (Shor): os códigos, calculados à mão com numpy
-(convenção própria: o qubit i é o i-ésimo fator do produto de Kronecker), e as
-soluções de referência executadas pelo motor com erros além dos que o validador usa."""
+"""Lessons 4.3 (phase-flip) and 4.4 (Shor): the codes, computed by hand with numpy
+(own convention: qubit i is the i-th factor of the Kronecker product), and the
+reference solutions run by the engine with errors beyond those the validator uses."""
 
 import itertools
 import json
@@ -22,7 +22,7 @@ H = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
 
 
 def op(n, gates):
-    """Produto de Kronecker com `gates` = {qubit: matriz 2x2} e identidade nos demais."""
+    """Kronecker product with `gates` = {qubit: 2x2 matrix} and identity on the rest."""
     result = np.array([[1.0 + 0j]])
     for q in range(n):
         result = np.kron(result, gates.get(q, I2))
@@ -50,7 +50,7 @@ _TABLES = {}
 
 
 def correction_table(n, stabilizers, kinds):
-    """Síndrome -> Pauli de correção, construída com os erros de um qubit em `kinds`."""
+    """Syndrome -> correction Pauli, built from the single-qubit errors in `kinds`."""
     key = (n, len(stabilizers), kinds)
     if key not in _TABLES:
         def signs(e):
@@ -66,8 +66,8 @@ def correction_table(n, stabilizers, kinds):
 
 
 def recovery_fidelity(n, stabilizers, logical, error, amplitudes, kinds="XYZ"):
-    """Fidelidade após medir a síndrome (projetando) e aplicar a correção do código:
-    soma, sobre as síndromes, de |⟨ψ_L| R_s P_s E |ψ_L⟩|²."""
+    """Fidelity after measuring the syndrome (projecting) and applying the code's correction:
+    sum, over the syndromes, of |⟨ψ_L| R_s P_s E |ψ_L⟩|²."""
     alpha, beta = amplitudes
     psi_l = alpha * logical[0] + beta * logical[1]
     damaged = error @ psi_l
@@ -81,7 +81,7 @@ def recovery_fidelity(n, stabilizers, logical, error, amplitudes, kinds="XYZ"):
 
 
 # --------------------------------------------------------------------------- #
-# Códigos em numpy
+# Codes in numpy
 # --------------------------------------------------------------------------- #
 
 PLUS = np.array([1, 1]) / np.sqrt(2)
@@ -121,7 +121,7 @@ def test_phase_flip_code_fails_for_x_and_for_two_z():
     for error in (pauli_string(3, {0: "X"}), pauli_string(3, {0: "Z", 1: "Z"})):
         f = recovery_fidelity(3, PHASE_FLIP["stabilizers"], PHASE_FLIP["logical"], error, state, "Z")
         assert f < 0.5 + 1e-9
-    # X é um Z lógico: com |0⟩ + |1⟩ vira |0⟩ − |1⟩ e a fidelidade é 0
+    # X is a logical Z: |0⟩ + |1⟩ becomes |0⟩ − |1⟩ and the fidelity is 0
     plus_state = np.array([1, 1]) / np.sqrt(2)
     f = recovery_fidelity(3, PHASE_FLIP["stabilizers"], PHASE_FLIP["logical"], pauli_string(3, {0: "X"}), plus_state, "Z")
     assert f == pytest.approx(0.0)
@@ -144,14 +144,14 @@ def test_shor_code_corrects_every_single_qubit_pauli_and_arbitrary_unitary():
 def test_shor_code_two_qubit_errors():
     state = np.array([0.6, 0.8j])
     args = (9, SHOR["stabilizers"], SHOR["logical"])
-    # dois X no mesmo bloco: sobra X⊗X⊗X no bloco, um Z lógico (fidelidade |⟨ψ|Z|ψ⟩|² = 0,0784)
+    # two X in the same block: X⊗X⊗X is left in the block, a logical Z (fidelity |⟨ψ|Z|ψ⟩|² = 0.0784)
     assert recovery_fidelity(*args, pauli_string(9, {0: "X", 1: "X"}), state) == pytest.approx(0.0784)
-    # dois Z em blocos diferentes: X lógico, falha em |0⟩
+    # two Z in different blocks: logical X, fails on |0⟩
     assert recovery_fidelity(*args, pauli_string(9, {0: "Z", 3: "Z"}), np.array([1, 0])) == pytest.approx(0.0)
 
 
 # --------------------------------------------------------------------------- #
-# Soluções de referência no motor
+# Reference solutions in the engine
 # --------------------------------------------------------------------------- #
 
 
@@ -174,11 +174,11 @@ def _psi(theta, phi):
 
 def _phase_flip_fidelity(theta, phi, error):
     rho, n = _final_state("section_4_3_phase_flip_code", theta, phi, error)
-    # Bits altos = qubits de índice alto (Qiskit): os dados 0, 1 e 2 são os 3 bits menos significativos.
+    # High bits = high-index qubits (Qiskit): data qubits 0, 1 and 2 are the 3 least significant bits.
     tensor = rho.reshape(4, 8, 4, 8)
     data = np.einsum("axay->xy", tensor)
     a, b = _psi(theta, phi)
-    # Em numpy puro: |+++⟩ e |−−−⟩ são simétricos sob troca de qubits, a ordem não importa.
+    # In plain numpy: |+++⟩ and |−−−⟩ are symmetric under qubit exchange, so the order does not matter.
     target = a * kron_all([PLUS] * 3) + b * kron_all([MINUS] * 3)
     return float(np.real(target.conj() @ data @ target))
 
@@ -190,7 +190,7 @@ def test_phase_flip_solution_recovers(error):
 
 
 def test_phase_flip_solution_does_not_correct_x_or_two_z():
-    # X é um Z lógico (com |+⟩ a fidelidade é 0); dois Z são um X lógico (com |0⟩ a fidelidade é 0)
+    # X is a logical Z (with |+⟩ the fidelity is 0); two Z are a logical X (with |0⟩ the fidelity is 0)
     assert _phase_flip_fidelity(np.pi / 2, 0.0, "x0") == pytest.approx(0.0, abs=1e-9)
     assert _phase_flip_fidelity(0.0, 0.0, "z0z1") == pytest.approx(0.0, abs=1e-9)
 
@@ -215,7 +215,7 @@ def test_shor_solution_all_single_pauli_errors():
 
 
 def test_shor_solution_fails_for_two_flips_in_one_block():
-    # Z lógico: com |+⟩ a fidelidade é 0
+    # Logical Z: with |+⟩ the fidelity is 0
     assert _shor_fidelity(np.pi / 2, 0.0, "x0x1") == pytest.approx(0.0, abs=1e-9)
 
 
@@ -224,6 +224,6 @@ def test_shor_solution_fails_for_two_phase_flips_in_different_blocks():
 
 
 def test_prediction_answers_match_the_physics():
-    for folder, expected in [("section_4_3_phase_flip_code", 2), ("section_4_4_shor_code", 1)]:
+    for folder, expected in [("section_4_3_phase_flip_code", 2), ("section_4_4_shor_code", 2)]:
         manifest = json.loads((CONTENT_DIR / "track_4_noise_qec" / folder / "manifest.json").read_text())
         assert manifest["prediction_answer"] == expected

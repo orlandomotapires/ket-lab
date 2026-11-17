@@ -1,7 +1,6 @@
-"""Trilha 0 (kit de matemática): valores de referência calculados de forma independente
-e respostas erradas comuns rejeitadas com a mensagem pretendida."""
+"""Track 0 (math kit): reference values computed independently
+and common wrong answers rejected with the intended message."""
 
-import cmath
 import math
 
 import numpy as np
@@ -15,7 +14,7 @@ def validate(library, lesson_id, code):
 
 
 def solution_with(library, lesson_id, **replacements):
-    """Solução de referência com as linhas `nome = ...` trocadas pelas dadas."""
+    """Reference solution with the `name = ...` lines replaced by the given ones."""
     lines = library.validation_bundle(lesson_id)["solution"].splitlines()
     out = []
     for line in lines:

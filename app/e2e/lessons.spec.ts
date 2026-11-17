@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
-import { collectErrors, openHub } from "./helpers";
+import { collectErrors, openHub, openLessonFromHub } from "./helpers";
 
 const catalog = JSON.parse(
   readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "content", "catalog.json"), "utf-8"),
@@ -14,7 +14,7 @@ test("all lessons open, run the starting code and produce no errors", async ({ p
   const errors = collectErrors(page);
   await openHub(page);
   for (const id of ids) {
-    await page.locator(".section-row", { has: page.locator(".section-id", { hasText: new RegExp(`^${id.replace(".", "\\.")}$`) }) }).click();
+    await openLessonFromHub(page, id);
     await expect(page.locator(".crumb-id")).toHaveText(id);
     await expect(page.locator(".lesson-title")).not.toBeEmpty();
     await expect(page.locator(".objectives li").first()).toBeVisible();

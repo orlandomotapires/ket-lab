@@ -1,6 +1,7 @@
 /** Interface text (in English, the platform's language). */
 const STRINGS = {
-  "app.name": "Quantum Learning Platform",
+  "app.name": "Ket Lab",
+  "app.tagline": "Learn Quantum Computing",
   "banner.closed": "Simulation engine disconnected. Trying to reconnect…",
   "app.loading": "Loading…",
   "banner.connecting": "Connecting to the simulation engine…",
@@ -32,13 +33,15 @@ const STRINGS = {
   "tour.done": "Start",
   "tour.open": "Show the guide",
   "search.label": "Search lessons, notes and glossary terms",
+  "search.placeholderShort": "Search",
   "search.placeholder": "Search lessons, notes and terms (e.g. Grover)",
   "search.empty": "Nothing found for “{query}”.",
 
   "help.open": "Help",
   "help.shortcuts": "Keyboard shortcuts",
-  "about.open": "About this platform",
-  "about.title": "About this platform",
+  "about.open": "About Ket Lab",
+  "about.title": "About Ket Lab",
+  "about.subtitle": "From a single qubit to quantum algorithms. You write the circuit and see the state after every gate.",
   "about.lead": "A place to learn quantum computing by doing it. You write real Qiskit and PennyLane code, and the platform shows what your circuit does to the quantum state, one gate at a time.",
   "about.what.title": "What it is",
   "about.what.body": "A course and a lab in one. Its {lessons} lessons, about {hours} hours in all, go from complex numbers to error correction, running a circuit on a real quantum computer and quantum annealing. Each lesson explains one idea and then hands you a mission to solve in code. The check looks at what your circuit does to the state, so any circuit that does the job passes.",
@@ -128,7 +131,6 @@ const STRINGS = {
 
   "hub.loading": "Loading the tracks…",
   "hub.title": "Learning tracks",
-  "hub.subtitle": "From a single qubit to quantum algorithms. You write the circuit and see the state after every gate.",
   "hub.progress": "{done} of {total} lessons completed",
   "hub.sandbox": "Free lab",
   "hub.startShort": "Start",

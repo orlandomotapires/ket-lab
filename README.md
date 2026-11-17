@@ -1,114 +1,91 @@
 # Quantum Learning Platform
 
-Aplicativo para aprender Computação Quântica escrevendo código Qiskit e vendo o estado quântico mudar enquanto você digita. Disponível em português, inglês e alemão.
+A web platform for learning quantum computing by writing Qiskit code and watching the quantum state change as you type. The interface and the lessons are in English.
 
-O plano completo de arquitetura, currículo e roteiro está em [docs/plano-diretor.md](docs/plano-diretor.md).
+Everything about the project (architecture, curriculum, history and next steps) is in a single document: [docs/master-plan.md](docs/master-plan.md).
 
-## Estado atual
+## Current state
 
-- **Três trilhas completas, 21 lições**: Fundamentos (7), Algoritmos (8, do algoritmo de Deutsch ao de Shor) e Fronteiras (6: circuitos variacionais, VQE, QAOA, redes neurais quânticas, ruído e correção de erros).
-- **Qiskit nas Trilhas 1 e 2, PennyLane na Trilha 3**, com simulação de ruído por matriz densidade.
-- **Exercícios revisados** a partir das aulas de Müller e de Jülich: missões, previsões e validações mais rigorosas.
-- **Aplicativo desktop** (Tauri) com o motor Python embutido; também roda no navegador para desenvolvimento.
-- **Visualizações**: esferas de Bloch, Q-Sphere, comparador Alice × Bob, medidor de emaranhamento, amplitudes com sinal e média, mostradores de fase, histograma de registrador e função periódica.
-- **Validação matemática**: fidelidade de estado, distribuição de medições, estado reduzido, oráculos secretos e entradas de teste.
-- **Interface, mensagens e conteúdo** em português, inglês e alemão; tema claro e escuro.
-- **Progresso** salvo em SQLite.
+- **Seven tracks, 53 lessons** (including 6 end-of-track projects):
+  - Track 0 (optional), math kit: complex numbers, vectors, matrices, tensor product.
+  - Track 1, *Basics of Quantum Information*: from the qubit to teleportation, no-cloning, superdense coding and the CHSH game.
+  - Track 2, *Fundamentals of Quantum Algorithms*: from Deutsch to Shor, with Simon and Hamiltonian simulation.
+  - Track 3, *Variational Algorithms*: parameter-shift, VQE, QAOA, classifiers, ansatz design, optimizers (SPSA), barren plateaus and a hardware-efficient VQE.
+  - Track 4, *Quantum Noise and Error Correction*: density matrix, bit-flip, phase-flip and Shor codes, stabilizers, toric code and threshold.
+  - Track 5, *Running on Quantum Hardware*: transpilation, primitives, T1/T2 and error mitigation.
+  - Track 6, *Adiabatic Computing and Quantum Annealing*: Ising models and QUBO, the adiabatic theorem, the anneal as a circuit, embedding and the limits of annealers.
+- **Learning objectives** in every lesson and **34 optional challenges** across Tracks 1 to 6, unlocked after the mission.
+- **Qiskit and PennyLane**, with density-matrix noise simulation; numerical lessons without a circuit in the math kit.
+- **Lab**: code that runs as you type, a click-based circuit composer, OpenQASM 2/3 export, training runs with a live curve, share links (with a review step before running) and execution on a real IBM quantum computer (with the learner's own key; extra `engine[hardware]`).
+- **Visualizations**: Bloch spheres, Q-Sphere, amplitudes, phases, register, cost landscapes, convergence, graphs, decision boundaries, variable table.
+- **Notes**: a drawer in the lab for the open lesson and a notes page on the hub, saved as you type, searchable and part of the backup.
+- **Review** at the end of Tracks 1 to 6: multiple-choice questions that point back to the lessons to revisit.
+- **Glossary** with 141 terms, shown as tooltips in the theory and on a page of its own, with a filter; **references** with exact section and pages (Nielsen & Chuang, Griffiths & Schroeter, IBM courses).
+- **Accessibility**: WCAG 2.1 AA checked with axe, circuit navigable by keyboard, text description of the state; tabbed layout on narrow screens; first-lesson guide.
+- **Progress** in SQLite (local engine) or in the browser (hosted engine), with export and import as a backup; the local engine also keeps a dated copy of its database.
+- **Web**: local engine (`npm run dev`) or hosted engine (`deploy/`).
 
-Só o Linux foi testado. Windows e macOS dependem do CI, que ainda não rodou.
+Only Linux has been tested. Windows and macOS depend on CI.
 
-## Estrutura
+## Structure
 
 ```text
-app/        Interface (React + TypeScript + Three.js + Monaco); textos em app/src/i18n/
-engine/     Motor Python (Qiskit): execução, simulação, validação, progresso, mensagens
-content/    Lições (manifest, solução, setup oculto, textos por idioma) e catálogo
-src-tauri/  Shell desktop (Rust): abre a janela e gerencia o motor
-scripts/    Utilitários de desenvolvimento
-docs/       Plano diretor
+app/        Interface (React + TypeScript + Three.js + Monaco); texts in app/src/strings.ts
+engine/     Python engine (Qiskit): execution, simulation, validation, progress, messages
+content/    Lessons (manifest, texts, theory, starter code, solution, hidden setup) and catalog
+scripts/    dev.mjs: starts the engine and the interface together
+docs/       Master plan, writing guide, how to add a lesson, verified references
 ```
 
-## Pré-requisitos
+## Prerequisites
 
-- Python 3.11 ou mais novo
-- Node.js 18 ou mais novo (20+ recomendado)
-- Para o aplicativo desktop: Rust e, no Linux, as bibliotecas do WebKitGTK:
+- Python 3.11 or newer
+- Node.js 22 or newer (Vite 7 does not run on older versions; install it with nvm or fnm)
+
+## How to run
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev
+npm run setup   # once: creates engine/.venv and installs the dependencies
+npm run dev     # engine + interface; open http://localhost:5173
 ```
 
-## Como rodar
+The interface reloads on every change. The engine loads the lessons at startup, so new or changed lessons only appear after restarting `npm run dev`.
+
+`npm run setup` checks the Node and Python versions before installing anything, and works on Linux, macOS and Windows.
+
+Progress is kept in the user's data directory (`~/.local/share/quantum-learning-platform` on Linux). To isolate a session, set `QLP_DATA_DIR=/some/path`. With `QLP_LOG=1`, the engine logs every connection and request to the terminal.
+
+## Just use it (Docker)
+
+To study without installing Python or Node: `docker compose -f deploy/local.yml up`, then open http://localhost:8080. Progress is kept in a Docker volume. This path has not been verified yet (see P2.2 in [docs/master-plan.md](docs/master-plan.md)).
+
+## Publish on the web
+
+The web version runs the engine on a server, behind the site (`deploy/`): `SITE_ORIGIN=https://… docker compose -f deploy/docker-compose.yml up --build`. Read [deploy/README.md](deploy/README.md) first: learner code runs on the server, and what is still missing before opening to the public is listed there. The reason it does not run in the browser is in [docs/web-engine-decision.md](docs/web-engine-decision.md).
+
+## Tests
 
 ```bash
-npm run setup         # uma vez: cria engine/.venv e instala as dependências
-npm run desktop:dev   # janela desktop; a interface recarrega a cada alteração
-npm run dev           # alternativa no navegador: http://127.0.0.1:5173
-```
-
-`npm run dev` e `npm run desktop:dev` usam a mesma porta (5173): rode um de cada vez. O motor é carregado na inicialização, então lições novas ou alteradas só aparecem depois de reiniciar o comando.
-
-**Use sempre `npm run desktop:*` para abrir a janela**, e não `tauri` ou o executável diretamente. O VS Code instalado via snap injeta no terminal variáveis GTK que derrubam aplicativos WebKitGTK com `symbol lookup error`; o lançador em `scripts/desktop.mjs` as restaura.
-
-No Windows, crie o ambiente manualmente: `python -m venv engine\.venv`, `engine\.venv\Scripts\pip install -e "engine[dev]"`, `npm install` e `npm --prefix app install`.
-
-O progresso fica no diretório de dados do usuário (`~/.local/share/quantum-learning-platform` no Linux). Para isolar uma sessão, defina `QLP_DATA_DIR=/algum/caminho`. Com `QLP_LOG=1`, o motor registra no terminal cada conexão e requisição.
-
-## Testes
-
-```bash
-npm test             # motor (pytest) + interface (tipos e vitest)
+npm test             # engine (pytest) + interface (types and vitest)
 npm run test:engine
 npm run test:app
+npm run test:e2e     # end to end (Playwright; needs Google Chrome installed)
 ```
 
-A suíte do motor inclui:
+The engine suite includes:
 
-- **suíte de conteúdo**: em cada lição e em cada idioma, a solução passa no oráculo e o código inicial executa sem passar;
-- **testes de física da Trilha 2**: resultados conferidos de forma independente das soluções;
-- **testes do PennyLane**: o estado de cada QNode é comparado com o do próprio PennyLane, inclusive com ruído.
+- **content suite**: in every lesson, the solution passes the oracle and the starter code runs without passing;
+- **Track 2 physics tests**: results checked independently of the solutions;
+- **PennyLane tests**: the state of each QNode is compared with PennyLane's own, including with noise.
 
-## Gerar o aplicativo
+## Create a lesson
 
-```bash
-engine/.venv/bin/pip install -e "engine[package]"   # uma vez: instala o PyInstaller
-npm run desktop:build                               # motor + interface + instaladores
-npm run desktop:run                                 # abre o build gerado
-```
+See [docs/adding-a-lesson.md](docs/adding-a-lesson.md): the files of a lesson, the validation types and a checklist. The text follows the [writing guide](docs/writing-guide.md).
 
-Os instaladores ficam em `src-tauri/target/release/bundle/`. Para gerar só um formato: `npm run desktop:build -- --bundles deb`. Para testar só o motor empacotado: `engine/.venv/bin/python engine/packaging/smoke_test.py`.
+## How the interface and the engine talk
 
-## Criar uma lição
+`npm run dev` starts the engine (`python -m qlp_engine`) on a fixed port (8765) with a session token, and Vite passes these values to the interface (`VITE_ENGINE_PORT`, `VITE_ENGINE_TOKEN`). The interface opens a WebSocket at `ws://127.0.0.1:8765`; the engine only accepts connections with the right token and from the allowed origins (`--allow-origin`). Learner code runs in a separate process, with time and memory limits.
 
-1. Crie `content/track_N_.../section_X_Y_nome/` com:
-   - `manifest.json`: estrutura, sem texto;
-   - `solution.py`;
-   - opcional: `hidden_setup.py`;
-   - `locales/{pt,en,de}/`, cada uma com `text.json`, `theory.md` e `starter_code.py`.
+## License
 
-   Use uma lição existente como modelo.
-2. O `id` precisa existir em `content/catalog.json`, com título e resumo nos três idiomas iguais aos de `text.json`.
-3. Rode `npm run test:engine`. O alvo é calculado a partir do `solution.py`; não é preciso digitá-lo.
-
-| Tipo de validação | Exemplo |
-| :-- | :-- |
-| `state_fidelity`: estado final | 1.1 |
-| `counts_distribution`: estatística das medições | 1.2, 2.8 |
-| `reduced_state`: estado de um qubit, para várias entradas e todos os ramos de medição | 1.6 |
-| `oracle_cases`: distribuição de um registrador contra vários oráculos secretos | 2.2, 2.3, 2.5, 2.7 |
-| `state_cases`: estado final para várias entradas | 2.6 |
-
-O setup oculto recebe cada caso secreto pela variável `_QLP_INPUT`.
-
-**Lições PennyLane** (Trilha 3) declaram `framework: "pennylane"` e qual QNode desenhar (`qnode`). Com `live: false`, o código roda pelo botão Executar. Elas podem trazer:
-
-- um `check.py`, com validação própria e mensagens em `messages` no `text.json`;
-- um `analysis.py`, que alimenta as visualizações de treino;
-- `controls`, botões que passam valores ao setup oculto, como o erro injetado na 3.6.
-
-A lição 3.6 é o exemplo mais completo.
-
-## Como o shell e o motor conversam
-
-O shell inicia o motor e lê a primeira linha que ele imprime: `{"event": "ready", "port": ..., "token": ...}`. A interface pede esses dados pelo comando `engine_endpoint` e abre o WebSocket. Toda mensagem leva o idioma atual (`lang`), e o motor responde nele. O shell mantém o stdin do motor aberto; se o shell morrer, o motor percebe o pipe fechado e encerra sozinho.
+[MIT](LICENSE). The software and fonts it depends on are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and changes are recorded in [CHANGELOG.md](CHANGELOG.md). The lecture notes used as background during development are third-party material and are not part of this repository.

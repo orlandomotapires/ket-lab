@@ -1,0 +1,32 @@
+{
+  "title": "Qubits and the Computational Basis",
+  "summary": "State vector, normalization and the X gate on the Bloch sphere.",
+  "objectives": [
+    "Turn |0⟩ into |1⟩ with a Pauli X gate",
+    "Say whether a pair of amplitudes is a valid state, and fix it if it is not",
+    "Place a state such as 0.6|0⟩ + 0.8|1⟩ on the Bloch sphere using its angle θ"
+  ],
+  "mission": "A new qubit always starts in |0⟩. Apply a gate to qubit 0 so that it ends in |1⟩.",
+  "hints": [
+    "Which gate swaps |0⟩ and |1⟩? A classical bit has one, the NOT. The quantum version is one of the Pauli gates.",
+    "The Pauli X gate is the quantum NOT. In Qiskit a gate is a method of the circuit that takes the qubit index.",
+    "Write qc.x(0) on a new line after the circuit is created. qc.y(0) and qc.rx(pi, 0) also pass, because they differ from X only by a global phase."
+  ],
+  "prediction": {
+    "question": "You apply the gate Y to |0⟩ and get i|1⟩. You then measure in the computational basis. What do you see?",
+    "options": [
+      "0 or 1 at random, because the amplitude i is not a real number",
+      "Always 0, because Y only changes a phase and leaves |0⟩ alone",
+      "Always 1, because |i|² = 1 and the factor i changes no probability"
+    ],
+    "explanation": "The probability of an outcome is the squared modulus of its amplitude. The amplitude of |1⟩ is i, and |i|² = 1, so the outcome is 1 with certainty. The factor i is a global phase here: it changes the vector's name but not what any measurement returns."
+  },
+  "challenge": {
+    "mission": "Prepare the state proportional to 3|0⟩ + 4|1⟩. The pair (3, 4) is not normalized, so divide it by its norm first. Only ry and rz are allowed, and ry must appear. The final state must match up to a global phase.",
+    "hints": [
+      "What is the length of the vector (3, 4)? Dividing by it gives the amplitudes, and their squares must add up to 1.",
+      "The norm is 5, so the state is 0.6|0⟩ + 0.8|1⟩. The gate ry(θ) takes |0⟩ to cos(θ/2)|0⟩ + sin(θ/2)|1⟩, so you need cos(θ/2) = 0.6 and sin(θ/2) = 0.8. Mind the half angle.",
+      "tan(θ/2) = 0.8 / 0.6, so θ = 2 · atan2(4, 3), about 106.26°. Write qc.ry(2 * atan2(4, 3), 0) and import atan2 from math."
+    ]
+  }
+}

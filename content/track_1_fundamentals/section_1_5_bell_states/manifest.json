@@ -33,21 +33,64 @@
       "swap"
     ]
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "1.3.6",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.3.6, “Example: Bell states”, pp. 25–26; Section 2.2.8, “Composite systems”, pp. 93–96"
+    },
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 12.1, “The EPR Paradox”, pp. 447–449, and Section 12.2, “Bell’s Theorem”, pp. 449–455"
     },
     {
       "kind": "course",
-      "title": "Multiple systems: quantum information",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "title": "Multiple systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Quantum states”, subsections “Tensor products of quantum state vectors”, “Entangled states” and “Bell states”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "state_cases",
+      "tolerance": 0.999,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "cx",
+        "cz",
+        "cy",
+        "ch",
+        "swap"
+      ],
+      "cases": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  }
 }

@@ -1,0 +1,56 @@
+{
+  "title": "Quantum Annealing as a Circuit",
+  "summary": "Cut the anneal into Trotter steps on three qubits and compare it with QAOA and with thermal simulated annealing.",
+  "objectives": [
+    "Turn a time-dependent annealing Hamiltonian into a sequence of rz, rzz and rx gates with the correct angles and signs",
+    "Say how the circuit differs from QAOA and from thermal simulated annealing",
+    "Predict what a wrong sign or a missing factor of 2 does to the final state"
+  ],
+  "mission": "A real annealer runs in continuous time, but a gate-based device has to cut the anneal into steps. Build qc for the three-qubit instance of lessons 6.1 and 6.2 (h and J are defined in the starter): Hadamards on every qubit, then p Trotter steps, each a cost layer (rz and rzz) followed by a mixer layer (rx) with the schedule frozen at the midpoint of the step. Measuring the circuit must give 110 with probability at least 0.7. Use only h, rx, rz and rzz, at most 1000 gates. You may change T and p.",
+  "prediction": {
+    "question": "You write the mixer with the wrong sign, rx(+2(1 − s)dt) instead of rx(−2(1 − s)dt), and keep everything else, with T and p large enough that the correct circuit would reach 0.7. Where does the probability end up?",
+    "options": [
+      "Spread almost evenly over the eight states, because the mixer no longer does anything useful",
+      "On |000⟩, the state of highest energy of H_P",
+      "On |011⟩, the right pattern with the qubits in the other order"
+    ],
+    "explanation": "With the opposite sign the driver is +ΣX, and |+++⟩ is its highest-energy state, not its lowest. The slow evolution follows the highest state of the interpolated Hamiltonian and ends on the highest-energy state of H_P, which is |000⟩ (E = 2.917). In the simulation, T = 120 and p = 100 give probability 1.000 on |000⟩. The reversed qubit order would put weight on |011⟩, but that comes from attaching h and J to the wrong qubits, not from the sign."
+  },
+  "hints": [
+    "Write the two layers as exponentials first: e^{-i s H_P dt} and e^{-i (1 − s) H_B dt}. Then ask what angle rz, rzz and rx need so that their own exponentials match, remembering that rz(θ) = e^{-iθZ/2}.",
+    "Cost layer: rz(2 s h_i dt) on qubit i and rzz(2 s J_ij dt) on each pair. Mixer layer: since H_B = −ΣX, the exponential is e^{+i(1 − s)dt X}, which is rx with the negative angle −2(1 − s)dt.",
+    "Loop for k in range(1, p + 1) with s = (k - 0.5) / p. The gap of this instance is small, so T = 10 is far too short: try T near 100 with p about equal to T, so that dt stays near 1."
+  ],
+  "messages": {
+    "ok": "Probability {prob} of measuring 110 with {count} gates (threshold {target}). The Trotterized anneal has followed the ground state of the problem.",
+    "no_circuit": "There is no circuit `qc` with 3 qubits yet.",
+    "wrong_qubits": "The instance has 3 spins, one qubit each, but your circuit has {count} qubits.",
+    "gates": "Only h, rx, rz and rzz are allowed, and the circuit also uses {names}. The state has to come from the anneal, not from a preparation shortcut.",
+    "too_many": "The circuit has {count} gates and the limit is {limit}. Fewer steps are enough: dt = T / p does not have to be much below 1.",
+    "no_hadamard": "Some qubit never gets a Hadamard, so the circuit does not start in |+++⟩, the ground state of H_B. Without it the anneal starts from a state that is not the lowest one.",
+    "no_layers": "The circuit has no annealing steps yet: it needs rx gates for the mixer and rz or rzz gates for the cost, repeated p times.",
+    "reversed": "The weight sits on |011⟩ ({other}) and only {prob} on |110⟩: the right pattern with the qubits in the other order. Qiskit puts qubit 0 on the right of the label, so check which h[i] and J[i, j] go to which qubit.",
+    "sign": "The circuit ends on |000⟩ with probability {other} and gives |110⟩ only {prob}. That is the state of highest energy, the signature of a flipped sign: the mixer should be e^{+i(1 − s)dt X}, that is rx with a negative angle, and the cost layer must not have its sign flipped.",
+    "not_converged": "Probability {prob} of 110, below {target}, and no single wrong state stands out. The usual causes are a factor 2 missing in an angle, a wrong sign, a total time T that is too short for the small gap, or a step dt so large that the Trotter error dominates."
+  },
+  "challenge": {
+    "mission": "The linear anneal of the mission spends as many steps where the gap is large as where it is small, and needs 903 gates for 0.77. Build a circuit for the same instance that reaches probability at least 0.9 of measuring 110 with at most 300 gates, using only h, rx, rz and rzz. The steps may have different lengths and s need not grow at a constant rate.",
+    "hints": [
+      "The adiabatic condition of lesson 6.2 asks for slowness only where the gap is small. Where, in s, is that for this instance, and how fast could you go elsewhere?",
+      "Compute the gap g(s) of H(s) from the 8 × 8 matrices of lesson 6.2 and let s move with speed proportional to g(s)². The time spent up to s is then t(s) = ∫ ds / (c g²). Keep the steps near dt = 1.2 and read s(t) at the midpoint of each step.",
+      "Integrate with a cumulative sum over a grid of s, make T = t(1), choose p = round(T / 1.2) steps of length T / p, and take s_k = np.interp((k + 0.5) * dt, t, grid). A constant c near 0.2 gives about thirty steps. Raise c to save gates and lower it to gain probability."
+    ],
+    "messages": {
+      "ok": "Probability {prob} of measuring 110 with {count} gates (limit 300). Moving slowly only near the small gap bought more probability with a third of the gates.",
+      "no_circuit": "There is no circuit `qc` with 3 qubits yet.",
+      "wrong_qubits": "The instance has 3 spins, one qubit each, but your circuit has {count} qubits.",
+      "gates": "Only h, rx, rz and rzz are allowed, and the circuit also uses {names}.",
+      "too_many": "The circuit has {count} gates and the limit is {limit}. A schedule that crawls through the whole sweep cannot afford that; slow down only where the gap is small.",
+      "no_hadamard": "Some qubit never gets a Hadamard, so the circuit does not start in |+++>, the ground state of H_B.",
+      "no_layers": "The circuit has no annealing steps yet: it needs rx gates for the mixer and rz or rzz gates for the cost.",
+      "reversed": "The weight sits on |011> ({other}) and only {prob} on |110>: the right pattern with the qubits in the other order. Check which h[i] and J[i, j] go to which qubit.",
+      "sign": "The circuit ends on |000> with probability {other} and gives |110> only {prob}: a flipped sign, most likely in the mixer, which needs a negative rx angle.",
+      "not_enough": "Probability {prob} of 110 with {count} gates, below {target}. Either the sweep is too fast near s = 0.95 where the gap is smallest, or the steps are so long that the Trotter error dominates; try steps of about 1.2 and a smaller c."
+    }
+  }
+}

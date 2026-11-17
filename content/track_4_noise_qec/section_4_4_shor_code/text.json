@@ -1,0 +1,47 @@
+{
+  "title": "The Shor Code",
+  "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit.",
+  "objectives": [
+    "Build the nine-qubit Shor code by encoding the phase-flip code with the bit-flip code",
+    "Decode with a majority vote inside each block and then across the block leaders",
+    "Explain why correcting X, Y and Z on one qubit also corrects an arbitrary error on that qubit",
+    "Tell which two-qubit errors the code corrects and which it turns into a logical error"
+  ],
+  "mission": "A real error is rarely a clean X or Z, so the code has to cover every error on one qubit. Complete encode(): a phase-flip code on the block leaders 0, 3 and 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5) and (6, 7, 8). Complete decode(): undo the bit-flip codes with a majority vote in each block, then undo the phase-flip code with a majority vote on the leaders. Afterwards qubit 0 must hold the input state again after an X, Y or Z error on any one of the nine qubits, and after an arbitrary rotation on any one qubit, for any input state.",
+  "prediction": {
+    "question": "Z errors hit qubits 0 and 1, both in the first block. What happens to the decoded qubit 0?",
+    "options": [
+      "A logical X, as for Z on qubits 0 and 3 in different blocks",
+      "A logical Z: two errors in one block beat the inner vote",
+      "It is recovered: the two phase flips cancel inside the block"
+    ],
+    "explanation": "A Z on any qubit of a block flips the sign between |000⟩ and |111⟩ in that block. Two of them flip it twice, so the block is back where it started: Z₀Z₁ is a stabilizer, and it acts as the identity on the code. The two-error failures come from other pairs, such as X on 0 and 1 (a logical Z) or Z on 0 and 3 (a logical X)."
+  },
+  "hints": [
+    "Encoding has two layers, and the outer one comes first. Which three qubits form the phase-flip code, and what do you apply to them? Then each of those qubits becomes the leader of a bit-flip code on its block.",
+    "The outer layer is qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]) and a qml.Hadamard on wires 0, 3 and 6. The inner layer is, for each block (a, b, c), qml.CNOT(wires=[a, b]) and qml.CNOT(wires=[a, c]). Decoding runs the same gates in reverse order, with a Toffoli as the vote.",
+    "For each block (a, b, c), decode with qml.CNOT(wires=[a, b]), qml.CNOT(wires=[a, c]) and qml.Toffoli(wires=[b, c, a]). Then the leaders 0, 3 and 6 hold a phase-flip code: a Hadamard on each, and the same vote with qml.Toffoli(wires=[3, 6, 0])."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "x4": "X on 4",
+        "y4": "Y on 4",
+        "z4": "Z on 4",
+        "u4": "Arbitrary rotation on 4",
+        "x0x1": "X on 0 and 1",
+        "z0z3": "Z on 0 and 3",
+        "x0z3": "X on 0, Z on 3"
+      }
+    }
+  },
+  "messages": {
+    "ok": "Qubit 0 is recovered after any X, Y or Z error on a single qubit, and after an arbitrary rotation on a single qubit, for every input state tested.",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 9 qubits.",
+    "wrong_qubits": "The Shor code uses 9 qubits, but the circuit has {count}.",
+    "encode_wrong": "With no error at all qubit 0 does not come back to |ψ⟩ (fidelity {fidelity}). The decoding is probably not the exact reverse of the encoding: check the order of the gates in each layer.",
+    "single_fail": "With the error {error} qubit 0 was not recovered (fidelity {fidelity}). If only some errors fail, look at the vote that should catch them: the inner one in each block for X, the one on the leaders for Z."
+  }
+}

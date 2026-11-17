@@ -1,0 +1,136 @@
+{
+  "questions": [
+    {
+      "lesson": "2.1",
+      "question": "A controlled-U acts on a control in α|0⟩ + β|1⟩ and a target that is an eigenstate |ψ⟩ of U with eigenvalue e^{iφ}. What is the state afterwards?",
+      "options": [
+        "The control is unchanged and the target becomes e^{iφ}|ψ⟩",
+        "(α|0⟩ + e^{iφ}β|1⟩)|ψ⟩",
+        "(e^{iφ}α|0⟩ + β|1⟩)|ψ⟩",
+        "The two qubits are entangled"
+      ],
+      "answer": 1,
+      "explanation": "The gate applies U to the target only in the term where the control is |1⟩, and U|ψ⟩ = e^{iφ}|ψ⟩. The target factors out unchanged and the phase stays on the |1⟩ term of the control, which is a relative phase and so a change of the control."
+    },
+    {
+      "lesson": "2.2",
+      "question": "In Deutsch's algorithm you measure qubit 0 and get 1. What do you know about f?",
+      "options": [
+        "f is constant and equal to 1",
+        "f(1) = 1",
+        "f(0) ≠ f(1), but not whether f is x or NOT x",
+        "f(0) = 0"
+      ],
+      "answer": 2,
+      "explanation": "Qubit 0 gives f(0) ⊕ f(1), so a 1 means the function is balanced. The algorithm does not reveal f(0) or f(1) separately: x and NOT x differ only by a global sign and give the same result."
+    },
+    {
+      "lesson": "2.3",
+      "question": "In the Deutsch–Jozsa circuit with a 3-qubit input register you measure 101. What do you conclude?",
+      "options": [
+        "f is constant",
+        "f(101) = 1",
+        "The result is inconclusive, so the circuit must run again",
+        "f is balanced"
+      ],
+      "answer": 3,
+      "explanation": "For a constant f the input register ends exactly in |000⟩, with certainty. Any other outcome means f is balanced, and one run is enough because the algorithm is exact."
+    },
+    {
+      "lesson": "2.4",
+      "question": "The Bernstein–Vazirani oracle (4 input qubits) applies CNOTs from qubits 1 and 3 to the auxiliary qubit. Which state does the input register end in, written in Qiskit order |q3 q2 q1 q0⟩?",
+      "options": [
+        "|1010⟩",
+        "|0101⟩",
+        "|1111⟩",
+        "|0000⟩"
+      ],
+      "answer": 0,
+      "explanation": "The CNOTs from qubits 1 and 3 mean s1 = s3 = 1, so f(x) = x1 ⊕ x3 and the register ends in |s⟩. With qubit 0 on the right this reads 1010. The label 0101 comes from writing qubit 0 on the left."
+    },
+    {
+      "lesson": "2.5",
+      "question": "In Simon's algorithm with n = 3 the measured outcomes y are 100 and 011. Which nonzero string s satisfies y·s = 0 (mod 2) for both?",
+      "options": [
+        "111",
+        "101",
+        "011",
+        "110"
+      ],
+      "answer": 2,
+      "explanation": "The outcome 100 requires s2 = 0, and 011 requires s1 ⊕ s0 = 0, so s1 = s0 and the nonzero solution is 011. The strings 111, 101 and 110 all have s2 = 1 and fail the first equation."
+    },
+    {
+      "lesson": "2.6",
+      "question": "With 16 items and one marked item, 3 Grover iterations give a success probability of 96%. What happens with 6 iterations?",
+      "options": [
+        "The probability keeps increasing toward 100%",
+        "It drops to about 2%, because the state has rotated past the marked item",
+        "It stays at 96%",
+        "It returns to 1/16, the uniform value"
+      ],
+      "answer": 1,
+      "explanation": "Each iteration rotates the state by 2θ with sin θ = 1/4, and the probability is sin²((2k+1)θ). For k = 6 the angle is about 188°, which gives about 2%. Grover's algorithm needs the right number of iterations, and more is worse."
+    },
+    {
+      "lesson": "2.6",
+      "question": "With 4 items and one marked, the amplitudes after the oracle are (1/2, 1/2, 1/2, −1/2). What are they after the diffusion operator?",
+      "options": [
+        "(0, 0, 0, 1)",
+        "(1/2, 1/2, 1/2, 1/2)",
+        "(1/4, 1/4, 1/4, 1/4)",
+        "(0, 0, 0, −1)"
+      ],
+      "answer": 0,
+      "explanation": "The mean is 1/4, and each amplitude a goes to 2·(1/4) − a. The three unmarked ones become 0 and the marked one becomes 2/4 + 1/2 = 1, so one iteration finds the item with certainty."
+    },
+    {
+      "lesson": "2.7",
+      "question": "You apply the 3-qubit QFT to |101⟩ and measure in the computational basis. What do you get?",
+      "options": [
+        "Always 5",
+        "Always 3, the bits reversed",
+        "Only the values 1, 3, 5 and 7",
+        "Each of the 8 values with probability 1/8"
+      ],
+      "answer": 3,
+      "explanation": "The QFT of a basis state has equal magnitude 1/√8 on every |k⟩. The information about x is in the phases e^{2πi·xk/8}, which a measurement in the computational basis does not see."
+    },
+    {
+      "lesson": "2.8",
+      "question": "U has an eigenphase θ = 0.3 (eigenvalue e^{2πiθ}) and you use 3 counting qubits. What does the measurement of the counting register give?",
+      "options": [
+        "Always 3, so θ ≈ 0.375",
+        "Mostly 2 (θ ≈ 0.25), with smaller probability on neighbours such as 3",
+        "Always 2, so θ ≈ 0.25",
+        "An error, because 0.3 is not a multiple of 1/8"
+      ],
+      "answer": 1,
+      "explanation": "Here 8θ = 2.4 is not an integer, so the probability spreads: about 58% on 2 and 26% on 3, with the rest on other values. The estimate is the most probable value, and more counting qubits give a finer one."
+    },
+    {
+      "lesson": "2.9",
+      "question": "In Shor's algorithm for N = 15 with a = 14, the order is r = 2 and gcd(a^(r/2) + 1, 15) = 15. Why does this run fail to give a factor?",
+      "options": [
+        "Because a^(r/2) ≡ −1 (mod N), so both gcds are trivial",
+        "Because r is odd",
+        "Because gcd(14, 15) is not 1",
+        "Because phase estimation cannot find r = 2"
+      ],
+      "answer": 0,
+      "explanation": "Here a^(r/2) = 14 ≡ −1 (mod 15), so a^(r/2) + 1 is a multiple of N and the gcds are 15 and 1. The order is even and was found correctly, so another a must be chosen."
+    },
+    {
+      "lesson": "2.10",
+      "question": "If A and B commute, how many Trotter steps does e^{-i(A+B)t} ≈ (e^{-iAΔt} e^{-iBΔt})^n need to be exact?",
+      "options": [
+        "Infinitely many",
+        "About t/ε steps for accuracy ε",
+        "Two steps, one for each term",
+        "One step, since e^{-iAt}e^{-iBt} = e^{-i(A+B)t}"
+      ],
+      "answer": 3,
+      "explanation": "The Trotter error comes from the commutator [A,B], which is zero here. The product of the two exponentials is already exact, and extra steps do not change it."
+    }
+  ]
+}

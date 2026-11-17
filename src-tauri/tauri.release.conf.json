@@ -1,7 +1,0 @@
-{
-  "bundle": {
-    "resources": {
-      "../engine/dist/qlp-engine/": "qlp-engine/"
-    }
-  }
-}

@@ -1,0 +1,22 @@
+{
+  "lectures": [
+    {
+      "title": "Quantum Information 2025 (lecture slides)",
+      "authors": "M. Wegewijs, M. Müller",
+      "year": 2025,
+      "note": "Used to revise the exercises of Tracks 1 and 2 (gates and circuits, Deutsch, Deutsch–Jozsa, Bernstein–Vazirani, universality). Not publicly available."
+    },
+    {
+      "title": "Quantum Computing: Concepts and Algorithms (lecture and exercises)",
+      "authors": "D. Willsch, Jülich Supercomputing Centre",
+      "year": 2026,
+      "note": "Used to revise the exercises of all three original tracks.",
+      "url": "https://go.fzj.de/qc26-lecture"
+    }
+  ],
+  "software": [
+    {"title": "Qiskit", "authors": "IBM and the Qiskit community", "note": "Circuits, transpiler, primitives and OpenQASM export (version 2.6).", "url": "https://www.ibm.com/quantum/qiskit"},
+    {"title": "PennyLane", "authors": "Xanadu and the PennyLane community", "note": "Variational circuits, gradients, quantum chemistry and noise channels (version 0.45).", "url": "https://pennylane.ai"},
+    {"title": "NumPy", "authors": "NumPy developers", "note": "The platform's own state-vector and density-matrix simulator.", "url": "https://numpy.org"}
+  ]
+}

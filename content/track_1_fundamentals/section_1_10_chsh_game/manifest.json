@@ -1,0 +1,47 @@
+{
+  "id": "1.10",
+  "track": 1,
+  "estimated_minutes": 30,
+  "num_qubits": 2,
+  "max_qubits": 2,
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "amplitudes",
+    "qsphere"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 12.2, “Bell’s Theorem”, pp. 449–455"
+    },
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 2.6, “EPR and the Bell inequality”, starts p. 111"
+    },
+    {
+      "kind": "course",
+      "title": "Entanglement in action: CHSH game",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Sections “CHSH game description”, “Limitation of classical strategies” and “CHSH game strategy”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/chsh-game"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

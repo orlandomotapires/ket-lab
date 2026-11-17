@@ -1,0 +1,45 @@
+{
+  "id": "3.9",
+  "track": 3,
+  "project": true,
+  "estimated_minutes": 45,
+  "framework": "pennylane",
+  "live": false,
+  "timeout": 25,
+  "num_qubits": 4,
+  "max_qubits": 4,
+  "qnode": {
+    "name": "circuit",
+    "args": [
+      "theta"
+    ]
+  },
+  "default_visualizer": "dissociation",
+  "available_visualizers": [
+    "dissociation",
+    "convergence",
+    "qsphere",
+    "bloch"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "A variational eigenvalue solver on a photonic quantum processor",
+      "authors": "A. Peruzzo, J. McClean, P. Shadbolt, M.-H. Yung, X.-Q. Zhou, P. J. Love, A. Aspuru-Guzik, J. L. O’Brien",
+      "year": 2014,
+      "location": "Nat. Commun. 5, 4213: the article that introduced the VQE (short article, read in full)",
+      "url": "https://doi.org/10.1038/ncomms5213"
+    },
+    {
+      "kind": "course",
+      "title": "Building a chemical Hamiltonian",
+      "authors": "IBM Quantum Learning, Quantum chemistry with VQE",
+      "location": "Section “Preparing Hamiltonians for Quantum Chemistry”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-chem-with-vqe/hamiltonian-construction"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "title": "Superdense Coding",
+  "summary": "Two classical bits travel in one qubit when sender and receiver share a Bell pair.",
+  "objectives": [
+    "Encode two classical bits on Alice's half of a Bell pair with Pauli gates",
+    "Decode both bits with a CNOT and a Hadamard gate and read them in the right order",
+    "Say why neither half of the pair carries any information about the message by itself"
+  ],
+  "mission": "Alice and Bob share a Bell pair: Alice holds qubit 1 and Bob holds qubit 0. Alice encodes the two-bit string `message` (the validator tries all four) by acting only on qubit 1, then sends that qubit to Bob, who decodes with gates that do not depend on the message. Reading |q1 q0⟩, the final state must be the message.",
+  "hints": [
+    "What does Alice and Bob's shared resource look like, and which two gates created it in lesson 1.5? Build it first.",
+    "Alice's gates act on her qubit 1 and depend on the message, which is known when the circuit is built, so ordinary Python if statements work: Z if message[0] == \"1\", X if message[1] == \"1\".",
+    "Bob runs the pair-creation circuit backwards on both qubits: qc.cx(1, 0), then qc.h(1). That sends the four Bell states to |00⟩, |01⟩, |10⟩ and |11⟩ in |q1 q0⟩."
+  ],
+  "prediction": {
+    "question": "Someone intercepts qubit 1 on its way from Alice to Bob and measures it in the computational basis. What do they learn about the message?",
+    "options": [
+      "Both bits, since qubit 1 is the qubit Alice encoded",
+      "Nothing: qubit 1 alone looks the same for every message",
+      "One bit, the one chosen by the X gate"
+    ],
+    "explanation": "Each Bell state has the reduced state I/2 on each qubit, so a measurement of qubit 1 alone gives 0 or 1 with probability 1/2 for all four messages. The message is in the correlations with Bob's qubit. The interceptor also spoils the protocol, because Bob no longer receives the Bell state."
+  },
+  "messages": {
+    "ok": "All four messages are decoded correctly: two classical bits travelled in one qubit.",
+    "wrong_size": "Use a circuit with 2 qubits, named `qc`.",
+    "gate_count": "Expected exactly two two-qubit gates (the CNOT that creates the pair and the CNOT that starts Bob's decoding), found {count}.",
+    "alice_local": "Between the two CNOT gates only Alice acts, and Alice owns qubit 1. A gate on another qubit uses a qubit that Alice does not hold.",
+    "protocol_fixed": "For the message {message}, the pair creation or Bob's decoding differs from the other messages. Only Alice's gates may depend on the message.",
+    "wrong_message": "For the message {message}, Bob reads {observed}."
+  },
+  "challenge": {
+    "mission": "The shared pair is now |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2 instead of |Φ⁺⟩: the circuit up to and including its first two-qubit gate must prepare it. Keep Bob's decoding (CNOT from 1 to 0, then H on qubit 1). Alice still acts only on qubit 1, and her gates, chosen from `message`, must make the final state |q1 q0⟩ equal to the message for all four messages.",
+    "hints": [
+      "Bob's decoding sends Φ⁺ to 00, Φ⁻ to 10, Ψ⁺ to 01 and Ψ⁻ to 11. Which gate of Alice's turns |Ψ⁻⟩ into each of the four Bell states?",
+      "To prepare |Ψ⁻⟩, start with X on both qubits to get |11⟩, then H on qubit 0 and a CNOT from 0 to 1.",
+      "With no gate from Alice, Bob reads 11. Z on qubit 1 turns |Ψ⁻⟩ into |Ψ⁺⟩, and X turns it into |Φ⁻⟩. Work out which of the four combinations gives each message."
+    ],
+    "messages": {
+      "ok": "All four messages arrive using the pair |Ψ⁻⟩.",
+      "wrong_size": "The variable `qc` must be a QuantumCircuit with 2 qubits, for every message.",
+      "gate_count": "The circuit must contain exactly two two-qubit gates, the one that creates the pair and the one that starts the decoding; it has {count}.",
+      "alice_local": "Between the two two-qubit gates, Alice may act only on qubit 1.",
+      "protocol_fixed": "The pair and Bob's decoding must not depend on the message; they differ for the message {message}.",
+      "wrong_pair": "After the first two-qubit gate the state is not |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2.",
+      "wrong_message": "For the message {message} the decoded result is {observed}."
+    }
+  }
+}

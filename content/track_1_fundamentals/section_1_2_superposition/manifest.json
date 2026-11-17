@@ -33,17 +33,44 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "2.2.3",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.3.1, “Single qubit gates”, pp. 17–20 (Hadamard gate); Section 2.2.3, “Quantum measurement”, pp. 84–86"
+    },
+    {
+      "kind": "course",
+      "title": "Single systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Measuring quantum states”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
     },
     {
       "kind": "course",
       "title": "Single systems: Qiskit implementation",
-      "authors": "IBM Quantum Learning — Basics of quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Subsection “Simulating measurements using Statevector”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/qiskit-implementation"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "counts_distribution",
+      "shots": 4096,
+      "tolerance": 0.05,
+      "allowed_gates": [
+        "z",
+        "h",
+        "ry",
+        "id",
+        "measure"
+      ],
+      "required_gates": [
+        "ry",
+        "h",
+        "z"
+      ]
+    }
+  }
 }

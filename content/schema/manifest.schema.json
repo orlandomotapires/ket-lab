@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Manifest de lição",
+  "title": "Lesson manifest",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,11 +14,11 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[1-9]\\.[0-9]+$"
+      "pattern": "^[0-9]\\.[0-9]+$"
     },
     "track": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 0
     },
     "estimated_minutes": {
       "type": "integer",
@@ -26,7 +26,7 @@
     },
     "num_qubits": {
       "type": "integer",
-      "minimum": 1,
+      "minimum": 0,
       "maximum": 10
     },
     "max_qubits": {
@@ -86,7 +86,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -100,7 +100,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -148,7 +148,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -162,7 +162,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -215,7 +215,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -229,7 +229,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             },
             "inputs": {
               "type": "array",
@@ -241,7 +241,7 @@
                   "type": "number"
                 }
               },
-              "description": "Pares (θ, φ) testados sempre, antes dos sorteados"
+              "description": "(θ, φ) pairs always tested, before the random ones"
             }
           }
         },
@@ -298,7 +298,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -312,7 +312,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -360,7 +360,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -374,7 +374,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -412,7 +412,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -426,7 +426,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         }
@@ -448,7 +448,7 @@
         "source_marker": {
           "type": "string",
           "minLength": 1,
-          "description": "Trecho de código; o estado de origem é o da linha onde ele aparece"
+          "description": "Code snippet; the source state is the one at the line where it appears"
         },
         "target_qubit": {
           "type": "integer",
@@ -466,7 +466,7 @@
       "required": [
         "qubits"
       ],
-      "description": "Registrador mostrado nas visualizações de amplitudes, mostradores e histograma",
+      "description": "Register shown in the amplitude views, gauges and histogram",
       "properties": {
         "qubits": {
           "type": "array",
@@ -499,9 +499,10 @@
     "framework": {
       "enum": [
         "qiskit",
-        "pennylane"
+        "pennylane",
+        "python"
       ],
-      "description": "pennylane: o circuito é um QNode"
+      "description": "pennylane: the circuit is a QNode; python: lesson without a circuit (math kit), shows the variables"
     },
     "qnode": {
       "type": "object",
@@ -520,17 +521,17 @@
           }
         }
       },
-      "description": "Qual QNode desenhar e com quais variáveis do aluno como argumentos"
+      "description": "Which QNode to draw and with which learner variables as arguments"
     },
     "live": {
       "type": "boolean",
-      "description": "false: executa só pelo botão (treinos demorados)"
+      "description": "false: runs only from the button (slow training runs)"
     },
     "timeout": {
       "type": "number",
       "minimum": 1,
       "maximum": 30,
-      "description": "Segundos por execução"
+      "description": "Seconds per run"
     },
     "controls": {
       "type": "array",
@@ -557,7 +558,7 @@
     "references": {
       "type": "array",
       "minItems": 2,
-      "description": "Leituras para aprofundar: ao menos uma teórica (livro/artigo) e uma prática (curso/tutorial)",
+      "description": "Further reading: at least one theoretical (book/article) and one practical (course/tutorial)",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -565,6 +566,7 @@
           "kind",
           "title",
           "authors",
+          "location",
           "url"
         ],
         "properties": {
@@ -587,15 +589,418 @@
           "year": {
             "type": "integer"
           },
-          "section": {
-            "type": "string"
-          },
           "url": {
             "type": "string",
             "pattern": "^https://"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Where to read, precisely: chapter/section, title and pages (books) or lesson and section title (courses)"
           }
         }
       }
+    },
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation"
+      ],
+      "description": "Optional challenge, unlocked after the mission: its own rules; files challenge_solution.py and, if needed, challenge_check.py and challenge_hidden_setup.py",
+      "properties": {
+        "validation": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "state_fidelity"
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "counts_distribution"
+                },
+                "shots": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 8192
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "qubit"
+              ],
+              "properties": {
+                "type": {
+                  "const": "reduced_state"
+                },
+                "qubit": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "trials": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "description": "(θ, φ) pairs always tested, before the random ones"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "cases",
+                "register"
+              ],
+              "properties": {
+                "type": {
+                  "const": "oracle_cases"
+                },
+                "cases": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "register": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "cases"
+              ],
+              "properties": {
+                "type": {
+                  "const": "state_cases"
+                },
+                "cases": {
+                  "type": "array",
+                  "minItems": 1
+                },
+                "tolerance": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 1
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "custom"
+                },
+                "allowed_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "max_gates": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "forbidden_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "expected_variables": {
+                  "type": "object",
+                  "description": "Learner-code variables checked after the main validation"
+                },
+                "required_gates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gate_counts": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "project": {
+      "type": "boolean",
+      "description": "End-of-track project (larger task, with a rubric in the validator)"
     }
   },
   "$defs": {
@@ -613,7 +1018,9 @@
         "dissociation",
         "graph",
         "boundary",
-        "threshold"
+        "threshold",
+        "curve",
+        "variables"
       ]
     }
   }

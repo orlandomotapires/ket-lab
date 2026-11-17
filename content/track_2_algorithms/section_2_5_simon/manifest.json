@@ -1,0 +1,45 @@
+{
+  "id": "2.5",
+  "track": 2,
+  "estimated_minutes": 35,
+  "num_qubits": 6,
+  "max_qubits": 6,
+  "default_visualizer": "histogram",
+  "available_visualizers": [
+    "histogram",
+    "amplitudes"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2
+    ]
+  },
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Figure 5.5, “Hidden subgroup problems”, p. 241, and Exercise 5.29, p. 242 (Simon’s problem as a hidden subgroup problem; the book has no section on the algorithm itself)"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum query algorithms: Simon’s algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Sections “Simon’s problem”, “Algorithm description” and “Analysis” (subsections “Classical post-processing” and “Classical difficulty”)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/simon-algorithm"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

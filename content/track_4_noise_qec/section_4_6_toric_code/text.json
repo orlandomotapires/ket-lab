@@ -1,0 +1,51 @@
+{
+  "title": "The Toric Code",
+  "summary": "A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops.",
+  "objectives": [
+    "Find which plaquettes light up for a chain of X errors on the torus",
+    "Tell a contractible error loop, which does nothing, from one that wraps the torus and changes the encoded state",
+    "Find the distance of a small torus by searching for its shortest undetected logical chain",
+    "Explain why defects always come in pairs at the ends of a chain"
+  ],
+  "mission": "On a lattice, errors are strings and the syndrome is where the strings end. Edges of an L×L torus are tuples (\"h\", r, c) and (\"v\", r, c), and a chain is a set of edges carrying X errors. plaquette_edges(L, r, c) is given. Write defects(L, chain), which returns the list of plaquettes (r, c) whose Z-stabilizer anticommutes with the chain. Write logical_class(L, chain), which for a chain with no defects returns (a, b): the parities of the number of its edges in the row (\"h\", 0, c) and in the column (\"v\", r, 0). Then search all chains on the 3×3 torus by increasing size and store in distance the size of the smallest chain that has no defects and logical_class other than (0, 0).",
+  "prediction": {
+    "question": "X errors act on the two vertical edges v(0,1) and v(0,2) of the torus, which share a plaquette. How many plaquettes anticommute with the chain?",
+    "options": [
+      "Four: each edge lights its two plaquettes",
+      "None: two errors cancel each other",
+      "Two, at the far ends: the shared plaquette holds two errors and stays quiet"
+    ],
+    "explanation": "Each edge lies in two plaquettes. The two edges share the plaquette (0, 1), which then holds an even number of errors and does not fire. The other plaquette of each edge, (0, 0) and (0, 2), holds one error and fires. A chain with open ends always has defects, at its two ends."
+  },
+  "hints": [
+    "A plaquette (r, c) fires when it contains an odd number of errors from the chain. How would you count the edges of the chain among the four edges of a plaquette?",
+    "Loop over all L² plaquettes, count the edges of plaquette_edges(L, r, c) that are in the chain (a set, so a membership test), and keep the plaquettes with an odd count. logical_class takes the same kind of count on two fixed Z-loops, modulo 2: the row of horizontal edges (\"h\", 0, c) and the column of vertical edges (\"v\", r, 0).",
+    "For the distance, try chains of size w = 1, 2, 3, … from itertools.combinations(edges, w), with edges = [(t, r, c) for t in \"hv\" for r in range(L) for c in range(L)]. The first size that has a chain with no defects and a class other than (0, 0) is the distance."
+  ],
+  "messages": {
+    "ok": "The defects and the loop classes are right. On the {L}×{L} torus the shortest undetected logical chain has {distance} edges, equal to L.",
+    "missing": "Store the result in the variable {name}.",
+    "missing_function": "Define the function {name}.",
+    "defects_wrong": "On the {L}×{L} torus, for the chain {chain}, the defects should be {expected} and defects returned {got}. A plaquette fires on an odd number of chain edges: two errors in the same plaquette cancel there.",
+    "class_wrong": "For the chain {chain} on the {L}×{L} torus, which has no defects, logical_class should return {expected} and returned {got}. Check which edges you count and that each count is taken modulo 2.",
+    "distance_wrong": "distance is {got}, which does not match a search over all chains on the 3×3 torus. Count only chains with no defects and a class other than (0, 0): a chain with defects is seen by the checks."
+  },
+  "challenge": {
+    "mission": "The mission gave you the syndrome of a chain of errors and the classes of loops. A decoder works backwards: it sees only the defects and has to guess a chain. The usual guess is a chain of minimum weight, and on the 3×3 torus it can be wrong, because a correction that is shorter than the error closes a loop with it that may wrap around the torus. Keep your defects, logical_class and the edges of the mission. Write decode(L, found), which receives the list of defects and returns a set of edges of minimum weight that has exactly those defects. Write outcome(L, error, correction), which returns \"success\" when error and correction together make a loop of class (0, 0) and \"failure\" otherwise. Then run every hidden error of two distinct edges (all pairs of the 18 edges), and store in total the number of cases and in failures how many your decoder gets wrong. The validator checks your decoder on a sample of errors against a search for the minimum weight, tests outcome on loops of its own, and recomputes both numbers.",
+    "hints": [
+      "The decoder cannot see the error, so you cannot test candidates against it. What can you test a candidate chain against? Try all chains of size 0, then 1, then 2.",
+      "The defects of a candidate come from the mission's defects function. The first size at which some candidate has exactly the defects you were given is the minimum weight; any candidate of that size will do on this torus.",
+      "error and correction have the same defects, so the symmetric difference of the two sets has none. Its class from logical_class says whether it is a product of stabilizers or a logical operator. Loop over itertools.combinations(edges, 2) for the errors."
+    ],
+    "messages": {
+      "ch_ok": "The decoder removes the defects with minimum weight, and it fails on {failures} of the {total} two-edge errors. On the 3×3 torus two errors in a row can already make the shorter way round the torus a logical operator.",
+      "ch_missing_function": "Define the function {name}.",
+      "ch_bad_chain": "For the defects {found}, decode must return a set of edges such as (\"h\", 0, 1), with indices below L. It returned something else.",
+      "ch_defects_left": "For the defects {found} the correction {correction} has the defects {left}, so it does not cancel them. Test each candidate with defects and compare it with the list you received.",
+      "ch_not_minimal": "For the defects {found} your correction has {size} edges and one with {best} exists. Go through the sizes in increasing order and stop at the first that matches.",
+      "ch_outcome_wrong": "For the error {error} and the correction {correction}, outcome should return \"{expected}\" and returned {got}. The loop to look at is the set of edges in exactly one of the two, and its logical_class decides.",
+      "ch_missing": "Store the result in the variable {name}.",
+      "ch_wrong_count": "{name} is {actual}, which does not match a run over all pairs of distinct edges. Count every pair once, and call a pair a failure only when outcome says so."
+    }
+  }
+}

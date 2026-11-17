@@ -1,0 +1,35 @@
+{
+  "title": "The Qiskit Primitives",
+  "summary": "Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots.",
+  "objectives": [
+    "Get the same expectation value in two ways: directly, and from counts",
+    "Measure an X-type observable using only computational-basis measurements",
+    "Say how many shots a given precision costs"
+  ],
+  "mission": "Counts are only useful once they become a number. For the Bell state (|00⟩ + |11⟩)/√2 in qc, store in zz_est and xx_est the values of ⟨Z⊗Z⟩ and ⟨X⊗X⟩ from the Estimator. Then compute the same two values from Sampler counts, in zz_samp and xx_samp, and ⟨Z⟩ of qubit 0 from counts in z0_samp. Store in sigma the statistical error 1/√shots of a Z expectation value.",
+  "prediction": {
+    "question": "With 4096 shots the statistical error of ⟨Z⟩ for a qubit in |+⟩ is about 0.016. Roughly how many shots do you need to bring it down to 0.004?",
+    "options": [
+      "65536 shots, sixteen times as many",
+      "16384 shots, four times as many",
+      "32768 shots, eight times as many"
+    ],
+    "explanation": "The error is 1/√N. Going from 0.016 to 0.004 divides it by 4, so N must be multiplied by 4² = 16, which is 65536 shots. Four times the shots would only halve the error; the idea that the error falls in proportion to the shots is what makes the cost of precision easy to underestimate."
+  },
+  "hints": [
+    "The Sampler only measures in the computational basis. What do you have to add to a copy of qc before you can read counts from it, and what does each outcome contribute to ⟨Z⊗Z⟩?",
+    "Each outcome counts +1 if the two bits are equal and −1 if they differ. For ⟨X⊗X⟩ the counts of qc itself are no use: put a Hadamard gate on both qubits of a copy first, because H X H = Z, then use the same rule. The Estimator takes the observable in the PUB, SparsePauliOp('XX'), and needs no rotation.",
+    "For ⟨Z⟩ of qubit 0 only the bit of qubit 0 counts, and in a key such as '10' that is the rightmost character. For sigma, an average of ±1 results with mean 0 has error 1/√shots. Keep qc itself without measurements: the measured copies are separate circuits."
+  ],
+  "messages": {
+    "ok": "All values agree. With this many shots the statistical error is {sigma}, and your ⟨Z⟩ of qubit 0 from counts is {z0}, a fluctuation of about that size around 0.",
+    "no_circuit": "There is no circuit in qc yet. Build the Bell state with a Hadamard gate on qubit 0 and a CNOT.",
+    "wrong_state": "qc does not prepare the Bell state: the fidelity with (|00⟩ + |11⟩)/√2 is {fidelity}. Check the gates, and leave the measurements for copies of qc.",
+    "missing": "{name} is not defined yet. Store the result in the variable {name}.",
+    "wrong_est": "The Estimator gives {actual} for {name}, but the Bell state has exactly 1. Check the observable you passed: its string should have one letter per qubit.",
+    "bad_shots": "shots is {shots}. Use between 1000 and 100000, so that the error is small enough to see and the run stays fast.",
+    "wrong_sigma": "sigma is {actual}, but 1/√shots is {want}. Remember the square root, and use the same shots as the Sampler.",
+    "wrong_samp": "{name} from counts is {actual}, farther from 1 than shot noise allows. If it is ⟨X⊗X⟩ and you read the Z-basis counts, that is the probable slip: apply a Hadamard gate to both qubits before measuring. Otherwise check the sign rule (equal bits give +1).",
+    "wrong_z0": "z0_samp is {actual}, but the exact value is 0 and shot noise should keep it within {limit}. You probably used both bits, which gives ⟨Z⊗Z⟩. Use only the bit of qubit 0, the rightmost character of each outcome."
+  }
+}

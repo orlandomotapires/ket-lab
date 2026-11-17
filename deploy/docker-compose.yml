@@ -1,0 +1,43 @@
+# Usage: SITE_ORIGIN=https://quantum.example.org docker compose -f deploy/docker-compose.yml up --build
+# (run from the repository root). See deploy/README.md before opening to the public.
+services:
+  engine:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.engine
+    # Each worker may use up to 4 GB before it is killed; keep workers × 4 GB near mem_limit.
+    command: ["--workers", "2", "--max-connections", "200", "--allow-origin", "${SITE_ORIGIN:?set SITE_ORIGIN}"]
+    # Hardening: learner code runs here.
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 8g
+    cpus: 4
+    # With gVisor installed on the host, uncomment to isolate the kernel:
+    # runtime: runsc
+    networks: [internal]
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    ports:
+      - "8080:8080"
+    depends_on: [engine]
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    networks: [internal, public]
+    restart: unless-stopped
+
+networks:
+  # The engine has no internet access: only the proxy talks to it.
+  internal:
+    internal: true
+  public: {}

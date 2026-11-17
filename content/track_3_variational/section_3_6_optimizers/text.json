@@ -1,0 +1,32 @@
+{
+  "title": "Optimizers and the Cost of a Gradient",
+  "summary": "Gradient descent, SPSA and COBYLA compared by the number of circuit evaluations they need.",
+  "objectives": [
+    "Count the circuit evaluations a gradient costs, with the parameter-shift rule and with SPSA",
+    "Carry out an SPSA step by hand, with the slope along a random direction",
+    "Pick an optimizer when every evaluation costs shots on hardware"
+  ],
+  "mission": "Evaluations are what you pay for on hardware, so this run has a budget. The variable cost(params) returns −F, minus the fidelity with |Φ⁺⟩ of a 4-angle ansatz, and cost.calls counts the evaluations. Minimize it with SPSA until the cost is −0.97 or lower, using at most 200 evaluations in total (the ones for recording the cost count too), and keep the last entry of energies equal to the final cost. Plain parameter-shift gradient descent does not fit this budget.",
+  "prediction": {
+    "question": "You have a budget of 1,000 circuit evaluations and an ansatz with 25 parameters. Ignoring the evaluations for recording the cost, how many steps can parameter-shift gradient descent and SPSA take?",
+    "options": [
+      "20 steps and 500 steps",
+      "40 steps and 500 steps",
+      "500 steps each, since both need two evaluations per step"
+    ],
+    "explanation": "The parameter-shift rule needs 2 evaluations for each of the 25 parameters, 50 per step, so 1,000 evaluations give 20 steps. SPSA needs 2 per step whatever the number of parameters, so 500 steps. Counting one evaluation per parameter (40 steps) forgets the two shifted runs of each derivative."
+  },
+  "hints": [
+    "How many evaluations does one SPSA step use, and how many does the whole run have? The answer tells you how many steps you can take.",
+    "Draw a random sign for each angle, delta = rng.choice([-1.0, 1.0], size=params.size). Evaluate the cost at params + c * delta and at params − c * delta; the slope along delta is their difference divided by 2 * c.",
+    "Move params = params − a * slope * delta, with a = 0.6 / step**0.602 and c = 0.2 / step**0.101 so that both shrink as the steps go on. Record the cost after each update, and call cost only where you need it."
+  ],
+  "messages": {
+    "ok": "The cost is {cost} after {calls} evaluations, within the budget of {limit}.",
+    "no_cost": "The name cost was overwritten or removed, and the evaluations can no longer be counted. Use cost(params) from the starter code.",
+    "no_params": "The four trained angles are missing: keep them in the variable params, a list or array of 4 numbers.",
+    "not_converged": "The cost is {cost}, above −0.97, after {calls} of {limit} evaluations. Either the update has the wrong sign (it should go against the slope), or a and c are not shrinking with the step.",
+    "over_budget": "The cost is {cost}, but the run spent {calls} evaluations and the limit is {limit}. Count what each step costs: some calls to cost may be unnecessary.",
+    "energies_inconsistent": "The cost is right, but the last entry of energies is not the cost of the final params. Append cost(params) after every update."
+  }
+}

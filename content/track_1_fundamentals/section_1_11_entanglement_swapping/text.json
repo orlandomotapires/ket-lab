@@ -1,0 +1,36 @@
+{
+  "title": "Project: Entanglement Swapping",
+  "summary": "Entangle two qubits that never interacted by measuring their partners in the Bell basis.",
+  "objectives": [
+    "Entangle two qubits that share no gate by measuring their partners in the Bell basis",
+    "Choose corrections on qubit 3 that give the same final state for every measurement result",
+    "Compare the entanglement of qubits 0 and 3 before and after the protocol"
+  ],
+  "mission": "Qubits 0 and 3 start in separate Bell pairs, (0, 1) and (2, 3), and no gate may act on both. Entangle them anyway: measure qubits 1 and 2 in the Bell basis and apply classically controlled corrections to qubit 3, so that qubits 0 and 3 end in |Φ⁺⟩ for every measurement result. Record c_before and c_after, the concurrence of qubits 0 and 3 right after creating the pairs and at the end of the circuit.",
+  "hints": [
+    "Start from lesson 1.6: what does Alice's Bell measurement look like, and which two qubits are measured here? Build the two pairs first.",
+    "Pairs: qc.h(0), qc.cx(0, 1) and qc.h(2), qc.cx(2, 3). Bell measurement of qubits 1 and 2: qc.cx(1, 2), qc.h(1), then qc.measure(1, 0) and qc.measure(2, 1). Then correct qubit 3 as Bob does: X when the bit of qubit 2 is 1, Z when the bit of qubit 1 is 1.",
+    "Each correction goes in a with qc.if_test((qc.clbits[k], 1)): block. For the records, c_before = float(concurrence(partial_trace(final_state(qc), [1, 2]))) right after the pairs, and the same expression again at the end for c_after."
+  ],
+  "prediction": {
+    "question": "After the Bell measurement on qubits 1 and 2, and even if you know both results, you look at qubit 0 alone. What do you see when you measure it?",
+    "options": [
+      "A fair coin, in any basis: qubit 0 is half of a Bell pair with qubit 3",
+      "A definite state that depends on the two results you know",
+      "|0⟩ every time, since no gate touched qubit 0 after its pair was made"
+    ],
+    "explanation": "Whatever the results are, qubits 0 and 3 end in a Bell state, and half of a Bell pair is maximally mixed. Qubit 0 is entangled with qubit 3 now, so alone it is a fair coin; the correlation shows up only when the outcomes of 0 and 3 are compared. No gate touched qubit 0, yet its situation changed, because the measurement acted on the state of the whole system."
+  },
+  "messages": {
+    "ok": "Qubits 0 and 3 end in |Φ⁺⟩ in all {total} sampled runs (with {outcomes} different measurement results), with concurrence {before} before and {after} after.",
+    "wrong_size": "The circuit needs four qubits and two classical bits: qc = QuantumCircuit(4, 2).",
+    "forbidden_pair": "A gate acts on qubits 0 and 3 together. The point of the protocol is that the two ends never interact, so use gates on (0, 1), (2, 3) and (1, 2) only, and single-qubit corrections.",
+    "measured_end": "Qubit {qubit} is measured. Only the middle qubits 1 and 2 should be measured, because measuring an end qubit destroys the state you are trying to build.",
+    "no_measurement": "There is no measurement yet. Qubits 1 and 2 must be measured in the Bell basis (after qc.cx(1, 2) and qc.h(1)), with the results stored in classical bits.",
+    "branch_wrong": "In none of the {total} sampled runs do qubits 0 and 3 end in |Φ⁺⟩ (worst fidelity {fidelity}). The problem is probably before the corrections, in the pairs or in the Bell measurement.",
+    "branch_partial": "Qubits 0 and 3 end in |Φ⁺⟩ in only {good} of {total} runs (worst fidelity {fidelity}). The pairs and the measurement look fine, so one correction is missing or tied to the wrong bit: X follows the bit of qubit 2, Z the bit of qubit 1.",
+    "no_record": "The concurrences are not recorded. Store them in c_before and c_after.",
+    "before_wrong": "c_before = {value}. Right after creating the pairs, qubits 0 and 3 have no correlation, so the value should be 0. Compute it before the measurement.",
+    "after_wrong": "c_after = {value}. At the end qubits 0 and 3 are in |Φ⁺⟩, so the value should be 1. Compute it after the corrections."
+  }
+}

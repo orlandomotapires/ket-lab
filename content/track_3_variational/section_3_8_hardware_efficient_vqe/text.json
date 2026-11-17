@@ -1,0 +1,60 @@
+{
+  "title": "VQE with a Hardware-Efficient Ansatz",
+  "summary": "Find the H₂ ground state with a general multi-parameter ansatz instead of a chemistry-inspired one.",
+  "objectives": [
+    "Build a layered ansatz from rotations and a ladder of CNOT gates, with no chemistry in it",
+    "Compare it with the chemistry ansatz by number of angles and by what it knows about the molecule",
+    "Say why starting every angle at zero stalls the training"
+  ],
+  "mission": "Show that a circuit with no chemistry in it can still reach the H₂ ground state. Reach an energy within chemical accuracy (1.6 mHa) of the exact value using at most 16 rotation angles and no excitation gates. The intended layout is the Hartree–Fock state, 3 layers of R_Y on every qubit each followed by CNOT gates on neighbours (0-1, 1-2, 2-3), and a final R_Y layer; train theta with qml.AdamOptimizer and record the energy after each step.",
+  "prediction": {
+    "question": "In the ansatz with 3 layers, every angle is set to 0, so only the CNOT ladders act on the Hartree–Fock state |1100⟩. Which basis state does the circuit prepare?",
+    "options": [
+      "|1100⟩ itself: the rotations are zero, so nothing changes",
+      "|1010⟩, after the three ladders have moved the bits",
+      "|0011⟩, the other state of the chemistry ansatz"
+    ],
+    "explanation": "A CNOT ladder is a fixed permutation of bit strings, and with zero rotations it is the only thing that acts. Ladder 1 takes 1100 to 1000, ladder 2 takes 1000 to 1111, and ladder 3 takes 1111 to 1010. That state has energy −0.531 Ha and is an eigenstate of H, so the gradient is zero there and the optimizer cannot leave it."
+  },
+  "hints": [
+    "What does the circuit need to do before the first rotation? It has to prepare the Hartree–Fock state, so that the electron count starts right.",
+    "Keep a counter k of the angle you are using. In each of the LAYERS rounds apply qml.RY(theta[k], wires=q) on every qubit, increasing k each time, then qml.CNOT(wires=[q, q + 1]) for q in range(3). Add one more rotation layer at the end.",
+    "The counter ends at 16, the length of theta. Train with qml.AdamOptimizer(0.1), about 150 steps, and append float(circuit(theta)) to energies at each step."
+  ],
+  "messages": {
+    "ok": "Energy {energy} Ha, {error} Ha from the exact value ({exact} Ha), using {count} angles.",
+    "no_circuit": "The QNode circuit(theta) is missing: define it so that it returns qml.expval(H).",
+    "no_theta": "The optimized angles are missing: store them in the variable theta.",
+    "wrong_qubits": "H₂ in this basis has 4 spin orbitals, so the circuit needs 4 qubits, and yours has {count}.",
+    "forbidden_op": "This circuit uses {names}, which are chemistry gates. The lesson is to reach the energy with rotations and entanglers only.",
+    "too_many_angles": "The circuit has {count} rotation angles and the limit is {limit}. Three layers of 4 rotations plus the final layer of 4 make 16.",
+    "no_entangler": "The energy is {energy} Ha and the circuit has no two-qubit gate. Without entanglement the state is a product state and cannot reach the ground state: add the CNOT ladder.",
+    "above_hf": "The energy ({energy} Ha) is above Hartree–Fock, so either the circuit does not start from hf_state or the optimizer is not lowering the energy. Check also that the starting angles are not all zero.",
+    "not_converged": "The energy is {energy} Ha, {error} Ha above the exact value, and chemical accuracy is 0.0016 Ha. The energy went down but has not arrived: check the CNOT ladder and train for more steps.",
+    "energies_inconsistent": "The energy is right, but the last entry of energies belongs to a different theta. Append float(circuit(theta)) after every step."
+  },
+  "challenge": {
+    "mission": "The theory of this lesson says that the all-zero start cannot be trained. Show it with numbers. With all 16 angles at zero, compute energy_zero (the energy of the circuit) and grad_norm_zero (the norm of its 16-component gradient), then run Adam for at least 10 steps from zero and keep the energy after each step in energies_zero. After that, train from small random angles as in the mission and reach chemical accuracy: theta and energies as before. The validator recomputes the energy and the gradient at zero from your circuit and compares them with your numbers.",
+    "hints": [
+      "Evaluate the circuit with np.zeros(16), and take the gradient of the circuit at that point with qml.grad. What energy do you get, and what does it tell you about the state?",
+      "With zero rotations only the CNOT ladders act on the Hartree–Fock state. A gradient that is exactly zero gives Adam nothing to scale, so every step is zero too.",
+      "Use a fresh optimizer for each run, and keep energies for the second run only: the check reads its last value against the final theta. A short zero run (20 steps) keeps the total time low."
+    ],
+    "messages": {
+      "ok": "From zero the energy stayed at {stuck} Ha with zero gradient; from small random angles it reached {energy} Ha, {error} Ha from the exact value.",
+      "ch_no_circuit": "There is no circuit with a qnode yet.",
+      "ch_no_theta": "theta is missing: the angles of the second run, after it starts from small random values.",
+      "ch_missing_report": "The variable {name} is missing. Compute it for the all-zero start.",
+      "ch_zero_not_flat": "At zero angles your circuit has a gradient of norm {norm}, not zero. Use the mission's ansatz (Hartree–Fock, three R_Y layers with CNOT ladders, a last R_Y layer) so the start sits on an eigenstate.",
+      "ch_energy_zero_wrong": "energy_zero is {reported}, but your circuit at zero angles has energy {energy}.",
+      "ch_grad_wrong": "grad_norm_zero is {reported}, but at this start the gradient is zero: the state is an eigenstate of H.",
+      "ch_zero_run_short": "energies_zero has {count} entries; run at least 10 steps from zero.",
+      "ch_zero_run_moved": "The energies in energies_zero are not all {energy} Ha, which is what the circuit gives at every step if the angles stay at zero. Start that run from np.zeros(16).",
+      "ch_wrong_qubits": "The system has 4 qubits, but your circuit uses {count}.",
+      "ch_forbidden_op": "Only rotations and entangling gates are allowed, and the circuit also uses {names}.",
+      "ch_too_many_angles": "The circuit has {count} rotation angles and the limit is {limit}.",
+      "ch_not_converged": "The final energy is {energy} Ha, {error} Ha from the exact value (the zero start gave {stuck} Ha). Train from small random angles for more steps.",
+      "ch_energies_inconsistent": "The last value of energies should be the energy of the final theta, {energy} Ha."
+    }
+  }
+}

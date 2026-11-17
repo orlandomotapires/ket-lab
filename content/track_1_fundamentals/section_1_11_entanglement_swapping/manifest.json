@@ -1,0 +1,35 @@
+{
+  "id": "1.11",
+  "track": 1,
+  "project": true,
+  "estimated_minutes": 40,
+  "num_qubits": 4,
+  "max_qubits": 4,
+  "default_visualizer": "qsphere",
+  "available_visualizers": [
+    "qsphere",
+    "bloch",
+    "amplitudes"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.3.7, “Example: quantum teleportation”, pp. 26–28"
+    },
+    {
+      "kind": "course",
+      "title": "Entanglement in action: Quantum teleportation",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Sections “Protocol” and “Analysis”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/entanglement-in-action/quantum-teleportation"
+    }
+  ]
+}

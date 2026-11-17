@@ -1,0 +1,32 @@
+{
+  "title": "Phase Kickback",
+  "summary": "A controlled gate acting on an eigenstate of its target changes the control, not the target.",
+  "objectives": [
+    "Predict which qubit of a CNOT changes when the target is an eigenstate of X",
+    "Prepare the target in |−⟩ and the control in |+⟩ and see the sign land on the control",
+    "Read an eigenvalue as the relative phase it leaves on the control"
+  ],
+  "mission": "The target will not change, the control will. Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, then apply a CNOT from qubit 0 to qubit 1.",
+  "prediction": {
+    "question": "Control in |+⟩, target in |−⟩, then a CNOT. You apply a Hadamard to the control and measure it. What do you get?",
+    "options": [
+      "Always 0, since the CNOT left the control alone",
+      "Always 1, since the control is now |−⟩",
+      "0 or 1 with equal probability"
+    ],
+    "explanation": "The CNOT kicks the eigenvalue −1 back onto the |1⟩ term of the control, which goes from |+⟩ to |−⟩. A Hadamard turns |−⟩ into |1⟩, so the result is always 1. A result of 0 would mean the control never changed."
+  },
+  "hints": [
+    "Which state does X only multiply by a number? Start from |0⟩ and ask how you reach it.",
+    "The target needs |−⟩ and the control |+⟩. The CNOT goes after both preparations.",
+    "|−⟩ is X followed by H on |0⟩: qc.x(1), qc.h(1). The control only needs qc.h(0)."
+  ],
+  "challenge": {
+    "mission": "A controlled-S kicks back a phase of i. Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |1⟩, an eigenstate of the S gate with eigenvalue i, then apply a controlled phase gate (cp) from qubit 0 to qubit 1 that acts as a controlled-S. The target stays in |1⟩ and the control must end in (|0⟩ + i|1⟩)/√2. Only x, y, z, h, cx, cz and cp are allowed, so the factor i has to come from the angle of cp.",
+    "hints": [
+      "Which basis state does a controlled-S touch, and by what factor? S is the phase gate with angle π/2.",
+      "Prepare the target with X and the control with a Hadamard. The cp gate takes the angle as its first argument.",
+      "The angle is π/2, which you get from math.pi / 2."
+    ]
+  }
+}

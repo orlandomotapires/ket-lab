@@ -1,0 +1,32 @@
+{
+  "title": "Interference and Measurement in Other Bases",
+  "summary": "HH = I, HZH = X and how the relative phase decides a measurement outcome.",
+  "objectives": [
+    "Tell |+⟩ from |−⟩ with a single measurement",
+    "Measure a qubit in the X basis by applying a Hadamard gate first",
+    "Predict how the order of two gates, such as H and S, changes the final state"
+  ],
+  "mission": "Qubit 0 was prepared in |+⟩ or |−⟩, and you do not know which. Add gates and a measurement so that |+⟩ always gives 0 and |−⟩ always gives 1. This is a measurement in the X basis.",
+  "hints": [
+    "In the computational basis both |+⟩ and |−⟩ give 0 or 1 at random. What would have to change about the states, just before the measurement, for the two outcomes to differ?",
+    "A gate has to send |+⟩ and |−⟩ to different poles. The Hadamard gate does: H|+⟩ = |0⟩ and H|−⟩ = |1⟩.",
+    "Apply qc.h(0), then qc.measure(0, 0)."
+  ],
+  "prediction": {
+    "question": "In H·H applied to |0⟩ you also measure the qubit between the two Hadamard gates and ignore the result. What is the probability that the final measurement gives 1?",
+    "options": [
+      "1/2: the middle measurement destroyed the interference",
+      "0: HH = I still holds, the middle measurement only reads the qubit",
+      "It is 1 for one middle result and 0 for the other"
+    ],
+    "explanation": "The middle measurement collapses the state to |0⟩ or |1⟩, so the second H starts from a basis state and gives |+⟩ or |−⟩. Each has probability 1/2 of giving 1. Without the middle measurement both paths reach the second H together and the |1⟩ terms cancel, which gives probability 0."
+  },
+  "challenge": {
+    "mission": "Qubit 0 is now prepared in |+i⟩ = (|0⟩ + i|1⟩)/√2 or |−i⟩ = (|0⟩ − i|1⟩)/√2, and you do not know which. Add gates and a measurement so that |+i⟩ always gives 0 and |−i⟩ always gives 1. This is a measurement in the Y basis.",
+    "hints": [
+      "Measuring in the computational basis, or after H alone, gives 0 and 1 with probability 1/2 for both states: they lie on the equator at ±Y.",
+      "The measurement is in the computational basis, so a gate must rotate the Y axis onto the Z axis. First bring the states to ±X, which H then maps to the poles.",
+      "S takes |+⟩ to |+i⟩, so S† takes |+i⟩ to |+⟩ and |−i⟩ to |−⟩. Apply S†, then H, then measure."
+    ]
+  }
+}

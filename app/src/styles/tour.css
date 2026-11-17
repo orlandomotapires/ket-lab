@@ -1,0 +1,48 @@
+/* Guide for the first lesson.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
+/* Guide for the first lesson */
+.tour-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.tour-card {
+  position: fixed;
+  pointer-events: auto;
+  padding: 14px 16px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(16, 24, 40, 0.18);
+}
+.tour-card:focus {
+  outline: none;
+}
+.tour-card h2 {
+  margin: 2px 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.tour-card p {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.tour-count {
+  margin: 0;
+}
+.tour-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.tour-actions .grow {
+  flex: 1;
+}
+.tour-target {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}

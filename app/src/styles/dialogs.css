@@ -1,0 +1,188 @@
+/* Dialogs: export, hardware, shared forms.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
+.dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 12px 40px rgba(16, 24, 40, 0.18);
+}
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.dialog::backdrop {
+  background: rgba(10, 12, 16, 0.45);
+}
+.dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px 0;
+}
+.dialog-head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.dialog-head .grow,
+.dialog-actions .grow {
+  flex: 1;
+}
+.dialog-note {
+  margin: 8px 18px 12px;
+}
+.export-code {
+  margin: 0 18px;
+  padding: 12px 14px;
+  min-height: 160px;
+  max-height: 46vh;
+  overflow: auto;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: 12.5px/1.55 var(--font-mono);
+  color: var(--text-2);
+  white-space: pre;
+}
+.export-code.is-loading {
+  color: var(--muted);
+}
+.dialog .notice {
+  margin: 0 18px;
+}
+.notice-error {
+  background: var(--error-soft);
+  border-color: transparent;
+  color: var(--error);
+}
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px 16px;
+}
+@media (max-width: 560px) {
+  .dialog-head {
+    flex-wrap: wrap;
+  }
+  .dialog-actions {
+    flex-wrap: wrap;
+  }
+}
+
+
+.hw-form {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px;
+}
+.hw-form label:not(.check) {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.hw-form input[type="password"],
+.hw-form input[type="text"] {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: 13px var(--font-mono);
+}
+.hw-form .dialog-actions {
+  padding: 4px 0 16px;
+}
+.hw-job {
+  padding: 0 18px;
+}
+.hw-compare {
+  margin: 10px 0;
+}
+.hw-job .dialog-actions {
+  padding: 8px 0 16px;
+}
+
+/* About dialog: a page of light text. */
+.about-dialog {
+  width: min(660px, calc(100vw - 32px));
+}
+.about-body {
+  overflow-y: auto;
+  padding: 6px 22px 6px;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.about-body:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.about-body p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.about-body .about-lead {
+  margin: 14px 0 4px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.about-body h3 {
+  margin: 20px 0 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+.about-tracks {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+.about-tracks li {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+}
+.about-track-number {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  font: 600 12px/24px var(--font-mono);
+  text-align: center;
+  color: var(--text-2);
+}
+.about-tracks strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.about-track-meta {
+  display: block;
+  margin: 1px 0 3px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.about-tracks p {
+  margin: 0;
+}
+.about-list {
+  margin: 0 0 10px;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.about-body .link {
+  margin-bottom: 4px;
+}

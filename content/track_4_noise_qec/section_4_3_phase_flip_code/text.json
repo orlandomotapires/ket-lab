@@ -1,0 +1,44 @@
+{
+  "title": "The Three-Qubit Phase-Flip Code",
+  "summary": "A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers.",
+  "objectives": [
+    "Explain why a phase flip is a bit flip in the Hadamard basis",
+    "Encode a qubit into three qubits so that a single phase flip can be located and undone",
+    "Read the syndrome of a Z error from the X⊗X checks, and say why an X error gives syndrome 00"
+  ],
+  "mission": "The bit-flip code ignores phase flips, but the Hadamard gate turns one kind of error into the other. Protect qubit 0 against phase flips: encode it into three qubits (encode), then detect and correct the flipped qubit with two ancillas and no measurement of the data qubits (recover). The recovery must leave the data qubits in the code space. The logical state must survive a Z error on any one of the three qubits, and no error, for any input state.",
+  "prediction": {
+    "question": "An X error hits qubit 0 of the phase-flip code, which holds the logical state (|0_L⟩ + |1_L⟩)/√2. What does the code report, and what is the state afterwards?",
+    "options": [
+      "Syndrome 10: qubit 0 is corrected and the state is restored",
+      "Syndrome 00, and the state is unchanged, since X leaves |+⟩ alone",
+      "Syndrome 00, and the state is now (|0_L⟩ − |1_L⟩)/√2"
+    ],
+    "explanation": "X commutes with X⊗X on every pair, so both stabilizers stay at +1 and the syndrome is 00. The error is not harmless: X leaves |+⟩ unchanged but sends |−⟩ to −|−⟩, so α|+++⟩ + β|−−−⟩ becomes α|+++⟩ − β|−−−⟩. That is a logical Z, and it turns (|0_L⟩ + |1_L⟩)/√2 into (|0_L⟩ − |1_L⟩)/√2 without any sign of it in the syndrome."
+  },
+  "hints": [
+    "Ask yourself what is different from the bit-flip code. Only the basis: |0_L⟩ is |+++⟩ and |1_L⟩ is |−−−⟩. Start from the bit-flip encoding and see what a Hadamard on each of the three qubits does to α|000⟩ + β|111⟩.",
+    "A Hadamard turns a phase flip into a bit flip, so recover() can begin with a Hadamard on each data qubit and then reuse the idea of lesson 4.2: ancilla 3 holds the parity of qubits 0 and 1, ancilla 4 the parity of qubits 1 and 2, with the same Toffoli pattern.",
+    "The pattern is 10 → qubit 0, 11 → qubit 1, 01 → qubit 2, with qml.PauliX on an ancilla before and after the Toffoli for a 0. Finish recover() with a second Hadamard on each data qubit, otherwise the data stays in the bit-flip basis and the state no longer matches the code."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "z0": "Z on 0",
+        "z1": "Z on 1",
+        "z2": "Z on 2",
+        "z0z1": "Z on 0 and 1",
+        "x0": "X on 0"
+      }
+    }
+  },
+  "messages": {
+    "ok": "The logical state survives any single phase flip, for every input state tested.",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 5 qubits.",
+    "wrong_qubits": "The code uses 3 data qubits and 2 ancillas, 5 in total, but the circuit has {count}.",
+    "encode_wrong": "With no error at all the final state is not α|+++⟩ + β|−−−⟩ (fidelity {fidelity}). Often the last Hadamards of the recovery are missing, so the data qubits stay in the bit-flip basis, or the recovery acts when the syndrome is 00.",
+    "single_fail": "With the error {error} the logical state was not recovered (fidelity {fidelity}). Check that the Hadamards come before the parities, and that each syndrome pattern corrects the qubit it points to."
+  }
+}

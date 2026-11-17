@@ -1,0 +1,41 @@
+{
+  "title": "Annealing Hardware: Embedding and Limits",
+  "summary": "Map a problem onto sparse hardware with chains of qubits, choose the chain strength, and see what is and is not known about speedups.",
+  "objectives": [
+    "Embed a problem whose couplings form a triangle onto hardware without triangles, using a chain of two qubits",
+    "Work out the energy of an embedded state with an intact and with a broken chain",
+    "Find by brute force the chain strength above which the ground state keeps the chain intact, and decode the logical answer",
+    "Say what limits annealing hardware in practice and what the evidence on speedups does and does not show"
+  ],
+  "mission": "The three-qubit problem of lesson 6.2 has a triangle of couplings, and the hardware here is four qubits on a square, 0–1–2–3–0. Write embed(F), which returns (fields, couplings) for chain strength F: fields is a list of four numbers, couplings a dict whose keys are pairs (i, j) with i < j (or a 4×4 upper triangular array). Logical qubit 2 becomes the chain of physical qubits 2 and 3, joined by −F Z₂Z₃. Put J_01 on edge 0–1, J_12 on edge 1–2 and J_02 on edge 3–0, h_0 and h_1 on qubits 0 and 1, and all of h_2 on physical qubit 2 (qubit 3 gets no field). For each F in F_values, find the lowest-energy physical state by brute force over the 16 states. Store chain_intact (a list of booleans), decoded (the logical spins (s0, s1, s2) read off the ground state, or None when its chain is broken) and F_min, the smallest F in F_values whose ground state has an intact chain and decodes to (+1, −1, −1). If two broken states tie for the lowest energy, either one is fine, since the chain is broken in both.",
+  "prediction": {
+    "question": "With the chain intact and F = 1, the embedded ground state decodes to the logical ground state, whose energy is −1.25. What energy does the embedded Hamiltonian give that physical state?",
+    "options": [
+      "−2.25: the logical energy minus F, because the chain term −F Z₂Z₃ equals −F when the two spins agree",
+      "−1.25: an intact chain adds nothing, since the two chain spins are equal",
+      "−0.25: the chain costs energy F to hold together, so the logical energy goes up by F"
+    ],
+    "explanation": "The chain term is −F s₂ s₃, and s₂ = s₃ makes the product +1, so the term contributes −F. The other three terms equal the logical energy because s₃ takes the place of s₂ on the edge 3–0 and the field is all on qubit 2. The energy is −1.25 − 1 = −2.25. The ferromagnetic coupling lowers the energy of aligned spins, which is what makes the chain hold."
+  },
+  "hints": [
+    "Write the embedded energy for a physical state (s0, s1, s2, s3) as a sum over the four edges plus the fields, and check it by hand on one state where s2 = s3. Which logical term moves to which edge?",
+    "embed(F) builds the fields [h0, h1, h2, 0] and the couplings {(0, 1): J01, (1, 2): J12, (0, 3): J02, (2, 3): −F}. The sign of the last one is the chain: a negative coefficient on Z₂Z₃ favors s2 = s3. Decoding a state is reading (s0, s1, s2) when s2 = s3.",
+    "Loop over the 16 states with itertools.product([1, -1], repeat=4), compute the energy with the fields and couplings that embed(F) returned, and keep the lowest. For each F, store ground[2] == ground[3], then the decoded tuple or None. F_min is the first F in the list that passes both tests."
+  ],
+  "messages": {
+    "ok": "The chain breaks in the ground state for F = {broken} and holds from F = {F_min}, where it decodes to (+1, −1, −1). The intact energy there is {energy}, the logical −1.25 minus F.",
+    "missing": "Store the result in the variable {name}.",
+    "missing_function": "Define the function {name}.",
+    "embed_shape": "embed({F}) did not return (fields, couplings) with four fields and a dict or 4×4 array of couplings. Got: {got}.",
+    "bad_edge": "embed puts a coupling on the pair {pair}, which is not an edge of the square 0–1–2–3–0. A logical coupling has to sit on an edge that exists; the pair that has no edge is the one the chain exists to replace.",
+    "chain_sign": "The chain coupling has the wrong sign: with +F the two chain spins prefer to differ, so the chain wants to break. A coefficient −F on Z₂Z₃ favors s₂ = s₃.",
+    "chain_value": "The coupling on the chain edge 2–3 is {got} for F = {F}, but the chain should be held by −F.",
+    "field_twice": "The field h₂ = 1 appears in full on both chain qubits, so it is counted twice. The mission puts all of it on physical qubit 2 and none on qubit 3.",
+    "field_split": "The fields on qubits 2 and 3 add up to h₂, but the mission puts all of h₂ on physical qubit 2 and none on qubit 3. Another split is a valid embedding but changes where the threshold lies.",
+    "field_wrong": "The fields are {got} for F = {F}. Qubits 0 and 1 keep h₀ = 1/3 and h₁ = 2/3, qubit 2 gets h₂ = 1, and qubit 3 gets 0.",
+    "coupling_wrong": "The coupling on edge {pair} is {got}, but the logical coupling placed there is {want}. J_01 goes on 0–1, J_12 on 1–2 and J_02 on 3–0.",
+    "intact_wrong": "For F = {F}, chain_intact says {got}, but brute force over the 16 states puts the lowest energy on a state where the chain is {want}. Compare s2 and s3 in the lowest state.",
+    "decoded_wrong": "For F = {F}, decoded is {got}, but it should be {want}. Read (s0, s1, s2) from the ground state as spins ±1 when the chain is intact, and use None when it is broken.",
+    "fmin_wrong": "F_min is {got}, but the smallest F in F_values with an intact chain that decodes to (+1, −1, −1) is {want}."
+  }
+}

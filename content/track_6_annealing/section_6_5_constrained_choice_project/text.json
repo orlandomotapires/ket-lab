@@ -1,0 +1,55 @@
+{
+  "title": "Project: A Constrained Choice by Annealing",
+  "summary": "Choose two of four jobs with the best total value: write the constraint as a penalty, check the QUBO by brute force, and anneal it.",
+  "objectives": [
+    "Write a constraint of a real problem as a penalty term and expand it into a QUBO matrix",
+    "Find by enumeration the smallest penalty weight that makes the feasible optimum the ground state",
+    "Anneal the resulting four-qubit Ising problem, compare a modest and an oversized penalty, and read the answer back as a choice of jobs"
+  ],
+  "mission": "An annealer minimizes an energy and knows nothing about rules, so the rules have to be inside the energy. The starter defines four jobs with values v, the conflicting pairs, and the weights B = 6, A_used = 4 and A_big = 20. The cost of a choice x ∈ {0,1}⁴ is −Σ v_i x_i + A (Σ x_i − 2)² + B Σ x_i x_j over the conflicting pairs. Define Q and offset (A = A_used, Q upper triangular, so that xᵀQx + offset is the cost of all 16 choices); best_jobs and best_value, the feasible choice of two jobs without conflicts that has the largest total value; A_min, the smallest value in penalties for which that choice is the only state of lowest cost; h, J (upper triangular) and const, the Ising form of the same cost with s = 1 − 2x; success and success_big, the probability of the best choice after annealing H(s) = (1 − s) H_B + s H_P for each T in T_values, with A_used and with A_big, where H_P is divided by the largest absolute value among h and J; and jobs, the list of jobs selected by the most probable state at T = 80 with A_used. Qubit i carries job i, in Qiskit's order.",
+  "prediction": {
+    "question": "For this instance, what is the lowest value of the penalized cost if the weight is A = 1, and which choice has it?",
+    "options": [
+      "−8, jobs {0, 2}: even a small penalty already forbids a third job",
+      "−9, jobs {0, 2, 3}: the third job brings 2 and costs only 1",
+      "−10, jobs {0, 2, 3}: at this size the penalty changes nothing"
+    ],
+    "explanation": "The three-job choice has value 10 and no conflict, and the count term adds A (3 − 2)² = 1, so its cost is −10 + 1 = −9, below the −8 of the best pair. Answering −10 forgets that the penalty is paid however small A is. Answering −8 supposes a penalty large enough to forbid the third job, which needs A above 2."
+  },
+  "hints": [
+    "Start with the QUBO and test it. Expand A (Σ x_i − 2)² for four bits and use x² = x. Which entries of Q does the square touch, the diagonal, the pairs, or both? Compare xᵀQx + offset with the cost directly for a few choices before going on.",
+    "A_min needs the cost of all 16 choices for every candidate weight, and the test is that the lowest one is the feasible optimum and the next one is strictly higher. For the Ising form, substitute x = (1 − s)/2 in each term: a diagonal entry gives a field and a constant, and a pair entry gives a coupling, two fields and a constant.",
+    "For the anneal, build H_P from h and J with Z operators on a 16 × 16 space (qubit 0 on the right), divide by the largest coefficient, and use the midpoint evolution of lesson 6.2 with a few hundred steps. For A_big repeat the whole chain from the QUBO. The basis index of a choice is Σ x_i 2^i, so job i runs when bit i of the most probable state is 1."
+  ],
+  "messages": {
+    "ok": "All six criteria are met. The smallest working weight is {a_min}. With A = 4 the anneal at T = 80 reaches the best choice with probability {small}, and with the oversized weight only {big}. The most probable state decodes to the jobs {jobs}, a total value of {value}.",
+    "missing": "{name} is not defined. Define it as the mission describes.",
+    "not_array": "{name} must be a number or array with shape {shape}, but it holds {actual}.",
+    "not_list": "{name} must be a list of {length} numbers, one for each time in T_values.",
+    "q_not_upper": "Criterion 1, QUBO: Q has nonzero entries below the diagonal. Put each pair once, at the position with i < j, so that the matrix stays upper triangular.",
+    "offset_wrong": "Criterion 1, QUBO: xᵀQx + offset is off by {diff} on every choice, so the entries of Q are fine and the constant is not. Expanding A (Σ x_i − 2)² leaves a term that does not depend on x.",
+    "q_no_count": "Criterion 1, QUBO: Q reproduces the values and the conflicts but the count penalty A (Σ x_i − 2)² is missing or too weak. Its square also puts a term on the diagonal, besides the pairs.",
+    "q_wrong": "Criterion 1, QUBO: for x = {state}, xᵀQx + offset is {got} but the cost is {want}. Expand A (Σ x_i − 2)² with x² = x: the diagonal gets −3A, every pair gets 2A, and the conflicting pairs also get B.",
+    "best_unconstrained": "Criterion 2, optimum: the jobs {jobs} are the best choice when the count is ignored, but exactly two jobs must run and no conflicting pair may run together. Compare only the feasible choices.",
+    "best_wrong": "Criterion 2, optimum: best_jobs is {got}, which is not the feasible pair of largest value. List the pairs of jobs that are not in conflict and add their values.",
+    "best_value_wrong": "Criterion 2, optimum: best_jobs is right but best_value is {got}, and the sum of the values of those jobs is {want}.",
+    "a_min_tie": "Criterion 3, threshold: at A = {got} the feasible optimum ties with another state, so the annealer ends on either of them. It has to be the only state of lowest cost, which first happens at A = {want}.",
+    "a_min_low": "Criterion 3, threshold: at A = {got} some state that breaks the count constraint still has a cost at or below the best feasible one. Compute the cost of all 16 choices for that weight and look at the lowest.",
+    "a_min_wrong": "Criterion 3, threshold: A_min is {got}, but the smallest listed weight for which the feasible optimum is the only ground state is {want}. Check that no smaller weight in the list already works.",
+    "j_not_upper": "Criterion 4, Ising form: J has nonzero entries on or below the diagonal. Each coupling is stored once, with i < j.",
+    "j_factor": "Criterion 4, Ising form: the couplings are off by a constant factor. With s = 1 − 2x the product x_i x_j becomes (1 − s_i)(1 − s_j)/4, so J_ij = Q_ij / 4.",
+    "j_wrong": "Criterion 4, Ising form: J does not match Q. Each coupling comes only from the off-diagonal entry Q_ij of the same pair, divided by 4.",
+    "h_sign": "Criterion 4, Ising form: h has the opposite sign of the right one, which is what x = (1 + s)/2 would give. This track uses s = 1 − 2x, so a bit x = 1 is s = −1 and the linear terms come with a minus sign.",
+    "h_wrong": "Criterion 4, Ising form: the couplings are right but h is not. The field on spin i gets −Q_ii/2 from the diagonal and −Q_ij/4 from every pair that contains i.",
+    "const_wrong": "Criterion 4, Ising form: h and J are right but const is {got} and should be {want}. Collect the constants: the offset, half of each diagonal entry and a quarter of each pair entry.",
+    "not_normalized": "Criterion 5, anneal: a probability is outside [0, 1]. The evolution must be unitary: exponentiate −iH dt, not −H dt.",
+    "not_rescaled": "Criterion 5, anneal: the probabilities match an evolution in which H_P was not divided by its largest coefficient. Divide h and J by max(|h|, |J|) so that the driver and the problem compete on the same scale.",
+    "wrong_state": "Criterion 5, anneal: your probabilities belong to the state {label}, not to the best choice. Check the order of the qubits: job i is qubit i, the rightmost factor of the label for job 0.",
+    "success_wrong": "Criterion 5, anneal: for T = {T} you report {got} for the best choice, and an independent evolution gives {want}. Look at the number of steps, the sign of the driver −ΣX, and whether the Hamiltonian is built from the h and J of the current weight.",
+    "big_same": "Criterion 5, anneal: success_big equals success. The oversized weight A_big changes Q, h and J, so the whole chain has to be rebuilt for it before annealing.",
+    "big_wrong": "Criterion 5, anneal: with A_big at T = {T} you report {got} and an independent evolution gives {want}. Rebuild the QUBO and the Ising form for A_big, divide by the largest coefficient of that model, and anneal again.",
+    "jobs_bits": "Criterion 6, decoding: jobs holds the bits of the state. Give the indices of the jobs that run, the positions where the bit is 1.",
+    "jobs_reversed": "Criterion 6, decoding: jobs is {got}, the right pattern read from the wrong end. In Qiskit's order bit i of the basis index, counted from the right, is job i.",
+    "jobs_wrong": "Criterion 6, decoding: jobs is {got}, and the most probable state at T = 80 selects {want}. Take the index with the largest probability and read its bits."
+  }
+}

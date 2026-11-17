@@ -2,13 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
+
+# A newer push to the same branch cancels the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   engine:
-    name: Motor (${{ matrix.os }})
+    name: Engine (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -19,19 +25,23 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: pip install -e "engine[dev]"
-      - name: Testes do motor e suíte de conteúdo
+      - run: pip install -e "engine[dev,hardware]" -c engine/constraints.txt
+      - name: Lint (syntax errors, undefined names, unused imports)
+        if: matrix.os == 'ubuntu-latest'
+        run: ruff check engine
+      - name: Engine tests and content suite
         run: python -m pytest -q
         working-directory: engine
 
   app:
     name: Interface
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
@@ -43,62 +53,63 @@ jobs:
       - run: npm run build
         working-directory: app
 
-  package:
-    name: Empacotamento (${{ matrix.os }})
-    needs: engine
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-      - run: pip install -e "engine[dev,package]"
-      - run: python engine/packaging/build.py
-      - name: Teste de fumaça do executável
-        run: python engine/packaging/smoke_test.py
 
-  desktop:
-    name: Aplicativo desktop (${{ matrix.os }})
-    needs: [engine, app]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+  e2e:
+    name: End to end (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+      - run: pip install -e "engine[dev]" -c engine/constraints.txt
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Bibliotecas de sistema (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev
-      - run: pip install -e "engine[package]"
-      - run: python engine/packaging/build.py
-      - run: npm ci
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
         working-directory: app
-      - name: Build do aplicativo e dos instaladores
-        run: npx tauri build --config src-tauri/tauri.release.conf.json
+      - run: npx playwright install --with-deps chromium
+        working-directory: app
+      - name: End-to-end tests
+        run: npx playwright test
+        working-directory: app
+        env:
+          CI: "1"
+          QLP_PYTHON: python
+      - name: End-to-end tests (hosted mode)
+        run: npx playwright test -c playwright.hosted.config.ts
+        working-directory: app
+        env:
+          CI: "1"
+          QLP_PYTHON: python
       - uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          name: instaladores-${{ matrix.os }}
-          path: |
-            src-tauri/target/release/bundle/**/*.deb
-            src-tauri/target/release/bundle/**/*.AppImage
-            src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.dmg
-          if-no-files-found: warn
+          name: playwright-report
+          path: app/playwright-report
+
+  images:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Local single-user image
+        run: docker build -f deploy/Dockerfile.local -t qlp-local .
+      - name: Hosted images
+        run: |
+          docker build -f deploy/Dockerfile.engine -t qlp-engine .
+          docker build -f deploy/Dockerfile.web -t qlp-web .
+      - name: The local image starts and serves the interface
+        run: |
+          docker run -d --name qlp -p 8080:8080 qlp-local
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/ > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          docker logs qlp
+          exit 1

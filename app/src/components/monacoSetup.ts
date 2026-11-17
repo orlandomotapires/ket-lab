@@ -1,13 +1,13 @@
 import * as monaco from "monaco-editor/esm/vs/editor/edcore.main";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import { t, type MessageKey } from "../i18n";
+import { t, type MessageKey } from "../strings";
 import { PALETTES, type ThemeName } from "../theme/theme";
 
-// O Monaco vem empacotado no aplicativo (nada é baixado de CDN: funciona offline).
+// Monaco is bundled with the app (nothing is downloaded from a CDN: works offline).
 self.MonacoEnvironment = { getWorker: () => new EditorWorker() };
 
-// Ao descartar um editor, o Monaco rejeita promessas internas com "Canceled". É esperado.
+// When an editor is disposed, Monaco rejects internal promises with "Canceled". This is expected.
 window.addEventListener("unhandledrejection", (event) => {
   if (event.reason?.name === "Canceled") event.preventDefault();
 });
@@ -23,7 +23,7 @@ function defineTheme(name: ThemeName, base: "vs" | "vs-dark", syntax: Record<str
     colors: {
       "editor.background": palette.surface,
       "editor.foreground": palette.text,
-      "editorLineNumber.foreground": palette.lineStrong,
+      "editorLineNumber.foreground": palette.muted,
       "editorLineNumber.activeForeground": palette.text,
       "editor.lineHighlightBackground": palette.editorLine,
       "editor.lineHighlightBorder": "#00000000",
@@ -36,14 +36,14 @@ function defineTheme(name: ThemeName, base: "vs" | "vs-dark", syntax: Record<str
 }
 
 defineTheme("light", "vs", {
-  comment: "8a909b", keyword: "9a3b6e", string: "2f7a52", number: "a15c00", identifier: "15171c",
+  comment: "6e7480", keyword: "9a3b6e", string: "2f7a52", number: "a15c00", identifier: "15171c",
 });
 defineTheme("dark", "vs-dark", {
   comment: "7d8491", keyword: "d79ccc", string: "8cc9a4", number: "e0b46c", identifier: "e6e8ec",
 });
 
-// O editor mede a largura dos caracteres ao ser criado; se a fonte do projeto
-// carregar depois, as medidas precisam ser refeitas.
+// The editor measures character widths when created; if the project font
+// loads later, the measurements must be redone.
 void document.fonts?.ready.then(() => monaco.editor.remeasureFonts());
 
 interface GateDoc {
@@ -51,7 +51,7 @@ interface GateDoc {
   signature: string;
 }
 
-// As descrições vêm do dicionário de idiomas (chaves gate.<nome>).
+// Descriptions come from strings.ts (gate.<name> keys).
 const GATES: GateDoc[] = [
   { name: "x", signature: "x(${1:qubit})" },
   { name: "y", signature: "y(${1:qubit})" },

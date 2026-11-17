@@ -1,0 +1,396 @@
+/* Tracks screen (hub), side panel and its narrow-screen rules.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
+/* --------------------------------------------------------------------- map */
+
+.hub-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+/* Two columns: fixed side panel and the tracks, which start right at the top. */
+.hub {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 28px 48px;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.hub-side {
+  position: sticky;
+  top: 24px; /* same gap as the page top, also while scrolling */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 4px;
+  /* Never taller than the window (minus the 52 px top bar and the page's top and bottom
+     padding): otherwise the panel alone makes the whole page scroll when the tracks fit.
+     When the window is short, the panel scrolls on its own. */
+  max-height: calc(100vh - 52px - 24px - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.hub-side h1 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.hub-subtitle {
+  margin-top: -8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hub-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.hub-progress .meter {
+  flex: 1;
+}
+.hub-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hub-next {
+  height: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 9px 14px;
+  white-space: normal;
+  text-align: left;
+}
+.hub-next-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+.hub-next-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.hub-index {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.hub-index-item {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  cursor: pointer;
+}
+/* The track index is one line per track: the level is on the track cards already. */
+.hub-index > .hub-index-item {
+  padding: 6px;
+}
+.hub-index-item:hover {
+  background: var(--surface);
+}
+.hub-index-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-3);
+  font: 600 12px var(--font-mono);
+  color: var(--text-2);
+}
+.hub-index-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.hub-index-title {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.hub-index-level {
+  font-size: 12px;
+  color: var(--muted);
+}
+.hub-index-count {
+  font-size: 12.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.hub-tracks {
+  min-width: 0;
+}
+.hub-tracks .track {
+  scroll-margin-top: 16px;
+}
+
+.track {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.track-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px 12px;
+}
+.track-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.track-head h2 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.section-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.section-row:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.section-row:disabled {
+  cursor: default;
+}
+.section-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: var(--accent-contrast);
+}
+.is-next .section-mark {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+.section-mark.is-started {
+  border-color: var(--accent);
+  background: radial-gradient(circle, var(--accent) 0 4px, transparent 4.5px);
+}
+.section-mark.is-done {
+  border-color: var(--success);
+  background: var(--success);
+}
+.section-mark.is-soon {
+  border-style: dashed;
+}
+.section-text {
+  min-width: 0;
+}
+.section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 14.5px;
+}
+.section-id {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.section-summary {
+  display: block;
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.section-row:disabled .section-title {
+  color: var(--muted);
+}
+.section-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* The action ("Start", "Review") only shows on the next lesson, on those already started and on
+   hover or focus of the row: 21 identical "Start" labels turned into noise. */
+.section-row .section-action {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.section-row.is-next .section-action,
+.section-row.is-started .section-action,
+.section-row:hover:not(:disabled) .section-action,
+.section-row:focus-visible .section-action {
+  opacity: 1;
+}
+.section-row.is-next .section-action,
+.section-row:hover:not(:disabled) .section-action {
+  color: var(--accent-text);
+}
+.section-row.is-next {
+  background: var(--accent-soft);
+}
+.section-row.is-next:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+@media (hover: none) and (pointer: coarse) {
+  .section-row .section-action {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1080px) {
+  .hub {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .hub-side {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  .hub-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .hub-index {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .hub {
+    padding: 16px 16px 40px;
+  }
+  .section-row {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+}
+.section-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+}
+.pill-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.track-head h2 + .pill {
+  margin-top: 6px;
+}
+
+/* Side panel shortcuts (references, progress copy) */
+.hub-extras {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.hub-extra {
+  grid-template-columns: 26px minmax(0, 1fr);
+  cursor: pointer;
+}
+.hub-extra .hub-index-number {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+.hub-extras-status {
+  margin: 4px 6px 0;
+}
+
+.track-stats {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.track.is-collapsed .track-head {
+  border-bottom: none;
+}
+.track-toggle {
+  color: var(--muted);
+}
+
+/* Backup dialog: export and import in one place. */
+.backup-dialog {
+  width: min(520px, calc(100vw - 32px));
+}
+.backup-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.backup-option h3 {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.backup-option p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.backup-option .btn {
+  flex: none;
+}
+.backup-status {
+  min-height: 20px;
+  margin: 0 18px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.backup-status.is-error {
+  color: var(--error);
+}
+@media (max-width: 560px) {
+  .backup-option {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "questions": [
+    {
+      "lesson": "6.5",
+      "question": "A penalty A(x_0 + x_1 − 1)² makes the QUBO prefer exactly one of two jobs. What condition on A makes the intended choice the lowest state?",
+      "options": [
+        "A as small as possible, so that the penalty does not disturb the objective",
+        "A larger than what breaking the rule gains in the objective, because at equal energy the annealer may end on either state",
+        "Any A above 0, because the penalty is zero on every state that obeys the rule"
+      ],
+      "answer": 1,
+      "explanation": "Breaking the rule costs A and can gain up to the value of a job, so A has to exceed that gain, and a tie is not enough because the annealer may end on the wrong state. A very large A is not free either: after rescaling it shrinks the energy differences of the real problem."
+    },
+    {
+      "lesson": "6.1",
+      "question": "A QUBO is obtained from an Ising energy with s = 1 − 2x. Where does a term linear in x_i end up in Q?",
+      "options": [
+        "On the diagonal entry Q_ii, because x_i² = x_i",
+        "In a separate vector that is not part of Q",
+        "On the entries Q_ij of the pairs that contain i"
+      ],
+      "answer": 0,
+      "explanation": "For a bit, x² = x, so a linear term can be written as a square term and sits on the diagonal of Q."
+    },
+    {
+      "lesson": "6.1",
+      "question": "Why does an Ising model without fields always have an even number of ground states?",
+      "options": [
+        "Because the number of spins is even",
+        "Because the couplings are all positive",
+        "Because each configuration has a flipped partner with the same energy"
+      ],
+      "answer": 2,
+      "explanation": "The energy only contains products s_i s_j, so flipping every spin leaves it unchanged and the ground states come in pairs. Fixing one spin, which creates fields, removes the pairing."
+    },
+    {
+      "lesson": "6.2",
+      "question": "For a sweep H(s) = (1 − s)H_B + sH_P, which quantity does the adiabatic condition compare with the total time T?",
+      "options": [
+        "The largest eigenvalue of H_P",
+        "The square of the smallest gap between the two lowest levels",
+        "The gap at s = 1 only"
+      ],
+      "answer": 1,
+      "explanation": "The condition asks for T large compared with a matrix element of dH/ds divided by the square of the smallest gap found anywhere in the sweep, not the gap at one end."
+    },
+    {
+      "lesson": "6.2",
+      "question": "On one qubit with H(s) = −(1 − s)X − sZ, a sweep with T = 5 ends in |0⟩ almost always, while T = 0.5 gives |0⟩ about half the time. What explains the difference?",
+      "options": [
+        "With T = 0.5 the state has no time to follow H(s), so it stays near |+⟩",
+        "The gap is smaller when T = 0.5",
+        "The ground state of H(s) depends on T"
+      ],
+      "answer": 0,
+      "explanation": "The gap is fixed by H(s) and does not depend on T. A fast sweep leaves the state near its starting value |+⟩, which reads 0 with probability 1/2."
+    },
+    {
+      "lesson": "6.2",
+      "question": "Why can you not compute the minimum gap of a large instance first and then choose T?",
+      "options": [
+        "The gap is exponentially small for every instance",
+        "The gap is zero for every instance with more than 10 qubits",
+        "The matrix has 2ⁿ rows, and no general shortcut to its gap is known"
+      ],
+      "answer": 2,
+      "explanation": "Diagonalization works for three qubits, but the matrix doubles with every qubit. Finding the gap in general is as hard as the problem itself, and it closes exponentially for some families and only polynomially for others."
+    },
+    {
+      "lesson": "6.3",
+      "question": "A Trotter step of the anneal uses H_B = −ΣX. Which gate applies e^{−i(1−s)Δt H_B} to one qubit?",
+      "options": [
+        "rx(+(1 − s)Δt)",
+        "rx(−2(1 − s)Δt)",
+        "rz(−2(1 − s)Δt)"
+      ],
+      "answer": 1,
+      "explanation": "Because H_B = −ΣX, the exponential is e^{+i(1−s)Δt X}. Since rx(θ) = e^{−iθX/2}, the angle is −2(1 − s)Δt: a factor 2 and a minus sign."
+    },
+    {
+      "lesson": "6.3",
+      "question": "The anneal circuit and QAOA both alternate cost and mixer layers. What is the main difference?",
+      "options": [
+        "The anneal uses a different cost Hamiltonian",
+        "The anneal needs CNOT gates in the mixer",
+        "The anneal takes its angles from a fixed schedule, and QAOA trains them"
+      ],
+      "answer": 2,
+      "explanation": "The layer structure is the same. The anneal fixes the angles from the schedule and needs many layers, while QAOA treats them as parameters and often does better with few layers."
+    },
+    {
+      "lesson": "6.3",
+      "question": "You keep T = 120 and cut the number of Trotter steps from 100 to 60. What happens to the probability of the ground state?",
+      "options": [
+        "It falls sharply, because each step is now too long for the Trotter approximation",
+        "It stays about the same, because T fixes the anneal",
+        "It rises, because fewer gates mean less error"
+      ],
+      "answer": 0,
+      "explanation": "T fixes the schedule, but each step is a first-order approximation whose error grows with its length. In this instance the probability drops from 0.77 to about 0.01."
+    },
+    {
+      "lesson": "6.4",
+      "question": "An embedded state has an intact chain of strength F. How does its energy compare with the logical energy of the state it decodes to?",
+      "options": [
+        "It is lower by F",
+        "It is the same",
+        "It is higher by 2F"
+      ],
+      "answer": 0,
+      "explanation": "With the two chain spins equal, the chain term −F s₂ s₃ equals −F, and every other term equals its logical counterpart."
+    },
+    {
+      "lesson": "6.4",
+      "question": "Why not set the chain strength as large as the hardware allows?",
+      "options": [
+        "A large F makes the chain break",
+        "The device rescales the problem so its largest coefficient fits, which shrinks the problem's own energy gaps",
+        "A large F changes which logical state has the lowest energy"
+      ],
+      "answer": 1,
+      "explanation": "The chain holds for any F above the threshold, but couplings have a limited range. The whole problem is divided by its largest coefficient, so a large F makes the logical energy differences small compared with noise and temperature."
+    },
+    {
+      "lesson": "6.4",
+      "question": "What did the careful benchmarks of annealers against classical algorithms establish?",
+      "options": [
+        "A proven exponential speedup for optimization problems",
+        "That annealers cannot find ground states at all",
+        "No general speedup so far: advantages were reported only for specific problem classes against specific classical algorithms"
+      ],
+      "answer": 2,
+      "explanation": "Rønnow and co-authors found no speedup on the instances they tested, and later work reports a scaling advantage over simulated annealing for particular problems. Whether annealing gives a general advantage is an open question."
+    }
+  ]
+}

@@ -1,13 +1,15 @@
 /**
- * Visualizações de treino (Trilha 3). Os dados vêm do analysis.py da lição,
- * calculados no motor depois de executar o código do aluno.
+ * Training visualizations (Track 3). The data comes from the lesson's analysis.py,
+ * computed in the engine after running the learner's code.
  */
-import { formatNumber, t, type MessageKey } from "../i18n";
+import { t, type MessageKey } from "../strings";
+
+const fixed = (value: number, decimals: number) => value.toFixed(decimals);
 
 const W = 600;
 const H = 260;
 
-/** Rampa sequencial perceptualmente uniforme (viridis), legível nos dois temas. */
+/** Perceptually uniform sequential ramp (viridis), legible in both themes. */
 const RAMP = ["#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"];
 
 function rampColor(value: number): string {
@@ -22,11 +24,11 @@ function rampColor(value: number): string {
 
 function niceNumber(value: number): string {
   const abs = Math.abs(value);
-  return formatNumber(value, abs >= 100 ? 0 : abs >= 10 ? 1 : abs >= 1 ? 2 : 3).replace("-", "−");
+  return fixed(value, abs >= 100 ? 0 : abs >= 10 ? 1 : abs >= 1 ? 2 : 3).replace("-", "−");
 }
 
 // --------------------------------------------------------------------------- //
-// Paisagem de custo
+// Cost landscape
 // --------------------------------------------------------------------------- //
 
 export interface LandscapeData {
@@ -97,7 +99,7 @@ export function LandscapeView({ data }: { data: LandscapeData }) {
 }
 
 // --------------------------------------------------------------------------- //
-// Convergência
+// Convergence
 // --------------------------------------------------------------------------- //
 
 export interface ConvergenceData {
@@ -161,7 +163,7 @@ export function ConvergenceView({ data, note }: { data: ConvergenceData; note?: 
 }
 
 // --------------------------------------------------------------------------- //
-// Curva de dissociação
+// Dissociation curve
 // --------------------------------------------------------------------------- //
 
 export interface DissociationData {
@@ -171,13 +173,13 @@ export interface DissociationData {
   point?: [number, number] | null;
   x_label?: string;
   y_label?: string;
-  /** Chaves de tradução da legenda das duas curvas e da nota (padrão: exata e Hartree-Fock). */
+  /** Translation keys for the legend of the two curves and the note (default: exact and Hartree-Fock). */
   legend?: [MessageKey, MessageKey];
   note?: MessageKey;
   point_label?: MessageKey;
 }
 
-/** Duas curvas e um ponto destacado: curva de dissociação (3.2) e curva de limiar (3.6). */
+/** Two curves and a highlighted point: dissociation curve (3.2) and threshold curve (3.6). */
 export function DissociationView({ data, label }: { data: DissociationData; label?: string }) {
   const [firstLegend, secondLegend] = data.legend ? data.legend.map((key) => t(key)) : [t("viz.exact"), "Hartree-Fock"];
   const all = [...data.exact, ...(data.hartree_fock ?? []), ...(data.point ? [data.point[1]] : [])];
@@ -233,7 +235,7 @@ export function DissociationView({ data, label }: { data: DissociationData; labe
 }
 
 // --------------------------------------------------------------------------- //
-// Grafo (Max-Cut)
+// Graph (Max-Cut)
 // --------------------------------------------------------------------------- //
 
 export interface GraphData {
@@ -268,7 +270,7 @@ export function GraphView({ data }: { data: GraphData }) {
           const p = at(node.id);
           return (
             <g key={node.id}>
-              {/* Forma e cor distinguem os grupos (não só a cor). */}
+              {/* Shape and color tell the groups apart (not color alone). */}
               {node.side ? (
                 <rect className="graph-node is-b" x={p.x - 15} y={p.y - 15} width={30} height={30} rx={6} />
               ) : (
@@ -282,14 +284,14 @@ export function GraphView({ data }: { data: GraphData }) {
         <text className="graph-text" x={listX} y={46}>
           |{data.best_bits}⟩ · {t("viz.graphBestDetail", { cut: data.best_cut, max: data.max_cut })}
         </text>
-        <text className="graph-text" x={listX} y={66}>{t("viz.graphRatio", { ratio: formatNumber(data.ratio, 3) })}</text>
+        <text className="graph-text" x={listX} y={66}>{t("viz.graphRatio", { ratio: fixed(data.ratio, 3) })}</text>
         <text className="graph-title" x={listX} y={98}>{t("viz.graphTop")}</text>
         {data.top.map((item, k) => (
           <g key={item.bits} transform={`translate(${listX}, ${116 + k * 22})`}>
             <text className="graph-text" x={0} y={4}>|{item.bits}⟩</text>
             <rect className="chart-bar" x={66} y={-5} width={Math.max(item.probability * 260, 1)} height={10} rx={2} />
             <text className="chart-tick" x={74 + item.probability * 260} y={4}>
-              {formatNumber(item.probability * 100, 0)}% · {t("viz.graphCut", { cut: item.cut })}
+              {fixed(item.probability * 100, 0)}% · {t("viz.graphCut", { cut: item.cut })}
             </text>
           </g>
         ))}
@@ -300,7 +302,7 @@ export function GraphView({ data }: { data: GraphData }) {
 }
 
 // --------------------------------------------------------------------------- //
-// Fronteira de decisão (classificador)
+// Decision boundary (classifier)
 // --------------------------------------------------------------------------- //
 
 export interface BoundaryData {
@@ -311,7 +313,7 @@ export interface BoundaryData {
   train_accuracy: number;
 }
 
-/** Divergente: azul (classe +1) ↔ laranja (classe −1), mais claro perto da fronteira. */
+/** Diverging: blue (class +1) ↔ orange (class −1), lighter near the boundary. */
 function divergingColor(value: number): string {
   const v = Math.max(-1, Math.min(1, value));
   const [r, g, b] = v >= 0 ? [47, 91, 211] : [214, 120, 30];
@@ -351,7 +353,7 @@ export function BoundaryView({ data }: { data: BoundaryData }) {
         <rect className="boundary-point is-minus" x={infoX + 2} y={top + 30} width={8} height={8} />
         <text className="graph-text" x={infoX + 18} y={top + 38}>−1</text>
         <text className="graph-text" x={infoX} y={top + 68}>{t("viz.trainAccuracy")}</text>
-        <text className="graph-title" x={infoX} y={top + 88}>{formatNumber(data.train_accuracy * 100, 1)}%</text>
+        <text className="graph-title" x={infoX} y={top + 88}>{fixed(data.train_accuracy * 100, 1)}%</text>
       </svg>
       <div className="stage-footer">{t("viz.boundaryNote")}</div>
     </>

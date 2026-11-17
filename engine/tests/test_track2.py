@@ -1,4 +1,4 @@
-"""Física da Trilha 2, verificada de forma independente das soluções de referência."""
+"""Physics of Track 2, verified independently of the reference solutions."""
 
 import numpy as np
 import pytest
@@ -71,7 +71,7 @@ def test_bernstein_vazirani_recovers_the_secret(library, case, secret):
     ],
 )
 def test_grover_amplifies_the_marked_items(library, marked, iterations, success):
-    execution = run(library, "2.5", marked)
+    execution = run(library, "2.6", marked)
     assert execution.namespace["num_marked"] == len(marked)
     assert execution.namespace["iterations"] == iterations
     distribution = simulator.register_distribution(execution.circuit, [0, 1, 2, 3])
@@ -80,27 +80,27 @@ def test_grover_amplifies_the_marked_items(library, marked, iterations, success)
 
 @pytest.mark.parametrize("x", range(8))
 def test_qft_solution_is_the_discrete_fourier_transform(library, x):
-    state = simulator.run_trajectory(run(library, "2.6", x).circuit).states[-1]
+    state = simulator.run_trajectory(run(library, "2.7", x).circuit).states[-1]
     expected = np.exp(2j * np.pi * x * np.arange(8) / 8) / np.sqrt(8)
     assert abs(np.vdot(expected, state)) ** 2 == pytest.approx(1.0)
 
 
 @pytest.mark.parametrize("theta", [0.125, 0.375, 0.625, 0.875])
 def test_phase_estimation_reads_theta(library, theta):
-    execution = run(library, "2.7", theta)
+    execution = run(library, "2.8", theta)
     distribution = simulator.register_distribution(execution.circuit, [0, 1, 2])
     assert distribution == pytest.approx({format(round(theta * 8), "03b"): 1.0})
     assert execution.namespace["theta"] == pytest.approx(theta)
 
 
 def test_phase_estimation_of_a_superposition_gives_zero_or_theta(library):
-    code = library.validation_bundle("2.7")["solution"].replace("qc.x(3)", "qc.h(3)")
-    distribution = simulator.register_distribution(run(library, "2.7", 0.625, code).circuit, [0, 1, 2])
+    code = library.validation_bundle("2.8")["solution"].replace("qc.x(3)", "qc.h(3)")
+    distribution = simulator.register_distribution(run(library, "2.8", 0.625, code).circuit, [0, 1, 2])
     assert distribution == pytest.approx({"000": 0.5, "101": 0.5})
 
 
 def test_modular_multiplication_is_multiplication_by_seven(library):
-    hidden = library.validation_bundle("2.8")["hidden_setup"]
+    hidden = library.validation_bundle("2.9")["hidden_setup"]
     for y in range(1, 15):
         prepare = "".join(f"qc.x({4 + bit})\n" for bit in range(4) if (y >> bit) & 1)
         code = (
@@ -114,7 +114,7 @@ def test_modular_multiplication_is_multiplication_by_seven(library):
 
 
 def test_shor_finds_the_period_peaks_and_the_factors(library):
-    execution = run(library, "2.8")
+    execution = run(library, "2.9")
     distribution = simulator.register_distribution(execution.circuit, [0, 1, 2, 3])
     assert distribution == pytest.approx({"0000": 0.25, "0100": 0.25, "1000": 0.25, "1100": 0.25})
     assert execution.namespace["factors"] == [3, 5]
@@ -122,10 +122,10 @@ def test_shor_finds_the_period_peaks_and_the_factors(library):
 
 
 def test_shor_post_processing_rejects_non_periods_and_the_minus_one_case(library):
-    solution = library.validation_bundle("2.8")["solution"]
-    # Com a = 14 (≡ -1 mod 15) a tentativa falha: nenhum fator aparece.
-    code = solution.replace("# a = 7 e N = 15 vêm do laboratório.", "a = 14")
-    assert run(library, "2.8", None, code).namespace["factors"] == []
+    solution = library.validation_bundle("2.9")["solution"]
+    # With a = 14 (≡ -1 mod 15) the attempt fails: no factor appears.
+    code = solution.replace("# a = 7 and N = 15 are provided by the lab.", "a = 14")
+    assert run(library, "2.9", None, code).namespace["factors"] == []
 
 
 def test_hidden_gates_have_readable_labels(library):
@@ -134,9 +134,9 @@ def test_hidden_gates_have_readable_labels(library):
         for i, record in enumerate(simulator.run_trajectory(run(library, lesson_id).circuit).steps)
     ]
     assert "U_f" in labels("2.3")
-    assert "U_ω" in labels("2.5")
-    assert {"U^1", "U^4", "QFT†"} <= set(labels("2.7"))
-    assert "×7^8" in labels("2.8")
+    assert "U_ω" in labels("2.6")
+    assert {"U^1", "U^4", "QFT†"} <= set(labels("2.8"))
+    assert "×7^8" in labels("2.9")
 
 
 def test_run_shots_is_available_to_student_code():

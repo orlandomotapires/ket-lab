@@ -1,17 +1,17 @@
-"""Executa o código do aluno uma única vez e registra, para cada instrução
-adicionada a um QuantumCircuit, a linha de nível de módulo que a originou.
+"""Runs the student's code exactly once and records, for each instruction
+added to a QuantumCircuit, the module-level line that originated it.
 
-"Estado após a linha k" não é bem definido quando há laços ou funções, então
-a unidade de passo é a *instrução*. Uma instrução emitida dentro de uma função
-é atribuída à linha de nível de módulo que chamou essa função; dentro de um
-`for`, à linha do corpo do laço.
+"State after line k" is not well defined when there are loops or functions, so
+the unit of a step is the *instruction*. An instruction emitted inside a function
+is attributed to the module-level line that called that function; inside a
+`for`, to the line of the loop body.
 """
 
 from __future__ import annotations
 
+import ast
 import contextlib
 import io
-import math
 import sys
 import time
 import traceback
@@ -20,29 +20,37 @@ from dataclasses import dataclass, field
 from qiskit import QuantumCircuit
 
 from . import guard
-from .i18n import t
+from .messages import t
 
-USER_FILENAME = "<aluno>"
+USER_FILENAME = "<student>"
 MAX_STDOUT_CHARS = 10_000
 
 
 class UserCodeError(Exception):
-    """Erro atribuível ao código do aluno, com a linha quando conhecida."""
+    """Error attributable to the student's code, with the line when known."""
 
-    def __init__(self, message: str, line: int | None = None, kind: str = "runtime"):
+    def __init__(self, message: str, line: int | None = None, kind: str = "runtime", stdout: str = ""):
         super().__init__(message)
         self.message = message
         self.line = line
         self.kind = kind
+        self.stdout = stdout  # what the code printed before it failed
 
 
 @dataclass
 class Execution:
-    circuit: QuantumCircuit | None  # None em código PennyLane
-    lines: list[int]  # linha de origem de cada instrução de circuit.data
+    circuit: QuantumCircuit | None  # None in PennyLane code
+    lines: list[int]  # source line of each instruction in circuit.data
     stdout: str = ""
     namespace: dict = field(default_factory=dict)
     reports: dict[str, list[float]] = field(default_factory=dict)
+    # What the hidden setup defined under private names (the secret case, helpers): not in `namespace`,
+    # which is what the learner's code ran in, but available to the lesson's own check.py and analysis.py.
+    setup_private: dict = field(default_factory=dict)
+
+    def full_namespace(self) -> dict:
+        """The learner's namespace plus the setup's private names (for trusted lesson code only)."""
+        return {**self.setup_private, **self.namespace}
 
 
 MAX_REPORTS = 5_000
@@ -50,11 +58,11 @@ REPORT_INTERVAL_S = 0.1
 
 
 class Reporter:
-    """`report(...)` no código do aluno: registra métricas de um laço de treino.
+    """`report(...)` in the student's code: records metrics from a training loop.
 
-    `report(custo)` grava a série "cost"; `report(cost=c, accuracy=a)` grava várias.
-    Com `emit`, os valores novos saem em lotes enquanto o código ainda roda
-    (no máximo a cada REPORT_INTERVAL_S), para a curva aparecer época a época.
+    `report(cost)` records the "cost" series; `report(cost=c, accuracy=a)` records several.
+    With `emit`, new values go out in batches while the code is still running
+    (at most every REPORT_INTERVAL_S), so the curve appears epoch by epoch.
     """
 
     def __init__(self, emit=None):
@@ -92,7 +100,7 @@ class Reporter:
 
 
 def _to_float(value) -> float | None:
-    """Número real de um float, inteiro, escalar NumPy ou tensor PennyLane de um elemento."""
+    """Real number from a float, int, NumPy scalar or one-element PennyLane tensor."""
     import numpy as np
 
     try:
@@ -105,29 +113,57 @@ def _to_float(value) -> float | None:
 
 
 class _CircuitWatcher:
-    """Observa os QuantumCircuits do namespace e atribui linhas às instruções novas."""
+    """Watches the namespace's QuantumCircuits and assigns lines to new instructions.
 
-    def __init__(self, namespace: dict):
+    The circuits already known are checked on every line event (one length comparison each). Looking for
+    NEW circuits is what used to scan the whole namespace on every line; now it happens only when the
+    namespace grew, or when the line that just ran binds a name (assignment, `for` target, `with ... as`,
+    walrus), or when the code declares `global` somewhere (a function may then rebind a name).
+    """
+
+    def __init__(self, namespace: dict, tree: ast.AST | None = None):
         self.namespace = namespace
         self.current_line: int | None = None
-        # id -> (circuito, linhas, ordem de criação). Guardar o circuito evita reuso de id.
+        # id -> (circuit, lines, creation order). Keeping the circuit avoids id reuse.
         self.seen: dict[int, tuple[QuantumCircuit, list[int], int]] = {}
+        self._tracked: list[tuple[QuantumCircuit, list[int]]] = []
+        self._size = -1  # forces a full scan on the first line (circuits made by the hidden setup)
+        bound, always = _bound_names(tree) if tree is not None else ({}, set())
+        # Names to look at after each line: what it binds, plus the names some function may rebind with `global`.
+        self._default = tuple(sorted(always))
+        self._bound = {line: tuple(sorted(names | always)) for line, names in bound.items()}
+        self._everything = tree is None  # without a tree there is no way to know: scan as before
 
     def flush(self) -> None:
+        """Looks for new circuits (where one can have appeared) and attributes the new instructions."""
+        namespace = self.namespace
+        if self._everything or len(namespace) != self._size:
+            self._size = len(namespace)
+            for value in list(namespace.values()):
+                if isinstance(value, QuantumCircuit) and id(value) not in self.seen:
+                    self._register(value)
+        else:
+            for name in self._bound.get(self.current_line, self._default):
+                value = namespace.get(name)
+                if isinstance(value, QuantumCircuit) and id(value) not in self.seen:
+                    self._register(value)
+        self._attribute()
+
+    def _attribute(self) -> None:
+        """Gives the instructions added since the last look to the line that was running."""
         line = self.current_line or 0
-        for value in list(self.namespace.values()):
-            if not isinstance(value, QuantumCircuit):
-                continue
-            entry = self.seen.get(id(value))
-            if entry is None:
-                entry = (value, [], len(self.seen))
-                self.seen[id(value)] = entry
-            lines = entry[1]
-            count = len(value.data)
-            if count > len(lines):
-                lines.extend([line] * (count - len(lines)))
-            elif count < len(lines):
-                del lines[count:]
+        for circuit, lines in self._tracked:
+            count = len(circuit)
+            if count != len(lines):
+                if count > len(lines):
+                    lines.extend([line] * (count - len(lines)))
+                else:
+                    del lines[count:]
+
+    def _register(self, circuit: QuantumCircuit) -> None:
+        lines: list[int] = []
+        self.seen[id(circuit)] = (circuit, lines, len(self.seen))
+        self._tracked.append((circuit, lines))
 
     def trace(self, frame, event, arg):
         code = frame.f_code
@@ -137,9 +173,46 @@ class _CircuitWatcher:
 
     def _trace_module(self, frame, event, arg):
         if event == "line":
-            self.flush()
+            # The hot path (every line of every loop), written out instead of calling flush().
+            namespace = self.namespace
+            if self._everything or len(namespace) != self._size:
+                self.flush()
+            else:
+                seen = self.seen
+                for name in self._bound.get(self.current_line, self._default):
+                    value = namespace.get(name)
+                    if isinstance(value, QuantumCircuit) and id(value) not in seen:
+                        self._register(value)
+                for circuit, lines in self._tracked:
+                    if len(circuit) != len(lines):
+                        self._attribute()
+                        break
             self.current_line = frame.f_lineno
         return self._trace_module
+
+
+def _bound_names(tree: ast.AST) -> tuple[dict[int, set[str]], set[str]]:
+    """Names each module-level line can bind (by line number), and the names declared `global`."""
+    by_line: dict[int, set[str]] = {}
+    always: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Global):
+            always.update(node.names)
+        if not isinstance(node, ast.stmt):
+            continue
+        if isinstance(getattr(node, "body", None), list):  # compound: only its header line(s)
+            parts = [
+                child for child in ast.iter_child_nodes(node)
+                if not isinstance(child, (ast.stmt, ast.excepthandler, ast.match_case))
+            ]
+            last = node.body[0].lineno - 1 if node.body else node.lineno
+        else:
+            parts = [node]
+            last = node.end_lineno or node.lineno
+        names = {n.id for part in parts for n in ast.walk(part) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)}
+        for line in range(node.lineno, max(last, node.lineno) + 1) if names else ():
+            by_line.setdefault(line, set()).update(names)
+    return by_line, always
 
 
 def execute(
@@ -151,10 +224,10 @@ def execute(
     require_circuit: bool = True,
     reporter: Reporter | None = None,
 ) -> Execution:
-    """Roda o código e devolve o circuito principal com a linha de cada instrução.
+    """Runs the code and returns the main circuit with the line of each instruction.
 
-    `inputs` são variáveis colocadas no namespace antes do setup oculto: é assim
-    que o validador varia, por exemplo, o estado que Alice teletransporta.
+    `inputs` are variables placed in the namespace before the hidden setup: this is how
+    the validator varies, for example, the state that Alice teleports.
     """
     try:
         tree = guard.check(code)
@@ -168,19 +241,29 @@ def execute(
     namespace["run_shots"] = _run_shots
     reporter = reporter or Reporter()
     namespace["report"] = reporter
-    if inputs:
-        namespace.update(inputs)
+    setup_private: dict = {}
     if hidden_setup:
-        exec(compile(hidden_setup, "<setup>", "exec"), namespace)  # conteúdo da lição, confiável
+        # The setup (lesson content, trusted) runs in a namespace of its own, with the case in `_QLP_INPUT`.
+        # The learner's code receives only its public names; the private ones (the secret, helpers) stay
+        # behind, reachable only through the globals of the functions the setup defined.
+        setup = dict(namespace)
+        if inputs:
+            setup.update(inputs)
+        exec(compile(hidden_setup, "<setup>", "exec"), setup)
+        namespace.update({name: value for name, value in setup.items() if not name.startswith("_")})
+        setup_private = {name: value for name, value in setup.items() if name.startswith("_") and name not in namespace}
 
-    watcher = _CircuitWatcher(namespace)
+    watcher = _CircuitWatcher(namespace, tree)
     stdout = io.StringIO()
     compiled = compile(tree, USER_FILENAME, "exec")
+
+    def printed() -> str:
+        return stdout.getvalue()[:MAX_STDOUT_CHARS]
 
     previous_trace = sys.gettrace()
     try:
         with contextlib.redirect_stdout(stdout):
-            # Sem rastreamento (lições PennyLane): laços de treino rodam sem custo extra.
+            # No tracing (PennyLane lessons): training loops run at no extra cost.
             sys.settrace(watcher.trace if trace else None)
             try:
                 exec(compiled, namespace)
@@ -189,17 +272,22 @@ def execute(
                 if trace:
                     watcher.flush()
                 reporter.flush()
+    except KeyboardInterrupt:
+        raise
     except MemoryError:
-        raise UserCodeError(t("run.memory"), watcher.current_line) from None
+        raise UserCodeError(t("run.memory"), watcher.current_line, stdout=printed()) from None
     except RecursionError:
-        raise UserCodeError(t("run.recursion"), watcher.current_line) from None
-    except Exception as exc:  # noqa: BLE001 - qualquer erro do aluno vira diagnóstico
-        raise UserCodeError(_describe(exc), _user_line(exc) or watcher.current_line) from None
+        raise UserCodeError(t("run.recursion"), watcher.current_line, stdout=printed()) from None
+    except Exception as exc:  # noqa: BLE001 - any student error becomes a diagnostic
+        raise UserCodeError(_describe(exc), _user_line(exc) or watcher.current_line, stdout=printed()) from None
+    except BaseException as exc:  # noqa: BLE001 - `raise SystemExit`, `exit()`: report it, do not let it end the worker
+        line = _user_line(exc) or watcher.current_line
+        raise UserCodeError(t("run.exit"), line, stdout=printed()) from None
 
     if not require_circuit and not watcher.seen:
         return Execution(
             circuit=None, lines=[], stdout=stdout.getvalue()[:MAX_STDOUT_CHARS], namespace=namespace,
-            reports=reporter.series,
+            reports=reporter.series, setup_private=setup_private,
         )
     circuit, lines = _pick_main_circuit(namespace, watcher)
     return Execution(
@@ -208,6 +296,7 @@ def execute(
         stdout=stdout.getvalue()[:MAX_STDOUT_CHARS],
         namespace=namespace,
         reports=reporter.series,
+        setup_private=setup_private,
     )
 
 
@@ -215,9 +304,9 @@ RUN_SHOTS_SEED = 7
 
 
 def _run_shots(circuit: QuantumCircuit, shots: int = 1024) -> dict[str, int]:
-    """Disponível no código do aluno: executa o circuito `shots` vezes e devolve as
-    contagens, como faria um computador quântico. A seed é fixa para que o
-    resultado não mude a cada tecla."""
+    """Available in the student's code: runs the circuit `shots` times and returns the
+    counts, as a quantum computer would. The seed is fixed so that the
+    result does not change on every keystroke."""
     from .simulator import sample_counts
 
     if not isinstance(circuit, QuantumCircuit):
@@ -231,7 +320,7 @@ def _pick_main_circuit(namespace: dict, watcher: _CircuitWatcher) -> tuple[Quant
         return preferred, watcher.seen[id(preferred)][1]
     if not watcher.seen:
         raise UserCodeError(t("run.no_circuit"), kind="no_circuit")
-    # Sem `qc`: usa o circuito criado por último.
+    # Without `qc`: uses the most recently created circuit.
     circuit, lines, _ = max(watcher.seen.values(), key=lambda entry: entry[2])
     return circuit, lines
 

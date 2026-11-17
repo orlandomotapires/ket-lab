@@ -19,7 +19,7 @@ def test_little_endian_ordering():
     circuit = QuantumCircuit(2)
     circuit.x(0)
     state = simulator.run_trajectory(circuit).states[-1]
-    # |q1 q0> = |01> -> índice 1
+    # |q1 q0> = |01> -> index 1
     assert np.allclose(np.abs(state) ** 2, [0, 1, 0, 0])
 
 
@@ -139,7 +139,7 @@ def test_counts_without_measure_sample_all_qubits():
 def test_counts_with_terminal_measures_use_clbit_order():
     circuit = QuantumCircuit(2, 2)
     circuit.x(0)
-    circuit.measure(0, 1)  # qubit 0 -> bit clássico 1
+    circuit.measure(0, 1)  # qubit 0 -> classical bit 1
     circuit.measure(1, 0)
     assert simulator.sample_counts(circuit, shots=50)["counts"] == {"10": 50}
 
@@ -151,7 +151,7 @@ def test_counts_with_mid_circuit_measurement():
 
 
 def test_qubit_cap():
-    with pytest.raises(simulator.SimulationError, match="limite"):
+    with pytest.raises(simulator.SimulationError, match="limit"):
         simulator.run_trajectory(QuantumCircuit(11))
     with pytest.raises(simulator.SimulationError):
         simulator.run_trajectory(QuantumCircuit(4), max_qubits=3)
@@ -170,5 +170,5 @@ def test_exact_distribution():
     circuit.cx(0, 1)
     circuit.measure([0, 1], [0, 1])
     assert simulator.exact_distribution(circuit) == pytest.approx({"00": 0.5, "11": 0.5})
-    assert simulator.exact_distribution(QuantumCircuit(1)) is None  # sem medição
-    assert simulator.exact_distribution(_teleport(0.3, 0.1)) is None  # medição no meio
+    assert simulator.exact_distribution(QuantumCircuit(1)) is None  # no measurement
+    assert simulator.exact_distribution(_teleport(0.3, 0.1)) is None  # mid-circuit measurement

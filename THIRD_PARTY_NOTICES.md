@@ -1,6 +1,6 @@
 # Third-party notices
 
-The Quantum Learning Platform is released under the [MIT license](LICENSE). It uses the following software and fonts, each under its own license. They are installed as dependencies and are not copied into this repository.
+Ket Lab is released under the [MIT license](LICENSE). It uses the following software and fonts, each under its own license. They are installed as dependencies and are not copied into this repository.
 
 ## Engine (Python)
 

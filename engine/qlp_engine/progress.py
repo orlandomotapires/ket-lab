@@ -13,6 +13,7 @@ from pathlib import Path
 
 from . import messages
 
+# Kept from the project's first name, so existing progress is still found after the rename to Ket Lab.
 APP_DIR_NAME = "quantum-learning-platform"
 BACKUPS_KEPT = 5
 BUSY_TIMEOUT_MS = 5000

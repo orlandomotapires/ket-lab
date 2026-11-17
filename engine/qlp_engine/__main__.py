@@ -51,7 +51,7 @@ class _TolerantStream:
 
 
 def parse_args(argv=None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(prog="qlp-engine", description="Quantum Learning Platform engine")
+    parser = argparse.ArgumentParser(prog="qlp-engine", description="Ket Lab engine")
     parser.add_argument("--port", type=int, default=0, help="local port (0 = random)")
     parser.add_argument("--token", default=None, help="session token (default: random)")
     parser.add_argument(

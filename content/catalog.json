@@ -178,6 +178,26 @@
         },
         {
           "id": "3.5",
+          "title": "Ansatz Design: Expressivity and Entanglement",
+          "summary": "Compare variational forms by number of parameters, entangling layers and the states they can reach."
+        },
+        {
+          "id": "3.6",
+          "title": "Optimizers and the Cost of a Gradient",
+          "summary": "Gradient descent, SPSA and COBYLA compared by the number of circuit evaluations they need."
+        },
+        {
+          "id": "3.7",
+          "title": "Barren Plateaus",
+          "summary": "Gradients of random deep circuits vanish exponentially with the number of qubits."
+        },
+        {
+          "id": "3.8",
+          "title": "VQE with a Hardware-Efficient Ansatz",
+          "summary": "Find the H₂ ground state with a general multi-parameter ansatz instead of a chemistry-inspired one."
+        },
+        {
+          "id": "3.9",
           "title": "Project: A Variational Dissociation Curve",
           "summary": "Compute the H₂ ground-state energy with VQE at several bond lengths and locate the equilibrium distance."
         }
@@ -259,6 +279,38 @@
           "id": "5.5",
           "title": "Project: A Mitigated Estimate on a Noisy Device",
           "summary": "Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Adiabatic Computing and Quantum Annealing",
+      "level": "Advanced",
+      "sections": [
+        {
+          "id": "6.1",
+          "title": "Optimization as Energy: Ising Models and QUBO",
+          "summary": "Write number partitioning and Max-Cut as the energy of spins, convert between the Ising and QUBO forms, and find the ground state by brute force."
+        },
+        {
+          "id": "6.2",
+          "title": "The Adiabatic Theorem and the Energy Gap",
+          "summary": "Interpolate slowly from an easy Hamiltonian to the problem Hamiltonian; the minimum gap sets how slow is slow enough."
+        },
+        {
+          "id": "6.3",
+          "title": "Quantum Annealing as a Circuit",
+          "summary": "Cut the anneal into Trotter steps on three qubits and compare it with QAOA and with thermal simulated annealing."
+        },
+        {
+          "id": "6.4",
+          "title": "Annealing Hardware: Embedding and Limits",
+          "summary": "Map a problem onto sparse hardware with chains of qubits, choose the chain strength, and see what is and is not known about speedups."
+        },
+        {
+          "id": "6.5",
+          "title": "Project: A Constrained Choice by Annealing",
+          "summary": "Choose two of four jobs with the best total value: write the constraint as a penalty, check the QUBO by brute force, and anneal it."
         }
       ]
     }

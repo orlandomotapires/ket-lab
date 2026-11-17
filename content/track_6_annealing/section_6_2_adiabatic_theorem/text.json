@@ -1,0 +1,39 @@
+{
+  "title": "The Adiabatic Theorem and the Energy Gap",
+  "summary": "Interpolate slowly from an easy Hamiltonian to the problem Hamiltonian; the minimum gap sets how slow is slow enough.",
+  "objectives": [
+    "Compute the spectrum of an interpolating Hamiltonian H(s) and read off its minimum gap and where it occurs",
+    "Simulate a sweep for several total times and explain why short sweeps fail and long ones succeed",
+    "State the adiabatic condition as an estimate, and say what it does and does not guarantee"
+  ],
+  "mission": "A sweep succeeds only if it is slow compared with the smallest gap, so you measure that gap and then test the claim with a simulation. Use H_B, H_P, s_grid, T_values and n_steps from the starter code (the three-qubit instance of lesson 6.1). Store in gaps the difference between the two lowest eigenvalues of H(s) = (1 − s) H_B + s H_P for every s in s_grid, in min_gap the smallest of them, and in s_at_min the value of s where it occurs (the value of s, not its index in the grid). Then, for each total time in T_values, start from |+++⟩, evolve with n_steps short steps of e^{−iH(s)Δt}, and store in success the probability of finding |110⟩ at the end, in the same order as T_values.",
+  "prediction": {
+    "question": "The first excited level of H(s) is separated from the ground state by 2 at s = 0 and by 1/6 at s = 1. A sweep of fixed total time T runs from |+++⟩ to H_P. Where in the sweep is the state most likely to leave the instantaneous ground state?",
+    "options": [
+      "At the start, where the driver Hamiltonian has the largest energies",
+      "At the end, where the gap is 1/6, because the gap only gets smaller as s grows",
+      "Near the smallest gap, which does not have to be at either end of the sweep"
+    ],
+    "explanation": "Transitions are most likely where the gap is smallest, and that minimum can sit in the interior of the sweep. Here the gap shrinks to 0.136 near s = 0.95, below its final value of 1/6 ≈ 0.167. Assuming the gap decreases steadily, or that large energies matter, misses that the ratio of the sweep speed to the gap is what counts."
+  },
+  "hints": [
+    "For one value of s, build (1 − s) * H_B + s * H_P and ask NumPy for its eigenvalues. Which function returns them sorted for a Hermitian matrix, and which two entries do you need?",
+    "For the evolution, cut the time T into n_steps pieces of length Δt = T / n_steps. In each piece H hardly changes, so apply expm(−1j * H(s) * Δt) with s taken in the middle of the piece, and update the state vector. The state starts as the vector with eight equal entries 1/√8.",
+    "The state |110⟩ is the basis vector with index 6 (binary 110, qubit 0 rightmost). After the loop, abs(psi[6]) ** 2 is the success probability. Print it for each T: it should grow with T. If a value is above 1, the starting state is not normalized."
+  ],
+  "messages": {
+    "ok": "The smallest gap on the grid is {min_gap}, at s = {s}. The success probability goes from {first} for the shortest sweep to {last} for the longest.",
+    "missing": "Store the result in the variable {name}.",
+    "gaps_length": "gaps has {got} entries, but s_grid has {want} points. You need one gap for each value of s.",
+    "gaps_wrong_levels": "The gaps are computed between the wrong levels. The gap that matters is the one between the ground state and the first excited state, the two lowest eigenvalues.",
+    "gaps_wrong": "The gaps do not match the spectrum of H(s) = (1 − s) H_B + s H_P. Check the interpolation, and that you subtract the lowest eigenvalue from the second lowest.",
+    "min_gap_wrong": "min_gap is {got}, but the smallest entry of the gaps is {want}.",
+    "s_is_index": "s_at_min is {got}, which looks like a position in the grid. Store the value of s at that position.",
+    "s_at_min_wrong": "s_at_min is {got}, but the smallest gap on the grid occurs at s = {want}.",
+    "success_length": "success has {got} entries, but T_values has {want}. Store one probability per total time, in order.",
+    "not_normalized": "A probability of {got} is above 1, so the state is not normalized. Check that the starting vector has norm 1 and that each step uses a unitary e^{−iHΔt}, with the minus sign and the i.",
+    "wrong_target": "These probabilities are for the basis state |{label}⟩, but the target is |110⟩. In Qiskit's order the index of |110⟩ is 6, because qubit 0 is the rightmost digit.",
+    "too_few_steps": "The values agree with an evolution of only about {n} steps. That is too coarse for the longer sweeps: the number of steps has to grow with T so that H changes little within one step. Use n_steps = 400 or more.",
+    "success_wrong": "For T = {T} the success probability should be about {want}, but you stored {got}. Check the initial state |+++⟩, that Δt = T / n_steps, and that s runs from 0 to 1 over the whole sweep."
+  }
+}

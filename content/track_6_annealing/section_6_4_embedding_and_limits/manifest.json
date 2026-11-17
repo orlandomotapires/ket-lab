@@ -1,0 +1,49 @@
+{
+  "id": "6.4",
+  "track": 6,
+  "estimated_minutes": 30,
+  "framework": "python",
+  "timeout": 10,
+  "num_qubits": 4,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Minor-embedding in adiabatic quantum computation: I. The parameter setting problem",
+      "authors": "V. Choi",
+      "year": 2008,
+      "url": "https://arxiv.org/abs/0804.4884",
+      "location": "Section 3, “Minor-Embedding” (Definition 3.1) and Section 4, “Parameter Requirement for the Embedded Ising Hamiltonian” (Quantum Inf. Process. 7, 193; arXiv:0804.4884)"
+    },
+    {
+      "kind": "paper",
+      "title": "Defining and detecting quantum speedup",
+      "authors": "T. F. Rønnow, Z. Wang, J. Job, S. Boixo, S. V. Isakov, D. Wecker, J. M. Martinis, D. A. Lidar, M. Troyer",
+      "year": 2014,
+      "url": "https://arxiv.org/abs/1401.2910",
+      "location": "Abstract and main text (Science 345, 420; arXiv:1401.2910): the definitions of speedup and the benchmark on random spin-glass instances"
+    },
+    {
+      "kind": "paper",
+      "title": "Demonstration of a scaling advantage for a quantum annealer over simulated annealing",
+      "authors": "T. Albash, D. A. Lidar",
+      "year": 2018,
+      "url": "https://doi.org/10.1103/PhysRevX.8.031016",
+      "location": "Abstract (Phys. Rev. X 8, 031016)"
+    },
+    {
+      "kind": "course",
+      "title": "Minor Embedding",
+      "authors": "D-Wave documentation",
+      "url": "https://docs.dwavequantum.com/en/latest/quantum_research/embedding_intro.html",
+      "location": "Sections “Chains” and “Chain Strength”"
+    }
+  ]
+}

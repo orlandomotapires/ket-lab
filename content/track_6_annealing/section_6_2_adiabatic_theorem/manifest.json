@@ -1,0 +1,42 @@
+{
+  "id": "6.2",
+  "track": 6,
+  "estimated_minutes": 30,
+  "framework": "python",
+  "timeout": 10,
+  "num_qubits": 3,
+  "default_visualizer": "curve",
+  "available_visualizers": [
+    "curve",
+    "variables"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Quantum Computation by Adiabatic Evolution",
+      "authors": "E. Farhi, J. Goldstone, S. Gutmann, M. Sipser",
+      "year": 2000,
+      "url": "https://arxiv.org/abs/quant-ph/0001106",
+      "location": "Section 2.1, “The Adiabatic Theorem”; Section 2.6, “The Size of the Minimum Gap and the Required Evolution Time”; Section 3.1, “One Qubit”"
+    },
+    {
+      "kind": "paper",
+      "title": "Adiabatic Quantum Computing",
+      "authors": "T. Albash, D. A. Lidar",
+      "year": 2018,
+      "url": "https://doi.org/10.1103/RevModPhys.90.015002",
+      "location": "Section II, “Adiabatic Theorems”: II.A “Approximate versions” and II.B.2 “Rigorous inverse gap squared” (arXiv:1611.04471)"
+    },
+    {
+      "kind": "course",
+      "title": "Adiabatic sweep (with QuantumObjectEvolution)",
+      "authors": "Li-Xun Cai, QuTiP Julia tutorials (QuantumToolbox.jl)",
+      "location": "Sections “Model” and “Code demonstration” (spectrum of an interpolating Hamiltonian and fidelity against the sweep time)",
+      "url": "https://qutip.org/qutip-julia-tutorials/QuantumToolbox.jl/time_evolution/adiabatic.html"
+    }
+  ]
+}

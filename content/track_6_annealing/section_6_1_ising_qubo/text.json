@@ -1,0 +1,73 @@
+{
+  "title": "Optimization as Energy: Ising Models and QUBO",
+  "summary": "Write number partitioning and Max-Cut as the energy of spins, convert between the Ising and QUBO forms, and find the ground state by brute force.",
+  "objectives": [
+    "Turn a cost function over ±1 choices into couplings J_ij and a constant by expanding it",
+    "Convert an Ising energy into a QUBO matrix and offset, and check that both give the same value on every state",
+    "Find the ground states of a small problem by enumeration, and explain why a model without fields has two of them"
+  ],
+  "mission": "Brute force is the reference every later lesson of the track is judged against, so build it once. The array a = [4, 5, 6, 7, 8] is given, with one spin per number and cost E(s) = (Σ a_i s_i)². Define J, a 5×5 array that is zero on and below the diagonal and holds the coupling J_ij of every pair i < j. Define energies, the 32 values of E(s) (the full cost, constant included) in the order of itertools.product([1, -1], repeat=5). Define ground_energy, and ground_states, an array with one row of ±1 per spin configuration of lowest energy. Define Q (5×5, zero below the diagonal) and offset such that xᵀQx + offset equals E(s) for every state, with s = 1 − 2x.",
+  "prediction": {
+    "question": "For the set [4, 5, 6, 7, 8] with all five spins free, how many spin configurations have the lowest energy of (Σ a_i s_i)²?",
+    "options": [
+      "2: the split {7, 8} against {4, 5, 6} and the same split with every spin flipped",
+      "1: only one split of the set has equal sums",
+      "4: two splits, each with its flipped copy"
+    ],
+    "explanation": "Only one split has equal sums, 15 and 15, but flipping every spin gives the same energy because a model with couplings and no fields only sees products s_i s_j, so the configuration and its mirror image are both ground states. Answering 1 forgets the mirror image. Answering 4 supposes a second split: the totals force 15 per side, and only {7, 8} against {4, 5, 6} reaches it."
+  },
+  "hints": [
+    "Expand the square by hand for two numbers first. Which terms keep a product of two different spins, and what happens to the terms with s_i · s_i?",
+    "The coupling of a pair is the coefficient of s_i s_j in the expansion, and the leftover is a constant. For Q, substitute s = 1 − 2x into the same expansion and use x² = x to move the linear terms onto the diagonal. Test it against the energies before trusting it.",
+    "Build energies with a loop over itertools.product([1, -1], repeat=5): s = np.array(config), then the cost is (a @ s) ** 2. For Q, check the pair (i, j) with i < j: the coefficient of x_i x_j is 8·a_i·a_j. The diagonal is 4·a_i·(a_i − sum(a)), and offset = sum(a) ** 2."
+  ],
+  "messages": {
+    "ok": "The model is consistent. The lowest cost is {ground_energy}, reached by {n_ground} configurations, and the QUBO reproduces all 32 energies with an offset of {offset}.",
+    "missing": "Define the variable {name}.",
+    "not_array": "The variable {name} must be a numeric array with shape {shape}, but it holds {actual}.",
+    "not_upper": "{name} has nonzero entries on or below the diagonal in places where the form requires zeros ({where}). Put each pair once, at the position with i < j.",
+    "j_not_upper": "J has nonzero entries on or below the diagonal ({where}). The terms s_i · s_i equal 1 and belong to the constant, and each pair i < j is written once, above the diagonal.",
+    "j_factor": "J is half of what the expansion gives: J[0, 1] is {got} and should be {want}. In (Σ a_i s_i)² each pair appears twice, as a_i a_j s_i s_j and a_j a_i s_j s_i, so the coefficient is 2 · a_i · a_j.",
+    "j_wrong": "J[{i}, {j}] is {got}, but the coefficient of s_{i} s_{j} in (Σ a_i s_i)² is {want}.",
+    "energies_shape": "energies must hold 32 numbers, one per spin configuration, but it has shape {actual}.",
+    "energies_constant": "energies are right up to a constant: every value is {diff} below the cost (Σ a_i s_i)². The terms s_i · s_i = 1 sum to {const}, and they belong in the energy.",
+    "energies_order": "The values of energies are the right ones, but not in the order of itertools.product([1, -1], repeat=5). The first entry is the all-plus state, with cost {first}.",
+    "energies_wrong": "energies[{index}] is {got}, but the cost of the configuration {state} is {want}.",
+    "ground_energy_wrong": "ground_energy is {got}, but the lowest value among the 32 energies is {want}.",
+    "ground_bits": "ground_states has only 0 and 1 in it. Give the spin values +1 and −1 of each configuration, not the bits.",
+    "ground_wrong": "ground_states should list every configuration of lowest energy, as rows of ±1 with shape ({n}, 5), and yours does not match. Is the mirror image of each configuration there?",
+    "q_not_upper": "Q has nonzero entries below the diagonal ({where}). The stated form is upper triangular: add the entry of the pair (j, i) to the one at (i, j) and leave zeros below.",
+    "offset_wrong": "xᵀQx + offset is off by the same amount, {diff}, on every state, so Q is fine and the constant is not. Substituting s = 1 − 2x into the expanded cost leaves a term that does not depend on x, and it is the offset.",
+    "q_diagonal": "The off-diagonal entries of Q are right, but the diagonal is not: on the state x = {state} the QUBO gives {got} and the cost is {want}. Because x² = x, every linear term in x_i sits on the diagonal entry Q[i, i].",
+    "q_wrong": "On the state x = {state} (s = {spins}), xᵀQx + offset is {got}, but the Ising energy is {want}. Re-derive the entries by substituting s = 1 − 2x into the expanded cost."
+  },
+  "challenge": {
+    "mission": "The mission minimized a cost that was already an energy. Max-Cut starts from the opposite end: you want the largest number, a cut, and the annealer wants the lowest energy, so the sign has to come out right. The dictionary edges (defined for you, edges[(i, j)] = weight with i < j) describes a weighted graph on five vertices, with one spin per vertex. Define J_cut, the 5 × 5 upper-triangular array of couplings of the Ising energy E(s) = Σ J_ij s_i s_j whose lowest states are the best cuts; cut_from_energy(E), a function returning the cut value (total weight of the edges between the two groups) of a state of energy E; Q_cut and offset_cut, a QUBO equal to E(s) on every state with s = 1 − 2x; best_cut, the largest cut value, found by brute force; best_spins, one coloring of ±1 that reaches it; and n_optimal, the number of colorings of ±1 that reach it.",
+    "hints": [
+      "Take one edge with weight w. For which values of s_i s_j is it cut, and which sign of J makes that the lower energy?",
+      "A cut edge contributes w to the cut and −w to the energy, an uncut edge contributes 0 and +w. The two differ by a constant that depends only on the total weight W of the graph, so the cut value is a linear function of E. The QUBO follows as in the mission, edge by edge.",
+      "Compute the energy of all 32 colorings with the same loop as in the mission. Count with the full list of colorings, not with the list of different cuts: a coloring and its mirror image have the same energy."
+    ],
+    "messages": {
+      "ok": "The best cut has weight {best_cut} (energy {energy}, total weight {W}), and {n_optimal} colorings reach it. Every other part of the model agrees with the brute force.",
+      "missing": "Define {name}.",
+      "not_array": "{name} must be a numeric value or array with shape {shape}, but it holds {actual}.",
+      "j_not_upper": "J_cut has nonzero entries on or below the diagonal. Store each edge once, at the position with i < j.",
+      "j_sign": "J_cut has the opposite sign. With negative couplings equal spins lower the energy, so the lowest states have no edge cut: they are the worst cuts. A cut edge has s_i s_j = −1 and should lower the energy, which needs J_ij = +w_ij.",
+      "j_half": "J_cut is half of what it should be (or its negative). The energy E = Σ J_ij s_i s_j with J_ij = w_ij already ranks the colorings correctly; the factor 1/2 belongs to the formula that turns an energy into a cut value, not to the coupling.",
+      "j_wrong": "J_cut does not match the edges: its entries should be the weights of the edges and zero where there is no edge.",
+      "relation_error": "cut_from_energy raised an error when called with a number.",
+      "relation_sign": "For a state of energy {E}, cut_from_energy gives {got} and the cut has weight {want}. The sign is reversed: a lower energy means a larger cut, so the energy is subtracted from the total weight, not added to it.",
+      "relation_wrong": "For a state of energy {E}, cut_from_energy gives {got} and the cut has weight {want}. Each edge adds w(1 − s_i s_j)/2 to the cut: sum it and express the result with E and the total weight.",
+      "q_not_upper": "Q_cut has nonzero entries below the diagonal. Add the entry of (j, i) to the one at (i, j) and leave zeros below.",
+      "q_offset": "xᵀQ_cut x + offset_cut is off by {diff} on every state, so only the constant is wrong. Substituting s = 1 − 2x in each edge leaves the weight w as a constant, and the constants add up over the edges.",
+      "q_wrong": "On x = {state}, the QUBO gives {got} but the Ising energy is {want}. Per edge: w s_i s_j = w − 2w x_i − 2w x_j + 4w x_i x_j, with the linear terms on the diagonal of both endpoints.",
+      "best_cut_energy": "best_cut is {got}, which is not the weight of the best cut. It looks like an energy or its complement: the best cut is the largest total weight between the two groups.",
+      "best_cut_wrong": "best_cut is {got}, but the largest cut found by trying all 32 colorings has a different weight.",
+      "spins_bits": "best_spins has 0 and 1 in it. Give the spin values +1 and −1 of each vertex.",
+      "spins_not_best": "best_spins is a coloring with a cut of weight {got}, but the best cut has weight {want}.",
+      "n_mirror": "n_optimal is {got}, half of the right count. Swapping the two groups gives another coloring with the same cut, and both are colorings of ±1: count them both.",
+      "n_wrong": "n_optimal is {got}, which is not the number of colorings with the best cut. Count the states of the 32 whose cut equals the best one."
+    }
+  }
+}

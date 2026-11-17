@@ -444,3 +444,19 @@ def test_single_user_mode_serves_the_interface_and_keeps_progress(library, tmp_p
 
     asyncio.run(scenario())
     assert ProgressStore(tmp_path / "data", lesson_keys=library.lesson_keys).all()["1.1"]["completed"]  # survives a restart
+
+
+def test_solution_order_does_not_depend_on_the_clock_resolution(tmp_path, monkeypatch):
+    """On Windows the clock ticks every ~15 ms: completing and then opening the solution can get the same time."""
+    from qlp_engine import progress as progress_module
+
+    monkeypatch.setattr(progress_module.time, "time", lambda: 1_000_000.0)
+    store = ProgressStore(tmp_path)
+    store.save("1.2", completed=True)
+    store.save("1.2", solution_seen=True)
+    entry = store.all()["1.2"]
+    assert entry["completed"] and entry["solution_seen"] and not entry["with_solution"]
+    # The other order, in the same tick, is completed with the solution.
+    store.save("1.3", solution_seen=True)
+    store.save("1.3", completed=True)
+    assert store.all()["1.3"]["with_solution"]

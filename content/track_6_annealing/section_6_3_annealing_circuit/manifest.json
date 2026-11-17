@@ -1,0 +1,55 @@
+{
+  "id": "6.3",
+  "track": 6,
+  "estimated_minutes": 35,
+  "num_qubits": 3,
+  "max_qubits": 3,
+  "default_visualizer": "amplitudes",
+  "available_visualizers": [
+    "amplitudes",
+    "qsphere",
+    "bloch"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Quantum annealing in the transverse Ising model",
+      "authors": "T. Kadowaki, H. Nishimori",
+      "year": 1998,
+      "url": "https://doi.org/10.1103/PhysRevE.58.5355",
+      "location": "Phys. Rev. E 58, 5355–5363: the whole article (a transverse field lowered in time, compared with thermal annealing)"
+    },
+    {
+      "kind": "paper",
+      "title": "Optimization by Simulated Annealing",
+      "authors": "S. Kirkpatrick, C. D. Gelatt Jr., M. P. Vecchi",
+      "year": 1983,
+      "url": "https://doi.org/10.1126/science.220.4598.671",
+      "location": "Science 220, 671–680: the whole article (accepting uphill moves with a falling temperature)"
+    },
+    {
+      "kind": "paper",
+      "title": "Quantum Computation by Adiabatic Evolution",
+      "authors": "E. Farhi, J. Goldstone, S. Gutmann, M. Sipser",
+      "year": 2000,
+      "url": "https://arxiv.org/abs/quant-ph/0001106",
+      "location": "arXiv:quant-ph/0001106, the abstract and the opening sections that define the interpolating Hamiltonian between H_B and H_P"
+    },
+    {
+      "kind": "course",
+      "title": "Exploring Trotterization",
+      "authors": "PennyLane Demos",
+      "location": "Sections “The commutation problem”, “Implementing the Trotter method” and “Trotter error”",
+      "url": "https://pennylane.ai/demos/exploring_trotterization"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

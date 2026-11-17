@@ -1,0 +1,37 @@
+{
+  "id": "6.1",
+  "track": 6,
+  "estimated_minutes": 25,
+  "framework": "python",
+  "num_qubits": 0,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Ising formulations of many NP problems",
+      "authors": "A. Lucas",
+      "year": 2014,
+      "url": "https://doi.org/10.3389/fphy.2014.00005",
+      "location": "Frontiers in Physics 2:5. Section 2.1, “Number partitioning” (inside Section 2, “Partitioning problems”)"
+    },
+    {
+      "kind": "course",
+      "title": "Models",
+      "authors": "D-Wave Documentation, Concepts",
+      "location": "Section “Binary Quadratic Model”, subsections “Ising Model” and “QUBO”",
+      "url": "https://docs.dwavequantum.com/en/latest/concepts/models.html"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

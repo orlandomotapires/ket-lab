@@ -1,0 +1,34 @@
+{
+  "id": "6.5",
+  "track": 6,
+  "estimated_minutes": 45,
+  "framework": "python",
+  "timeout": 10,
+  "num_qubits": 4,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Ising formulations of many NP problems",
+      "authors": "A. Lucas",
+      "year": 2014,
+      "url": "https://doi.org/10.3389/fphy.2014.00005",
+      "location": "Frontiers in Physics 2:5. Section 4.2, “Set packing” (a penalty H_A for the constraint, an objective H_B, and the condition B < A); also Section 4.3, “Vertex cover”"
+    },
+    {
+      "kind": "course",
+      "title": "Penalty Models",
+      "authors": "D-Wave Documentation, Concepts",
+      "location": "Sections “Descriptive Example” and “Code Example” (a constraint as a model with higher energy on infeasible states, and the classical gap)",
+      "url": "https://docs.dwavequantum.com/en/latest/concepts/penalty.html"
+    }
+  ],
+  "project": true
+}

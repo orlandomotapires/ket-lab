@@ -263,9 +263,14 @@ class ProgressStore:
         if failed_attempt:
             self._db.execute("UPDATE progress SET attempts = attempts + 1 WHERE lesson_id = ?", (lesson_id,))
         if solution_seen:
+            # "Completed with the solution" compares the two times, so the solution of a lesson
+            # already completed must be stamped later even within one clock tick (about 15 ms
+            # on Windows): otherwise equal times would read as "seen first".
             self._db.execute(
-                "UPDATE progress SET solution_seen_at = COALESCE(solution_seen_at, ?) WHERE lesson_id = ?",
-                (now, lesson_id),
+                "UPDATE progress SET solution_seen_at = COALESCE(solution_seen_at, "
+                "CASE WHEN completed_at IS NOT NULL AND completed_at >= ? THEN completed_at + 0.001 ELSE ? END) "
+                "WHERE lesson_id = ?",
+                (now, now, lesson_id),
             )
         self._db.execute("UPDATE progress SET updated_at = ? WHERE lesson_id = ?", (now, lesson_id))
         self._db.commit()

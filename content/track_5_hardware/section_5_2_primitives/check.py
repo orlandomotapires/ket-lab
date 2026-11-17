@@ -1,5 +1,5 @@
-"""Validação da lição 5.2: valores do Estimator e do Sampler para o estado de Bell,
-e o erro estatístico 1/√shots."""
+"""Validation for lesson 5.2: Estimator and Sampler values for the Bell state,
+and the statistical error 1/√shots."""
 
 import numpy as np
 from qiskit import QuantumCircuit

@@ -1,10 +1,10 @@
 import numpy as np
 
-# Dispositivo de 3 qubits em linha (0-1-2) com ruído oculto:
-#   depolarizing após cada porta (1 qubit: 0.01; 2 qubits: 0.03), que cresce com o dobramento;
-#   erro de leitura por qubit: P(1|0) = 0.02, P(0|1) = 0.06.
-# Portas aceitas: ("h", q), ("x", q), ("cx", controle, alvo), com cx só entre vizinhos.
-# Os rótulos de contagens escrevem o qubit 0 à esquerda ("q0 q1 q2"), ao contrário do Qiskit.
+# 3-qubit device on a line (0-1-2) with hidden noise:
+#   depolarizing after each gate (1 qubit: 0.01; 2 qubits: 0.03), which grows with folding;
+#   readout error per qubit: P(1|0) = 0.02, P(0|1) = 0.06.
+# Accepted gates: ("h", q), ("x", q), ("cx", control, target), with cx only between neighbors.
+# Count labels write qubit 0 on the left ("q0 q1 q2"), unlike Qiskit.
 _P1, _P2 = 0.01, 0.03
 _READ = np.array([[0.98, 0.06], [0.02, 0.94]])  # _READ[i, j] = P(ler i | verdadeiro j)
 _MAX_SHOTS = 200000
@@ -35,7 +35,7 @@ def _unitary(gate):
 
 
 def _depolarize(rho, qubits, p):
-    """rho -> (1 - p) rho + p Tr_qubits(rho) ⊗ I/d sobre os qubits indicados."""
+    """rho -> (1 - p) rho + p Tr_qubits(rho) ⊗ I/d over the given qubits."""
     tensor = rho.reshape((2,) * 6)
     keep = [q for q in range(3) if q not in qubits]
     traced = np.einsum(_trace_spec(qubits), tensor)
@@ -82,13 +82,13 @@ def _counts(probs, shots, seed):
 
 
 def run_device(gates, shots=20000, seed=0):
-    """Executa a lista de portas no dispositivo ruidoso e devolve as contagens {"000": n, ...}.
-    Mudar `seed` dá outra amostra de tiros."""
+    """Run the gate list on the noisy device and return the counts {"000": n, ...}.
+    Changing `seed` gives another sample of shots."""
     return _counts(_probabilities(list(gates)), shots, seed)
 
 
 def calibrate(shots=20000, seed=0):
-    """Contagens de leitura quando cada estado da base é preparado sem erro de porta:
+    """Readout counts when each basis state is prepared with no gate error:
     {"000": {"000": n, ...}, "001": {...}, ...}."""
     a = np.kron(np.kron(_READ, _READ), _READ)
     return {format(j, "03b"): _counts(a[:, j], shots, seed + j) for j in range(8)}

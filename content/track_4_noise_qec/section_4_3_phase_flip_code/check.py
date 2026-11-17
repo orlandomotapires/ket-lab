@@ -1,7 +1,7 @@
-"""Validação da lição 4.3: o estado lógico α|+++⟩ + β|−−−⟩ sobrevive a qualquer
-phase flip único (e à ausência de erro), para vários estados de entrada.
+"""Validation for lesson 4.3: the logical state α|+++⟩ + β|−−−⟩ survives any single
+phase flip (and the no-error case), for several input states.
 
-A fidelidade é calculada a partir das portas do circuito do aluno.
+The fidelity is computed from the gates of the learner's circuit.
 """
 
 import numpy as np
@@ -14,7 +14,7 @@ TOLERANCE = 0.999
 
 
 def logical_state(theta, phi):
-    """α|+++⟩ + β|−−−⟩ para |ψ⟩ = RZ(φ) RY(θ) |0⟩ (a fase global não importa)."""
+    """α|+++⟩ + β|−−−⟩ for |ψ⟩ = RZ(φ) RY(θ) |0⟩ (the global phase does not matter)."""
     alpha = np.cos(theta / 2) * np.exp(-1j * phi / 2)
     beta = np.sin(theta / 2) * np.exp(1j * phi / 2)
     plus = np.ones(2) / np.sqrt(2)
@@ -23,7 +23,7 @@ def logical_state(theta, phi):
 
 
 def data_density(state, n):
-    """Matriz densidade dos qubits 0, 1 e 2 (descarta as ancillas, que são os qubits 3 e 4)."""
+    """Density matrix of qubits 0, 1 and 2 (discards the ancillas, which are qubits 3 and 4)."""
     rho = state if state.ndim == 2 else np.outer(state, state.conj())
     tensor = rho.reshape((2,) * (2 * n))
     traced = np.einsum("abxyzabuvw->xyzuvw", tensor)

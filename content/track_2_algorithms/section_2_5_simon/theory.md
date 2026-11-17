@@ -1,51 +1,39 @@
-## The problem
+## A hidden collision pattern
 
-A function $f:\{0,1\}^n \to \{0,1\}^n$ is given as an oracle, with the promise that for some string $s \in \{0,1\}^n$
+A function $f:\{0,1\}^3 \to \{0,1\}^3$ is given as an oracle, with a promise: for some secret string $s$,
 
 $$
 f(x) = f(y) \iff y = x \ \text{ or } \ y = x \oplus s
 $$
 
-where $\oplus$ is the bitwise XOR. The task is to find $s$.
+where $\oplus$ is bitwise XOR. For $s = 110$ this means $f(000) = f(110)$, $f(001) = f(111)$ and so on: the inputs pair up as $\{x, x\oplus s\}$ and every pair has its own output. For $s = 000$ the condition says $f$ is one-to-one, so $s = 000$ is a valid answer and means "no collisions". The task is to find $s$.
 
-If $s \neq 0^n$, then $f$ is two-to-one: the inputs pair up as $\{x, x\oplus s\}$ and each pair has its own output. If $s = 0^n$, the condition reads $f(x)=f(y) \iff y = x$, so $f$ is one-to-one. The string $s = 000$ is therefore a valid answer: it means that $f$ has no collisions.
+Classically $s$ shows up only through a collision $f(x) = f(y)$ with $x \neq y$, because then $s = x \oplus y$. With $q$ queries there are about $q^2/2$ pairs, so a collision takes $q = \Theta(2^{n/2})$ queries even with randomization. Simon's algorithm needs $O(n)$.
 
-Classically, $s$ is revealed only by a collision $f(x)=f(y)$ with $x\neq y$, since then $s = x\oplus y$. Among $q$ distinct queries there are about $q^2/2$ pairs, so a collision needs $q = \Theta(2^{n/2})$ queries, even with randomization. Simon's algorithm needs $O(n)$ queries, an exponential separation in query complexity.
+## The circuit, with $n = 2$ first
 
-## The circuit
+Use $n$ input qubits and $n$ output qubits, all in $|0\rangle$, and the query $U_f|x\rangle|z\rangle = |x\rangle|z \oplus f(x)\rangle$. Apply $H^{\otimes n}$ to the input, query once, apply $H^{\otimes n}$ to the input again and measure it.
 
-Use an input register of $n$ qubits and an output register of $n$ qubits, all in $|0\rangle$, and the query gate $U_f|x\rangle|z\rangle = |x\rangle|z\oplus f(x)\rangle$.
-
-1. Apply $H^{\otimes n}$ to the input register: $\frac{1}{\sqrt{2^n}}\sum_x |x\rangle|0^n\rangle$.
-2. Apply $U_f$: $\frac{1}{\sqrt{2^n}}\sum_x |x\rangle|f(x)\rangle$.
-3. Apply $H^{\otimes n}$ to the input register and measure it.
-
-Group the terms by output value. For $s \neq 0^n$, each value $f(x)$ appears for exactly $x$ and $x\oplus s$, so the state is $\frac{1}{\sqrt{2^{n-1}}}\sum_{x \in A}\frac{|x\rangle + |x\oplus s\rangle}{\sqrt2}|f(x)\rangle$, where $A$ contains one input from each pair. A Hadamard layer maps $|x\rangle$ to $\frac{1}{\sqrt{2^n}}\sum_y (-1)^{x\cdot y}|y\rangle$, hence
+Take $n = 2$, $s = 11$, with $f(00) = f(11) = 0$ and $f(01) = f(10) = 1$ (the output has one bit that matters). After the first Hadamards and the query the state is
 
 $$
-H^{\otimes n}\frac{|x\rangle + |x\oplus s\rangle}{\sqrt2} = \frac{1}{\sqrt{2^{n+1}}}\sum_y (-1)^{x\cdot y}\left(1 + (-1)^{s\cdot y}\right)|y\rangle.
+\tfrac12\big[(|00\rangle + |11\rangle)|0\rangle + (|01\rangle + |10\rangle)|1\rangle\big]
 $$
 
-The factor $1+(-1)^{s\cdot y}$ is 2 when $s\cdot y = 0 \pmod 2$ and 0 otherwise. Each measurement of the input register returns a string $y$ chosen uniformly from the $2^{n-1}$ strings with
+The second Hadamard layer turns $(|00\rangle + |11\rangle)/\sqrt2$ into itself, and $(|01\rangle + |10\rangle)/\sqrt2$ into $(|00\rangle - |11\rangle)/\sqrt2$. Either way the input measures to $00$ or $11$, each with probability $1/2$, and never to $01$ or $10$. Both outcomes satisfy $y \cdot s = 0 \pmod 2$. The outcome $11$ is one equation, $s_0 \oplus s_1 = 0$, which already leaves a single nonzero solution, $s = 11$.
+
+In general, group the terms of the state by output value. For $s \neq 0^n$ each value $f(x)$ comes from exactly $x$ and $x \oplus s$, giving $\frac{|x\rangle + |x\oplus s\rangle}{\sqrt2}$ on the input. Since $H^{\otimes n}|x\rangle = \frac{1}{\sqrt{2^n}}\sum_y (-1)^{x\cdot y}|y\rangle$,
 
 $$
-y \cdot s = y_0 s_0 \oplus \dots \oplus y_{n-1}s_{n-1} = 0 \pmod 2
+H^{\otimes n}\frac{|x\rangle + |x\oplus s\rangle}{\sqrt2} = \frac{1}{\sqrt{2^{n+1}}}\sum_y (-1)^{x\cdot y}\left(1 + (-1)^{s\cdot y}\right)|y\rangle
 $$
 
-For $s = 0^n$ the factor is always 2 and the outcome is uniform over all $2^n$ strings, which is consistent with the same equation.
+The factor $1 + (-1)^{s\cdot y}$ is 2 when $s\cdot y = 0 \pmod 2$ and 0 otherwise. Each run returns a string $y$ drawn uniformly from the $2^{n-1}$ strings with $y\cdot s = 0$. For $s = 0^n$ the factor is always 2 and the outcome is uniform over all $2^n$ strings.
 
-## Classical post-processing
+## Solving for $s$
 
-Each outcome $y$ is one linear equation $y\cdot s = 0$ over the field with two elements. The solutions of one equation form a subspace of dimension $n-1$. Outcomes that are linearly independent (modulo 2) cut the dimension of the solution space by one each, so $n-1$ independent outcomes leave exactly one nonzero solution, which is $s$.
+Each outcome is a linear equation $y\cdot s = 0$ over the field with two elements. One equation leaves a solution space of dimension $n-1$, and every independent outcome removes one dimension, so $n-1$ independent outcomes leave exactly one nonzero solution, which is $s$. A new random outcome is independent of the earlier ones with probability at least $1/2$, so $O(n)$ runs are enough with high probability. Gaussian elimination modulo 2 does the algebra in $O(n^3)$ steps; for $n=3$ you can test the 7 nonzero candidates against every outcome.
 
-A random outcome is independent of the previous ones with probability at least $1/2$, so $O(n)$ runs give $n-1$ independent equations with high probability. Gaussian elimination modulo 2 solves the system in $O(n^3)$ steps. For $n=3$ the system is small enough to test each of the 7 nonzero candidates against every outcome.
+If $s \neq 0^n$, $s$ satisfies every equation and always survives. If no nonzero candidate survives, $s = 0^n$. When $s = 0^n$ and you have few outcomes, a nonzero candidate may survive by luck, so collect enough of them. Qubit 0 is the last character of every string, so $s = s_2s_1s_0$ and an outcome is $y_2y_1y_0$; the inner product $y\cdot s$ does not depend on the order if both strings use the same one.
 
-If $s\neq 0^n$, the string $s$ satisfies every equation, so it is always among the solutions. If no nonzero string satisfies all the equations, then $s=0^n$ with certainty. In the other direction, a nonzero candidate that survives may be spurious when $s=0^n$ and few outcomes were collected: the outcomes are uniform over all strings and, with enough of them, span $\{0,1\}^n$ and eliminate every nonzero candidate.
-
-## In the lab
-
-The oracle is a single gate on 6 qubits. Before the second Hadamard layer, the input register is in a superposition that depends on $s$. In the histogram, the measured strings are those orthogonal to $s$, each with probability $1/4$ for $n=3$ and $s\neq 000$. Validation runs your code with eight hidden strings, including $000$, and compares `s_found` with each.
-
-## Qubit ordering
-
-Nielsen & Chuang write qubit 0 on the left of the label. Qiskit, and this lab, write qubit 0 on the right, so $s = s_2s_1s_0$ and an outcome is $y_2y_1y_0$. The inner product $y\cdot s$ does not depend on the order as long as both strings use the same one.
+For $n=3$ and $s \neq 000$, the histogram of the input register shows four strings with probability $1/4$ each. Predict which four before you look.

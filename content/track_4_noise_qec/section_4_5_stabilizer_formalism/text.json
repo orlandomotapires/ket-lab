@@ -2,37 +2,57 @@
   "title": "The Stabilizer Formalism",
   "summary": "Describe a code by commuting Pauli operators and read the syndrome from commutation with them.",
   "objectives": [
-    "Decide whether two Pauli strings commute or anticommute.",
-    "Compute the syndrome of a Pauli error for any list of stabilizer generators.",
-    "Build the syndrome table of the bit-flip code and identify the errors it cannot detect.",
-    "Find logical operators: Pauli strings that commute with every generator but are not in the stabilizer group."
+    "Decide whether two Pauli strings commute or anticommute",
+    "Read the syndrome of a Pauli error from its commutation with the generators",
+    "Say which errors a stabilizer code cannot detect, using its syndrome table",
+    "Find a logical operator: a string that commutes with every generator but is not a product of them"
   ],
-  "mission": "Pauli strings are written as text, for example \"ZZI\". Write commutes(a, b), which returns True when two Pauli strings of equal length commute. Write syndrome(error, stabilizers), which returns a tuple with one bit per generator: 0 if the error commutes with it, 1 if it anticommutes. Store in table the syndrome of each of the nine single-qubit errors (\"XII\", \"YII\", \"ZII\", \"IXI\", …) for the bit-flip code generators in STABILIZERS. Finally set logical_X and logical_Z to Pauli strings that act as X and Z on the encoded qubit.",
+  "mission": "The syndrome of an error is decided by commutation alone, and this lesson asks you to compute it. Pauli strings are written as text, for example \"ZZI\". Write commutes(a, b), which returns True when two Pauli strings of equal length commute. Write syndrome(error, stabilizers), which returns a tuple with one bit per generator: 0 if the error commutes with it, 1 if it anticommutes. Store in table the syndrome of each of the nine single-qubit errors (\"XII\", \"YII\", \"ZII\", \"IXI\", …) for the bit-flip code generators in STABILIZERS. Finally set logical_X and logical_Z to Pauli strings that act as X and Z on the encoded qubit.",
   "prediction": {
-    "question": "For the generators Z₁Z₂ and Z₂Z₃, which single-qubit errors have syndrome (0, 0), so that the code cannot detect them?",
+    "question": "Add XXX as a third generator to ZZI and IZZ. What happens?",
     "options": [
-      "None: every single-qubit error changes at least one eigenvalue",
-      "Z on any of the three qubits",
-      "Y on the middle qubit"
+      "The three commute and are independent, so k = 0: a single state is left",
+      "The three commute, but XXX adds nothing new, so k = 1 as before",
+      "XXX is not allowed: it anticommutes with ZZI"
     ],
-    "explanation": "Z commutes with Z₁Z₂ and Z₂Z₃, so a Z error leaves both eigenvalues at +1. It is not a stabilizer element either, so it changes the encoded state: Z on any qubit acts as the logical Z. Y anticommutes with Z exactly as X does, so Y on the middle qubit gives syndrome (1, 1)."
+    "explanation": "XXX and ZZI clash at two positions, an even number, so they commute; the same holds for IZZ. XXX is not a product of ZZI and IZZ, so it is a new independent generator, and k = 3 − 3 = 0. The code space shrinks to the one state (|000⟩ + |111⟩)/√2. XXX was the logical X, and making it a stabilizer removes the encoded qubit."
   },
   "hints": [
-    "Compare the two strings position by position. Two single-qubit Paulis anticommute when both are different from I and they are different from each other (X and Z, X and Y, Y and Z). The strings commute when the number of anticommuting positions is even.",
-    "syndrome(error, stabilizers) is a tuple with one entry per generator g: 0 if commutes(error, g), 1 otherwise. Build the nine errors by placing X, Y or Z at one position of \"III\", and fill table with a dictionary comprehension over them.",
-    "A logical operator commutes with ZZI and IZZ but is not a product of them. XXX flips every qubit, so it maps |000⟩ to |111⟩. For the logical Z, a single Z on one qubit works, and it must anticommute with logical_X."
+    "Go through the two strings position by position. Which pairs of single-qubit Paulis anticommute? What do you need to count to know whether the whole strings commute?",
+    "syndrome(error, stabilizers) has one entry per generator g: 0 if commutes(error, g) and 1 otherwise. The nine errors are one X, Y or Z in one place of \"III\"; a dictionary comprehension over ERRORS fills table.",
+    "A logical operator commutes with ZZI and IZZ but is not a product of them. What does XXX do to |000⟩? For the logical Z, one Z on a single qubit is enough, and it has to anticommute with logical_X."
   ],
   "messages": {
-    "ok": "The syndrome table is correct and the logical operators are valid. {undetected} of the 9 single-qubit errors have syndrome (0, 0): they commute with every generator.",
+    "ok": "The syndrome table and the logical operators are right. {undetected} of the 9 single-qubit errors have syndrome (0, 0): they commute with every generator and the code cannot see them.",
     "missing": "Store the result in the variable {name}.",
     "missing_function": "Define the function {name}.",
-    "commutes_wrong": "commutes(\"{a}\", \"{b}\") should return {expected}.",
-    "syndrome_wrong": "For the generators {stabilizers}, the syndrome of the error {error} should be {expected}, but syndrome returned {got}.",
+    "commutes_wrong": "commutes(\"{a}\", \"{b}\") should return {expected}. Count only the positions where both Paulis are not I and differ from each other; Y against Y is not one of them.",
+    "syndrome_wrong": "For the generators {stabilizers}, the syndrome of {error} should be {expected} and syndrome returned {got}. One bit per generator: 1 when the error anticommutes with it.",
     "table_wrong": "In table, the syndrome of {error} should be {expected}, but it is {got}.",
     "table_keys": "table must have one entry for each of the nine single-qubit errors (\"XII\" to \"IIZ\"), and nothing else.",
     "logical_format": "{name} must be a string of 3 letters chosen from I, X, Y and Z.",
-    "logical_syndrome": "{name} = {value} anticommutes with a generator, so it takes the state out of the code space. A logical operator must commute with every generator.",
-    "logical_trivial": "{name} = {value} is a product of generators (or the identity), so it acts as the identity on the code space.",
-    "logical_commute": "logical_X and logical_Z commute. The logical X and Z must anticommute, like X and Z on one qubit."
+    "logical_syndrome": "{name} = {value} anticommutes with a generator, so it would take the state out of the code space. A logical operator has to commute with every generator.",
+    "logical_trivial": "{name} = {value} is the identity or a product of generators, so it does nothing to the encoded qubit. A logical operator must not belong to the group.",
+    "logical_commute": "logical_X and logical_Z commute. On the encoded qubit they should anticommute, as X and Z do on a single qubit."
+  },
+  "challenge": {
+    "mission": "The mission used the three-qubit bit-flip code, which stops only one kind of error. The Steane [[7,1,3]] code stops X, Y and Z on any single qubit, and it comes from one small matrix: the parity-check matrix of the [7,4] Hamming code, H = [[0,0,0,1,1,1,1],[0,1,1,0,0,1,1],[1,0,1,0,1,0,1]], whose columns are the numbers 1 to 7 in binary. Write css_generators(H), which returns the generators as Pauli strings: for each row of H an X-type string (X where the row has a 1, I elsewhere), all X-type strings first and then the Z-type ones. Write css_valid(H), which uses your commutes to say whether all the generators commute. Write locate(bits), which takes the syndrome of a single-qubit error for these six generators and returns (position, pauli) with the position counted from 0. Finally search by increasing weight for the smallest Pauli string that commutes with every generator and is not in the group, store it in min_logical, and its weight in distance. The validator recomputes generators, commutation, all 21 syndromes and the minimum weight itself.",
+    "hints": [
+      "An X-type generator and a Z-type generator commute when their 1s overlap in an even number of places. Which condition on H does that give for every pair of rows?",
+      "Compute the syndrome of an error on qubit j with Z or X only: it copies column j of H into one half of the bits. Then think about what Y does, and build a table from syndrome to error by looping over the 21 errors.",
+      "A string that commutes with all six generators is either in the group or a logical operator. A group element commutes with XXXXXXX and ZZZZZZZ too, so a logical operator is one that anticommutes with at least one of them. Search weights 1, 2, 3, ... and stop at the first hit."
+    ],
+    "messages": {
+      "ch_ok": "The Steane code is assembled from H, every single-qubit error has its own syndrome, and the smallest logical operator has weight {distance}: it takes three errors to change the encoded qubit without being noticed.",
+      "ch_missing_function": "Define the function {name}.",
+      "ch_generators_wrong": "For H = {H} the generators should be {expected} and css_generators returned {got}. One X-type string per row first, then one Z-type string per row, with the letter wherever the row has a 1.",
+      "ch_valid_wrong": "For H = {H}, css_valid should return {expected}. Check every pair of generators with commutes, including an X-type and a Z-type string built from the same row.",
+      "ch_locate_wrong": "For the syndrome {syndrome}, locate should return {expected} and returned {got}. Z errors show up in the X-type generators and X errors in the Z-type ones, and a Y error shows up in both halves.",
+      "ch_logical_format": "min_logical must be a string of 7 letters chosen from I, X, Y and Z.",
+      "ch_logical_detected": "{value} anticommutes with a generator, so the syndrome would show it. A logical operator has to commute with all six.",
+      "ch_logical_trivial": "{value} is a product of generators and does nothing to the encoded qubit. Look for a string that is not in the group.",
+      "ch_logical_heavy": "{value} is a logical operator but it has weight {weight}, and a smaller one exists. Search by increasing weight and keep the first hit.",
+      "ch_distance_wrong": "distance is {got}, which does not match the weight of the smallest logical operator found by searching all Pauli strings on 7 qubits."
+    }
   }
 }

@@ -1,6 +1,6 @@
-"""Validação da lição 2.5: para cada segredo s (inclusive 000), o circuito consulta o
-oráculo uma vez, o registrador de entrada só produz y com y·s = 0 (mod 2), com a
-distribuição exata uniforme sobre esses y, e a variável s_found é igual a s."""
+"""Validation for lesson 2.5: for each secret s (including 000), the circuit queries the
+oracle once, the input register only produces y with y·s = 0 (mod 2), with the
+exact uniform distribution over those y, and the variable s_found equals s."""
 
 from qiskit import QuantumCircuit
 

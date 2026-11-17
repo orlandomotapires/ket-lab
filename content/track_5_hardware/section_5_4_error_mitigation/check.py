@@ -1,12 +1,12 @@
-"""Validação da lição 5.4: mitigação de leitura (inversão da matriz de atribuição) e
-extrapolação para ruído zero, comparadas com os valores exatos."""
+"""Validation for lesson 5.4: readout mitigation (assignment matrix inversion) and
+zero-noise extrapolation, compared with the exact values."""
 
 import numpy as np
 
 IDEAL_READOUT = 0.6
 IDEAL_CIRCUIT = float(np.cos(0.9))
 SCALES = [1, 3, 5]
-ZNE_TOLERANCE = 0.006  # o valor bruto erra por 0.023
+ZNE_TOLERANCE = 0.006  # the raw value is off by 0.023
 
 
 def number(ns, name):

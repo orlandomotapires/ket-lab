@@ -1,27 +1,27 @@
-# Setup oculto do desafio da lição 1.4: prepara |+i⟩ ou |−i⟩, sem dizer qual.
+# Hidden setup for the lesson 1.4 challenge: prepares |+i⟩ or |−i⟩, without saying which.
 try:
-    _entrada = _QLP_INPUT
+    _input = _QLP_INPUT
     del _QLP_INPUT
 except NameError:
-    _entrada = "plusi"
+    _input = "plusi"
 
 
-def _criar_preparacao(entrada):
+def _build_preparation(input_):
     from qiskit import QuantumCircuit as _QuantumCircuit
 
-    circuito = _QuantumCircuit(1, name="prepare_unknown")
-    circuito.h(0)
-    circuito.s(0)
-    if entrada == "minusi":
-        circuito.z(0)
-    porta = circuito.to_gate()
+    circuit = _QuantumCircuit(1, name="prepare_unknown")
+    circuit.h(0)
+    circuit.s(0)
+    if input_ == "minusi":
+        circuit.z(0)
+    gate = circuit.to_gate()
 
     def prepare_unknown(qc):
-        """Prepara no qubit 0 o estado |+i⟩ ou |−i⟩ (desconhecido)."""
-        qc.append(porta, [0])
+        """Prepare the state |+i⟩ or |−i⟩ (unknown) on qubit 0."""
+        qc.append(gate, [0])
 
     return prepare_unknown
 
 
-prepare_unknown = _criar_preparacao(_entrada)
-del _criar_preparacao, _entrada
+prepare_unknown = _build_preparation(_input)
+del _build_preparation, _input

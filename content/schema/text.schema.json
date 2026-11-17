@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Textos de uma lição",
+  "title": "Lesson texts",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -73,7 +73,7 @@
     },
     "views": {
       "type": "object",
-      "description": "Rótulos opcionais das abas do visualizador",
+      "description": "Optional labels for the viewer tabs",
       "additionalProperties": {
         "type": "string"
       }
@@ -83,7 +83,7 @@
       "additionalProperties": {
         "type": "string"
       },
-      "description": "Mensagens da validação própria (check.py), por chave"
+      "description": "Messages from the lesson's own validation (check.py), by key"
     },
     "controls": {
       "type": "object",
@@ -115,7 +115,7 @@
         "type": "string",
         "minLength": 10
       },
-      "description": "O que o aluno saberá fazer ao fim da lição; cada objetivo é exercitado pela missão, por uma dica ou pela previsão"
+      "description": "What the learner will be able to do at the end of the lesson; each objective is exercised by the mission, a hint or the prediction"
     },
     "challenge": {
       "type": "object",

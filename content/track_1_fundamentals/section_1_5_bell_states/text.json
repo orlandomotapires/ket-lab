@@ -3,30 +3,30 @@
   "summary": "Tensor products, the CNOT gate, Bell states and qubit ordering.",
   "objectives": [
     "Prepare the Bell state |Φ⁺⟩ with a Hadamard and a CNOT gate",
-    "Choose the control and target qubits of a CNOT gate",
+    "Read a two-qubit label as |q₁q₀⟩ and prepare a state in which only qubit 1 is in superposition",
     "Decide whether a two-qubit state is a product state by comparing a₀₀a₁₁ with a₀₁a₁₀"
   ],
   "mission": "Prepare the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 0 and 1.",
   "hints": [
-    "Put qubit 0 in superposition with a Hadamard gate: qc.h(0). At this point each qubit still has a Bloch vector of length 1.",
-    "The CNOT flips the target when the control is 1. Use qubit 0 as control and qubit 1 as target: qc.cx(control, target).",
-    "Apply qc.h(0), then qc.cx(0, 1). With the cursor on the CNOT line, the Bloch vectors shrink to the center of the sphere."
+    "The two bits must be random and equal. Which qubit has to be in superposition first, and which gate can then make the other follow it?",
+    "Put qubit 0 in superposition with a Hadamard gate. The CNOT flips its target when its control is 1: qc.cx(control, target).",
+    "qc.h(0), then qc.cx(0, 1). The CNOT line is where each qubit stops having a Bloch vector of length 1."
   ],
   "prediction": {
-    "question": "The state (|00⟩ + |01⟩ − |10⟩ − |11⟩)/2 has four nonzero amplitudes. Is it entangled?",
+    "question": "You apply a CZ gate to |+⟩|+⟩, so the amplitudes become (1, 1, 1, −1)/2. Is the result entangled?",
     "options": [
-      "Yes: with all four amplitudes nonzero, the qubits are correlated",
-      "No: it is a product state, since a₀₀a₁₁ = a₀₁a₁₀",
-      "It cannot be decided without measuring both qubits"
+      "No: CZ only changes a sign, so the qubits stay independent",
+      "No: all four amplitudes have the same size, so neither qubit is favored",
+      "Yes: it fails the test, since a₀₀a₁₁ = −1/4 and a₀₁a₁₀ = 1/4"
     ],
-    "explanation": "Here a₀₀a₁₁ = (1/2)(−1/2) = −1/4 and a₀₁a₁₀ = (1/2)(−1/2) = −1/4, so the product test is satisfied. The state is |−⟩ on qubit 1 and |+⟩ on qubit 0. Having several nonzero amplitudes does not imply entanglement."
+    "explanation": "A product state needs a₀₀a₁₁ = a₀₁a₁₀. Here the left side is (1/2)(−1/2) = −1/4 and the right side is (1/2)(1/2) = 1/4, so the state is entangled. A diagonal gate can entangle: the sign it adds depends on both qubits at once, and no choice of one-qubit signs can reproduce it."
   },
   "challenge": {
-    "mission": "The variable `bell` is defined for you and takes a value from 0 to 3. Prepare the Bell state it selects on qubits 0 and 1: 0 for |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, 1 for |Φ⁻⟩ = (|00⟩ − |11⟩)/√2, 2 for |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2, 3 for |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2. The circuit is tested with all four values, so it must use `bell` and not a fixed choice.",
+    "mission": "The variable `bell` is defined for you and takes a value from 0 to 5. Prepare the state it selects on qubits 0 and 1: 0 for |Φ⁺⟩ = (|00⟩ + |11⟩)/√2, 1 for |Φ⁻⟩ = (|00⟩ − |11⟩)/√2, 2 for |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2, 3 for |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2, 4 for the product state (|00⟩ + |10⟩)/√2 and 5 for (|01⟩ + |11⟩)/√2. Labels are |q₁q₀⟩, as in the lesson. The circuit is tested with all six values, so it must use `bell` and not a fixed choice.",
     "hints": [
-      "Start from the circuit that creates |Φ⁺⟩ and decide which single-qubit gate turns it into each of the other three.",
-      "Z on one qubit of |Φ⁺⟩ changes the sign of |11⟩, giving |Φ⁻⟩. X on one qubit exchanges |00⟩ with |10⟩ and |11⟩ with |01⟩, giving |Ψ⁺⟩.",
-      "Use the two bits of `bell`: if bell & 1 apply Z, if bell & 2 apply X. For bell = 3 both are applied and the result is |Ψ⁻⟩ up to a global phase."
+      "Start from the circuit for |Φ⁺⟩. Which single-qubit gate on one of the qubits changes it into each of the other Bell states? Values 4 and 5 are product states and need no CNOT.",
+      "Z on one qubit of |Φ⁺⟩ flips the sign of |11⟩ and gives |Φ⁻⟩. X on one qubit swaps |00⟩ with |10⟩ and |11⟩ with |01⟩, giving |Ψ⁺⟩. For 4 and 5, read the label: in (|00⟩ + |10⟩)/√2 the left bit, qubit 1, is the one in superposition.",
+      "For bell < 4, use the two bits of `bell`: if bell & 1 apply Z, if bell & 2 apply X. With bell = 3 both are applied, which gives |Ψ⁻⟩ up to a global phase. For bell ≥ 4, apply H to qubit 1 and, for bell = 5, X to qubit 0 so that qubit 0 is in |1⟩."
     ]
   }
 }

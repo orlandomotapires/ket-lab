@@ -17,7 +17,7 @@
       3
     ]
   },
-  "prediction_answer": 0,
+  "prediction_answer": 1,
   "validation": {
     "type": "oracle_cases",
     "register": [

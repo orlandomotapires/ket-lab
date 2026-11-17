@@ -1,42 +1,25 @@
-## The problem
+## Eight inputs, one query
 
-A function $f:\{0,1\}^n \to \{0,1\}$ is given as a black box, with a promise: $f$ is either **constant** (the same output for every input) or **balanced** (output $0$ for exactly half of the inputs and $1$ for the other half). The task is to decide which.
+Now the box takes 3 bits. The promise is that $f:\{0,1\}^3 \to \{0,1\}$ is either **constant** (the same output for all 8 inputs) or **balanced** (0 on exactly four inputs and 1 on the other four). A classical program that gets four 0s in a row still cannot decide, because the other four inputs could all give 1. In the worst case it needs $2^{n-1} + 1 = 5$ queries for $n = 3$ bits, and $2^{n-1}+1$ in general. The Deutsch–Jozsa algorithm decides with one query and never errs.
 
-A deterministic classical algorithm needs $2^{n-1} + 1$ queries in the worst case: if the first $2^{n-1}$ answers are equal, $f$ can still be balanced. The Deutsch–Jozsa algorithm decides with one query and no error.
+Only the exact classical algorithm is beaten. A randomized one that asks $k$ random inputs and answers "constant" when they all agree is wrong with probability about $2^{1-k}$, so ten queries already bring the error below 0.2%. The separation is real but modest.
 
-This is a separation from exact classical algorithms. A randomized classical algorithm that queries $k$ random inputs and answers "constant" if all outputs agree errs with probability about $2^{1-k}$, which is already small for modest $k$.
+## The circuit of lesson 2.2, with more qubits
 
-## The oracle
-
-The function is available as the query gate $U_f$ (the oracle):
-
-$$
-U_f\,|x\rangle|y\rangle = |x\rangle|y \oplus f(x)\rangle
-$$
-
-Here $x$ is the input register (qubits 0 to 2) and $y$ is the auxiliary qubit (qubit 3). In the lab, the oracle is `oracle(qc)` and its contents are hidden.
-
-## The algorithm
-
-1. Prepare the auxiliary qubit in $|-\rangle$ and apply a Hadamard gate to each input qubit, giving a uniform superposition.
-2. Query once. By phase kickback, each basis state $|x\rangle$ acquires the sign $(-1)^{f(x)}$:
+The oracle is the query gate $U_f|x\rangle|y\rangle = |x\rangle|y \oplus f(x)\rangle$, with the input register on qubits 0 to 2 and the auxiliary qubit on qubit 3. Put the auxiliary qubit in $|-\rangle$ and a Hadamard on each input qubit. By phase kickback the query writes a sign on every basis state:
 
 $$
 \frac{1}{\sqrt{2^n}}\sum_x |x\rangle \;\longrightarrow\; \frac{1}{\sqrt{2^n}}\sum_x (-1)^{f(x)}|x\rangle
 $$
 
-3. Apply a Hadamard gate to each input qubit. The amplitude of $|0\dots0\rangle$ is the average of the signs:
+A second layer of Hadamards sends the amplitude of $|0\dots0\rangle$ to the average of the signs:
 
 $$
 \frac{1}{2^n}\sum_x (-1)^{f(x)}
 $$
 
-If $f$ is constant, the average is $\pm 1$ and the input register is $|0\dots0\rangle$. If $f$ is balanced, the signs cancel and $|0\dots0\rangle$ has probability zero. Measuring the input register decides: all zeros means constant, anything else means balanced.
+For a constant $f$ the average is $\pm 1$, so the register ends in $|0\dots0\rangle$. For a balanced $f$ four signs are $+$ and four are $-$, the average is 0, and $|0\dots0\rangle$ never appears. Any other outcome means balanced.
 
-## In the lab
+Take two input bits to see it whole, with $f(x) = x_0$. Qiskit writes qubit 0 on the right, so the states $|00\rangle, |01\rangle, |10\rangle, |11\rangle$ get the signs $+,-,+,-$, and the state after the query is $|+\rangle|-\rangle$. The Hadamards turn it into $|0\rangle|1\rangle$, which is the label $|01\rangle$: not all zeros, so balanced. Textbooks that put qubit 0 on the left write the same state as $|10\rangle$.
 
-The Amplitudes tab shows the state of the input register with its signs. Before the last layer of Hadamards, read the signs written by the oracle. After it, the amplitude is either all on $|000\rangle$ or absent from it. The default oracle is balanced. Validation runs your circuit against several hidden oracles, constant and balanced.
-
-## Qubit ordering
-
-Nielsen & Chuang write qubit 0 on the left of the label, $|x_0 x_1 x_2\rangle$. Qiskit, and this lab, write qubit 0 on the right, $|q_2 q_1 q_0\rangle$. Labels in a textbook may appear reversed.
+The algorithm works for every balanced function, not only parities such as $x_0 \oplus x_1$. The check in this lab also runs your circuit on functions like $x_0 \oplus x_1x_2$ and the majority of the three bits.

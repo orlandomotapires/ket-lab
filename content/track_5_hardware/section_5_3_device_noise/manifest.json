@@ -44,5 +44,10 @@
       "location": "Section “3. Qubit properties” (median T1 and T2) and subsection “3.2 Gate and readout errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/hardware"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

@@ -1,6 +1,6 @@
-"""Desafio da lição 2.9: a base a é secreta (a em {2, 7, 4, 11, 13, 8}, N = 15). O circuito
-tem 8 qubits e usa c_mod_mult e qft_dagger; a variável `order` precisa ser a ordem
-de a módulo 15."""
+"""Challenge for lesson 2.9: the base a is secret (a in {2, 7, 4, 11, 13, 8}, N = 15). The circuit
+has 8 qubits and uses c_mod_mult and qft_dagger; the variable `order` must be the order
+of a modulo 15."""
 
 from qiskit import QuantumCircuit
 

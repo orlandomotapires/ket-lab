@@ -1,4 +1,4 @@
-"""Validação da lição 0.2: norma, produto interno com conjugação, base ±."""
+"""Validation for lesson 0.2: norm, inner product with conjugation, ± basis."""
 
 import numpy as np
 
@@ -18,7 +18,7 @@ def _fmt(value):
 
 
 def _get(ns, name, shape=()):
-    """Devolve (array complexo, None) ou (None, resultado de falha)."""
+    """Return (complex array, None) or (None, failure result)."""
     if name not in ns:
         return None, {"passed": False, "key": "missing", "params": {"name": name}}
     try:

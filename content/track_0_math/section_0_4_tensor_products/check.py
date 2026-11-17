@@ -1,4 +1,4 @@
-"""Validação da lição 0.4: produto tensorial, ordem de Qiskit e teste de produto."""
+"""Validation for lesson 0.4: tensor product, Qiskit ordering and product-state test."""
 
 import numpy as np
 

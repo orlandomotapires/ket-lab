@@ -1,0 +1,30 @@
+{
+  "title": "Barren Plateaus",
+  "summary": "Gradients of random deep circuits vanish exponentially with the number of qubits.",
+  "objectives": [
+    "Estimate how big a gradient is at a random starting point by sampling it over random angles",
+    "Say how the size of the gradient and the number of shots needed to see it scale with the number of qubits",
+    "Say why a cost on all qubits is harder to train than one on a few qubits"
+  ],
+  "mission": "The gradients of random circuits shrink as the circuit grows. The ansatz has n layers on n qubits, each layer an R_Y(θ) on every qubit followed by a chain of CZ gates between neighbours, and the cost is the expectation of Z on all qubits at once. Complete gradient_variance(n, layers, samples) so that it returns the variance of ∂C/∂θ for the first angle (layer 0, qubit 0) over random angles in [0, 2π), and store the results for 2 to 6 qubits, 100 samples each, in variances. The variance for 6 qubits must be below 0.3 times the variance for 2 qubits.",
+  "prediction": {
+    "question": "For the product ansatz of the text (one R_Y per qubit, cost Z on all qubits), the gradient variance is 2⁻ⁿ. With n = 10, about how many shots per evaluation does it take before shot noise stops hiding a typical gradient?",
+    "options": [
+      "About a thousand: the typical gradient is 2⁻⁵ and the shot error is 1/√N",
+      "About ten, one per qubit",
+      "About a million, since the variance is 2⁻¹⁰ and the shots must be its inverse squared"
+    ],
+    "explanation": "A typical gradient is the standard deviation, 2^(−10/2) = 2⁻⁵ = 1/32. The statistical error of an evaluation with N shots is about 1/√N, so it drops below 1/32 for N around 32² = 1,024 = 2¹⁰. Taking the variance 2⁻¹⁰ as the size of the gradient would give a factor 2²⁰, about a million, which overstates the cost."
+  },
+  "hints": [
+    "The gradient of one parameter needs the circuit at θ + π/2 and θ − π/2. How would you shift only the first angle, layer 0 and qubit 0?",
+    "Draw theta = rng.uniform(0, 2 * np.pi, (layers, n)) and make two copies, with π/2 added to entry [0][0] of one and subtracted from the other. The gradient is half the difference of the two circuit values. Inside the QNode, apply RY then the CZ chain for each layer and return the product of Z on every qubit.",
+    "Collect the gradients of the 100 samples in a list and return float(np.var(gradients)). Then build variances with one call per width, using layers = n."
+  ],
+  "messages": {
+    "ok": "The variance falls from {first} (2 qubits) to {last} (6 qubits), a ratio of {ratio}.",
+    "no_variances": "variances needs {count} positive numbers, one for each of 2, 3, 4, 5 and 6 qubits, in that order.",
+    "wrong_value": "The variance for {qubits} qubits is {got}, while a reference simulation gives about {expected}. The probable cause is a different circuit: check that there are n layers, each with R_Y on every qubit then the CZ chain, that the cost is Z on all qubits, and that the gradient is half the shifted difference.",
+    "no_decay": "The variance for 6 qubits is {ratio} times that for 2 qubits, but for this ansatz it should be below 0.3 times. A cost on only one qubit, or too few layers, would not decay like this: check that you use layers = n and the cost on every qubit."
+  }
+}

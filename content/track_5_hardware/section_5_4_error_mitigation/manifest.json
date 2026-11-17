@@ -35,5 +35,10 @@
       "location": "Subsections “Twirled Readout Error eXtinction (TREX)” and “Zero-noise extrapolation (ZNE)”",
       "url": "https://quantum.cloud.ibm.com/docs/en/guides/error-mitigation-and-suppression-techniques"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

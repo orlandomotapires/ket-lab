@@ -2,31 +2,31 @@
   "title": "The Deutsch–Jozsa Algorithm",
   "summary": "Decide constant or balanced for an n-bit function with one query.",
   "objectives": [
-    "Extend Deutsch's circuit to an n-bit input register with Hadamard gates before and after the oracle",
-    "Read the outcome: |0…0⟩ means constant, any other result means balanced",
-    "Compare the one quantum query with the 2^(n−1) + 1 queries a deterministic classical algorithm needs"
+    "Extend Deutsch's circuit to a register of several input qubits",
+    "Read the outcome: all zeros means constant, anything else means balanced",
+    "Say why the classical exact algorithm needs 2^(n−1) + 1 queries and the quantum one needs one"
   ],
   "mission": "Call oracle(qc) once so that the input register (qubits 0 to 2) ends in |000⟩ if the hidden function is constant, and has zero probability of being |000⟩ if it is balanced.",
   "prediction": {
-    "question": "A deterministic classical algorithm must decide, with no error, whether a function of 3 bits is constant or balanced. How many queries does it need in the worst case?",
+    "question": "A function of 3 bits is 1 on six of the eight inputs, so it breaks the promise. You run the Deutsch–Jozsa circuit and measure the input register. What is the probability of 000?",
     "options": [
-      "1",
-      "5",
-      "8"
+      "0, since f is not constant",
+      "3/4, the fraction of inputs where f = 1",
+      "1/4"
     ],
-    "explanation": "If the first 4 queries return the same value, the function can still be balanced, so only the fifth query decides. In general the worst case is 2^(n−1) + 1 queries. The quantum algorithm uses one."
+    "explanation": "The amplitude of |000⟩ is the average of the signs (−1)^f(x), which is (2·(+1) + 6·(−1))/8 = −1/2. The probability is the square, 1/4. The algorithm only gives a certain answer under the promise."
   },
   "hints": [
-    "Prepare the auxiliary qubit in |−⟩ as in the phase kickback lesson: qc.x(3), then qc.h(3).",
-    "Apply a Hadamard to qubits 0, 1 and 2 before the oracle, and again after it.",
-    "qc.x(3), qc.h(3), Hadamard on qubits 0 to 2, oracle(qc), Hadamard on qubits 0 to 2."
+    "This is lesson 2.2 with more input qubits. What does the auxiliary qubit have to be?",
+    "Hadamard gates on every input qubit, before and after the query.",
+    "The auxiliary preparation is qc.x(3) then qc.h(3). The input layers are loops over qubits 0 to 2."
   ],
   "challenge": {
     "mission": "Run Deutsch–Jozsa without an auxiliary qubit. Build a circuit qc with 3 qubits (the input register only) and apply the phase oracle of f(x) = x0 ⊕ x1·x2 yourself, as the diagonal operation |x⟩ → (−1)^f(x)|x⟩ made of z and cz gates, between two layers of Hadamard gates. The final state must equal the one the algorithm gives for this balanced function (fidelity at least 0.999). The gates h, x, z and cz are allowed, and cz is required.",
     "hints": [
-      "A phase oracle needs no auxiliary qubit: (−1)^(x0 ⊕ x1·x2) = (−1)^x0 · (−1)^(x1·x2).",
-      "(−1)^x0 is a Z on qubit 0. (−1)^(x1·x2) is a controlled-Z between qubits 1 and 2.",
-      "Hadamard on qubits 0 to 2, qc.z(0), qc.cz(1, 2), Hadamard on qubits 0 to 2."
+      "Without an auxiliary qubit the oracle must write its sign itself. Split the exponent: (−1)^(x0 ⊕ x1·x2) is a product of two signs.",
+      "(−1)^x0 is a Z on qubit 0. (−1)^(x1·x2) is a sign only when both qubits are 1: which gate?",
+      "The two Hadamard layers surround one z and one cz."
     ]
   }
 }

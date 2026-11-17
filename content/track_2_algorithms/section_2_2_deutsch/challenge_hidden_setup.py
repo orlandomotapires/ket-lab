@@ -1,4 +1,4 @@
-# Setup oculto do desafio da lição 2.2: só a tabela [f(0), f(1)]; o oráculo é do aluno.
+# Hidden setup for the lesson 2.2 challenge: only the table [f(0), f(1)]; the oracle is the learner's.
 try:
     table = _QLP_INPUT
     del _QLP_INPUT

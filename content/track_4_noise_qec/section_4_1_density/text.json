@@ -2,33 +2,52 @@
   "title": "Density Operators and Quantum Noise",
   "summary": "Density operators, Kraus operators, and the difference between error probability and wrong-answer probability.",
   "objectives": [
-    "Write a Pauli error channel as Kraus operators and apply it to a qubit",
-    "Compute the density matrix of a circuit with noise",
-    "Compute the probability of a wrong result and the purity Tr(ρ²) from the density matrix",
-    "Distinguish the probability that an error occurs from the probability that the result is wrong"
+    "Write a Pauli error as Kraus operators and apply it to a density matrix",
+    "Read the probability of a wrong answer and the purity off a density matrix",
+    "Explain why an error in 40% of the runs does not mean a wrong answer in 40% of the runs"
   ],
-  "mission": "The circuit H, T, T†, H returns |0⟩. Insert an error between T and T†: X with probability p_x, Z with probability p_z, nothing otherwise. Compute the final density matrix, and for p_x = p_z = 0.2 store in p_wrong the probability of measuring 1 and in purity the purity Tr(ρ²).",
+  "mission": "An error that strikes in 40% of the runs does not spoil 40% of the answers, and this circuit shows it. H, T, T†, H returns |0⟩. Insert an error between T and T†: X with probability p_x, Z with probability p_z, nothing otherwise. Compute the final density matrix, and for p_x = p_z = 0.2 store in p_wrong the probability of measuring 1 and in purity the purity Tr(ρ²).",
   "prediction": {
-    "question": "With p_x = p_z = 0.2, an error occurs in 40% of the runs. With what probability does the final measurement give the wrong result (1)?",
+    "question": "With p_x = p_z = 0.2, an error happens in 40% of the runs. In what fraction of the runs does the final measurement give 1?",
     "options": [
-      "40%",
+      "40%, since every error ends in a wrong result",
       "30%",
-      "20%"
+      "20%, since only one of the two errors reaches the measurement"
     ],
-    "explanation": "Z commutes with T, and after the final H it becomes X, so it always flips the result. An X error between T and T† reaches the measurement as a rotation that flips the result with probability 1/2. Total: 0.2 + 0.2 × 0.5 = 0.3."
+    "explanation": "Z commutes with T and becomes X after the last H, so it always flips the result. X does not commute with T: it reaches the measurement as a rotation that gives 1 with probability 1/2. Total: 0.2 + 0.2 × 0.5 = 0.3."
   },
   "hints": [
-    "A channel is given by Kraus operators. For this error they are √(1 − p_x − p_z)·I, √p_x·X and √p_z·Z. Return this list from error_kraus and apply it with qml.QubitChannel(error_kraus(p_x, p_z), wires=0).",
-    "The circuit is qml.Hadamard, qml.T, the channel, qml.adjoint(qml.T(wires=0)) and qml.Hadamard. To keep ρ, use the default.mixed device and return qml.density_matrix(wires=0).",
-    "With rho = circuit(p_x, p_z), the probability of measuring 1 is rho[1, 1] and the purity is np.trace(rho @ rho). Use np.real to drop the zero imaginary part."
+    "Ask what the error does to ρ: with probability p_x it applies X, with p_z it applies Z, otherwise nothing. Which three operators K, with which weights, give ρ → Σ K ρ K† with ΣK†K = I?",
+    "Return √(1 − p_x − p_z)·I, √p_x·X and √p_z·Z from error_kraus and apply them between the two T gates with qml.QubitChannel(error_kraus(p_x, p_z), wires=0). The circuit returns qml.density_matrix(wires=0) on the default.mixed device.",
+    "The probability of measuring 1 is the diagonal entry rho[1, 1], and the purity is np.trace(rho @ rho). Both come out with a zero imaginary part that np.real removes."
   ],
   "messages": {
-    "ok": "The density matrix is correct for all the error probabilities tested. The result is wrong in a fraction {p_wrong} of the runs, and the purity is {purity}: the noise left the state mixed.",
+    "ok": "The density matrix is right for every error probability tested. The result is wrong in a fraction {p_wrong} of the runs, and the purity is {purity}: the noise left the qubit in a mixed state.",
     "no_circuit": "Define the QNode circuit(p_x, p_z) on a default.mixed device.",
     "wrong_qubits": "This lesson uses 1 qubit, but the circuit has {count}.",
-    "no_noise": "The final state is still pure, so the error is not being applied. Use qml.QubitChannel with the Kraus operators between T and T†.",
-    "wrong_rho": "With p_x = {px} and p_z = {pz}, the probability of measuring 1 should be {want}, but the circuit gives {got}. Check the Kraus operators and where the error is applied.",
+    "no_noise": "The final state is still pure, so the error never acts. Put qml.QubitChannel with the Kraus operators between T and T†.",
+    "wrong_rho": "With p_x = {px} and p_z = {pz} the probability of measuring 1 should be {want} and the circuit gives {got}. Either the error sits at the wrong place in the circuit, or the Kraus operators carry p where they need √p.",
     "missing": "Store the result in the variable {name}.",
-    "wrong_value": "The variable {name} is {actual}, which does not match the density matrix for p_x = p_z = 0.2."
+    "wrong_value": "{name} is {actual}, which does not match the density matrix for p_x = p_z = 0.2. Read p_wrong from ρ[1, 1] and the purity from Tr(ρ²) of the final ρ."
+  },
+  "challenge": {
+    "mission": "The mission's errors are Pauli mixtures, and they only shrink the Bloch vector toward the centre of the sphere. Energy loss does something else: a qubit in |1⟩ decays to |0⟩ with probability γ, and the Bloch vector moves toward |0⟩. Write damping_kraus(gamma), which returns the two Kraus operators of this amplitude damping channel, and a QNode damped(gamma) on a default.mixed device that prepares |+⟩ with a Hadamard gate and applies the channel with qml.QubitChannel. For γ = 0.36 store in bloch_plus the Bloch vector [x, y, z] of the result, in purity_plus its purity, and in z_from_mixed the z component of the output when the input is the maximally mixed state I/2. The validator checks that your operators satisfy ΣK†K = I, applies them to several states, and rebuilds the state from your QNode; any equivalent set of Kraus operators passes.",
+    "hints": [
+      "Think of two things that can happen to a qubit that may lose energy: nothing, or a jump from |1⟩ to |0⟩. Each needs one operator, and the jump has amplitude √γ.",
+      "The no-jump operator must still account for the fact that not having jumped is evidence for |0⟩: it leaves |0⟩ alone and multiplies the amplitude of |1⟩ by √(1−γ). Then check that K0†K0 + K1†K1 is the identity, matrix by matrix.",
+      "The Bloch vector has components Tr(ρX), Tr(ρY) and Tr(ρZ). For I/2 a Pauli mixture gives z = 0; if your z_from_mixed is not 0, the channel is not one."
+    ],
+    "messages": {
+      "ch_ok": "The channel is complete and moves |+⟩ to the Bloch vector ({x}, 0, {z}) with purity {purity}. The z component is not zero, which no mixture of Pauli errors can produce from |+⟩.",
+      "ch_missing_function": "Define the function {name}(gamma).",
+      "ch_kraus_format": "damping_kraus({gamma}) must return a list of 2×2 matrices.",
+      "ch_not_complete": "For γ = {gamma} the sum of K†K has diagonal {diag} instead of 1, 1, so the trace of ρ would not stay 1. Check the factor on each operator: the amplitudes carry √, not the probabilities.",
+      "ch_wrong_channel": "For γ = {gamma} the channel gives ρ00 = {got} on one test state and it should give {want}. The operators are complete but do not describe decay: |1⟩ should go to |0⟩ with probability γ and |0⟩ should stay put.",
+      "ch_no_qnode": "Define the QNode damped(gamma) on a default.mixed device.",
+      "ch_qnode_qubits": "damped should use 1 qubit, but it uses {count}.",
+      "ch_qnode_wrong": "For γ = {gamma} the probability of 1 after H and the channel is {got} and it should be {want}. Check that the channel comes after the Hadamard gate and receives your operators for this γ.",
+      "ch_missing": "Store the result in the variable {name}.",
+      "ch_wrong_value": "{name} is {actual}, which does not match the output of the channel for |+⟩ with γ = 0.36. Rebuild it from the final ρ, using Tr(ρX), Tr(ρY), Tr(ρZ) for the Bloch vector."
+    }
   }
 }

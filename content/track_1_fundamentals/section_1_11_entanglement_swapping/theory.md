@@ -1,32 +1,23 @@
-## What to build
+## Entangling qubits that never meet
 
-Two Bell pairs, $|\Phi^+\rangle_{01}$ and $|\Phi^+\rangle_{23}$, are prepared first. Qubits 0 and 3 are in a product state: no gate has touched both. **Entanglement swapping** makes them entangled by acting only on qubits 1 and 2.
+Prepare two Bell pairs, $|\Phi^+\rangle$ on qubits 0 and 1 and another on qubits 2 and 3. Qubits 0 and 3 have never been near each other: no gate has touched both. Their joint state, with the rest ignored, is a plain mixture, $I/4$, with no correlation at all. Yet a measurement on qubits 1 and 2 alone can leave 0 and 3 in a Bell state. This is **entanglement swapping**.
 
-Measure qubits 1 and 2 in the Bell basis (CNOT from 1 to 2, $H$ on qubit 1, then computational-basis measurement). This is Alice's measurement in teleportation, with qubit 2 playing the role of the second qubit of her pair. Each of the four results has probability $1/4$ and leaves qubits 0 and 3 in a Bell state:
+## Working it out
 
-| Measured bits (q2 q1) | State of qubits 0 and 3 |
-| :-- | :-- |
-| 00 | $\Phi^+$ |
-| 01 | $\Phi^-$ |
-| 10 | $\Psi^+$ |
-| 11 | $\Psi^-$ |
+Write the two pairs as a sum over the bits $a$ of the first pair and $b$ of the second, with qubits in the order 0, 1, 2, 3 from left to right (the opposite of Qiskit's labels, chosen so that the two outer qubits can be grouped):
 
-Classically controlled corrections on qubit 3, the same as in lesson 1.6, map every case to $|\Phi^+\rangle$. The bits are those of `qc.measure(1, 0)` (qubit 1) and `qc.measure(2, 1)` (qubit 2): $X$ on qubit 3 corrects the bit of qubit 2, and $Z$ the bit of qubit 1.
+$$
+\frac{1}{2}\sum_{a,b}|a\rangle_0|a\rangle_1|b\rangle_2|b\rangle_3 = \frac{1}{2}\sum_{a,b}|a\,b\rangle_{12}\otimes|a\,b\rangle_{03}.
+$$
 
-## Concurrence
+Now measure qubits 1 and 2 in the Bell basis, as Alice does in lesson 1.6: CNOT from qubit 1 to qubit 2, then $H$ on qubit 1, then the computational basis. Here qubit 1 plays the part of Alice's qubit 0 (its bit decides a $Z$ correction) and qubit 2 plays the part of her qubit 1 (its bit decides an $X$). The CNOT turns $|a\,b\rangle_{12}$ into $|a,\ a\oplus b\rangle$, and $H$ turns $|a\rangle$ on qubit 1 into $(|0\rangle + (-1)^a|1\rangle)/\sqrt{2}$. So if qubit 2 reads $m_2$ and qubit 1 reads $m_1$, the surviving terms are those with $a \oplus b = m_2$, each carrying the sign $(-1)^{a m_1}$.
 
-The **concurrence** $C(\rho)$ of a two-qubit state measures entanglement: $C = 0$ for separable states and $C = 1$ for Bell states. For a pure two-qubit state $\alpha|00\rangle + \beta|01\rangle + \gamma|10\rangle + \delta|11\rangle$ it equals $2|\alpha\delta - \beta\gamma|$.
+Take $m_2 = 1$ and $m_1 = 1$. Then $b = 1 - a$, and the terms are $|a\,b\rangle_{03} = |01\rangle$ with sign $+$ and $|10\rangle$ with sign $-$, so qubits 0 and 3 are in $(|01\rangle - |10\rangle)/\sqrt{2} = |\Psi^-\rangle$. The other results give $\Phi^+$ for $m_2 m_1 = 00$, $\Phi^-$ for $01$ and $\Psi^+$ for $10$. Each of the four results has probability $1/4$.
 
-Qubits 0 and 3 are part of a four-qubit state, so their state is the reduced density operator, obtained with `partial_trace(state, [1, 2])` (it removes qubits 1 and 2). `final_state(qc)` gives the state vector after one run of the circuit, with a random measurement branch fixed by its `seed` argument.
+The teleportation corrections turn every case into $|\Phi^+\rangle$ again. In the $\Psi^-$ case above, $X$ on qubit 3 (because $m_2 = 1$) gives $(|00\rangle - |11\rangle)/\sqrt{2}$ and $Z$ on qubit 3 (because $m_1 = 1$) gives $|\Phi^+\rangle$. The bits are stored by `qc.measure(1, 0)` and `qc.measure(2, 1)`, so classical bit 0 holds $m_1$ and bit 1 holds $m_2$. This pairing is the easiest thing to cross over.
 
-## Rubric
+## Measuring how entangled two qubits are
 
-The validator checks five independent criteria and reports the first that fails.
+The validator compares the state of qubits 0 and 3 with $|\Phi^+\rangle$ using the **fidelity** $\langle\Phi^+|\rho|\Phi^+\rangle$, which is 1 when they are the same. The task also asks you to record the **concurrence** $C$ before and after. For a pure two-qubit state $\alpha|00\rangle + \beta|01\rangle + \gamma|10\rangle + \delta|11\rangle$ it equals $2|\alpha\delta - \beta\gamma|$, which is 0 for product states and 1 for Bell states. Before the measurement, though, the state of qubits 0 and 3 is the mixed state $I/4$, and for a mixed state $\rho$ one uses Wootters' general definition: take the square roots $\lambda_1 \ge \dots \ge \lambda_4$ of the eigenvalues of $\rho\,(Y\otimes Y)\rho^*(Y\otimes Y)$ and set $C = \max(0,\ \lambda_1 - \lambda_2 - \lambda_3 - \lambda_4)$. For $I/4$ this gives 0. After the measurement the state of qubits 0 and 3 is pure within one run, so both formulas agree and $C = 1$.
 
-1. The circuit has 4 qubits and the classical bits for the measurements.
-2. No gate acts on qubits 0 and 3 together.
-3. Only qubits 1 and 2 are measured.
-4. In 40 sampled runs, covering all four measurement results, the state of qubits 0 and 3 has fidelity at least 0.999 with $|\Phi^+\rangle$.
-5. `c_before` is 0 and `c_after` is 1 (tolerance 0.05).
-
-Qubit ordering: the platform follows Qiskit, so qubit 0 is the rightmost label in a state such as $|q_3 q_2 q_1 q_0\rangle$.
+The library does this for you: `partial_trace(state, [1, 2])` removes qubits 1 and 2 from a state and leaves the state of 0 and 3, and `concurrence` takes it from there. `final_state(qc)` gives the final state vector of one run, with the random measurement branch fixed by its `seed` argument.

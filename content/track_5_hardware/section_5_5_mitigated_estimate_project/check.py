@@ -1,12 +1,12 @@
-"""Validação do projeto 5.5 (estimativa mitigada num dispositivo ruidoso): rubrica com seis critérios.
+"""Validation for project 5.5 (mitigated estimate on a noisy device): rubric with six criteria.
 
-1. ghz prepara o estado GHZ só com h, x e cx entre vizinhos;
-2. fold dobra o circuito corretamente (escalas 1, 3, 5, 7, em dois circuitos);
-3. A concorda com a matriz de atribuição verdadeira;
-4. raw concorda com o valor ruidoso exato dentro de cinco larguras de ruído de tiros;
-5. o erro do valor mitigado é no máximo 1/5 do erro bruto;
-6. sigma concorda com a dispersão de uma execução independente da mesma estimativa
-   (leitura mitigada + extrapolação linear, mesmo número de tiros).
+1. ghz prepares the GHZ state using only h, x and cx between neighbors;
+2. fold folds the circuit correctly (scales 1, 3, 5, 7, in two circuits);
+3. A agrees with the true assignment matrix;
+4. raw agrees with the exact noisy value within five shot-noise widths;
+5. the error of the mitigated value is at most 1/5 of the raw error;
+6. sigma agrees with the spread of an independent run of the same estimate
+   (mitigated readout + linear extrapolation, same number of shots).
 """
 
 import numpy as np
@@ -32,7 +32,7 @@ def fold_reference(gates, scale):
 
 
 def reference_sigma(ns, shots, repeats=40):
-    """Dispersão da estimativa de referência com a verdade exata de A (sem erro de calibração)."""
+    """Spread of the reference estimate using the exact truth for A (no calibration error)."""
     ghz = [tuple(g) for g in ns["ghz"]]
     a_inv = np.linalg.inv(np.kron(np.kron(ns["_READ"], ns["_READ"]), ns["_READ"]))
     probs = [ns["_probabilities"](fold_reference(ghz, s)) for s in SCALES]

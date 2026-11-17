@@ -2,9 +2,9 @@
   "title": "The CHSH Game",
   "summary": "A shared Bell pair wins the CHSH game with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4.",
   "objectives": [
-    "State the rules of the CHSH game and the classical limit of 3/4 on the winning probability.",
-    "Choose measurement angles for a shared Bell pair that win with probability at least 0.85.",
-    "Compute the exact winning probability from the outcome probabilities of the four question pairs."
+    "State the rules of the CHSH game and the classical limit of 3/4 on the winning probability",
+    "Choose measurement angles for a shared Bell pair that win with probability at least 0.85",
+    "Compute the exact winning probability from the outcome probabilities of the four question pairs"
   ],
   "mission": "Alice and Bob share a Bell pair. A referee gives Alice a bit x and Bob a bit y; they answer bits a and b without communicating and win when a ⊕ b = x ∧ y. Choose the four angles in `alice_angle` and `bob_angle` (each player rotates with Ry before measuring) so that the average winning probability over the four question pairs is at least 0.85, and store it in `win_probability`.",
   "hints": [
@@ -13,13 +13,13 @@
     "Alice: 0 for x = 0 and π/2 for x = 1. Bob: π/4 for y = 0 and −π/4 for y = 1. Then E₀₀ = E₀₁ = E₁₀ = cos(π/4) and E₁₁ = −cos(π/4). Compute win_probability by summing p/4 over the four question pairs and the entries of outcome_probabilities(play(x, y)) with (a ^ b) == (x & y)."
   ],
   "prediction": {
-    "question": "With the shared Bell pair and the best measurements, what is the maximum probability of winning the CHSH game?",
+    "question": "Alice and Bob play 1,000 rounds with the best quantum strategy on a shared Bell pair. About how many rounds do they win?",
     "options": [
-      "3/4, the same as the best classical strategy",
-      "cos²(π/8) ≈ 0.854",
-      "1, because the pair correlates the answers perfectly"
+      "About 854, which is 1,000 · cos²(π/8)",
+      "About 750, since entanglement only lets them choose a better deterministic strategy",
+      "All 1,000, since a Bell pair correlates their answers perfectly"
     ],
-    "explanation": "The best classical strategies, including shared randomness, win with probability 3/4. Measurements on an entangled pair reach cos²(π/8) = (2 + √2)/4 ≈ 0.854, and no quantum strategy exceeds this value (the Tsirelson bound). The probability is below 1 because the correlation between Alice's and Bob's results depends on the angle between their measurements: it cannot be +1 for three question pairs and −1 for the fourth."
+    "explanation": "The best quantum strategy wins with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4 and below 1 (Tsirelson bound). The correlation of the answers is cos of the angle between the two measurement axes, and it cannot be +1 for three question pairs and −1 for the fourth. Entanglement is not a deterministic strategy in disguise: no deterministic strategy beats 3/4."
   },
   "messages": {
     "ok": "Winning probability {probability}: above the classical limit of 3/4.",

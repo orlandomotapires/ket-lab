@@ -44,5 +44,10 @@
       "location": "Sections “Layout stage” and “Routing stage”",
       "url": "https://quantum.cloud.ibm.com/docs/en/qiskit/transpiler-stages"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

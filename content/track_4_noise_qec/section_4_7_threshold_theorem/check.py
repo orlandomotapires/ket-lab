@@ -1,14 +1,14 @@
-"""Validação da lição 4.7: concatenação do código de 3 qubits (p ↦ 3p² − 2p³),
-modelo genérico (c·p)^(2^k)/c, limiar e número de níveis para um erro alvo.
+"""Validation for lesson 4.7: concatenation of the 3-qubit code (p ↦ 3p² − 2p³),
+generic model (c·p)^(2^k)/c, threshold and number of levels for a target error.
 
-Os valores esperados vêm da fórmula fechada e de uma iteração própria.
+The expected values come from the closed formula and from an independent iteration.
 """
 
 import math
 
 
 def ref_f(p):
-    return 3 * p * p * (1 - p) + p**3  # falha com 2 ou 3 inversões
+    return 3 * p * p * (1 - p) + p**3  # fails with 2 or 3 flips
 
 
 def ref_concatenated(p, k):

@@ -1,5 +1,5 @@
-"""Validação da lição 5.1: o circuito transpilado usa só as portas da base, respeita a
-conectividade linear, prepara o GHZ de 4 qubits e usa no máximo 3 portas de dois qubits."""
+"""Validation for lesson 5.1: the transpiled circuit uses only basis gates, respects the
+linear connectivity, prepares the 4-qubit GHZ and uses at most 3 two-qubit gates."""
 
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector, state_fidelity
@@ -33,7 +33,7 @@ def check(ns, run_case):
             return {"passed": False, "key": "not_adjacent", "params": {"a": a, "b": b}}
     try:
         state = Statevector(qc)
-    except Exception:  # medições ou portas não unitárias
+    except Exception:  # measurements or non-unitary gates
         return {"passed": False, "key": "not_unitary"}
     fidelity = float(state_fidelity(state, ghz_state()))
     if fidelity < 0.999:

@@ -14,7 +14,7 @@ The two contributions to $|1\rangle$ have opposite signs and cancel (destructive
 
 ## The phase selects what cancels
 
-If the relative phase is flipped between the two Hadamards, the cancellation moves to the other outcome: $H|-\rangle = |1\rangle$. A gate that leaves all probabilities unchanged therefore still determines the final measurement result. This is why the relative phase of lesson 1.3 matters.
+If the relative phase is flipped between the two Hadamards, the cancellation moves to the other outcome: $H|-\rangle = |1\rangle$. A gate that leaves all probabilities unchanged therefore still determines the final measurement result. With $Z$ between the two Hadamards, $H|0\rangle = |+\rangle$, $Z|+\rangle = |-\rangle$ and $H|-\rangle = |1\rangle$, so $HZH|0\rangle = |1\rangle$: the sequence $HZH$ acts as $X$. This is why the relative phase of lesson 1.3 matters.
 
 ## Measuring in another basis
 
@@ -28,6 +28,6 @@ In $HH = I$ the two $|1\rangle$ terms cancel only because both amplitudes reach 
 
 In general $AB \neq BA$. Applying $H$ and then $S$ to $|0\rangle$ gives $SH|0\rangle = |{+i}\rangle = (|0\rangle + i|1\rangle)/\sqrt{2}$. Applying $S$ and then $H$ gives $HS|0\rangle = |+\rangle$, because $S|0\rangle = |0\rangle$. Circuits and code list gates in the order they act, while the matrix product is written in the opposite order: the rightmost operator acts first.
 
-## In the lab
+## Try it
 
-Step through the circuit with the timeline and read the amplitude table: compare the signs of the amplitudes before the last Hadamard with what remains after it.
+Predict the signs of the two amplitudes before and after the last Hadamard gate in $H Z H$ acting on $|0\rangle$, then step through the circuit and compare. The signs before the last $H$ are what decide which outcome survives.

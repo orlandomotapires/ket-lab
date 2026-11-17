@@ -1,8 +1,8 @@
-"""Validação da lição 4.6: síndrome de uma cadeia de erros X no código tórico,
-classe lógica de laços e distância (L = 3).
+"""Validation for lesson 4.6: syndrome of a chain of X errors in the toric code,
+logical class of loops and distance (L = 3).
 
-A referência usa vetores binários: cada plaqueta é um vetor sobre os 2L² qubits e
-a síndrome é o produto com o vetor do erro, módulo 2.
+The reference uses binary vectors: each plaquette is a vector over the 2L² qubits and
+the syndrome is the product with the error vector, modulo 2.
 """
 
 import random
@@ -68,8 +68,8 @@ def defect_cases():
 
 def class_cases():
     for L in (3, 4):
-        row = lambda r0: {("v", r0, c) for c in range(L)}  # laço horizontal no dual: classe (0, 1)
-        col = lambda c0: {("h", r, c0) for r in range(L)}  # laço vertical no dual: classe (1, 0)
+        row = lambda r0: {("v", r0, c) for c in range(L)}  # horizontal loop on the dual lattice: class (0, 1)
+        col = lambda c0: {("h", r, c0) for r in range(L)}  # vertical loop on the dual lattice: class (1, 0)
         yield L, set(), (0, 0)
         yield L, star(L, 0, 0), (0, 0)
         yield L, star(L, 1, 2) ^ star(L, 0, 1), (0, 0)

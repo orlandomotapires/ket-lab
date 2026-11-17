@@ -1,6 +1,6 @@
-# Hamiltoniano molecular do H₂ em 0,74 Å, base STO-3G, mapeamento de Jordan-Wigner
-# (4 qubits). Pré-calculado com qml.qchem.molecular_hamiltonian(method="dhf") para
-# não depender de química em tempo de execução. Energia exata: -1.1372838 Ha.
+# Molecular Hamiltonian of H₂ at 0.74 Å, STO-3G basis, Jordan-Wigner mapping
+# (4 qubits). Precomputed with qml.qchem.molecular_hamiltonian(method="dhf") so
+# that no chemistry is needed at run time. Exact energy: -1.1372838 Ha.
 H2_TERMS = [
     (-0.0970662078, 'IIII'),
     (0.171412835, 'ZIII'),
@@ -19,10 +19,10 @@ H2_TERMS = [
     (0.1744128778, 'IIZZ'),
 ]
 
-"""Validação da lição 3.2: a energia do estado que o circuito prepara.
+"""Validation for lesson 3.2: the energy of the state the circuit prepares.
 
-Não confia no valor que o aluno calcula: reconstrói o estado do circuito com
-os parâmetros finais e calcula ⟨ψ|H|ψ⟩ com um Hamiltoniano próprio.
+Does not trust the value the learner computes: rebuilds the circuit state with
+the final parameters and computes ⟨ψ|H|ψ⟩ with its own Hamiltonian.
 """
 
 import numpy as np
@@ -49,20 +49,20 @@ def check(ns, run_case):
     ops, lines, n = pl.trace_qnode(circuit, [ns["theta"]])
     if n != 4:
         return {"passed": False, "key": "wrong_qubits", "params": {"count": n}}
-    # Só o ansatz químico: estado de base (vira X) e excitações. Preparar o estado
-    # fundamental direto (StatePrep, QubitUnitary) não é VQE.
+    # Only the chemistry ansatz: basis state (becomes X) and excitations. Preparing the
+    # ground state directly (StatePrep, QubitUnitary) is not VQE.
     extra = sorted({op.name for op in ops} - {"x", "id", "singleexcitation", "doubleexcitation"})
     if extra:
         return {"passed": False, "key": "forbidden_op", "params": {"names": ", ".join(extra)}}
     state = simulator.run_ops_trajectory(ops, lines, n).states[-1]
-    # O simulador usa a ordem do Qiskit; a matriz do PennyLane, o fio 0 como bit mais significativo.
+    # The simulator uses Qiskit ordering; the PennyLane matrix uses wire 0 as the most significant bit.
     state = state.reshape((2,) * n).transpose(range(n)[::-1]).reshape(-1)
     energy = float(np.real(np.vdot(state, _hamiltonian_matrix() @ state)))
     error = energy - EXACT
     params = {"energy": energy, "error": abs(error), "exact": EXACT}
     energies = ns.get("energies") or []
     if error <= CHEMICAL_ACCURACY:
-        # A curva de convergência mostra energies: o último valor precisa ser o do estado final.
+        # The convergence curve shows energies: the last value must be that of the final state.
         if not energies or abs(float(energies[-1]) - energy) > 1e-6:
             return {"passed": False, "key": "energies_inconsistent", "params": params}
         return {"passed": True, "key": "ok", "params": params}

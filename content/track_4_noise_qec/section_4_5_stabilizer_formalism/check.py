@@ -1,7 +1,7 @@
-"""Validação da lição 4.5: comutação de strings de Pauli, síndrome e operadores lógicos.
+"""Validation for lesson 4.5: commutation of Pauli strings, syndrome and logical operators.
 
-A referência usa matrizes (produto de Kronecker), sem a regra de contar posições,
-para que a contagem do aluno seja testada contra a definição.
+The reference uses matrices (Kronecker product), without the position-counting rule,
+so that the learner's counting is tested against the definition.
 """
 
 import itertools
@@ -85,7 +85,7 @@ def check(ns, run_case):
             return fail("logical_format", name=name)
         if any(not ref_commutes(value, g) for g in BIT_FLIP):
             return fail("logical_syndrome", name=name, value=value)
-        # Os elementos do grupo estabilizador (a menos de fase) são I, ZZI, IZZ e ZIZ.
+        # The elements of the stabilizer group (up to phase) are I, ZZI, IZZ and ZIZ.
         if value in ("III", "ZZI", "IZZ", "ZIZ"):
             return fail("logical_trivial", name=name, value=value)
         logical[name] = value

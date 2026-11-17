@@ -13,7 +13,8 @@
     "tolerance": 0.999,
     "required_gates": [
       "s",
-      "t"
+      "t",
+      "rz"
     ],
     "allowed_gates": [
       "x",

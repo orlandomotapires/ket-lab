@@ -33,7 +33,7 @@
       "swap"
     ]
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "references": [
     {
       "kind": "book",
@@ -87,7 +87,9 @@
         0,
         1,
         2,
-        3
+        3,
+        4,
+        5
       ]
     }
   }

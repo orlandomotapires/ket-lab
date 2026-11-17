@@ -2,24 +2,24 @@
   "title": "The No-Cloning Theorem",
   "summary": "No unitary operation copies an unknown quantum state; the CNOT copier works only for basis states.",
   "objectives": [
-    "Build a CNOT copier and verify that it copies |0⟩ and |1⟩.",
-    "Compute the fidelity between the output of the copier and the ideal copy |+⟩|+⟩.",
-    "Use linearity to explain why no unitary operation copies every state."
+    "Build a CNOT copier and verify that it copies |0⟩ and |1⟩",
+    "Compute the fidelity between the output of the copier and the ideal copy |+⟩|+⟩",
+    "Use linearity to explain why no unitary operation copies every state"
   ],
   "mission": "Copy qubit 0 onto qubit 1 with a single CNOT, so that |0⟩ and |1⟩ are copied exactly. The input in the editor is |+⟩. Store in `copy_fidelity` the fidelity between the final state of your circuit and the ideal copy |+⟩|+⟩.",
   "hints": [
-    "Qubit 1 starts in |0⟩, so the copier is one gate: qc.cx(0, 1). For |0⟩ it leaves |00⟩ and for |1⟩ it leaves |11⟩.",
+    "What is the simplest gate that makes qubit 1 equal to qubit 0 when qubit 0 is 0 or 1? Qubit 1 starts in |0⟩, so one gate does it: qc.cx(0, 1).",
     "Take the final state with output = Statevector(qc) and the ideal copy with Statevector.from_label(\"++\"). Then state_fidelity(output, ideal_copy) returns |⟨ideal copy|output⟩|².",
     "By linearity, CNOT maps (|0⟩+|1⟩)|0⟩/√2 to (|00⟩+|11⟩)/√2, a Bell state. Its overlap with |++⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2 has amplitude 1/√2, so the fidelity is 1/2."
   ],
   "prediction": {
-    "question": "The CNOT copier receives |+⟩ on qubit 0 and |0⟩ on qubit 1. What is the output?",
+    "question": "The CNOT copier receives |+⟩ on qubit 0 and |0⟩ on qubit 1. You then measure both qubits in the computational basis. What do you see?",
     "options": [
-      "|+⟩|+⟩, two copies of |+⟩",
-      "(|00⟩ + |11⟩)/√2, an entangled state",
-      "|00⟩ or |11⟩ with equal probability, as a classical mixture"
+      "All four outcomes 00, 01, 10 and 11 with probability 1/4, as for two copies of |+⟩",
+      "Always 00, since the blank qubit started in |0⟩",
+      "Only 00 or 11, half the time each, so the two bits always agree"
     ],
-    "explanation": "The CNOT acts linearly on the two terms of |+⟩|0⟩ = (|00⟩ + |10⟩)/√2, sending |00⟩ to |00⟩ and |10⟩ to |11⟩. The result is a superposition of the two copied basis states, which is the Bell state |Φ⁺⟩, not the product |+⟩|+⟩. The output is a pure state, so it is not a classical mixture."
+    "explanation": "The CNOT turns (|0⟩ + |1⟩)|0⟩/√2 into (|00⟩ + |11⟩)/√2, a Bell state, so the two bits agree and 01 and 10 never appear. Two independent copies of |+⟩ would give all four outcomes. The agreement is the sign that the output is entangled rather than two copies."
   },
   "comparison": {
     "source_label": "Original, qubit 0 before the CNOT",
@@ -28,7 +28,7 @@
   "challenge": {
     "mission": "One CNOT copies |0⟩ and |1⟩ but gives each output qubit a fidelity of only 1/2 with |+⟩. Build a 2-qubit circuit with no measurement that clones states on the equator of the Bloch sphere, |ψ⟩ = (|0⟩ + e^{iφ}|1⟩)/√2, better than that: for five values of φ, each output qubit (reduced state of qubit 0 and of qubit 1) must have fidelity of at least 0.85 with |ψ⟩. The circuit may be longer than one gate.",
     "hints": [
-      "A unitary that clones |0⟩ and |1⟩ perfectly cannot clone superpositions. Give up exact copies of |1⟩ in exchange for good copies on the equator.",
+      "A unitary that clones |0⟩ and |1⟩ perfectly cannot clone superpositions. What would you accept losing, if you only care about states on the equator of the Bloch sphere?",
       "Choose the map |0⟩|0⟩ → |00⟩ and |1⟩|0⟩ → (|01⟩ + |10⟩)/√2. For an equatorial input each output qubit then has fidelity (1 + 1/√2)/2 ≈ 0.854.",
       "Rotate the blank qubit by Ry(π/2) controlled on qubit 0, which gives |1⟩(|0⟩ + |1⟩)/√2 when qubit 0 is 1, then apply a CNOT from qubit 1 to qubit 0. In Qiskit: qc.cry(pi / 2, 0, 1) and qc.cx(1, 0)."
     ],

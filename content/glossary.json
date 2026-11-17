@@ -5,27 +5,25 @@
       "aliases": [
         "complex numbers"
       ],
-      "definition": "A number a + bi with real part a and imaginary part b, where i² = −1. Quantum amplitudes are complex numbers.",
+      "definition": "A number a + bi built from two real numbers and the unit i, where i² = −1; 3 + 4i is one. It can be drawn as a point in a plane, and every amplitude is one.",
       "lesson": "0.1"
     },
     {
       "term": "modulus",
       "aliases": [],
-      "definition": "The modulus of a complex number z = a + bi is |z| = √(a² + b²), its distance from the origin in the complex plane. The squared modulus of an amplitude gives a probability.",
+      "definition": "The length of a complex number z = a + bi, written |z| and equal to √(a² + b²). For 3 + 4i it is 5. Squaring it turns an amplitude into a probability.",
       "lesson": "0.1"
     },
     {
       "term": "polar form",
       "aliases": [],
-      "definition": "Writing a complex number as r·e^{iφ}, with modulus r and angle φ. It makes the phase of an amplitude explicit.",
+      "definition": "The number z = r·e^{iφ}: the same complex number given by its length r and its angle φ from the positive real axis. Multiplying two numbers in this form multiplies the lengths and adds the angles.",
       "lesson": "0.1"
     },
     {
       "term": "global phase",
-      "aliases": [
-        "global phases"
-      ],
-      "definition": "A factor e^{iγ} multiplying a whole state vector. It changes no measurement probability, so states that differ only by a global phase are physically identical.",
+      "aliases": [],
+      "definition": "A factor e^{iγ} in front of a whole state, as in e^{iγ}|ψ⟩. Every probability stays the same, so |ψ⟩ and e^{iγ}|ψ⟩ are the same physical state.",
       "lesson": "0.1"
     },
     {
@@ -33,156 +31,32 @@
       "aliases": [
         "relative phases"
       ],
-      "definition": "The phase difference between the amplitudes of two basis states in a superposition, as in (|0⟩ + e^{iφ}|1⟩)/√2. It is not observable directly but decides the outcome of interference.",
-      "lesson": "1.3"
-    },
-    {
-      "term": "inner product",
-      "aliases": [
-        "inner products"
-      ],
-      "definition": "For column vectors, ⟨u|v⟩ is the sum of the conjugated entries of u times the entries of v. Its squared modulus gives the probability of finding |v⟩ in the state |u⟩.",
-      "lesson": "0.2"
-    },
-    {
-      "term": "normalization",
-      "aliases": [
-        "normalized"
-      ],
-      "definition": "The requirement that the squared moduli of a state's amplitudes add up to 1, so that the measurement probabilities sum to 1.",
-      "lesson": "0.2"
-    },
-    {
-      "term": "unitary",
-      "aliases": [
-        "unitary matrix",
-        "unitary operator",
-        "unitarity"
-      ],
-      "definition": "A matrix U with U†U = I. Unitaries preserve the norm of a state and describe every reversible quantum operation.",
-      "lesson": "0.3"
-    },
-    {
-      "term": "conjugate transpose",
-      "aliases": [
-        "adjoint"
-      ],
-      "definition": "The matrix A† obtained by transposing A and conjugating every entry. Also called the Hermitian adjoint.",
-      "lesson": "0.3"
-    },
-    {
-      "term": "Hermitian",
-      "aliases": [
-        "Hermitian matrix",
-        "Hermitian operator"
-      ],
-      "definition": "A matrix equal to its own conjugate transpose, A = A†. Its eigenvalues are real, so it represents an observable.",
-      "lesson": "0.3"
-    },
-    {
-      "term": "Pauli matrices",
-      "aliases": [
-        "Pauli matrix",
-        "Pauli operator",
-        "Pauli operators"
-      ],
-      "definition": "The matrices X, Y and Z, which with the identity I form a basis for all 2×2 matrices. They are Hermitian and unitary and square to I.",
-      "lesson": "0.3"
-    },
-    {
-      "term": "eigenvalue",
-      "aliases": [
-        "eigenvalues",
-        "eigenvector",
-        "eigenvectors",
-        "eigenstate",
-        "eigenstates"
-      ],
-      "definition": "For a matrix A, a number λ with A|v⟩ = λ|v⟩ for some nonzero vector |v⟩, called an eigenvector. Eigenvalues of a unitary are phases e^{iφ}.",
-      "lesson": "0.3"
-    },
-    {
-      "term": "tensor product",
-      "aliases": [
-        "Kronecker product",
-        "tensor products"
-      ],
-      "definition": "The operation ⊗ that combines the state spaces of two systems. The state of n qubits lives in the n-fold tensor product of C².",
-      "lesson": "0.4"
-    },
-    {
-      "term": "product state",
-      "aliases": [
-        "product states"
-      ],
-      "definition": "A multi-qubit state that can be written as a tensor product of single-qubit states. Any state that cannot be written this way is entangled.",
-      "lesson": "0.4"
+      "definition": "The angle φ between the two amplitudes of a superposition, as in (|0⟩ + e^{iφ}|1⟩)/√2. A 0/1 measurement cannot see it, but a Hadamard gate turns it into a difference in probabilities.",
+      "lesson": "0.1"
     },
     {
       "term": "qubit",
       "aliases": [
         "qubits"
       ],
-      "definition": "The basic unit of quantum information: a two-level system whose state is a unit vector α|0⟩ + β|1⟩ in C².",
-      "lesson": "1.1"
+      "definition": "A system with two distinguishable states |0⟩ and |1⟩ whose state can be any unit vector α|0⟩ + β|1⟩ with complex α and β. A real device builds one from, for example, a superconducting circuit or a trapped ion.",
+      "lesson": "0.1"
     },
     {
       "term": "computational basis",
       "aliases": [
         "computational basis states"
       ],
-      "definition": "The orthonormal basis {|0⟩, |1⟩} of one qubit, or the 2ⁿ bit-string states |x⟩ of n qubits. Measurement in this basis returns a bit string.",
-      "lesson": "1.1"
-    },
-    {
-      "term": "state vector",
-      "aliases": [
-        "state vectors",
-        "statevector"
-      ],
-      "definition": "The column vector of complex amplitudes that describes the pure state of a quantum system.",
-      "lesson": "1.1"
+      "definition": "The states |0⟩ and |1⟩ for one qubit, and for n qubits the 2ⁿ states |00…0⟩ to |11…1⟩, one for each bit string. Measuring in this basis returns a bit string.",
+      "lesson": "0.1"
     },
     {
       "term": "amplitude",
       "aliases": [
         "amplitudes"
       ],
-      "definition": "A complex coefficient of a basis state in a state vector. The probability of an outcome is the squared modulus of its amplitude (Born rule).",
-      "lesson": "1.1"
-    },
-    {
-      "term": "pure state",
-      "aliases": [
-        "pure states"
-      ],
-      "definition": "A state described by a single state vector |ψ⟩, or equivalently a density operator with purity Tr(ρ²) = 1.",
-      "lesson": "4.1"
-    },
-    {
-      "term": "Bloch sphere",
-      "aliases": [],
-      "definition": "The unit sphere whose points represent the pure states of one qubit up to global phase. |0⟩ and |1⟩ sit at the poles and single-qubit gates act as rotations.",
-      "lesson": "1.1"
-    },
-    {
-      "term": "X gate",
-      "aliases": [
-        "Pauli X",
-        "Pauli-X",
-        "NOT gate",
-        "bit flip gate"
-      ],
-      "definition": "The Pauli X gate swaps |0⟩ and |1⟩. It is the quantum NOT and a rotation by π about the x-axis of the Bloch sphere.",
-      "lesson": "1.1"
-    },
-    {
-      "term": "superposition",
-      "aliases": [
-        "superpositions"
-      ],
-      "definition": "A state that is a linear combination of basis states with more than one nonzero amplitude, such as (|0⟩ + |1⟩)/√2.",
-      "lesson": "1.2"
+      "definition": "The complex number in front of a basis state in a superposition. In (|0⟩ + i|1⟩)/√2 the amplitudes are 1/√2 and i/√2, and the probability of an outcome is the squared modulus of its amplitude.",
+      "lesson": "0.1"
     },
     {
       "term": "Hadamard gate",
@@ -190,8 +64,8 @@
         "Hadamard",
         "Hadamard gates"
       ],
-      "definition": "The single-qubit gate H that maps |0⟩ to |+⟩ and |1⟩ to |−⟩. It converts between the computational basis and the ± basis.",
-      "lesson": "1.2"
+      "definition": "The matrix H = (1/√2)[[1, 1], [1, −1]]. It sends |0⟩ to |+⟩ = (|0⟩ + |1⟩)/√2 and |1⟩ to |−⟩ = (|0⟩ − |1⟩)/√2, and applying it twice gives back the starting state.",
+      "lesson": "0.1"
     },
     {
       "term": "measurement",
@@ -200,49 +74,184 @@
         "measure",
         "measured"
       ],
-      "definition": "An operation that extracts a classical outcome from a quantum state with probabilities given by the Born rule and leaves the state collapsed to the outcome.",
-      "lesson": "1.2"
+      "definition": "Reading a qubit in a chosen basis. It returns one classical outcome, with probability equal to the squared modulus of that outcome's amplitude, and leaves the state in the matching basis state.",
+      "lesson": "0.1"
     },
     {
-      "term": "phase gate",
+      "term": "inner product",
       "aliases": [
-        "S gate",
-        "phase gate S"
+        "inner products"
       ],
-      "definition": "The gate S = diag(1, i), a quarter turn about the z-axis. It adds a relative phase of π/2 to |1⟩.",
-      "lesson": "1.3"
+      "definition": "⟨u|v⟩ = u₁*v₁ + u₂*v₂ + …, the conjugated entries of u times the entries of v, added up. It is 1 for the same unit vector and 0 for orthogonal ones, and |⟨u|v⟩|² is the probability of finding u when the state is v.",
+      "lesson": "0.2"
     },
     {
-      "term": "rotation operators",
+      "term": "normalization",
       "aliases": [
-        "rotation operator",
-        "rotation gates",
-        "rotation gate",
-        "R_z",
-        "R_x",
-        "R_y",
-        "Rz gate",
-        "Rx gate",
-        "Ry gate"
+        "normalized",
+        "normalize",
+        "norm"
       ],
-      "definition": "The gates R_x(θ), R_y(θ) and R_z(θ), which rotate the Bloch vector by the angle θ about the x, y or z axis.",
-      "lesson": "1.3"
+      "definition": "Scaling a state so that |α|² + |β|² + … = 1, which is what makes the probabilities add up to 1. To normalize a vector, divide it by its norm √⟨v|v⟩.",
+      "lesson": "0.2"
     },
     {
-      "term": "interference",
+      "term": "orthogonal",
+      "aliases": [
+        "orthonormal"
+      ],
+      "definition": "Describes two vectors whose inner product is 0, such as |0⟩ and |1⟩ or |+⟩ and |−⟩. A measurement can tell orthogonal states apart perfectly. A set of orthogonal vectors that all have length 1 is called orthonormal.",
+      "lesson": "0.2"
+    },
+    {
+      "term": "state vector",
+      "aliases": [
+        "state vectors",
+        "statevector"
+      ],
+      "definition": "The list of complex amplitudes, one per basis state, that fixes a pure state: (1/√2, 1/√2) is |+⟩. For n qubits it has 2ⁿ entries.",
+      "lesson": "0.2"
+    },
+    {
+      "term": "unitary",
+      "aliases": [
+        "unitarity"
+      ],
+      "definition": "A matrix U with U†U = I, so it keeps the length of every state equal to 1. Every gate is unitary, which also makes it reversible: U† undoes U.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "conjugate transpose",
       "aliases": [],
-      "definition": "The effect by which amplitudes of different computational paths add or cancel, depending on their relative phase. Quantum algorithms arrange for wrong answers to cancel.",
-      "lesson": "1.4"
+      "definition": "The matrix A† you get by flipping A over its diagonal and replacing each entry by its complex conjugate. For a column |v⟩ it gives the row ⟨v|.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "Hermitian",
+      "aliases": [
+        "Hermitian matrix"
+      ],
+      "definition": "A matrix equal to its own conjugate transpose, A = A†, such as X, Y, Z or H. Its eigenvalues are real numbers, so observables and Hamiltonians, whose eigenvalues are measurement results, are Hermitian.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "Pauli matrices",
+      "aliases": [
+        "Pauli operator"
+      ],
+      "definition": "The three 2×2 matrices X = [[0, 1], [1, 0]], Y = [[0, −i], [i, 0]] and Z = diag(1, −1). Together with I they span every 2×2 matrix, and each one squares to I.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "eigenvalue",
+      "aliases": [
+        "eigenvalues",
+        "eigenvector",
+        "eigenvectors"
+      ],
+      "definition": "A number λ for which some nonzero vector |v⟩, the eigenvector, satisfies A|v⟩ = λ|v⟩: the matrix only rescales it. X has eigenvalue +1 on |+⟩, and an eigenvalue of a unitary is always a phase e^{iφ}.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "expectation value",
+      "aliases": [
+        "expectation values"
+      ],
+      "definition": "The average result of measuring an observable O on |ψ⟩, equal to ⟨ψ|O|ψ⟩. For Z on |+⟩ it is 0. In practice you estimate it by averaging many shots.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "observable",
+      "aliases": [
+        "observables"
+      ],
+      "definition": "A Hermitian matrix that stands for something you can measure, like Z. Its eigenvalues are the possible results, and ⟨ψ|O|ψ⟩ is their average on |ψ⟩.",
+      "lesson": "0.3"
+    },
+    {
+      "term": "tensor product",
+      "aliases": [
+        "Kronecker product"
+      ],
+      "definition": "The operation ⊗ that joins two systems: |0⟩ ⊗ |1⟩ = |01⟩. Two qubits have 4 amplitudes and n qubits have 2ⁿ. For matrices, A ⊗ B acts on the two parts independently.",
+      "lesson": "0.4"
+    },
+    {
+      "term": "product state",
+      "aliases": [
+        "product states"
+      ],
+      "definition": "A multi-qubit state that factors into one state per qubit, like |+⟩|0⟩. When no such factoring exists, as for (|00⟩ + |11⟩)/√2, the state is entangled.",
+      "lesson": "0.4"
     },
     {
       "term": "entanglement",
       "aliases": [
         "entangled",
-        "entangled state",
         "entangled states"
       ],
-      "definition": "A property of multi-qubit states that cannot be written as a product of single-qubit states. Measurement outcomes of the parts are correlated beyond classical means.",
-      "lesson": "1.5"
+      "definition": "A correlation between parts of a state that no product of single-qubit states can reproduce. In (|00⟩ + |11⟩)/√2 each qubit alone gives a random bit, yet the two always agree.",
+      "lesson": "0.4"
+    },
+    {
+      "term": "pure state",
+      "aliases": [
+        "pure states"
+      ],
+      "definition": "A state described by one state vector |ψ⟩, with nothing hidden. Its density operator is |ψ⟩⟨ψ| and its purity is 1. A state that cannot be written this way is mixed.",
+      "lesson": "1.1"
+    },
+    {
+      "term": "Bloch sphere",
+      "aliases": [],
+      "definition": "The unit sphere whose points are the pure states of one qubit: |0⟩ at the north pole, |1⟩ at the south, |+⟩ and |−⟩ on the x axis. Global phase is dropped, and a gate acts as a rotation of the sphere.",
+      "lesson": "1.1"
+    },
+    {
+      "term": "X gate",
+      "aliases": [],
+      "definition": "The gate [[0, 1], [1, 0]] that swaps |0⟩ and |1⟩, the quantum NOT. On the Bloch sphere it is a half turn about the x axis.",
+      "lesson": "1.1"
+    },
+    {
+      "term": "rotation operators",
+      "aliases": [
+        "R_z",
+        "R_x",
+        "R_y"
+      ],
+      "definition": "R_x(θ), R_y(θ) and R_z(θ): the gates that turn the Bloch vector by the angle θ about the x, y or z axis. For example, R_y(π/2) takes |0⟩ to |+⟩.",
+      "lesson": "1.1"
+    },
+    {
+      "term": "superposition",
+      "aliases": [
+        "superpositions"
+      ],
+      "definition": "A state with more than one nonzero amplitude, such as (|0⟩ + |1⟩)/√2. When measured it gives a single outcome, chosen with probabilities set by the squared amplitudes.",
+      "lesson": "1.2"
+    },
+    {
+      "term": "collapse",
+      "aliases": [
+        "collapses"
+      ],
+      "definition": "What a measurement does to the state: afterwards it is the basis state that was found, so measuring again gives the same result. Which state it is, is random.",
+      "lesson": "1.2"
+    },
+    {
+      "term": "phase gate",
+      "aliases": [
+        "S gate"
+      ],
+      "definition": "S = diag(1, i). It leaves |0⟩ alone and multiplies |1⟩ by i, a quarter turn about the z axis of the Bloch sphere. Applying S twice gives Z.",
+      "lesson": "1.3"
+    },
+    {
+      "term": "interference",
+      "aliases": [],
+      "definition": "What happens when two routes to the same outcome have amplitudes that add or cancel, depending on their relative phase. H followed by H returns |0⟩ because the two routes to |1⟩ cancel.",
+      "lesson": "1.4"
     },
     {
       "term": "Bell states",
@@ -251,44 +260,32 @@
         "Bell pair",
         "Bell pairs"
       ],
-      "definition": "The four maximally entangled two-qubit states |Φ⁺⟩, |Φ⁻⟩, |Ψ⁺⟩ and |Ψ⁻⟩, which form an orthonormal basis of two qubits.",
+      "definition": "The four entangled two-qubit states (|00⟩ ± |11⟩)/√2 and (|01⟩ ± |10⟩)/√2, called |Φ±⟩ and |Ψ±⟩. They are orthogonal to each other and together form a basis of two qubits.",
       "lesson": "1.5"
     },
     {
       "term": "CNOT gate",
       "aliases": [
         "CNOT",
-        "controlled-NOT",
-        "controlled-X"
+        "controlled-NOT"
       ],
-      "definition": "The two-qubit gate that flips the target qubit when the control qubit is |1⟩. With H, it creates Bell states from basis states.",
+      "definition": "A two-qubit gate that flips the target qubit when the control is |1⟩ and does nothing otherwise, so |10⟩ becomes |11⟩. H on the control followed by CNOT turns |00⟩ into the Bell state (|00⟩ + |11⟩)/√2.",
       "lesson": "1.5"
-    },
-    {
-      "term": "control qubit",
-      "aliases": [
-        "control qubits"
-      ],
-      "definition": "The qubit whose value decides whether a controlled operation acts on the target qubit.",
-      "lesson": "1.7"
     },
     {
       "term": "controlled operation",
       "aliases": [
-        "controlled operations",
-        "controlled gate",
-        "controlled gates",
-        "controlled-U"
+        "controlled gates"
       ],
-      "definition": "A gate that applies a unitary U to a target qubit only when a control qubit is |1⟩, acting as a coherent if-statement on basis states.",
-      "lesson": "1.7"
+      "definition": "Controlled-U: apply U to the target qubit if the control is |1⟩ and leave it alone if the control is |0⟩. With the control in a superposition, both cases happen together.",
+      "lesson": "1.6"
     },
     {
       "term": "quantum teleportation",
       "aliases": [
         "teleportation"
       ],
-      "definition": "A protocol that transfers an unknown qubit state using a shared Bell pair and two classical bits, without moving the physical qubit.",
+      "definition": "A protocol that moves an unknown qubit state from Alice to Bob using a shared Bell pair and two classical bits. Alice's measurement destroys her copy, so nothing is cloned.",
       "lesson": "1.6"
     },
     {
@@ -296,13 +293,73 @@
       "aliases": [
         "no-cloning"
       ],
-      "definition": "The theorem that no quantum operation can copy an arbitrary unknown state: there is no unitary with U|ψ⟩|0⟩ = |ψ⟩|ψ⟩ for all |ψ⟩.",
+      "definition": "No quantum operation takes an unknown |ψ⟩ and a blank |0⟩ to |ψ⟩|ψ⟩ for every |ψ⟩. A CNOT copies |0⟩ and |1⟩, but on |+⟩ it produces a Bell state instead.",
+      "lesson": "1.6"
+    },
+    {
+      "term": "maximally mixed state",
+      "aliases": [
+        "maximally mixed"
+      ],
+      "definition": "The state I/d that tells you nothing: every basis outcome is equally likely. For one qubit it is I/2, the center of the Bloch sphere.",
+      "lesson": "1.6"
+    },
+    {
+      "term": "reduced state",
+      "aliases": [
+        "reduced density operator"
+      ],
+      "definition": "What one part of a larger system looks like on its own, found by ignoring the rest. Each qubit of a Bell pair, taken alone, is maximally mixed.",
+      "lesson": "1.6"
+    },
+    {
+      "term": "mixed state",
+      "aliases": [
+        "mixed states"
+      ],
+      "definition": "A state that is a probabilistic mixture, like |0⟩ half of the time and |1⟩ the other half, or one qubit of an entangled pair. No single state vector describes it, and its Bloch vector is shorter than 1.",
+      "lesson": "1.6"
+    },
+    {
+      "term": "SWAP gate",
+      "aliases": [
+        "SWAP"
+      ],
+      "definition": "Exchanges the states of two qubits, and equals three CNOTs. The transpiler inserts it to bring distant qubits next to each other.",
+      "lesson": "1.6"
+    },
+    {
+      "term": "control qubit",
+      "aliases": [],
+      "definition": "The qubit that decides whether a controlled gate acts. In a CNOT the target is flipped only when the control is |1⟩.",
+      "lesson": "1.7"
+    },
+    {
+      "term": "fidelity",
+      "aliases": [],
+      "definition": "How close two states are. For pure states it is |⟨a|b⟩|², which is 1 when they match and 0 when they are orthogonal; for a state ρ and a pure target |a⟩ it is ⟨a|ρ|a⟩.",
+      "lesson": "1.8"
+    },
+    {
+      "term": "three-qubit bit-flip code",
+      "aliases": [
+        "bit-flip code"
+      ],
+      "definition": "Encodes a|0⟩ + b|1⟩ as a|000⟩ + b|111⟩. The parity checks Z₀Z₁ and Z₁Z₂ point to a single flipped qubit, and an X on it restores the state.",
+      "lesson": "1.8"
+    },
+    {
+      "term": "ancilla",
+      "aliases": [
+        "ancillas"
+      ],
+      "definition": "An extra qubit used as scratch space or to read a parity check, such as the qubits that hold a syndrome. It usually starts in |0⟩.",
       "lesson": "1.8"
     },
     {
       "term": "superdense coding",
       "aliases": [],
-      "definition": "A protocol in which one qubit of a shared Bell pair carries two classical bits from a sender to a receiver.",
+      "definition": "Sending two classical bits with one qubit, when sender and receiver already share a Bell pair. The sender applies I, X, Z or XZ to her half, and the receiver measures both qubits in the Bell basis.",
       "lesson": "1.9"
     },
     {
@@ -310,16 +367,59 @@
       "aliases": [
         "CHSH"
       ],
-      "definition": "A two-player cooperative game in which classical strategies win at most 75% of the time, while players sharing an entangled pair can win about 85.4%.",
+      "definition": "A game in which Alice and Bob each receive a bit and answer so that the XOR of their answers equals the AND of the bits, without talking. Classical players win at most 75% of the time; with a shared Bell pair they win cos²(π/8) ≈ 85.4%.",
       "lesson": "1.10"
+    },
+    {
+      "term": "Tsirelson bound",
+      "aliases": [],
+      "definition": "The limit |S| ≤ 2√2 on the CHSH quantity for any quantum strategy, against 2 for classical ones. It corresponds to the best quantum winning probability, cos²(π/8) ≈ 85.4%.",
+      "lesson": "1.10"
+    },
+    {
+      "term": "entanglement swapping",
+      "aliases": [],
+      "definition": "Two qubits that never met become entangled when a third party measures one qubit from each of two Bell pairs in the Bell basis. It is teleportation applied to half of an entangled pair.",
+      "lesson": "1.11"
+    },
+    {
+      "term": "concurrence",
+      "aliases": [],
+      "definition": "For a pure two-qubit state α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩, the number C = 2|αδ − βγ|. It is 0 for product states and 1 for Bell states.",
+      "lesson": "1.11"
+    },
+    {
+      "term": "eigenstate",
+      "aliases": [
+        "eigenstates"
+      ],
+      "definition": "A state |ψ⟩ that an operator only multiplies by a number, A|ψ⟩ = λ|ψ⟩. |−⟩ is an eigenstate of X with eigenvalue −1, so measuring X on it gives −1 every time.",
+      "lesson": "2.1"
     },
     {
       "term": "oracle",
       "aliases": [
-        "oracles",
         "query gate"
       ],
-      "definition": "A black-box unitary U_f that computes a function f, mapping |x⟩|y⟩ to |x⟩|y ⊕ f(x)⟩. Algorithms are judged by how many times they query it.",
+      "definition": "A black box that evaluates a function, given as a gate U_f taking |x⟩|y⟩ to |x⟩|y ⊕ f(x)⟩. The algorithm sees only what the box returns and is scored by how often it calls it.",
+      "lesson": "2.1"
+    },
+    {
+      "term": "phase kickback",
+      "aliases": [],
+      "definition": "When a controlled-U acts on a target that is an eigenstate of U with eigenvalue e^{iφ}, the target stays the same and the control picks up the phase: α|0⟩ + β|1⟩ becomes α|0⟩ + e^{iφ}β|1⟩.",
+      "lesson": "2.1"
+    },
+    {
+      "term": "Deutsch's algorithm",
+      "aliases": [],
+      "definition": "Decides with one oracle call whether a one-bit function is constant or balanced: the answer is written as a relative phase and a Hadamard gate reads it. A classical method has to evaluate f twice.",
+      "lesson": "2.1"
+    },
+    {
+      "term": "phase estimation",
+      "aliases": [],
+      "definition": "Given an eigenstate |u⟩ of U with U|u⟩ = e^{2πiφ}|u⟩, it reads φ to n bits: controlled powers of U write φ as phases on n qubits, and an inverse QFT turns them into the bits.",
       "lesson": "2.1"
     },
     {
@@ -327,57 +427,39 @@
       "aliases": [
         "queries"
       ],
-      "definition": "One use of an oracle. Query complexity counts how many such uses an algorithm needs.",
-      "lesson": "2.1"
-    },
-    {
-      "term": "phase kickback",
-      "aliases": [],
-      "definition": "The effect that a controlled-U acting on an eigenstate of U leaves that eigenstate unchanged and writes its eigenvalue as a phase onto the control qubit.",
-      "lesson": "2.1"
+      "definition": "One call to an oracle. Counting queries is how these lessons compare algorithms: Deutsch's algorithm uses one, a classical method needs two.",
+      "lesson": "2.2"
     },
     {
       "term": "constant function",
       "aliases": [
-        "constant",
-        "constant functions"
+        "constant"
       ],
-      "definition": "A Boolean function f whose output is the same for every input. In the Deutsch–Jozsa problem the other allowed case is a balanced function.",
+      "definition": "A function f(x) that returns the same bit for every input, like f(x) = 0. Deutsch's problem asks to tell it apart from a balanced one.",
       "lesson": "2.2"
     },
     {
       "term": "balanced function",
       "aliases": [
-        "balanced",
-        "balanced functions"
+        "balanced"
       ],
-      "definition": "A Boolean function that outputs 0 for exactly half of its inputs and 1 for the other half.",
-      "lesson": "2.2"
-    },
-    {
-      "term": "Deutsch's algorithm",
-      "aliases": [
-        "Deutsch algorithm"
-      ],
-      "definition": "A one-query algorithm that decides whether a one-bit function is constant or balanced, where a classical algorithm needs two queries.",
+      "definition": "A function that returns 0 on exactly half of the inputs and 1 on the other half. For one bit, f(x) = x and f(x) = 1 − x are the balanced ones.",
       "lesson": "2.2"
     },
     {
       "term": "Deutsch–Jozsa algorithm",
       "aliases": [
-        "Deutsch-Jozsa",
         "Deutsch–Jozsa"
       ],
-      "definition": "An algorithm that decides with one query whether an n-bit function is constant or balanced, where a deterministic classical algorithm needs 2ⁿ⁻¹ + 1 queries.",
+      "definition": "The n-bit version, for a function promised to be constant or balanced: one query, then a measurement that gives all zeros for constant and anything else for balanced. A deterministic classical method may need 2ⁿ⁻¹ + 1 queries.",
       "lesson": "2.3"
     },
     {
       "term": "Bernstein–Vazirani algorithm",
       "aliases": [
-        "Bernstein-Vazirani",
         "Bernstein–Vazirani"
       ],
-      "definition": "An algorithm that finds a hidden bit string s of the function f(x) = s·x mod 2 with a single query.",
+      "definition": "Finds a hidden bit string s from an oracle f(x) = s·x mod 2 with a single query. Classically you need n queries, one per bit of s.",
       "lesson": "2.4"
     },
     {
@@ -385,24 +467,19 @@
       "aliases": [
         "Simon's algorithm"
       ],
-      "definition": "Given a function with f(x) = f(x ⊕ s) for a hidden string s, find s. Simon's algorithm needs O(n) queries, while classical algorithms need exponentially many.",
+      "definition": "A function satisfies f(x) = f(x ⊕ s) for a hidden string s, and the task is to find s. Simon's algorithm needs about n queries, while any classical method needs exponentially many.",
       "lesson": "2.5"
     },
     {
       "term": "Grover iteration",
-      "aliases": [
-        "Grover iterations"
-      ],
-      "definition": "One round of Grover's algorithm: an oracle that flips the phase of the marked states followed by the diffusion operator.",
+      "aliases": [],
+      "definition": "One round of Grover's search: the oracle flips the sign of the marked amplitudes, then the diffusion operator reflects all amplitudes about their mean. Each round rotates the state by a fixed angle toward the marked states.",
       "lesson": "2.6"
     },
     {
       "term": "Grover's algorithm",
-      "aliases": [
-        "Grover search",
-        "Grover's search"
-      ],
-      "definition": "A search algorithm that finds a marked item among N using about (π/4)√N oracle queries, a quadratic speedup over classical search.",
+      "aliases": [],
+      "definition": "Finds a marked item among N with about (π/4)√N oracle calls, where a classical search needs about N/2, by repeating the Grover iteration. The speedup is quadratic, not exponential.",
       "lesson": "2.6"
     },
     {
@@ -410,7 +487,13 @@
       "aliases": [
         "inversion about the mean"
       ],
-      "definition": "The operator 2|s⟩⟨s| − I, where |s⟩ is the uniform superposition. It reflects every amplitude about the mean amplitude.",
+      "definition": "D = 2|s⟩⟨s| − I, where |s⟩ is the equal superposition of all strings. It sends each amplitude a to 2·mean − a, an inversion about the mean.",
+      "lesson": "2.6"
+    },
+    {
+      "term": "outer product",
+      "aliases": [],
+      "definition": "|a⟩⟨b|, a column times a row, which makes a matrix. It sends |ψ⟩ to ⟨b|ψ⟩|a⟩, so |s⟩⟨s| projects onto |s⟩.",
       "lesson": "2.6"
     },
     {
@@ -419,131 +502,158 @@
         "QFT",
         "inverse QFT"
       ],
-      "definition": "The unitary that maps a basis state |x⟩ to a superposition of all basis states with phases e^{2πixy/N}. It is the quantum analogue of the discrete Fourier transform.",
+      "definition": "The unitary that sends |x⟩ to (1/√N) Σ_y e^{2πixy/N}|y⟩. It turns a periodic pattern of amplitudes into a sharp peak at its frequency, and it needs only about n² gates for n qubits.",
       "lesson": "2.7"
     },
     {
-      "term": "phase estimation",
-      "aliases": [
-        "quantum phase estimation",
-        "QPE"
-      ],
-      "definition": "An algorithm that estimates the phase φ in an eigenvalue e^{2πiφ} of a unitary U, given an eigenstate, using controlled powers of U and an inverse QFT.",
-      "lesson": "2.8"
+      "term": "period",
+      "aliases": [],
+      "definition": "The smallest r > 0 with f(x + r) = f(x) for all x. Shor's algorithm finds it for f(x) = aˣ mod N, and Simon's problem has the XOR analogue f(x ⊕ s) = f(x).",
+      "lesson": "2.7"
+    },
+    {
+      "term": "Shor's algorithm",
+      "aliases": [],
+      "definition": "Factors N by finding the order r of a random a modulo N with phase estimation, then taking gcd(a^(r/2) ± 1, N). It runs in time polynomial in log N, where no classical method is known to.",
+      "lesson": "2.7"
     },
     {
       "term": "order finding",
       "aliases": [],
-      "definition": "The problem of finding the smallest r > 0 with aʳ ≡ 1 (mod N). It is solved by phase estimation and is the quantum core of Shor's algorithm.",
-      "lesson": "2.9"
-    },
-    {
-      "term": "period",
-      "aliases": [
-        "periodicity"
-      ],
-      "definition": "The smallest r > 0 such that f(x + r) = f(x) for all x. Order finding in Shor's algorithm is period finding; Simon's problem uses a period under bitwise XOR, f(x ⊕ s) = f(x).",
-      "lesson": "2.9"
-    },
-    {
-      "term": "Shor's algorithm",
-      "aliases": [
-        "Shor algorithm"
-      ],
-      "definition": "A quantum algorithm that factors integers in polynomial time by reducing factoring to order finding.",
-      "lesson": "2.9"
+      "definition": "Given a and N with no common factor, find the smallest r > 0 with aʳ mod N = 1. For a = 2 and N = 15 it is r = 4. Phase estimation solves it, and Shor's algorithm builds on it.",
+      "lesson": "2.8"
     },
     {
       "term": "Hamiltonian",
-      "aliases": [
-        "Hamiltonians"
-      ],
-      "definition": "A Hermitian operator H that represents the energy of a system and generates its time evolution e^{−iHt}.",
+      "aliases": [],
+      "definition": "The Hermitian matrix H that gives the energy of a system. Its eigenvalues are the allowed energies, and the state evolves by the unitary e^{−iHt}.",
+      "lesson": "2.10"
+    },
+    {
+      "term": "commutator",
+      "aliases": [],
+      "definition": "[A, B] = AB − BA, which is zero exactly when A and B commute. For X and Z it is −2iY, so e^{−i(X+Z)t} is not e^{−iXt}e^{−iZt}.",
       "lesson": "2.10"
     },
     {
       "term": "Trotterization",
       "aliases": [
         "Trotter",
-        "Trotter–Suzuki",
-        "Trotter formula",
-        "Trotter step",
         "Trotter steps"
       ],
-      "definition": "A method that approximates e^{−i(A+B)t} by alternating short evolutions under A and B. The error shrinks as the number of steps grows.",
+      "definition": "Approximating e^{−i(A+B)t} by n alternating short steps, (e^{−iAt/n} e^{−iBt/n})ⁿ, each easy to run. The error comes from the commutator [A, B] and shrinks as n grows.",
       "lesson": "2.10"
     },
     {
-      "term": "expectation value",
-      "aliases": [
-        "expectation values"
-      ],
-      "definition": "The average result ⟨ψ|O|ψ⟩ of measuring an observable O on the state |ψ⟩, estimated by repeated measurement.",
+      "term": "transverse-field Ising model",
+      "aliases": [],
+      "definition": "For two qubits, H = J Z⊗Z + h(X⊗I + I⊗X): neighbouring spins coupled along z, plus a field along x. The two parts do not commute, so simulating it needs Trotter steps.",
+      "lesson": "2.10"
+    },
+    {
+      "term": "gradient descent",
+      "aliases": [],
+      "definition": "Moving the parameters repeatedly a small step against the gradient of the cost: θ ← θ − η·∇C, where η is the learning rate. In a variational circuit the gradient comes from the parameter-shift rule or from finite differences.",
       "lesson": "3.1"
     },
     {
       "term": "ansatz",
       "aliases": [
-        "ansatz circuit",
-        "ansätze",
-        "ansatze",
-        "variational form"
+        "ansätze"
       ],
-      "definition": "A parameterized circuit family whose parameters are tuned by a classical optimizer in a variational algorithm.",
+      "definition": "A circuit with free angles, chosen in advance, that a classical optimizer tunes: for example R_y(θ) followed by a CNOT. Its shape decides which states it can reach.",
       "lesson": "3.1"
     },
     {
       "term": "parameter-shift rule",
       "aliases": [
-        "parameter shift rule",
         "parameter-shift"
       ],
-      "definition": "A rule that gives the exact gradient of an expectation value with respect to a rotation angle from two shifted evaluations: [f(θ + π/2) − f(θ − π/2)]/2.",
+      "definition": "For a gate e^{−iθP/2} with a Pauli P, the exact derivative of an expectation value is [f(θ + π/2) − f(θ − π/2)]/2. It costs two extra circuit runs per parameter and works on hardware.",
       "lesson": "3.1"
     },
     {
-      "term": "ground state",
+      "term": "shots",
       "aliases": [
-        "ground-state energy",
-        "ground energy"
+        "shot"
       ],
-      "definition": "The eigenstate of a Hamiltonian with the lowest energy eigenvalue.",
-      "lesson": "3.2"
+      "definition": "How many times a circuit is run and measured. An estimate from n shots has a statistical error of about 1/√n, so shots trade time for accuracy.",
+      "lesson": "3.1"
     },
     {
       "term": "variational quantum eigensolver",
       "aliases": [
         "VQE"
       ],
-      "definition": "A variational algorithm that estimates the ground-state energy of a Hamiltonian by minimizing the expectation value ⟨ψ(θ)|H|ψ(θ)⟩ over an ansatz.",
-      "lesson": "3.2"
-    },
-    {
-      "term": "variational principle",
-      "aliases": [],
-      "definition": "The fact that the expectation value of H in any state is at least the ground-state energy, so minimizing it gives an upper bound.",
-      "lesson": "3.2"
+      "definition": "A loop: a circuit prepares |ψ(θ)⟩ and measures ⟨H⟩, a classical optimizer updates θ, and the cycle repeats. The lowest energy found estimates the ground energy from above.",
+      "lesson": "3.1"
     },
     {
       "term": "quantum approximate optimization algorithm",
       "aliases": [
         "QAOA"
       ],
-      "definition": "A variational algorithm that alternates a cost Hamiltonian evolution and a mixer Hamiltonian evolution to find good solutions of combinatorial problems.",
-      "lesson": "3.3"
+      "definition": "A variational method for combinatorial problems: start in |+…+⟩ and apply p rounds of a cost layer e^{−iγH_C/2} and a mixer layer, tuning the 2p angles so that measurement gives good bit strings.",
+      "lesson": "3.1"
+    },
+    {
+      "term": "ground state",
+      "aliases": [],
+      "definition": "The lowest-energy eigenstate of a Hamiltonian, with eigenvalue E₀. For H₂ at 0.74 Å the lesson's exact value is E₀ = −1.1373 Ha.",
+      "lesson": "3.2"
+    },
+    {
+      "term": "variational principle",
+      "aliases": [],
+      "definition": "For any normalized |ψ⟩, ⟨ψ|H|ψ⟩ ≥ E₀, because it is an average of energies that are all at least E₀. So any trial state gives an upper bound on the ground energy.",
+      "lesson": "3.2"
+    },
+    {
+      "term": "chemical accuracy",
+      "aliases": [],
+      "definition": "An energy error of about 1.6 mHa (1 kcal/mol), the precision at which computed reaction energies become useful in chemistry.",
+      "lesson": "3.2"
+    },
+    {
+      "term": "Hartree–Fock state",
+      "aliases": [
+        "Hartree–Fock"
+      ],
+      "definition": "The simplest guess for the electrons: each one sits in its own lowest orbital. For H₂ on four qubits it is |1100⟩, and the VQE of lesson 3.2 starts from it.",
+      "lesson": "3.2"
+    },
+    {
+      "term": "Jordan–Wigner",
+      "aliases": [
+        "Jordan–Wigner mapping"
+      ],
+      "definition": "A recipe that turns the operators of electrons into qubit operators, with one qubit per spin orbital and |1⟩ meaning occupied. It writes a molecular Hamiltonian as a sum of Pauli strings.",
+      "lesson": "3.2"
+    },
+    {
+      "term": "Pauli string",
+      "aliases": [
+        "Pauli strings"
+      ],
+      "definition": "A tensor product of I, X, Y and Z, one per qubit, like Z⊗Z⊗I⊗X. A Hamiltonian is written as a weighted sum of them, and each string is measured on its own.",
+      "lesson": "3.2"
     },
     {
       "term": "Max-Cut",
-      "aliases": [
-        "MaxCut"
-      ],
-      "definition": "The problem of splitting the vertices of a graph into two sets to maximize the number of edges between them.",
+      "aliases": [],
+      "definition": "Color the vertices of a graph with two colors to maximize the number of edges whose ends differ. A triangle has best cut 2, since its three edges cannot all be cut.",
+      "lesson": "3.3"
+    },
+    {
+      "term": "approximation ratio",
+      "aliases": [],
+      "definition": "The value a method finds divided by the best possible value. For Max-Cut, a ratio of 1 means an optimal cut.",
       "lesson": "3.3"
     },
     {
       "term": "cost Hamiltonian",
       "aliases": [],
-      "definition": "A Hamiltonian whose ground state encodes the optimal solution of a problem, such as the Max-Cut cost operator.",
+      "definition": "A diagonal Hamiltonian whose value on each bit string is that string's cost, so its lowest eigenstate is the best answer. For Max-Cut it is the sum of Z_iZ_j over the edges.",
       "lesson": "3.3"
     },
     {
@@ -551,7 +661,7 @@
       "aliases": [
         "mixer"
       ],
-      "definition": "The Hamiltonian, usually a sum of X terms, whose evolution moves amplitude between bit strings in QAOA.",
+      "definition": "The Hamiltonian X₁ + X₂ + … whose evolution moves amplitude between bit strings that differ in one bit. Without it, the cost layer would only add phases and change no probability.",
       "lesson": "3.3"
     },
     {
@@ -559,86 +669,114 @@
       "aliases": [
         "re-uploading"
       ],
-      "definition": "A model design in which the input data is encoded repeatedly between trainable layers, increasing the expressive power of a small circuit.",
+      "definition": "Encoding the same input x again in several layers, with trainable gates in between: R(x), trainable gates, R(x) again. A single qubit gets a much richer function of x this way.",
       "lesson": "3.4"
     },
     {
       "term": "variational quantum classifier",
       "aliases": [
-        "quantum classifier",
-        "quantum neural network"
+        "quantum classifier"
       ],
-      "definition": "A parameterized circuit trained to assign class labels to data encoded in qubits, with the label read from a measurement.",
+      "definition": "A circuit that encodes a data point in qubits, applies trainable gates and reads a label from a measurement, say the sign of ⟨Z⟩. Training moves the angles to cut the classification error.",
       "lesson": "3.4"
+    },
+    {
+      "term": "Schmidt coefficients",
+      "aliases": [],
+      "definition": "The weights λᵢ in |φ⟩ = Σ λᵢ|aᵢ⟩|bᵢ⟩, a sum of orthogonal product states. One nonzero weight means a product state; a Bell state has two, both equal to 1/√2.",
+      "lesson": "3.5"
+    },
+    {
+      "term": "hardware-efficient ansatz",
+      "aliases": [],
+      "definition": "A block of single-qubit rotations on every qubit followed by CNOTs between connected neighbours, repeated. It is chosen because the device runs it well, not because of the problem, and each block enlarges the set of reachable states.",
+      "lesson": "3.5"
+    },
+    {
+      "term": "SPSA",
+      "aliases": [],
+      "definition": "An optimizer that perturbs all angles at once by ±c in a random direction and estimates the gradient from just two evaluations per step. It is cheap and tolerates shot noise, but needs many steps.",
+      "lesson": "3.6"
+    },
+    {
+      "term": "COBYLA",
+      "aliases": [],
+      "definition": "An optimizer that uses no gradient: it fits a linear model of the cost to recent evaluations and moves inside a trust region that shrinks over time. It suits small problems with a smooth cost.",
+      "lesson": "3.6"
+    },
+    {
+      "term": "barren plateau",
+      "aliases": [
+        "barren plateaus"
+      ],
+      "definition": "A flat landscape: for deep random circuits the variance of each gradient shrinks exponentially with the number of qubits, so an optimizer starting at a random point has no direction to follow.",
+      "lesson": "3.7"
+    },
+    {
+      "term": "dissociation curve",
+      "aliases": [],
+      "definition": "The ground-state energy of a molecule as the atoms move apart. For H₂ the minimum of the curve sits at the bond length, 0.74 Å.",
+      "lesson": "3.9"
     },
     {
       "term": "density operator",
       "aliases": [
-        "density matrix",
-        "density operators",
-        "density matrices"
+        "density matrix"
       ],
-      "definition": "The operator ρ that describes a quantum state, pure or mixed, with ρ ≥ 0 and Tr(ρ) = 1. Probabilities follow from Tr(ρP) for a projector P.",
+      "definition": "The matrix ρ, with ρ ≥ 0 and Tr ρ = 1, that holds everything measurable about a state. A pure state has ρ = |ψ⟩⟨ψ|, and a mixture of |ψᵢ⟩ with probabilities pᵢ has ρ = Σ pᵢ|ψᵢ⟩⟨ψᵢ|.",
       "lesson": "4.1"
     },
     {
-      "term": "mixed state",
-      "aliases": [
-        "mixed states"
-      ],
-      "definition": "A statistical mixture of pure states, with a density operator ρ = Σ pᵢ|ψᵢ⟩⟨ψᵢ|. It arises from classical ignorance or from entanglement with an unobserved system.",
+      "term": "partial trace",
+      "aliases": [],
+      "definition": "The operation that removes a subsystem from ρ by summing over it, leaving the reduced state of the rest. Tracing out one qubit of a Bell pair gives I/2.",
       "lesson": "4.1"
     },
     {
       "term": "purity",
       "aliases": [],
-      "definition": "The quantity Tr(ρ²). It equals 1 for a pure state and is smaller for a mixed state, down to 1/d for the maximally mixed state of dimension d.",
+      "definition": "Tr(ρ²): 1 for a pure state, falling to 1/d for the maximally mixed state of dimension d. For one qubit the Bloch vector has length √(2 Tr(ρ²) − 1).",
       "lesson": "4.1"
     },
     {
       "term": "quantum channel",
-      "aliases": [
-        "quantum channels",
-        "noise channel"
-      ],
-      "definition": "A completely positive, trace-preserving map ρ → E(ρ) that describes the evolution of an open quantum system, including noise.",
+      "aliases": [],
+      "definition": "Any physically allowed change ρ → E(ρ) of a possibly noisy state: linear, trace-preserving and completely positive. Unitary gates are channels, and so are bit flips and decay.",
       "lesson": "4.1"
     },
     {
       "term": "Kraus operators",
       "aliases": [
-        "Kraus operator",
         "operator-sum representation"
       ],
-      "definition": "Operators Kₖ with Σ Kₖ†Kₖ = I that define a channel by E(ρ) = Σ KₖρKₖ†.",
+      "definition": "Matrices Kₖ with Σ Kₖ†Kₖ = I that write a channel as E(ρ) = Σ Kₖ ρ Kₖ†. A bit flip with probability p has K₀ = √(1−p)·I and K₁ = √p·X.",
       "lesson": "4.1"
     },
     {
       "term": "bit-flip channel",
       "aliases": [
-        "bit flip channel",
         "bit flip",
         "bit flips"
       ],
-      "definition": "A channel that applies X with probability p and does nothing otherwise.",
+      "definition": "Applies X with probability p and does nothing with probability 1 − p, so |0⟩ becomes |1⟩ with probability p.",
       "lesson": "4.1"
     },
     {
       "term": "phase-flip channel",
       "aliases": [
-        "phase flip channel",
         "phase flip",
         "phase flips"
       ],
-      "definition": "A channel that applies Z with probability p and does nothing otherwise. It destroys superpositions without changing populations.",
+      "definition": "Applies Z with probability p. The populations of |0⟩ and |1⟩ stay, but the off-diagonal terms of ρ shrink by a factor 1 − 2p, so |+⟩ drifts toward a 50/50 mixture of |+⟩ and |−⟩.",
       "lesson": "4.1"
     },
     {
       "term": "depolarizing channel",
       "aliases": [
-        "depolarizing noise"
+        "depolarizing noise",
+        "depolarizing"
       ],
-      "definition": "A channel that replaces the state with the maximally mixed state with probability p, equivalent to applying X, Y or Z at random.",
+      "definition": "With probability p the qubit is replaced by the maximally mixed state I/2; otherwise it is untouched. The Bloch vector shrinks by a factor 1 − p in every direction.",
       "lesson": "4.1"
     },
     {
@@ -646,49 +784,15 @@
       "aliases": [
         "amplitude damping channel"
       ],
-      "definition": "A channel that models energy loss, sending |1⟩ to |0⟩ with probability γ. It is the standard model of T1 relaxation.",
+      "definition": "Energy loss: |1⟩ decays to |0⟩ with probability γ, while |0⟩ stays put. It is the usual model of T1 relaxation and pulls the Bloch vector toward |0⟩.",
       "lesson": "4.1"
-    },
-    {
-      "term": "dephasing",
-      "aliases": [
-        "dephasing channel"
-      ],
-      "definition": "Loss of phase coherence between |0⟩ and |1⟩ without energy loss. It is the standard model of T2 decay.",
-      "lesson": "4.1"
-    },
-    {
-      "term": "T1",
-      "aliases": [
-        "T1 time",
-        "relaxation time"
-      ],
-      "definition": "The relaxation time of a qubit: the characteristic time for an excited |1⟩ to decay to |0⟩.",
-      "lesson": "5.3"
-    },
-    {
-      "term": "T2",
-      "aliases": [
-        "T2 time",
-        "coherence time"
-      ],
-      "definition": "The dephasing time of a qubit: the characteristic time over which superpositions lose their phase coherence. It satisfies T2 ≤ 2·T1.",
-      "lesson": "5.3"
     },
     {
       "term": "quantum error correction",
       "aliases": [
         "error correction"
       ],
-      "definition": "The use of redundancy across several physical qubits to detect and undo errors without measuring the encoded information.",
-      "lesson": "4.2"
-    },
-    {
-      "term": "three-qubit bit-flip code",
-      "aliases": [
-        "bit-flip code"
-      ],
-      "definition": "A code that encodes a|0⟩ + b|1⟩ as a|000⟩ + b|111⟩ and corrects any single bit flip by majority vote.",
+      "definition": "Spreading one qubit's state over several physical qubits so that an error can be found by parity checks and undone, without ever measuring the stored state itself.",
       "lesson": "4.2"
     },
     {
@@ -697,7 +801,7 @@
         "syndrome measurement",
         "syndromes"
       ],
-      "definition": "The outcome of parity checks that reveal which error occurred without revealing the encoded state.",
+      "definition": "The bits that the parity checks return. They say where the error is, for example 10 for a flip of qubit 0 in the bit-flip code, without revealing a or b.",
       "lesson": "4.2"
     },
     {
@@ -706,7 +810,21 @@
         "logical qubits",
         "logical state"
       ],
-      "definition": "A qubit encoded in the joint state of several physical qubits, protected by an error-correcting code.",
+      "definition": "A qubit stored in the joint state of several physical qubits, such as a|000⟩ + b|111⟩. Its error rate can be far below that of the physical qubits that carry it.",
+      "lesson": "4.2"
+    },
+    {
+      "term": "pseudo-threshold",
+      "aliases": [],
+      "definition": "The physical error rate p* at which a code's logical failure probability equals that of one bare qubit. Below it the code helps and above it the code hurts; for the three-qubit code it is 1/2. It is not the threshold of fault-tolerant computation.",
+      "lesson": "4.2"
+    },
+    {
+      "term": "fault tolerance",
+      "aliases": [
+        "fault-tolerant"
+      ],
+      "definition": "Building circuits so that one faulty gate causes at most one error in each block of encoded data, which the code can then fix. Otherwise the correcting circuit would add more errors than it removes.",
       "lesson": "4.2"
     },
     {
@@ -714,7 +832,22 @@
       "aliases": [
         "three-qubit phase-flip code"
       ],
-      "definition": "The Hadamard-conjugated version of the bit-flip code, encoding in |+++⟩ and |−−−⟩ to correct a single phase flip.",
+      "definition": "The bit-flip code in the ± basis: a|+++⟩ + b|−−−⟩. A Z error swaps + and −, so the same majority logic corrects a single phase flip.",
+      "lesson": "4.3"
+    },
+    {
+      "term": "stabilizer",
+      "aliases": [
+        "stabilizers",
+        "stabilizer codes"
+      ],
+      "definition": "A Pauli operator S, like ZZI, with S|ψ⟩ = |ψ⟩. A stabilizer code is the set of states fixed by several commuting stabilizers, and measuring them gives the syndrome.",
+      "lesson": "4.3"
+    },
+    {
+      "term": "code space",
+      "aliases": [],
+      "definition": "The set of states fixed by every stabilizer, where the encoded qubit lives. An error takes the state out of it, and the syndrome says which way.",
       "lesson": "4.3"
     },
     {
@@ -722,84 +855,64 @@
       "aliases": [
         "nine-qubit code"
       ],
-      "definition": "The nine-qubit code that concatenates the phase-flip and bit-flip codes and corrects an arbitrary single-qubit error.",
+      "definition": "Nine physical qubits per logical qubit: three blocks of the phase-flip code, each qubit itself replaced by a bit-flip triple. It corrects any single-qubit error, whether a bit flip, a phase flip or both.",
       "lesson": "4.4"
     },
     {
-      "term": "stabilizer",
+      "term": "concatenation",
+      "aliases": [],
+      "definition": "Encoding each qubit of a code with another code, level after level. The Shor code is one such pair, with the bit-flip code inside the phase-flip code.",
+      "lesson": "4.4"
+    },
+    {
+      "term": "logical operator",
       "aliases": [
-        "stabilizers",
-        "stabilizer code",
-        "stabilizer codes",
-        "stabilizer formalism"
+        "logical operators"
       ],
-      "definition": "A Pauli operator S with S|ψ⟩ = |ψ⟩. A stabilizer code is defined as the joint +1 eigenspace of a set of commuting stabilizers.",
+      "definition": "An operator that acts on the encoded qubit, like XXX on a|000⟩ + b|111⟩. It commutes with every stabilizer, so it changes the stored state without producing a syndrome.",
       "lesson": "4.5"
     },
     {
       "term": "code distance",
       "aliases": [],
-      "definition": "The minimum number of physical qubits on which a logical operator acts nontrivially. A code of distance d corrects up to ⌊(d−1)/2⌋ errors.",
+      "definition": "The size of the smallest logical operator, counted in qubits it touches. A code of distance d corrects up to ⌊(d−1)/2⌋ errors, so distance 3 corrects one.",
       "lesson": "4.5"
     },
     {
       "term": "toric code",
       "aliases": [],
-      "definition": "A topological stabilizer code on a lattice with periodic boundaries, whose stabilizers are local star and plaquette operators.",
+      "definition": "A stabilizer code on a grid wrapped into a torus. Each star is X on the four edges at a vertex and each plaquette is Z on the four edges of a face; an error shows up as a pair of violated checks.",
       "lesson": "4.6"
     },
     {
       "term": "threshold theorem",
       "aliases": [
-        "threshold",
-        "error threshold",
-        "fault-tolerance threshold"
+        "threshold"
       ],
-      "definition": "The result that if the physical error rate per operation is below a threshold, arbitrarily long computations can be made reliable with polynomial overhead.",
-      "lesson": "4.7"
-    },
-    {
-      "term": "fault tolerance",
-      "aliases": [
-        "fault-tolerant"
-      ],
-      "definition": "Designing circuits so that a single fault cannot spread into an uncorrectable error in the encoded data.",
+      "definition": "If every operation fails with probability below some threshold, a computation of any length can be made as reliable as you like, at a cost that grows only polynomially with its size.",
       "lesson": "4.7"
     },
     {
       "term": "transpilation",
       "aliases": [
-        "transpile",
         "transpiler",
         "transpiled"
       ],
-      "definition": "The process of rewriting a circuit into the native gates and connectivity of a specific device, while optimizing it.",
+      "definition": "Rewriting a circuit so that it uses only the gates a device runs and only the qubit pairs it connects, adding SWAPs where needed and simplifying where possible.",
       "lesson": "5.1"
     },
     {
       "term": "coupling map",
-      "aliases": [
-        "connectivity"
-      ],
-      "definition": "The graph of which pairs of physical qubits can interact directly with a two-qubit gate on a device.",
+      "aliases": [],
+      "definition": "The graph whose nodes are physical qubits and whose edges are the pairs that can take a two-qubit gate directly. On a line 0–1–2, a CNOT between 0 and 2 needs help.",
       "lesson": "5.1"
     },
     {
       "term": "basis gates",
       "aliases": [
-        "native gates",
-        "basis gate"
+        "native gates"
       ],
-      "definition": "The gate set a device implements directly. All other gates are decomposed into it during transpilation.",
-      "lesson": "5.1"
-    },
-    {
-      "term": "SWAP gate",
-      "aliases": [
-        "SWAP",
-        "SWAP gates"
-      ],
-      "definition": "A two-qubit gate that exchanges the states of two qubits. Transpilers insert SWAPs to connect qubits that are not adjacent.",
+      "definition": "The small set of gates a device really executes, such as sx, rz and a two-qubit gate like ECR. Every other gate is rewritten in terms of them.",
       "lesson": "5.1"
     },
     {
@@ -809,32 +922,45 @@
         "Estimator",
         "primitive"
       ],
-      "definition": "The Qiskit interfaces Sampler, which returns measurement samples, and Estimator, which returns expectation values of observables.",
+      "definition": "Qiskit's two ways to run circuits: the Sampler returns measured bit strings, and the Estimator returns expectation values of observables.",
       "lesson": "5.2"
     },
     {
-      "term": "shots",
-      "aliases": [
-        "shot"
-      ],
-      "definition": "The number of times a circuit is run and measured to collect outcome statistics.",
-      "lesson": "1.2"
+      "term": "dephasing",
+      "aliases": [],
+      "definition": "Loss of the relative phase of a superposition with no energy exchange: the populations stay and the off-diagonal terms of ρ decay. It is the usual model of T2.",
+      "lesson": "5.3"
     },
     {
-      "term": "observable",
-      "aliases": [
-        "observables"
-      ],
-      "definition": "A Hermitian operator whose eigenvalues are the possible measurement results and whose expectation value predicts their average.",
-      "lesson": "0.3"
+      "term": "noise model",
+      "aliases": [],
+      "definition": "A list of the error channels attached to each gate and measurement of a device, used to simulate noisy runs, for example depolarizing noise after each gate and flips at readout.",
+      "lesson": "5.3"
+    },
+    {
+      "term": "T1",
+      "aliases": [],
+      "definition": "The time scale on which an excited qubit decays from |1⟩ to |0⟩: the chance that it is still excited falls as e^{−t/T1}.",
+      "lesson": "5.3"
+    },
+    {
+      "term": "T2",
+      "aliases": [],
+      "definition": "The time scale on which a superposition loses its phase, so that the off-diagonal terms of ρ shrink as e^{−t/T2}. It cannot exceed 2·T1, because energy decay destroys phase too.",
+      "lesson": "5.3"
     },
     {
       "term": "readout error",
       "aliases": [
-        "measurement error",
         "readout errors"
       ],
-      "definition": "The probability that a measurement reports the wrong bit. It is one of the main sources of error on current devices.",
+      "definition": "The chance that a measurement reports 0 for a qubit in |1⟩, or the reverse. These probabilities form an assignment matrix, which can be inverted to undo much of the error.",
+      "lesson": "5.3"
+    },
+    {
+      "term": "assignment matrix",
+      "aliases": [],
+      "definition": "A matrix whose entry (i, j) is the probability of reading bit string i when the true string was j. Inverting it undoes much of the readout error.",
       "lesson": "5.3"
     },
     {
@@ -842,7 +968,7 @@
       "aliases": [
         "gate errors"
       ],
-      "definition": "The average infidelity of a gate on hardware, typically much larger for two-qubit gates than for single-qubit gates.",
+      "definition": "How far a gate on hardware is from the ideal one, usually quoted as an average infidelity. Two-qubit gates are typically much worse than single-qubit gates, so counting them estimates the total error.",
       "lesson": "5.3"
     },
     {
@@ -850,7 +976,7 @@
       "aliases": [
         "mitigation"
       ],
-      "definition": "Techniques that reduce the bias of noisy expectation values without a quantum code, using extra circuit runs (for example gate folding) and classical post-processing.",
+      "definition": "Reducing the bias of noisy expectation values by running extra circuits and combining their results classically, without any encoding. It costs more shots and does not repair a single run.",
       "lesson": "5.4"
     },
     {
@@ -858,16 +984,68 @@
       "aliases": [
         "ZNE"
       ],
-      "definition": "A mitigation method that runs a circuit at several amplified noise levels and extrapolates the expectation value to zero noise.",
+      "definition": "Run the circuit at noise levels 1, 3, 5, for example by folding gates, then fit the expectation values and extrapolate back to noise level 0.",
       "lesson": "5.4"
     },
     {
-      "term": "noise model",
+      "term": "Ising energy",
       "aliases": [
-        "noise models"
+        "Ising model"
       ],
-      "definition": "A description of the errors of a device as a set of channels attached to gates and measurements, used in noisy simulation.",
-      "lesson": "4.1"
+      "definition": "The energy of spins s_i = ±1 as a sum of couplings J_ij s_i s_j over pairs plus fields h_i s_i. Optimization problems are written in this form so that the answer is the state of lowest energy.",
+      "lesson": "6.1"
+    },
+    {
+      "term": "QUBO",
+      "aliases": [
+        "quadratic unconstrained binary optimization"
+      ],
+      "definition": "The same kind of problem written with bits x_i = 0 or 1: the cost is xᵀQx plus a constant, with Q an upper triangular matrix. It follows from the Ising form by s = 1 − 2x.",
+      "lesson": "6.1"
+    },
+    {
+      "term": "frustration",
+      "aliases": [],
+      "definition": "The situation where no spin configuration satisfies every coupling at once, as on a triangle with an antiferromagnetic coupling on each edge. The best energy then leaves some couplings unsatisfied.",
+      "lesson": "6.1"
+    },
+    {
+      "term": "adiabatic theorem",
+      "aliases": [],
+      "definition": "If a Hamiltonian changes slowly and the gap above the ground state stays open, a system that starts in the ground state stays close to the instantaneous ground state. How slow is slow enough is set by the smallest gap.",
+      "lesson": "6.2"
+    },
+    {
+      "term": "quantum annealing",
+      "aliases": [],
+      "definition": "Finding the lowest-energy state of an Ising problem by starting in the ground state of a transverse field and slowly trading that field for the problem's energy. In practice it is a heuristic: nothing guarantees the sweep is slow enough.",
+      "lesson": "6.3"
+    },
+    {
+      "term": "simulated annealing",
+      "aliases": [],
+      "definition": "A classical optimization method that flips random spins, always accepts a lower energy, accepts a higher one with probability e^(−ΔE/kT), and lowers the temperature over time. It crosses energy barriers by thermal fluctuations.",
+      "lesson": "6.3"
+    },
+    {
+      "term": "minor embedding",
+      "aliases": [],
+      "definition": "Fitting a problem onto hardware that lacks some of its couplings, by representing a logical qubit with a connected chain of physical qubits.",
+      "lesson": "6.4"
+    },
+    {
+      "term": "chain strength",
+      "aliases": [],
+      "definition": "The size F of the ferromagnetic coupling −F Z Z that holds the qubits of a chain together. Too small and the chain breaks in the ground state; too large and the rescaled problem shrinks.",
+      "lesson": "6.4"
+    },
+    {
+      "term": "penalty term",
+      "aliases": [
+        "penalty weight"
+      ],
+      "definition": "A term added to the energy that is zero when a constraint holds and positive when it is broken, so that an annealer, which has no rules of its own, avoids violations. Its weight must exceed what a violation could gain in the objective.",
+      "lesson": "6.5"
     }
   ]
 }

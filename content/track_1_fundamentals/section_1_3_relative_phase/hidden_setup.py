@@ -1,34 +1,34 @@
-# Setup oculto da lição 1.3: prepara o estado de entrada, que o aluno não conhece.
-# O validador troca a entrada (via _QLP_INPUT): |0⟩, |1⟩, |+⟩, |+i⟩ e um estado genérico.
+# Hidden setup for lesson 1.3: prepares the input state, which the learner does not know.
+# The validator swaps the input (via _QLP_INPUT): |0⟩, |1⟩, |+⟩, |+i⟩ and a generic state.
 try:
-    _entrada = _QLP_INPUT
+    _input = _QLP_INPUT
     del _QLP_INPUT
 except NameError:
-    _entrada = "generic"
+    _input = "generic"
 
 
-def _criar_preparacao(entrada):
+def _build_preparation(input_):
     from qiskit import QuantumCircuit as _QuantumCircuit
 
-    circuito = _QuantumCircuit(1, name="prepare_input")
-    if entrada == 1:
-        circuito.x(0)
-    elif entrada == "plus":
-        circuito.h(0)
-    elif entrada == "plusi":
-        circuito.h(0)
-        circuito.s(0)
-    elif entrada == "generic":
-        circuito.ry(1.15, 0)
-        circuito.rz(2.2, 0)
-    porta = circuito.to_gate()
+    circuit = _QuantumCircuit(1, name="prepare_input")
+    if input_ == 1:
+        circuit.x(0)
+    elif input_ == "plus":
+        circuit.h(0)
+    elif input_ == "plusi":
+        circuit.h(0)
+        circuit.s(0)
+    elif input_ == "generic":
+        circuit.ry(1.15, 0)
+        circuit.rz(2.2, 0)
+    gate = circuit.to_gate()
 
     def prepare_input(qc):
-        """Prepara no qubit 0 um estado de entrada desconhecido."""
-        qc.append(porta, [0])
+        """Prepare an unknown input state on qubit 0."""
+        qc.append(gate, [0])
 
     return prepare_input
 
 
-prepare_input = _criar_preparacao(_entrada)
-del _criar_preparacao, _entrada
+prepare_input = _build_preparation(_input)
+del _build_preparation, _input

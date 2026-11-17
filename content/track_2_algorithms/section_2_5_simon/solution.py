@@ -1,11 +1,15 @@
+# Idea: one query followed by Hadamards makes every outcome y orthogonal to s (y·s = 0 mod 2).
+# Collect a few outcomes, then keep the nonzero string that is orthogonal to all of them.
 from qiskit import QuantumCircuit
 
 qc = QuantumCircuit(6, 3)
+# Uniform superposition on the input register; the output register stays in |000⟩.
 for qubit in range(3):
     qc.h(qubit)
 
 oracle(qc)
 
+# Second Hadamard layer: only the strings y with y·s = 0 keep amplitude, each equally likely.
 for qubit in range(3):
     qc.h(qubit)
 qc.measure([0, 1, 2], [0, 1, 2])

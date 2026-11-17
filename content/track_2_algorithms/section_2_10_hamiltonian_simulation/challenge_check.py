@@ -1,6 +1,6 @@
-"""Desafio da lição 2.10: mesmo Hamiltoniano e estado alvo da missão (exponencial de matriz
-exata), mas com no máximo 20 portas e fidelidade ≥ 0,995. Só a fórmula de segunda ordem
-(simétrica) com as meias etapas do campo fundidas chega lá: 5 etapas, 17 portas."""
+"""Challenge for lesson 2.10: same Hamiltonian and target state as the mission (exact matrix
+exponential), but with at most 20 gates and fidelity ≥ 0.995. Only the second-order
+(symmetric) formula with the half steps of the field merged gets there: 5 steps, 17 gates."""
 
 import numpy as np
 from qiskit import QuantumCircuit

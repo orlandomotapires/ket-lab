@@ -18,7 +18,7 @@ def levels_needed(p, target):
     return 0
 
 
-# Threshold: the value 0 < p < 1 with f(p) = p.
+# Pseudo-threshold: the value 0 < p < 1 with f(p) = p.
 p_th = 0.0
 
 p = 0.01

@@ -1,12 +1,12 @@
-"""Validação do projeto 4.8 (código de Shor sob ruído): rubrica com cinco critérios.
+"""Validation for project 4.8 (Shor code under noise): rubric with five criteria.
 
-1. decodificador: qubit 0 volta a |ψ⟩ após X, Y ou Z em qualquer um dos nove qubits;
-2. logical_pauli concorda com a referência em muitos padrões de erro;
-3. logical_failure(p) concorda com a enumeração exata dos 4^9 padrões;
-4. logical_failure(p) < bare_failure(p) para p pequeno;
-5. p_star perto do cruzamento exato.
-A referência calcula o Pauli lógico por propagação clássica dos bits X e Z e conta os
-padrões que falham por peso, o que dá p_L(p) = soma_w N_w (p/3)^w (1-p)^(9-w).
+1. decoder: qubit 0 returns to |ψ⟩ after X, Y or Z on any of the nine qubits;
+2. logical_pauli agrees with the reference on many error patterns;
+3. logical_failure(p) agrees with the exact enumeration of the 4^9 patterns;
+4. logical_failure(p) < bare_failure(p) for small p;
+5. p_star close to the exact crossover.
+The reference computes the logical Pauli by classical propagation of the X and Z bits and counts the
+patterns that fail by weight, which gives p_L(p) = soma_w N_w (p/3)^w (1-p)^(9-w).
 """
 
 import itertools
@@ -26,21 +26,21 @@ LETTERS = "IXYZ"
 
 
 def reference_pauli(error):
-    """Pauli lógico para um padrão de erro (lista de nove letras)."""
+    """Logical Pauli for an error pattern (list of nine letters)."""
     x = [c in "XY" for c in error]
     z = [c in "YZ" for c in error]
     leader_x, leader_z = [], []
     for block in BLOCKS:
-        leader_x.append(sum(x[q] for q in block) >= 2)  # voto interno falha: X no líder
-        leader_z.append(sum(z[q] for q in block) % 2 == 1)  # Z em qualquer qubit chega ao líder
-    logical_z = sum(leader_x) % 2 == 1  # X em um líder (base +/−) é um Z lógico
-    logical_x = sum(leader_z) >= 2  # o voto entre líderes erra
+        leader_x.append(sum(x[q] for q in block) >= 2)  # inner vote fails: X on the leader
+        leader_z.append(sum(z[q] for q in block) % 2 == 1)  # Z on any qubit reaches the leader
+    logical_z = sum(leader_x) % 2 == 1  # X on a leader (+/− basis) is a logical Z
+    logical_x = sum(leader_z) >= 2  # the vote among leaders fails
     return {
         (False, False): "I", (True, False): "X", (False, True): "Z", (True, True): "Y"}[(logical_x, logical_z)]
 
 
 def failing_counts():
-    """N_w: quantos dos 4^9 padrões de peso w deixam um Pauli lógico diferente de I."""
+    """N_w: how many of the 4^9 patterns of weight w leave a logical Pauli different from I."""
     counts = [0] * 10
     for pattern in itertools.product(LETTERS, repeat=9):
         if reference_pauli(pattern) != "I":

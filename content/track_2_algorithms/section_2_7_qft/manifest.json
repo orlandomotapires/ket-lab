@@ -17,7 +17,7 @@
       2
     ]
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "validation": {
     "type": "state_cases",
     "tolerance": 0.999,

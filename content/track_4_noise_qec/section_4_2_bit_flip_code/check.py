@@ -1,8 +1,8 @@
-"""Validação da lição 3.6: o estado lógico α|000⟩ + β|111⟩ sobrevive a qualquer
-bit flip único, para vários estados de entrada; e o ruído de bit flip em todos os
-qubits segue a fórmula 1 − 3p² + 2p³.
+"""Validation for lesson 4.2: the logical state α|000⟩ + β|111⟩ survives any single
+bit flip, for several input states; and bit-flip noise on all the
+qubits follows the formula 1 − 3p² + 2p³.
 
-A fidelidade é calculada a partir das portas e canais do circuito do aluno.
+The fidelity is computed from the gates and channels of the learner's circuit.
 """
 
 import numpy as np
@@ -12,12 +12,12 @@ from qlp_engine import pl, simulator
 INPUTS = [(0.0, 0.0), (np.pi / 2, 0.0), (1.1, 0.7)]
 SINGLE_ERRORS = ["none", "x0", "x1", "x2"]
 P = 0.1
-EXPECTED_NOISY = 1 - 3 * P**2 + 2 * P**3  # 0,972
+EXPECTED_NOISY = 1 - 3 * P**2 + 2 * P**3  # 0.972
 TOLERANCE = 0.999
 
 
 def logical_state(theta, phi):
-    """α|000⟩ + β|111⟩ para |ψ⟩ = RZ(φ) RY(θ) |0⟩ (a fase global não importa)."""
+    """α|000⟩ + β|111⟩ for |ψ⟩ = RZ(φ) RY(θ) |0⟩ (the global phase does not matter)."""
     alpha = np.cos(theta / 2) * np.exp(-1j * phi / 2)
     beta = np.sin(theta / 2) * np.exp(1j * phi / 2)
     psi = np.zeros(8, dtype=complex)
@@ -26,12 +26,12 @@ def logical_state(theta, phi):
 
 
 def data_density(state, n):
-    """Matriz densidade dos qubits 0, 1 e 2 (descarta as ancillas)."""
+    """Density matrix of qubits 0, 1 and 2 (discards the ancillas)."""
     rho = state if state.ndim == 2 else np.outer(state, state.conj())
     keep = 3
     tensor = rho.reshape((2,) * (2 * n))
-    # índice de linha: qubits n-1 … 0 (o qubit 0 é o eixo n-1); as ancillas são os qubits altos.
-    traced = np.einsum("abxyzabuvw->xyzuvw", tensor)  # soma sobre q4 e q3 (linha = coluna)
+    # row index: qubits n-1 ... 0 (qubit 0 is axis n-1); the ancillas are the high qubits.
+    traced = np.einsum("abxyzabuvw->xyzuvw", tensor)  # sum over q4 and q3 (row = column)
     return traced.reshape(2**keep, 2**keep)
 
 
@@ -59,8 +59,8 @@ def check(ns, run_case):
             if f < TOLERANCE:
                 key = "encode_wrong" if error == "none" else "single_fail"
                 return {"passed": False, "key": key, "params": {"error": error.upper(), "fidelity": f}}
-    # Com |0⟩, um erro lógico dá um estado ortogonal: a fidelidade é a probabilidade de
-    # sucesso, 1 − 3p² + 2p³. Num estado genérico, um X lógico ainda tem sobreposição com |ψ⟩.
+    # With |0⟩, a logical error gives an orthogonal state: the fidelity is the success
+    # probability, 1 − 3p² + 2p³. For a generic state, a logical X still overlaps with |ψ⟩.
     noisy = fidelity(run_case, 0.0, 0.0, "bitflip")
     if abs(noisy - EXPECTED_NOISY) > 0.003:
         return {"passed": False, "key": "noisy_mismatch", "params": {"fidelity": noisy, "expected": EXPECTED_NOISY}}

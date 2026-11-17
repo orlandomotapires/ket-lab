@@ -1,45 +1,31 @@
-## Complex numbers
+## Two states with the same odds
 
-A complex number is $z = x + iy$ with $x, y$ real and $i^2 = -1$. Its **complex conjugate** is $z^* = x - iy$, and its **modulus** is
+The states $(|0\rangle + |1\rangle)/\sqrt2$ and $(|0\rangle - |1\rangle)/\sqrt2$ give outcome 0 half the time and outcome 1 half the time, in the computational basis. Yet they are different states, and a Hadamard gate followed by a measurement tells them apart with certainty (Track 1 does this). The difference is a minus sign on one amplitude, and a minus sign is the simplest case of a phase. To talk about phases you need amplitudes that are complex numbers.
 
-$$
-|z| = \sqrt{z^* z} = \sqrt{x^2 + y^2}.
-$$
+## Arithmetic and the modulus
 
-Addition acts on real and imaginary parts separately. Multiplication uses $i^2 = -1$:
+A complex number is $z = x + iy$ with $x, y$ real and $i^2 = -1$. Its conjugate is $z^* = x - iy$ and its **modulus** is $|z| = \sqrt{z^* z} = \sqrt{x^2 + y^2}$. Addition works on the real and imaginary parts separately; multiplication uses $i^2 = -1$:
 
 $$
 (3 + 4i)(1 - 2i) = 3 - 6i + 4i - 8i^2 = 11 - 2i.
 $$
 
-Python writes $i$ as `1j`, so `(3 + 4j) * (1 - 2j)` gives `(11-2j)`. `abs(z)` returns the modulus and `np.angle(z)` (or `cmath.phase(z)`) the argument.
+The $-8i^2$ is the term people drop or get the sign of. Python writes $i$ as `1j`, so `(3 + 4j) * (1 - 2j)` prints `(11-2j)`, and `abs(z)` is the modulus.
 
 ## Polar form
 
-Every nonzero $z$ is a point in the plane at distance $r = |z|$ from the origin and angle $\varphi$ from the real axis:
+Draw $z$ as a point in the plane. Its distance from the origin is $r = |z|$ and the angle from the real axis is $\varphi$, the **phase** (or argument) of $z$:
 
 $$
 z = r\,e^{i\varphi} = r(\cos\varphi + i\sin\varphi).
 $$
 
-The angle $\varphi$ is the **phase** (argument) of $z$. For $3 + 4i$, $r = 5$ and $\varphi = \arctan(4/3) \approx 0.927$ rad. In polar form, products are simple: moduli multiply and phases add,
+For $3 + 4i$ we get $r = 5$ and $\varphi = \arctan(4/3) \approx 0.927$ rad. NumPy returns it with `np.angle(z)`. Polar form is what makes products easy, because moduli multiply and phases add. Check on the example above: $|3+4i| = 5$ and $|1-2i| = \sqrt5$, so the product has modulus $5\sqrt5 \approx 11.18$, which is $\sqrt{11^2 + 2^2}$. The phases are $0.927$ and $-1.107$, and their sum $-0.180$ is the angle of $11 - 2i$.
 
-$$
-r_1 e^{i\varphi_1}\, r_2 e^{i\varphi_2} = r_1 r_2\, e^{i(\varphi_1 + \varphi_2)}.
-$$
-
-## Why the modulus of $e^{i\varphi}$ is 1
-
-$$
-|e^{i\varphi}|^2 = (e^{i\varphi})^* e^{i\varphi} = e^{-i\varphi} e^{i\varphi} = e^0 = 1.
-$$
-
-Equivalently, $|\cos\varphi + i\sin\varphi|^2 = \cos^2\varphi + \sin^2\varphi = 1$. Multiplying by $e^{i\varphi}$ rotates a number in the plane and leaves its modulus unchanged. This is the property that lets phases appear in quantum states without changing probabilities.
+When $r = 1$ the number sits on the unit circle. Then $|e^{i\varphi}|^2 = e^{-i\varphi}e^{i\varphi} = 1$ for every $\varphi$, so multiplying by $e^{i\varphi}$ rotates a number and never stretches it. That is why phases can enter a quantum state without disturbing the probabilities. Phases are only defined modulo $2\pi$, since $e^{i\varphi} = e^{i(\varphi + 2\pi)}$.
 
 ## Global and relative phase
 
-A qubit state is $\alpha|0\rangle + \beta|1\rangle$ with complex amplitudes $\alpha, \beta$. Measuring in the computational basis gives outcome 0 with probability $|\alpha|^2$ and outcome 1 with probability $|\beta|^2$, so only the moduli matter there.
+A qubit state is $\alpha|0\rangle + \beta|1\rangle$ with complex amplitudes, and the computational basis gives outcome 0 with probability $|\alpha|^2$ and outcome 1 with probability $|\beta|^2$. Only the moduli appear there.
 
-Multiplying both amplitudes by the same $e^{i\gamma}$ is a **global phase**. It changes no probability for any measurement, and states that differ by it are physically the same. The **relative phase** is the difference $\arg\beta - \arg\alpha$. It cannot be removed, and it decides, for example, whether $(|0\rangle + |1\rangle)/\sqrt2$ or $(|0\rangle - |1\rangle)/\sqrt2$ is prepared. Track 1 shows how a Hadamard gate turns a relative phase into a measurable difference.
-
-Phases are defined modulo $2\pi$: $e^{i\varphi} = e^{i(\varphi + 2\pi)}$.
+Multiply both amplitudes by the same $e^{i\gamma}$ and no probability of any measurement changes. This common factor is a **global phase**, and states that differ only by it are the same physical state. The **relative phase** $\arg\beta - \arg\alpha$ is unchanged when both amplitudes are rotated together, because the shift cancels in the difference. It is what separates the plus and minus states above, whose relative phases are $0$ and $\pi$.

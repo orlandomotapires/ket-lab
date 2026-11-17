@@ -2,31 +2,31 @@
   "title": "The Quantum Fourier Transform",
   "summary": "Moves the information about x from the basis states into the phases.",
   "objectives": [
-    "Build the 3-qubit quantum Fourier transform from Hadamard, controlled phase and SWAP gates",
-    "Account for the reversed qubit order at the output of the circuit",
-    "Predict the output of the QFT for a basis state, such as the uniform superposition without relative phases for |000⟩"
+    "Build the 3-qubit quantum Fourier transform from Hadamard, controlled phase and swap gates",
+    "Say what the QFT does to a basis state and where the information about x ends up",
+    "Account for the reversed qubit order that the circuit produces without a swap"
   ],
   "mission": "Build the 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩.",
   "prediction": {
-    "question": "What does the QFT do to the state |000⟩?",
+    "question": "You apply the QFT to |100⟩ (x = 4). Relative to the amplitude of |000⟩, what is the phase of the amplitude of |001⟩?",
     "options": [
-      "Leaves it in |000⟩",
-      "Creates a uniform superposition, with all phases equal to 0",
-      "Creates a uniform superposition, with different phases"
+      "0, all phases are equal as for |000⟩",
+      "A quarter turn, a factor i",
+      "Half a turn, a factor −1"
     ],
-    "explanation": "For x = 0 every phase e^(2πi·xk/N) equals 1, so the result is the uniform superposition |+++⟩ with no relative phases. The information about x is stored in the phases, and x = 0 gives none."
+    "explanation": "The amplitude of |k⟩ carries the phase e^(2πi·xk/8). For x = 4 and k = 1 that is e^(iπ) = −1, half a turn. The QFT of |000⟩ is the only basis state whose phases are all 0."
   },
   "hints": [
-    "Start with the most significant qubit, qubit 2: qc.h(2), then qc.cp(pi / 2, 1, 2) and qc.cp(pi / 4, 0, 2). pi comes from the math module.",
-    "Repeat for qubit 1 (qc.h(1), qc.cp(pi / 2, 0, 1)) and finish with qc.h(0).",
-    "The output qubits are in reverse order, so end with qc.swap(0, 2)."
+    "Start with the most significant qubit, qubit 2. After its Hadamard, which phases from qubits 1 and 0 does it need?",
+    "Qubit 2 gets cp(π/2) from qubit 1 and cp(π/4) from qubit 0. Then qubit 1 gets its Hadamard and a cp(π/2) from qubit 0, and qubit 0 only a Hadamard.",
+    "The phases end up on the wrong qubits: one gate at the end exchanges qubits 0 and 2. pi comes from the math module."
   ],
   "challenge": {
     "mission": "Build the inverse 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩. The final state is compared with the exact inverse QFT of the input, for several inputs.",
     "hints": [
-      "The inverse QFT is the QFT circuit read backwards, with every gate inverted: Hadamard gates stay, phase angles change sign.",
-      "Start with the swap of qubits 0 and 2, then go through the qubits 0, 1, 2: for each qubit apply its controlled phases with angle −π/2^k from the earlier qubits, then its Hadamard.",
-      "qc.swap(0, 2), qc.h(0), qc.cp(−π/2, 0, 1), qc.h(1), qc.cp(−π/4, 0, 2), qc.cp(−π/2, 1, 2), qc.h(2)."
+      "The inverse of a circuit is the same circuit backwards with every gate inverted. Which gates are their own inverse?",
+      "Hadamard gates stay, phase angles change sign, and the swap moves to the start.",
+      "Swap qubits 0 and 2, then for each qubit from 0 up: its controlled phases with negative angles from the earlier qubits, then its Hadamard."
     ]
   }
 }

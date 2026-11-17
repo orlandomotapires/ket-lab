@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Manifest de lição",
+  "title": "Lesson manifest",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -86,7 +86,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -100,7 +100,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -148,7 +148,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -162,7 +162,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -215,7 +215,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -229,7 +229,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             },
             "inputs": {
               "type": "array",
@@ -241,7 +241,7 @@
                   "type": "number"
                 }
               },
-              "description": "Pares (θ, φ) testados sempre, antes dos sorteados"
+              "description": "(θ, φ) pairs always tested, before the random ones"
             }
           }
         },
@@ -298,7 +298,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -312,7 +312,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -360,7 +360,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -374,7 +374,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         },
@@ -412,7 +412,7 @@
             },
             "expected_variables": {
               "type": "object",
-              "description": "Variáveis do código do aluno conferidas após a validação principal"
+              "description": "Learner-code variables checked after the main validation"
             },
             "required_gates": {
               "type": "array",
@@ -426,7 +426,7 @@
                 "type": "integer",
                 "minimum": 0
               },
-              "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+              "description": "Exact number of times each gate must appear (e.g. one oracle query)"
             }
           }
         }
@@ -448,7 +448,7 @@
         "source_marker": {
           "type": "string",
           "minLength": 1,
-          "description": "Trecho de código; o estado de origem é o da linha onde ele aparece"
+          "description": "Code snippet; the source state is the one at the line where it appears"
         },
         "target_qubit": {
           "type": "integer",
@@ -466,7 +466,7 @@
       "required": [
         "qubits"
       ],
-      "description": "Registrador mostrado nas visualizações de amplitudes, mostradores e histograma",
+      "description": "Register shown in the amplitude views, gauges and histogram",
       "properties": {
         "qubits": {
           "type": "array",
@@ -502,7 +502,7 @@
         "pennylane",
         "python"
       ],
-      "description": "pennylane: o circuito é um QNode; python: lição sem circuito (kit de matemática), mostra as variáveis"
+      "description": "pennylane: the circuit is a QNode; python: lesson without a circuit (math kit), shows the variables"
     },
     "qnode": {
       "type": "object",
@@ -521,17 +521,17 @@
           }
         }
       },
-      "description": "Qual QNode desenhar e com quais variáveis do aluno como argumentos"
+      "description": "Which QNode to draw and with which learner variables as arguments"
     },
     "live": {
       "type": "boolean",
-      "description": "false: executa só pelo botão (treinos demorados)"
+      "description": "false: runs only from the button (slow training runs)"
     },
     "timeout": {
       "type": "number",
       "minimum": 1,
       "maximum": 30,
-      "description": "Segundos por execução"
+      "description": "Seconds per run"
     },
     "controls": {
       "type": "array",
@@ -558,7 +558,7 @@
     "references": {
       "type": "array",
       "minItems": 2,
-      "description": "Leituras para aprofundar: ao menos uma teórica (livro/artigo) e uma prática (curso/tutorial)",
+      "description": "Further reading: at least one theoretical (book/article) and one practical (course/tutorial)",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -596,7 +596,7 @@
           "location": {
             "type": "string",
             "minLength": 1,
-            "description": "Onde ler, com precisão: capítulo/seção, título e páginas (livros) ou aula e título da seção (cursos)"
+            "description": "Where to read, precisely: chapter/section, title and pages (books) or lesson and section title (courses)"
           }
         }
       }
@@ -607,7 +607,7 @@
       "required": [
         "validation"
       ],
-      "description": "Desafio opcional, liberado depois da missão: regras próprias; arquivos challenge_solution.py e, se preciso, challenge_check.py e challenge_hidden_setup.py",
+      "description": "Optional challenge, unlocked after the mission: its own rules; files challenge_solution.py and, if needed, challenge_check.py and challenge_hidden_setup.py",
       "properties": {
         "validation": {
           "oneOf": [
@@ -650,7 +650,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -664,7 +664,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 }
               }
             },
@@ -712,7 +712,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -726,7 +726,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 }
               }
             },
@@ -779,7 +779,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -793,7 +793,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 },
                 "inputs": {
                   "type": "array",
@@ -805,7 +805,7 @@
                       "type": "number"
                     }
                   },
-                  "description": "Pares (θ, φ) testados sempre, antes dos sorteados"
+                  "description": "(θ, φ) pairs always tested, before the random ones"
                 }
               }
             },
@@ -862,7 +862,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -876,7 +876,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 }
               }
             },
@@ -924,7 +924,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -938,7 +938,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 }
               }
             },
@@ -976,7 +976,7 @@
                 },
                 "expected_variables": {
                   "type": "object",
-                  "description": "Variáveis do código do aluno conferidas após a validação principal"
+                  "description": "Learner-code variables checked after the main validation"
                 },
                 "required_gates": {
                   "type": "array",
@@ -990,7 +990,7 @@
                     "type": "integer",
                     "minimum": 0
                   },
-                  "description": "Número exato de vezes que cada porta deve aparecer (ex.: uma consulta ao oráculo)"
+                  "description": "Exact number of times each gate must appear (e.g. one oracle query)"
                 }
               }
             }
@@ -1000,7 +1000,7 @@
     },
     "project": {
       "type": "boolean",
-      "description": "Projeto de fim de trilha (tarefa maior, com rubrica no validador)"
+      "description": "End-of-track project (larger task, with a rubric in the validator)"
     }
   },
   "$defs": {
@@ -1019,6 +1019,7 @@
         "graph",
         "boundary",
         "threshold",
+        "curve",
         "variables"
       ]
     }

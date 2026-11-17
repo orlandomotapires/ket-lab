@@ -1,4 +1,4 @@
-"""Dados das visualizações da lição 3.3: o grafo com o corte mais provável e a convergência."""
+"""Data for the lesson 3.3 visualizations: the graph with the most likely cut and the convergence."""
 
 import itertools
 import math
@@ -18,11 +18,11 @@ def analyze(ns):
     result = {}
     history = [float(v) for v in (ns.get("history") or [])]
     if history:
-        # energia de Ising E = Σ⟨ZZ⟩  ->  corte esperado = (arestas − E) / 2
+        # Ising energy E = Σ⟨ZZ⟩  ->  expected cut = (edges − E) / 2
         result["convergence"] = {
             "values": [(len(EDGES) - e) / 2 / best_cut for e in history],
             "target": 0.85,
-            "y_label": "⟨corte⟩ / máx.",
+            "y_label": "⟨cut⟩ / max.",
         }
     if "params" in ns and pl.is_qnode(ns.get("circuit")):
         ops, lines, n = pl.trace_qnode(ns["circuit"], [ns["params"]])

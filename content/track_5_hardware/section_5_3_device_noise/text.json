@@ -2,35 +2,51 @@
   "title": "Noise on Real Devices",
   "summary": "T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence.",
   "objectives": [
-    "Convert T1, T2 and an idle time into the parameters of amplitude damping and phase damping",
-    "Simulate an idling qubit with a density matrix and read its population and coherence",
-    "Check that population decays as exp(−t/T1) and coherence as exp(−t/T2)",
-    "State the constraint T2 ≤ 2·T1"
+    "Turn T1, T2 and a waiting time into the strength of the two noise channels",
+    "Predict how much population and coherence a waiting qubit has left",
+    "Say why T2 can never be more than twice T1"
   ],
-  "mission": "A qubit in |+⟩ idles for t_wait with relaxation time T1 and coherence time T2. In the QNode idle(T1, T2, t_wait), apply amplitude damping followed by phase damping so that the population of |1⟩ decays as exp(−t/T1) and the coherence as exp(−t/T2). Then store in p1 the probability of measuring 1 and in coherence the size |ρ01| of the off-diagonal element.",
+  "mission": "An idle qubit is the simplest noise experiment on a device. Start a qubit in |+⟩ and let it wait t_wait with relaxation time T1 and coherence time T2. In the QNode idle(T1, T2, t_wait), apply amplitude damping followed by phase damping so that the population of |1⟩ decays as exp(−t/T1) and the coherence as exp(−t/T2). Then store in p1 the probability of measuring 1 and in coherence the size |ρ01| of the off-diagonal element.",
   "prediction": {
-    "question": "A qubit has T1 = 50 µs. Which coherence time T2 is impossible?",
+    "question": "A qubit has T1 = 50 µs and a measured T2 = 80 µs. What is its pure dephasing time Tφ?",
     "options": [
-      "T2 = 30 µs",
-      "T2 = 100 µs",
-      "T2 = 120 µs"
+      "30 µs, the difference between T2 and T1",
+      "44 µs, from 1/Tφ = 1/T2 + 1/(2·T1)",
+      "400 µs, from 1/Tφ = 1/T2 − 1/(2·T1)"
     ],
-    "explanation": "Relaxation alone dephases the qubit: amplitude damping already shrinks the coherence as exp(−t/(2·T1)). Any other process can only shorten T2, so T2 ≤ 2·T1 = 100 µs. T2 = 100 µs is the limit with no pure dephasing, and 120 µs would need negative dephasing."
+    "explanation": "Relaxation already contributes a coherence rate 1/(2·T1) = 1/100 µs⁻¹. The measured rate is 1/T2 = 1/80 µs⁻¹, so the pure dephasing supplies the rest: 1/80 − 1/100 = 1/400. Tφ is therefore 400 µs, much longer than T2, because relaxation does most of the damage. The rates add; the times do not."
   },
   "hints": [
-    "Amplitude damping with parameter γ takes ρ11 to (1 − γ)·ρ11. For the population to decay as exp(−t/T1), take γ = 1 − exp(−t_wait/T1) and apply qml.AmplitudeDamping(gamma, wires=0).",
-    "Amplitude damping also multiplies the coherence by √(1 − γ) = exp(−t/(2·T1)). The target is exp(−t/T2), so the missing decay comes from pure dephasing with rate 1/T_phi = 1/T2 − 1/(2·T1). Phase damping with parameter λ multiplies the coherence by √(1 − λ), so λ = 1 − exp(−2·t_wait/T_phi).",
-    "Apply qml.AmplitudeDamping(gamma, wires=0) and qml.PhaseDamping(lam, wires=0) after the Hadamard gate. Then rho = idle(T1, T2, t_wait), p1 = np.real(rho[1, 1]) and coherence = np.abs(rho[0, 1]). Expect p1 = exp(−t/T1)/2 and coherence = exp(−t/T2)/2."
+    "How does amplitude damping with parameter γ change ρ11? Choose γ so that the population falls as exp(−t_wait/T1), and apply qml.AmplitudeDamping(gamma, wires=0).",
+    "Amplitude damping also shrinks the coherence, by exp(−t/(2·T1)). The target is exp(−t/T2), so the missing decay comes from pure dephasing: 1/Tφ = 1/T2 − 1/(2·T1). Phase damping multiplies the coherence by √(1 − λ), and you need that to equal exp(−t/Tφ).",
+    "Put both channels after the Hadamard gate: amplitude damping, then phase damping with λ = 1 − exp(−2·t_wait/Tφ). Outside the QNode, rho = idle(T1, T2, t_wait) is the density matrix; read ρ11 and ρ01 from its entries."
   ],
   "messages": {
-    "ok": "The density matrix is correct for all the (T1, T2, t) tested. Probability of measuring 1: {p1}. Coherence |ρ01|: {coherence}.",
-    "no_circuit": "Define the QNode idle(T1, T2, t_wait) on a default.mixed device.",
+    "ok": "The density matrix is right for every (T1, T2, t) tested. Probability of measuring 1: {p1}. Coherence |ρ01|: {coherence}.",
+    "no_circuit": "There is no QNode named idle(T1, T2, t_wait) yet. Define it on a default.mixed device.",
     "wrong_qubits": "This lesson uses 1 qubit, but the circuit has {count}.",
-    "no_noise": "The final state is still pure, so no noise is applied. Use qml.AmplitudeDamping and qml.PhaseDamping after the Hadamard gate.",
-    "wrong_population": "With T1 = {T1}, T2 = {T2} and t = {t}, the probability of measuring 1 should be {want_p1}, but the circuit gives {got_p1}. Check gamma = 1 − exp(−t/T1).",
-    "wrong_coherence": "With T1 = {T1}, T2 = {T2} and t = {t}, |ρ01| should be {want_c}, but the circuit gives {got_c}. Amplitude damping already contributes exp(−t/(2·T1)); phase damping must supply the rest.",
-    "missing": "Store the result in the variable {name}.",
-    "unphysical": "T1 = {T1} and T2 = {T2} are not allowed: both must be positive and T2 ≤ 2·T1.",
-    "wrong_value": "The variable {name} is {actual}, which does not match the density matrix of idle(T1, T2, t_wait)."
+    "no_noise": "The final state is still pure, so no noise reached the qubit. Add qml.AmplitudeDamping and qml.PhaseDamping after the Hadamard gate.",
+    "wrong_population": "With T1 = {T1}, T2 = {T2} and t = {t}, the probability of measuring 1 should be {want_p1} and the circuit gives {got_p1}. The decay of the population comes from amplitude damping alone: check that gamma is 1 − exp(−t/T1), not exp(−t/T1).",
+    "wrong_coherence": "The population is right, but with T1 = {T1}, T2 = {T2} and t = {t} the coherence |ρ01| should be {want_c} and the circuit gives {got_c}. Amplitude damping already took exp(−t/(2·T1)) of it, so phase damping must supply only the rest. Check whether you used 1/T2 where 1/T2 − 1/(2·T1) belongs.",
+    "missing": "{name} is not defined. Store the result in the variable {name}.",
+    "unphysical": "T1 = {T1} and T2 = {T2} cannot describe a qubit: both must be positive and T2 can be at most 2·T1.",
+    "wrong_value": "The variable {name} is {actual}, which does not match the density matrix of idle(T1, T2, t_wait). Read ρ11 and |ρ01| from the matrix the QNode returns."
+  },
+  "challenge": {
+    "mission": "The mission turned T1 and T2 into a circuit. In the lab the problem runs the other way: you measure the decay and have to find the times. The variables delays (in µs), p1_data and coh_data hold the population of |1⟩ and the size of the coherence |ρ01| of an idle qubit prepared in |+⟩, measured after each delay with a little noise, so both curves start at 1/2. Store in T1_fit and T2_fit your estimates in µs, and in Tphi_fit the pure dephasing time that follows from them. The validator accepts T1_fit and T2_fit within 10% of the true times and Tphi_fit within 20%, and it requires your three numbers to obey 1/T2 = 1/(2·T1) + 1/Tφ.",
+    "hints": [
+      "What does the logarithm of an exponential decay look like when you plot it against the delay? Which feature of that picture gives the decay time?",
+      "np.polyfit(delays, np.log(p1_data), 1) returns the slope and the intercept of a straight line. The slope is minus the decay rate, and the intercept takes care of the factor 1/2 without any extra work.",
+      "Do the same with coh_data to get the rate 1/T2. For the pure dephasing, subtract rates and not times: the coherence rate is 1/(2·T1) plus 1/Tφ."
+    ],
+    "messages": {
+      "ch_ok": "The fits give T1 = {T1} µs and T2 = {T2} µs, and the pure dephasing time Tφ = {tphi} µs follows from them.",
+      "ch_missing": "{name} is not defined. Store your estimate in the variable {name}.",
+      "ch_unphysical": "T1 = {T1} and T2 = {T2} cannot describe a qubit: both must be positive and T2 can be at most 2·T1. Check the sign of the slope and that you took the reciprocal of the rate.",
+      "ch_far_t1": "T1_fit is {actual} µs, too far from what the population data allow. Fit the logarithm of p1_data against delays, and remember that the slope is −1/T1.",
+      "ch_far_t2": "T1 is fine, but T2_fit is {actual} µs, too far from what the coherence data allow. Use coh_data for T2, not p1_data, and take the reciprocal of minus the slope.",
+      "ch_inconsistent": "Tphi_fit is {tphi} µs, but your T1_fit and T2_fit imply {implied} µs. Rates add, so 1/Tφ = 1/T2 − 1/(2·T1); subtracting the times gives something else.",
+      "ch_far_tphi": "Tphi_fit is {actual} µs. It follows your T1 and T2, but both fits are noisy and the difference of rates amplifies the error, so it is too far from the true value. Fit all the points, not only two of them."
+    }
   }
 }

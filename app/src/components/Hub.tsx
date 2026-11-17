@@ -6,6 +6,7 @@ import { exportLocalProgress } from "../lib/localProgress";
 import { backupFile, lessonKeys, lessonNoteKey } from "../lib/notes";
 import { readLastLesson, resumeTarget } from "../lib/resume";
 import { useStoredFlag } from "../lib/storedFlag";
+import { NARROW, useMediaQuery } from "../lib/useMediaQuery";
 import { reviewKey, reviewScore, useStore } from "../state/store";
 import { BookIcon, CheckIcon, ChevronRightIcon, ExportIcon, GlossaryIcon, ImportIcon, NoteIcon } from "./icons";
 
@@ -46,6 +47,8 @@ function Meter({ value }: { value: number }) {
 }
 
 export function Hub() {
+  // One column (tablets, phones): the tracks come first and the extra links after them.
+  const narrow = useMediaQuery(NARROW);
   const catalog = useStore((s) => s.catalog);
   const progress = useStore((s) => s.progress);
   const loadError = useStore((s) => s.loadError);
@@ -81,12 +84,7 @@ export function Hub() {
       <main className="hub">
         {/* Fixed side panel: summary, next lesson and track index. */}
         <aside className="hub-side">
-          <h1>{t("hub.title")}</h1>
-          <p className="hub-subtitle">{t("hub.subtitle")}</p>
-          <div className="hub-progress">
-            <Meter value={done / sections.length} />
-            <span>{t("hub.progress", { done, total: sections.length })}</span>
-          </div>
+          <h1 className="sr-only">{t("hub.title")}</h1>
           <div className="hub-actions">
             {next && (
               <button
@@ -113,11 +111,20 @@ export function Hub() {
                 <button
                   key={track.id}
                   className="hub-index-item"
-                  onClick={() => document.getElementById(`track-${track.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent(OPEN_TRACK_EVENT, { detail: track.id }));
+                    // After the track has opened, so the scroll lands on its final position.
+                    requestAnimationFrame(() =>
+                      document.getElementById(`track-${track.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                    );
+                  }}
                 >
                   <span className="hub-index-number">{track.id}</span>
                   <span className="hub-index-text">
                     <span className="hub-index-title">{track.title}</span>
+                    <span className="hub-index-bar" aria-hidden="true">
+                      <span style={{ width: `${track.sections.length ? (100 * trackDone) / track.sections.length : 0}%` }} />
+                    </span>
                   </span>
                   <span className="hub-index-count">
                     {trackDone}/{track.sections.length}
@@ -126,8 +133,12 @@ export function Hub() {
               );
             })}
           </nav>
+          <div className="hub-progress">
+            <Meter value={done / sections.length} />
+            <span>{t("hub.progress", { done, total: sections.length })}</span>
+          </div>
           {loadError && <p className="error-text">{loadError}</p>}
-          <HubExtras />
+          {!narrow && <HubExtras />}
         </aside>
 
         <div className="hub-tracks">
@@ -135,6 +146,7 @@ export function Hub() {
         {catalog.tracks.map((track) => (
           <Track key={track.id} track={track} progress={progress} next={next} offline={offline} action={action} openLesson={openLesson} />
         ))}
+          {narrow && <HubExtras />}
         </div>
       </main>
     </div>
@@ -145,6 +157,9 @@ type TrackData = NonNullable<ReturnType<typeof useStore.getState>["catalog"]>["t
 
 /** One track: its header and the lesson rows. A finished track folds to its header, and the
  *  track that holds the next lesson stays open; the learner's choice is remembered. */
+/** Sent by the track index: the track it jumps to opens if it was collapsed. */
+const OPEN_TRACK_EVENT = "qlp:open-track";
+
 function Track({ track, progress, next, offline, action, openLesson }: {
   track: TrackData;
   progress: Record<string, LessonProgress>;
@@ -162,7 +177,15 @@ function Track({ track, progress, next, offline, action, openLesson }: {
   const allDone =
     stats.lessons > 0 && stats.lessonsDone === stats.lessons && stats.challengesDone === stats.challenges;
   const holdsNext = Boolean(next && track.sections.some((section) => section.id === next.id));
-  const [open, setOpen] = useStoredFlag(`qlp.hub.track.${track.id}`, holdsNext || !allDone);
+  // Only the track you are on starts open; a track you open or close yourself stays that way.
+  const [open, setOpen] = useStoredFlag(`qlp.hub.track.${track.id}`, holdsNext);
+  useEffect(() => {
+    const onOpen = (event: Event) => {
+      if ((event as CustomEvent<number>).detail === track.id) setOpen(true);
+    };
+    window.addEventListener(OPEN_TRACK_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_TRACK_EVENT, onOpen);
+  }, [track.id, setOpen]);
   const listId = `track-list-${track.id}`;
   return (
     <section id={`track-${track.id}`} className={`track${open ? "" : " is-collapsed"}`} aria-labelledby={`track-title-${track.id}`}>

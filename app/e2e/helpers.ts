@@ -92,3 +92,13 @@ export async function clearNotes(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Back to tracks" }).click();
   await expect(page.locator(".section-row").first()).toBeVisible();
 }
+
+/** Opens a lesson from its row on the hub, first opening its track if it is collapsed. */
+export async function openLessonFromHub(page: Page, lessonId: string): Promise<void> {
+  const row = page.locator(".section-row", { has: page.locator(".section-id", { hasText: new RegExp(`^${lessonId.replace(".", "\\.")}$`) }) });
+  if (!(await row.isVisible())) {
+    const track = lessonId.split(".")[0];
+    await page.locator(`#track-${track}`).getByRole("button", { name: /^Show/ }).click();
+  }
+  await row.click();
+}

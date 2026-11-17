@@ -1,4 +1,4 @@
-"""Validação da lição 0.1: aritmética complexa, forma polar e fase relativa."""
+"""Validation for lesson 0.1: complex arithmetic, polar form and relative phase."""
 
 import cmath
 

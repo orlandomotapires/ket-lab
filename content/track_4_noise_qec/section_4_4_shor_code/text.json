@@ -2,25 +2,25 @@
   "title": "The Shor Code",
   "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit.",
   "objectives": [
-    "Build the nine-qubit Shor code by concatenating the phase-flip and bit-flip codes",
-    "Decode with majority votes inside each block and then across the block leaders",
-    "Show that correcting X, Y and Z on one qubit also corrects an arbitrary single-qubit error",
-    "Predict which two-qubit errors the code turns into a logical error"
+    "Build the nine-qubit Shor code by encoding the phase-flip code with the bit-flip code",
+    "Decode with a majority vote inside each block and then across the block leaders",
+    "Explain why correcting X, Y and Z on one qubit also corrects an arbitrary error on that qubit",
+    "Tell which two-qubit errors the code corrects and which it turns into a logical error"
   ],
-  "mission": "Protect qubit 0 against any error on a single qubit of the nine. Complete encode(): a phase-flip code on the block leaders 0, 3 and 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5) and (6, 7, 8). Complete decode(): undo the bit-flip codes with a majority vote in each block, then undo the phase-flip code with a majority vote on the leaders. Afterwards qubit 0 must hold the input state again after an X, Y or Z error on any one of the nine qubits, and after an arbitrary rotation on any one qubit, for any input state.",
+  "mission": "A real error is rarely a clean X or Z, so the code has to cover every error on one qubit. Complete encode(): a phase-flip code on the block leaders 0, 3 and 6, then a bit-flip code inside each block (0, 1, 2), (3, 4, 5) and (6, 7, 8). Complete decode(): undo the bit-flip codes with a majority vote in each block, then undo the phase-flip code with a majority vote on the leaders. Afterwards qubit 0 must hold the input state again after an X, Y or Z error on any one of the nine qubits, and after an arbitrary rotation on any one qubit, for any input state.",
   "prediction": {
-    "question": "X errors hit qubits 0 and 1, both in the first block. What does the Shor code do?",
+    "question": "Z errors hit qubits 0 and 1, both in the first block. What happens to the decoded qubit 0?",
     "options": [
-      "It corrects them, because the two flips are in the same block",
-      "It fails: the block decoding also flips qubit 2, and X on all three qubits of a block is a logical Z",
-      "It fails: the syndrome is 00, so the errors are not detected"
+      "A logical X, as for Z on qubits 0 and 3 in different blocks",
+      "A logical Z: two errors in one block beat the inner vote",
+      "It is recovered: the two phase flips cancel inside the block"
     ],
-    "explanation": "Inside a block, two bit flips have the syndrome of a flip on the third qubit, so the block decoding applies X to qubit 2 and X⊗X⊗X is left acting on the block. This operator leaves |000⟩ + |111⟩ unchanged and multiplies |000⟩ − |111⟩ by −1. On the logical states it gives |0_L⟩ → |0_L⟩ and |1_L⟩ → −|1_L⟩, a logical Z. The code corrects any error on one qubit, not two."
+    "explanation": "A Z on any qubit of a block flips the sign between |000⟩ and |111⟩ in that block. Two of them flip it twice, so the block is back where it started: Z₀Z₁ is a stabilizer, and it acts as the identity on the code. The two-error failures come from other pairs, such as X on 0 and 1 (a logical Z) or Z on 0 and 3 (a logical X)."
   },
   "hints": [
-    "Encoding has two layers. First the phase-flip code on the leaders: qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]), then qml.Hadamard on wires 0, 3 and 6. Then, for each block (a, b, c), the bit-flip code: qml.CNOT(wires=[a, b]) and qml.CNOT(wires=[a, c]).",
-    "Decode in the reverse order. For each block (a, b, c): qml.CNOT(wires=[a, b]), qml.CNOT(wires=[a, c]), qml.Toffoli(wires=[b, c, a]). Afterwards the leader holds the block's bit with a bit flip corrected, and a phase flip anywhere in the block has become a phase flip of the leader.",
-    "The leaders 0, 3 and 6 now form a phase-flip code. Apply qml.Hadamard to each, then repeat the majority vote: qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]), qml.Toffoli(wires=[3, 6, 0]). Qubit 0 then holds |ψ⟩."
+    "Encoding has two layers, and the outer one comes first. Which three qubits form the phase-flip code, and what do you apply to them? Then each of those qubits becomes the leader of a bit-flip code on its block.",
+    "The outer layer is qml.CNOT(wires=[0, 3]), qml.CNOT(wires=[0, 6]) and a qml.Hadamard on wires 0, 3 and 6. The inner layer is, for each block (a, b, c), qml.CNOT(wires=[a, b]) and qml.CNOT(wires=[a, c]). Decoding runs the same gates in reverse order, with a Toffoli as the vote.",
+    "For each block (a, b, c), decode with qml.CNOT(wires=[a, b]), qml.CNOT(wires=[a, c]) and qml.Toffoli(wires=[b, c, a]). Then the leaders 0, 3 and 6 hold a phase-flip code: a Hadamard on each, and the same vote with qml.Toffoli(wires=[3, 6, 0])."
   ],
   "controls": {
     "error": {
@@ -41,7 +41,7 @@
     "ok": "Qubit 0 is recovered after any X, Y or Z error on a single qubit, and after an arbitrary rotation on a single qubit, for every input state tested.",
     "no_circuit": "Define the QNode circuit() on a default.mixed device with 9 qubits.",
     "wrong_qubits": "The Shor code uses 9 qubits, but the circuit has {count}.",
-    "encode_wrong": "Even with no error, qubit 0 does not return to |ψ⟩ (fidelity {fidelity}). Check that decode() undoes encode().",
-    "single_fail": "With the error {error}, qubit 0 was not recovered (fidelity {fidelity}). Check the majority vote in each block and on the leaders."
+    "encode_wrong": "With no error at all qubit 0 does not come back to |ψ⟩ (fidelity {fidelity}). The decoding is probably not the exact reverse of the encoding: check the order of the gates in each layer.",
+    "single_fail": "With the error {error} qubit 0 was not recovered (fidelity {fidelity}). If only some errors fail, look at the vote that should catch them: the inner one in each block for X, the one on the leaders for Z."
   }
 }

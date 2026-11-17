@@ -1,6 +1,6 @@
-# Setup oculto da lição 3.4: o conjunto de treino (o de teste só existe no validador).
+# Hidden setup for lesson 3.4: the training set (the test set exists only in the validator).
 def make_circles(n, seed):
-    """Dois círculos concêntricos: raio 1,0 (classe +1) e 0,45 (classe −1), com ruído radial."""
+    """Two concentric circles: radius 1.0 (class +1) and 0.45 (class -1), with radial noise."""
     import numpy as _np
 
     rng = _np.random.default_rng(seed)
@@ -11,13 +11,13 @@ def make_circles(n, seed):
     return points, labels
 
 
-def _criar_dados():
+def _build_data():
     from pennylane import numpy as _pnp
 
     points, labels = make_circles(80, seed=7)
     return _pnp.array(points, requires_grad=False), _pnp.array(labels, requires_grad=False)
 
 
-X_train, y_train = _criar_dados()
+X_train, y_train = _build_data()
 x_example = X_train[:1]
-del _criar_dados, make_circles
+del _build_data, make_circles

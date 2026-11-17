@@ -2,41 +2,41 @@
   "title": "Phase Estimation",
   "summary": "Read an eigenvalue phase with controlled powers of U and an inverse QFT.",
   "objectives": [
-    "Build a phase estimation circuit with controlled powers of U and an inverse QFT",
-    "Convert the measured counting register to an estimate θ = m / 2ⁿ",
-    "Read the measured bit string with Qiskit's qubit ordering"
+    "Say how a controlled power of U writes the phase of an eigenvalue on a counting qubit",
+    "Turn a measured counting register into an estimate of θ",
+    "Say how the probability spreads when θ is not a multiple of 1/2^t"
   ],
   "mission": "Estimate the phase θ of the operator U using 3 counting qubits, and store the estimate in the variable theta, a number between 0 and 1.",
   "prediction": {
-    "question": "With 3 counting qubits, the register is measured as 101. What is the estimate of θ?",
+    "question": "For U with θ = 3/8 you use 4 counting qubits instead of 3. What does the counting register give?",
     "options": [
-      "0.101",
-      "5/8 = 0.625",
-      "1/5 = 0.2"
+      "0110 with certainty, which is 6/16 = 3/8",
+      "A spread over 0101, 0110 and 0111, because 3/8 is not a multiple of 1/16",
+      "0011, the same as with 3 qubits"
     ],
-    "explanation": "The register holds the integer m = 2³θ in binary. 101 is 5, so θ ≈ 5/8 = 0.625."
+    "explanation": "3/8 equals 6/16, a multiple of 1/16, so the register is exactly the QFT of |6⟩ and the inverse QFT returns |0110⟩ with certainty. An extra counting qubit does not blur a phase it can represent exactly, and it changes the string length, so 0011 would read as 3/16."
   },
   "hints": [
-    "The eigenvector of U is |1⟩, so apply qc.x(3). The counting qubits (0 to 2) start with a Hadamard each.",
-    "In a loop for j in range(3), call apply_controlled_u(qc, j, 2**j). Then call inverse_qft(qc, [0, 1, 2]) and measure qubits 0 to 2 into bits 0 to 2.",
-    "In the keys of run_shots, qubit 0 is the rightmost character (Qiskit convention): \"101\" means qubit 0 = 1, qubit 1 = 0, qubit 2 = 1. This is why int(bits, 2) gives the right integer.",
-    "counts = run_shots(qc) returns a dictionary such as {'101': 1024}. Take the most frequent key, compute int(bits, 2) / 8 and store it in theta."
+    "Which state of qubit 3 is an eigenvector of U? And what do the counting qubits start in?",
+    "A loop over j in range(3) applies the controlled power apply_controlled_u(qc, j, 2**j). After it comes the inverse QFT on qubits 0 to 2, then the measurement.",
+    "The keys of run_shots have qubit 0 on the right, so int(bits, 2) is the number m the register holds.",
+    "Take the most frequent key of counts and divide int(bits, 2) by 2³."
   ],
   "challenge": {
     "mission": "Estimate a phase that 3 counting qubits cannot represent exactly. For each tested θ (not a multiple of 1/8), build a circuit qc with 4 qubits that uses apply_controlled_u and inverse_qft, measure the counting qubits (0 to 2), and store in theta the best estimate, the multiple of 1/8 with the highest probability, and in p_best the probability of that outcome, estimated from the counts (for example with run_shots(qc, 4096)). p_best is accepted within 0.03 of the exact value.",
     "hints": [
-      "When θ is not k/8 the probability spreads over several outcomes, and the largest one is below 1.",
-      "The estimate is still the most frequent outcome divided by 8. Its probability is its count divided by the number of shots.",
-      "Use a large shot count: counts = run_shots(qc, 4096); best = max(counts, key=counts.get); theta = int(best, 2) / 8; p_best = counts[best] / 4096."
+      "When θ is not k/8 the probability spreads over several outcomes. What does that do to the largest one?",
+      "The estimate is still the most frequent outcome divided by 8. Its probability is its count over the number of shots.",
+      "A large number of shots keeps p_best close to the exact value, within the tolerance of 0.03."
     ],
     "messages": {
-      "ok": "All {total} phases were estimated: theta was the most probable multiple of 1/8 and p_best matched its probability.",
-      "no_circuit": "Define the circuit qc with 4 qubits.",
-      "wrong_qubits": "The circuit needs 3 counting qubits and 1 eigenstate qubit (4 in total), but it has {count}.",
-      "gates": "Use apply_controlled_u and inverse_qft in the circuit.",
-      "variable_missing": "Store the result in the variable {name}.",
-      "wrong_theta": "For θ = {phase}, theta is {found}, but the most probable outcome corresponds to {expected}.",
-      "wrong_probability": "For θ = {phase}, p_best is {found}, but the probability of the best outcome is about {expected}. Use more shots and divide by the number of shots."
+      "ok": "All {total} phases were estimated: theta was the most probable multiple of 1/8, and p_best matched its probability.",
+      "no_circuit": "There is no circuit `qc` with 4 qubits yet.",
+      "wrong_qubits": "Phase estimation needs 3 counting qubits and 1 eigenvector qubit, 4 in all. Yours has {count}.",
+      "gates": "The circuit must use apply_controlled_u and inverse_qft.",
+      "variable_missing": "The variable {name} is not set.",
+      "wrong_theta": "For θ = {phase} your theta is {found}, but the most probable outcome reads as {expected}. Take the most frequent key of the counts, not the first one.",
+      "wrong_probability": "For θ = {phase} your p_best is {found}, but the best outcome has probability about {expected}. Use more shots, and divide the count of the best key by the number of shots."
     }
   }
 }

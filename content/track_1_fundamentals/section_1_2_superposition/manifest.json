@@ -60,20 +60,16 @@
       "shots": 4096,
       "tolerance": 0.05,
       "allowed_gates": [
-        "x",
-        "y",
         "z",
         "h",
-        "s",
-        "sdg",
-        "t",
-        "tdg",
-        "rx",
         "ry",
-        "rz",
-        "p",
         "id",
         "measure"
+      ],
+      "required_gates": [
+        "ry",
+        "h",
+        "z"
       ]
     }
   }

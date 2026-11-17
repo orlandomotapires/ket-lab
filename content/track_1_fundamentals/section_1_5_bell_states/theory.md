@@ -1,61 +1,39 @@
-## Two qubits
+## Two bits that are random and always equal
 
-Two qubits have four computational basis states, $|00\rangle$, $|01\rangle$, $|10\rangle$ and $|11\rangle$, and a general state is
+Apply $H$ to one qubit, then a CNOT from it to a second qubit, and measure both. Each qubit alone gives 0 or 1 with probability $1/2$, yet the two bits always agree. A pair of independent coins cannot do that, and no choice of one-qubit states for the two qubits can either. The state is **entangled**, and this lesson shows how to build it and how to recognize it.
 
-$$
-|\psi\rangle = a_{00}|00\rangle + a_{01}|01\rangle + a_{10}|10\rangle + a_{11}|11\rangle
-$$
+## Two-qubit states and their labels
 
-With $n$ qubits there are $2^n$ amplitudes. This growth is why simulating quantum computers on classical ones becomes hard.
+Two qubits have four basis states, $|00\rangle$, $|01\rangle$, $|10\rangle$ and $|11\rangle$, and a general state is $a_{00}|00\rangle + a_{01}|01\rangle + a_{10}|10\rangle + a_{11}|11\rangle$. With $n$ qubits there are $2^n$ amplitudes, which is why classical simulation of quantum circuits gets expensive so quickly.
 
-## Qubit ordering
+The labels follow Qiskit: in $|q_1q_0\rangle$ qubit 0 is the rightmost, as in a binary number, so $|01\rangle$ means qubit 0 is 1. Nielsen & Chuang write qubit 0 on the left, and the same state is $|10\rangle$ there. Whenever you compare with a book, check which side it counts from.
 
-This platform follows Qiskit: qubit 0 is the rightmost label, so in $|q_1 q_0\rangle$ the state $|01\rangle$ has qubit 0 in $1$ and qubit 1 in $0$. This is the ordering of a binary number, with the least significant bit on the right.
-
-Nielsen & Chuang, and many other texts, write qubit 0 on the left, so the same state is labeled $|10\rangle$ there. Check which convention a source uses before comparing labels.
-
-## Product states and entangled states
-
-When each qubit has its own state, the joint state is the **tensor product**:
+If each qubit has its own state, the joint state is their **tensor product**. With qubit 1 in $|+\rangle$ and qubit 0 in $|0\rangle$,
 
 $$
-|q_1\rangle \otimes |q_0\rangle = |+\rangle \otimes |0\rangle = \frac{|00\rangle + |10\rangle}{\sqrt{2}}
+|+\rangle \otimes |0\rangle = \frac{|00\rangle + |10\rangle}{\sqrt{2}},
 $$
 
-Here qubit 1 is in $|+\rangle$ and qubit 0 is in $|0\rangle$. The left factor is the qubit with the higher index.
-
-Some states cannot be written as a product. An example is the Bell state
-
-$$
-|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}
-$$
-
-No pair of single-qubit states has $|\Phi^+\rangle$ as its tensor product. The qubits are **entangled**: only the pair has a definite state. The four Bell states, $|\Phi^\pm\rangle$ and $|\Psi^\pm\rangle$, are maximally entangled and form a basis of the two-qubit state space.
+where the left factor belongs to the higher-numbered qubit. Such a state is a **product state**.
 
 ## The CNOT gate
 
-The controlled-NOT (CNOT) gate acts on a **control** qubit and a **target** qubit. It flips the target if the control is $1$ and does nothing otherwise. With the control in superposition it creates entanglement:
+The controlled-NOT (CNOT) gate flips the **target** qubit when the **control** qubit is 1 and does nothing otherwise. Take qubit 0 as control, in $|+\rangle$, and qubit 1 as target, in $|0\rangle$, so the input is $(|00\rangle + |01\rangle)/\sqrt{2}$. The CNOT leaves $|00\rangle$ alone and changes $|01\rangle$ into $|11\rangle$:
 
 $$
-\text{CNOT}\,\frac{|00\rangle + |01\rangle}{\sqrt{2}} = \frac{|00\rangle + |11\rangle}{\sqrt{2}}
+\mathrm{CNOT}\,\frac{|00\rangle + |01\rangle}{\sqrt{2}} = \frac{|00\rangle + |11\rangle}{\sqrt{2}} = |\Phi^+\rangle .
 $$
 
-Here qubit 0 is the control, and it is in $|+\rangle$ while qubit 1 is in $|0\rangle$.
+This is one of the four Bell states, $|\Phi^\pm\rangle = (|00\rangle \pm |11\rangle)/\sqrt{2}$ and $|\Psi^\pm\rangle = (|01\rangle \pm |10\rangle)/\sqrt{2}$. They are orthogonal, they are all maximally entangled, and lesson 1.6 uses them as a measurement basis.
 
-## A test for product states
+## Recognizing a product state
 
-A pure two-qubit state is a product state if and only if
+A pure two-qubit state is a product state exactly when $a_{00}a_{11} = a_{01}a_{10}$. For a product $(\alpha_1|0\rangle + \beta_1|1\rangle)\otimes(\alpha_0|0\rangle + \beta_0|1\rangle)$ both sides equal $\alpha_1\alpha_0\beta_1\beta_0$. For $|\Phi^+\rangle$ the left side is $1/2$ and the right side is $0$, so it is entangled.
 
-$$
-a_{00}\,a_{11} = a_{01}\,a_{10}
-$$
+The tempting shortcut is to count nonzero amplitudes. It fails: $(|00\rangle + |01\rangle - |10\rangle - |11\rangle)/2$ has four of them, but $a_{00}a_{11} = -1/4 = a_{01}a_{10}$, and indeed the state is $|-\rangle \otimes |+\rangle$. Nor does the opposite shortcut work, since two nonzero amplitudes are enough for entanglement.
 
-For $|\psi\rangle = (\alpha_1|0\rangle + \beta_1|1\rangle)\otimes(\alpha_0|0\rangle + \beta_0|1\rangle)$ we have $a_{00}a_{11} = \alpha_1\alpha_0\beta_1\beta_0 = a_{01}a_{10}$. For $|\Phi^+\rangle$, $a_{00}a_{11} = \tfrac{1}{2}$ and $a_{01}a_{10} = 0$, so it is entangled.
+## What each qubit looks like alone
 
-Counting nonzero amplitudes is not enough. The state $(|00\rangle + |01\rangle - |10\rangle - |11\rangle)/2$ has four nonzero amplitudes but passes the test: it equals $|-\rangle\otimes|+\rangle$.
+After the CNOT, neither qubit has a pure state of its own. If you measure qubit 0 in any basis, the result is a fair coin, and the same is true of qubit 1. The Bloch vector of a qubit in this situation is inside the sphere, and for $|\Phi^+\rangle$ its length is $0$: that is the signature of being half of a maximally entangled pair. Before you apply the CNOT, predict this length, then run the circuit and read each qubit's Bloch vector at the end.
 
-## In the lab
-
-- Q-Sphere: each point is a basis state. The more $1$s in the label, the further south the point. Size shows probability and color shows phase.
-- Bloch spheres: a qubit that is entangled with another has no pure state of its own, and its vector shrinks toward the center ($|r| < 1$). For $|\Phi^+\rangle$, $|r| = 0$.
-- Entanglement: the concurrence is $0$ for a product state and $1$ for a maximally entangled state.
+Measuring one half of the pair does tell you about the other half, though. If qubit 0 gives 0, qubit 1 will give 0 as well. Lesson 1.6 uses this correlation, together with a measurement in the Bell basis, to move a state from one place to another.

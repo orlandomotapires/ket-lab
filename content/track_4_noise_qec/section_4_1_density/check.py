@@ -1,8 +1,8 @@
-"""Validação da lição 3.5: a matriz densidade do circuito com erro, para várias
-probabilidades de erro, e os valores derivados dela (resposta errada e pureza).
+"""Validation for lesson 4.1: the density matrix of the circuit with error, for several
+error probabilities, and the values derived from it (wrong answer and purity).
 
-O estado é reconstruído a partir das portas e canais do circuito do aluno, sem
-confiar no que o QNode devolve.
+The state is rebuilt from the gates and channels of the learner's circuit, without
+trusting what the QNode returns.
 """
 
 import numpy as np

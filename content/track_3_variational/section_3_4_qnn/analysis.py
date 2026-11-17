@@ -1,4 +1,4 @@
-"""Dados das visualizações da lição 3.4: fronteira de decisão e curva de perda."""
+"""Data for the lesson 3.4 visualizations: decision boundary and loss curve."""
 
 import numpy as np
 

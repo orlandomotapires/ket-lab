@@ -2,34 +2,51 @@
   "title": "The Variational Quantum Eigensolver",
   "summary": "Ground-state energy of H₂ with a variational circuit.",
   "objectives": [
-    "Build a VQE ansatz that starts from the Hartree–Fock state and applies a double excitation",
-    "Optimize a circuit parameter by gradient descent until the energy reaches chemical accuracy",
-    "Use the variational principle to bound the energy of any prepared state from below by the ground-state energy"
+    "Say why the energy of any trial state is at least the ground-state energy",
+    "Prepare a Hartree–Fock state and rotate it toward the ground state with one angle",
+    "Lower the energy by gradient descent until it is within chemical accuracy"
   ],
-  "mission": "Find the ground-state energy of H₂ to chemical accuracy. Build an ansatz that starts from the Hartree–Fock state and applies a double excitation with angle theta, and optimize theta by gradient descent. Click Run to train.",
+  "mission": "Get the H₂ ground-state energy to within chemical accuracy (1.6 mHa) of the exact value. Start the circuit from the Hartree–Fock state, apply a double excitation with angle theta, and lower the energy of that circuit by gradient descent on theta, recording the energy after each step. Click Run to train.",
   "prediction": {
-    "question": "By the variational principle, the energy ⟨ψ|H|ψ⟩ of any state the circuit prepares is…",
+    "question": "You compute the exact expectation value ⟨ψ|H|ψ⟩ of a normalized state your circuit prepares for H₂ at 0.74 Å, and get −1.20 Ha. The exact ground-state energy is −1.1373 Ha. What does this tell you?",
     "options": [
-      "less than or equal to the ground-state energy",
-      "greater than or equal to the ground-state energy",
-      "always equal to the ground-state energy"
+      "Something is wrong: no normalized state has an energy below the ground state, so the Hamiltonian or the state is not what you think",
+      "The ansatz is better than exact: an expressive circuit can find a state below the ground state",
+      "Nothing is wrong: the optimizer overshoots, and later steps bring the energy back above −1.1373 Ha"
     ],
-    "explanation": "The ground state has the lowest energy of all states, so every other state has an energy greater than or equal to it. Minimizing ⟨H⟩ over the ansatz approaches the ground-state energy from above."
+    "explanation": "The energy is a weighted average of the eigenvalues of H, so it cannot fall below the lowest one, however the optimizer behaves and however expressive the ansatz is. A value below E₀ means the H in the circuit is not the one that defines E₀ (for example it comes from another bond length), or the energy was not computed on a normalized state. With a finite number of shots the estimate could dip below by chance, but the exact value cannot."
   },
   "hints": [
-    "The circuit applies qml.BasisState(hf_state, wires=[0, 1, 2, 3]) to prepare the Hartree–Fock state, then qml.DoubleExcitation(theta, wires=[0, 1, 2, 3]), and returns qml.expval(H).",
-    "Start from theta = np.array(0.0, requires_grad=True) and create optimizer = qml.GradientDescentOptimizer(stepsize=0.4).",
-    "In a loop of about 40 steps, update theta = optimizer.step(circuit, theta) and store the energy with energies.append(float(circuit(theta)))."
+    "Which two things must the circuit do before it measures the energy? It has to prepare the Hartree–Fock state and then apply one rotation with the angle theta.",
+    "Prepare the state with qml.BasisState(hf_state, wires=[0, 1, 2, 3]), apply qml.DoubleExcitation(theta, wires=[0, 1, 2, 3]) and return qml.expval(H). Start theta at 0.0 as an array that PennyLane can differentiate.",
+    "A qml.GradientDescentOptimizer with stepsize 0.4 and about 40 steps is enough. Update theta = optimizer.step(circuit, theta) in the loop and append float(circuit(theta)) to energies."
   ],
   "messages": {
     "ok": "Energy {energy} Ha, {error} Ha from the exact value ({exact} Ha): within chemical accuracy.",
-    "no_circuit": "Define the QNode circuit(theta), which returns qml.expval(H).",
-    "no_theta": "Store the optimized angle in the variable theta.",
-    "wrong_qubits": "H₂ in this basis needs 4 qubits, but the circuit has {count}.",
-    "not_converged": "The prepared state has energy {energy} Ha, {error} Ha from the exact value. Chemical accuracy requires an error of at most 0.0016 Ha, so keep optimizing.",
-    "forbidden_op": "Use only the chemistry ansatz (qml.BasisState and excitations). Found: {names}.",
-    "stuck_hf": "The energy is the Hartree–Fock energy ({energy} Ha): theta did not move. Check the optimization loop and the step size.",
-    "above_hf": "The energy ({energy} Ha) is above even the Hartree–Fock energy, so the initial state is probably not hf_state.",
-    "energies_inconsistent": "The energy is correct, but the last entry of energies is not the energy of the final state. Append float(circuit(theta)) after each step."
+    "no_circuit": "There is no QNode circuit(theta) yet: define it so that it returns qml.expval(H).",
+    "no_theta": "The trained angle is missing: store it in the variable theta.",
+    "wrong_qubits": "H₂ in this basis has 4 spin orbitals, so the circuit needs 4 qubits, and yours has {count}.",
+    "not_converged": "The prepared state has energy {energy} Ha, {error} Ha from the exact value, and chemical accuracy is 0.0016 Ha. The energy is going down but has not arrived: keep optimizing.",
+    "forbidden_op": "This circuit is not VQE: it uses {names}. Build the state only with the Hartree–Fock preparation and the excitation gates, and let the optimizer find the angle.",
+    "stuck_hf": "The energy is the Hartree–Fock energy ({energy} Ha): theta never left its starting value. Check that the loop updates theta and that its stepsize is not tiny.",
+    "above_hf": "The energy ({energy} Ha) is above even Hartree–Fock, which means the circuit probably does not start from hf_state, since the HF state alone already gives −1.1168 Ha.",
+    "energies_inconsistent": "The energy of the state is right, but the last entry of energies belongs to a different theta. Append float(circuit(theta)) after every update."
+  },
+  "challenge": {
+    "mission": "The mission used the double excitation. Suppose a device or an ansatz offers only single excitations. From the Hartree–Fock state, take each of the six pairs of wires (i, j) with i < j, apply qml.SingleExcitation(theta, wires=[i, j]) and minimize the energy over theta. Store the lowest energy of each pair in the dict best_energy under the key (i, j), then set gap_mha to the distance, in millihartree, from the best of the six to the exact ground state (−1.1373 Ha; 1 Ha = 1000 mHa). The validator recomputes the best energy of every pair and accepts 0.1 mHa of slack.",
+    "hints": [
+      "Before running any optimizer, evaluate the gradient of the energy at theta = 0 for one pair. What does the optimizer do if it starts exactly there?",
+      "Hartree–Fock is |1100⟩. A single excitation on wires (i, j) swaps the bits i and j, so it changes the state only when they differ, and for the other pairs it does nothing at all. Start the descent away from 0 to see how the energy behaves around it.",
+      "Build the circuit inside a function of (i, j) that returns the qnode, and loop over itertools.combinations(range(4), 2). The gap is (lowest energy − exact) × 1000."
+    ],
+    "messages": {
+      "ok": "No single excitation helps: the best of the six pairs stays at {best} Ha, {gap} mHa above the exact ground state.",
+      "ch_no_dict": "There is no dict best_energy yet, with one entry per pair (i, j).",
+      "ch_missing_pair": "best_energy has no entry for the pair {pair}. All six pairs with i < j are needed, including the ones where the gate seems to do nothing.",
+      "ch_too_low": "The energy {value} Ha for the pair {pair} is below the lowest this gate can reach ({limit} Ha). By the variational principle such a value cannot come from this circuit; check the Hamiltonian and the starting state.",
+      "ch_not_minimized": "For the pair {pair} you report {value} Ha, but the gate can reach {best} Ha. The optimizer stopped early or ended on the wrong side of the landscape.",
+      "ch_no_gap": "best_energy is right. Now set gap_mha: the lowest of the six energies minus the exact energy, in millihartree.",
+      "ch_gap_wrong": "gap_mha is {gap}, but the best of the six energies sits {gap_true} mHa above the exact value. Check the factor between hartree and millihartree."
+    }
   }
 }

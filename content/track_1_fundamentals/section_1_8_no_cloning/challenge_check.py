@@ -1,8 +1,8 @@
-"""Desafio da lição 1.8: clonador covariante em fase.
+"""Challenge for lesson 1.8: phase-covariant cloner.
 
-Para entradas no equador da esfera de Bloch, a fidelidade de cada uma das duas
-saídas (estado reduzido de cada qubit) com a entrada precisa chegar a 0,85.
-O valor ótimo é (1 + 1/√2)/2 ≈ 0,8536; um CNOT dá 0,5.
+For inputs on the equator of the Bloch sphere, the fidelity of each of the two
+outputs (reduced state of each qubit) with the input must reach 0.85.
+The optimal value is (1 + 1/√2)/2 ≈ 0.8536; a CNOT gives 0.5.
 """
 
 from math import pi

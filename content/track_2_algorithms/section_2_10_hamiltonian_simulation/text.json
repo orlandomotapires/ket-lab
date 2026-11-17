@@ -2,47 +2,47 @@
   "title": "Hamiltonian Simulation",
   "summary": "Approximate the evolution under a sum of terms with Trotter steps.",
   "objectives": [
-    "Implement one Trotter step for H = J Z⊗Z + h (X⊗I + I⊗X) with rzz and rx gates, and repeat it n times.",
-    "Choose the number of steps n so that the final state has fidelity at least 0.99 with the exact evolution.",
-    "Predict how the error of a first-order Trotter formula changes when n doubles."
+    "Say why a sum of Hamiltonian terms cannot just be applied one term after another, and when it can",
+    "Build a Trotter step for the transverse-field Ising model and repeat it",
+    "Choose the number of steps for a target fidelity, and predict how the error changes when it doubles"
   ],
-  "mission": "Simulate the evolution of two qubits under H = J Z⊗Z + h (X⊗I + I⊗X), with J = 1, h = 0.8 and time t = 2, starting in |00⟩. Build qc with n_steps repeated Trotter steps, each e^{-iJ Z⊗Z dt} followed by e^{-ih X dt} on each qubit, using only rzz and rx. Choose n_steps so that the final state has fidelity at least 0.99 with the exact state e^{-iHt}|00⟩. The circuit may have at most 90 gates.",
+  "mission": "Simulate two qubits under H = J Z⊗Z + h (X⊗I + I⊗X) with J = 1, h = 0.8 and time t = 2, starting in |00⟩, to see how many Trotter steps the non-commuting terms cost. Build qc with n_steps repeated steps, each e^{-iJ Z⊗Z dt} followed by e^{-ih X dt} on each qubit, using only rzz and rx. Choose n_steps so that the final state has fidelity at least 0.99 with the exact state e^{-iHt}|00⟩. The circuit may have at most 90 gates.",
   "prediction": {
-    "question": "With a first-order Trotter formula, the norm of the difference between the approximate and the exact final states is about 0.27 for n = 3. What is it about for n = 6?",
+    "question": "With a first-order Trotter formula and n = 5 steps the infidelity 1 − F is about 0.022. What is it about for n = 10?",
     "options": [
-      "About 0.27, the same",
-      "About 0.13, half",
-      "About 0.07, a quarter"
+      "About 0.011, half",
+      "About 0.005, a quarter",
+      "About 0.022, since the error per step stays the same"
     ],
-    "explanation": "The error of the whole evolution is O(t²/n), so doubling n halves it. The infidelity 1 − F is proportional to the square of this error, so it falls by a factor of 4."
+    "explanation": "The error of the state falls like 1/n, so doubling n halves it, and the infidelity is quadratic in that error, so it falls by a factor of 4. The exact values are 0.0220 for n = 5 and 0.0049 for n = 10. The error per step does shrink, as Δt²."
   },
   "hints": [
-    "The gate e^{-iθ/2 Z⊗Z} is qc.rzz(θ, 0, 1) and e^{-iθ/2 X} is qc.rx(θ, qubit). To get e^{-iJ Z⊗Z dt}, use θ = 2·J·dt, and θ = 2·h·dt for each X term.",
-    "Put the three gates of one step inside for _ in range(n_steps), with dt = t / n_steps already defined. Every step uses the same angles.",
-    "Increase n_steps until the fidelity reported by the validator reaches 0.99. The fidelity improves as n grows, and each step costs 3 gates."
+    "Each term of one step is a rotation. rzz(θ) is e^{-iθ ZZ/2}, so which θ gives e^{-iJ ZZ dt}? The same question for rx.",
+    "The three gates of one step go inside a loop over n_steps. dt = t / n_steps is already defined.",
+    "Start with a few steps and raise n_steps while watching the fidelity. Each step costs three gates, so 90 gates allow at most 30 steps."
   ],
   "messages": {
-    "ok": "The fidelity with e^{{-iHt}}|00⟩ is {fidelity}, using {count} gates.",
-    "no_circuit": "Define the circuit qc with 2 qubits.",
-    "wrong_qubits": "The system has 2 qubits, but the circuit has {count}.",
-    "gates": "Use only rzz and rx. The circuit also uses {names}.",
-    "too_many": "The circuit has {count} gates, above the limit of {limit}. Fewer steps are enough.",
-    "low_fidelity": "The fidelity with the exact evolution is {fidelity}, below {target}. Check the angles (2·J·dt and 2·h·dt) and use more Trotter steps."
+    "ok": "Fidelity {fidelity} with the exact evolution e^{{-iHt}}|00⟩, with {count} gates. The Trotter error is small enough.",
+    "no_circuit": "There is no circuit `qc` with 2 qubits yet.",
+    "wrong_qubits": "The system has 2 qubits, but your circuit has {count}.",
+    "gates": "Only rzz and rx are allowed, and the circuit also uses {names}.",
+    "too_many": "The circuit has {count} gates and the limit is {limit}. Fewer Trotter steps are enough.",
+    "low_fidelity": "The fidelity with the exact evolution is {fidelity}, below {target}. If it stays low for many steps, check the angles (2·J·dt for rzz and 2·h·dt for rx); otherwise use more steps."
   },
   "challenge": {
-    "mission": "Reach fidelity at least 0.995 with the exact state e^{-iHt}|00⟩, for the same H, t and initial state as the mission, using at most 20 gates (only rzz and rx). The first-order formula needs about 10 steps (30 gates) for this fidelity, so use the second-order (symmetric) Trotter step: half a step of the field, a full Z⊗Z step, half a step of the field. Consecutive half steps on the same qubit can be merged into one rx.",
+    "mission": "Reach fidelity at least 0.995 with the exact state e^{-iHt}|00⟩, for the same H, t and initial state as the mission, using at most 20 gates (only rzz and rx). The first-order formula needs about 10 steps and 30 gates for this, so use the second-order (symmetric) step: half a step of the field, a full Z⊗Z step, half a step of the field. Half steps on the same qubit that meet between two steps can be merged into one rx.",
     "hints": [
-      "The symmetric step is e^{-ihXdt/2} e^{-iJZZdt} e^{-ihXdt/2}. Its error per step is of order dt³ instead of dt².",
-      "Between two steps, the closing half rx and the opening half rx on the same qubit merge into one rx with angle 2·h·dt.",
-      "n_steps = 5: rx(h·dt) on both qubits, then 5 times rzz(2·J·dt) followed by rx(2·h·dt) on both qubits, with the last rx using h·dt. That is 17 gates."
+      "The symmetric step is e^{-ihXdt/2} e^{-iJZZdt} e^{-ihXdt/2}. Look at what sits between the end of one step and the start of the next.",
+      "Two half rotations on the same qubit, one after the other, make one rotation with the angles added.",
+      "Five steps need 2 half rx at the start, 5 rzz, 4 full rx on each qubit at the joins and 2 half rx at the end: 17 gates, within the limit."
     ],
     "messages": {
-      "ok": "The fidelity with e^{{-iHt}}|00⟩ is {fidelity}, using {count} gates.",
-      "no_circuit": "Define the circuit qc with 2 qubits.",
-      "wrong_qubits": "The system has 2 qubits, but the circuit has {count}.",
-      "gates": "Use only rzz and rx. The circuit also uses {names}.",
-      "too_many": "The circuit has {count} gates, above the limit of {limit}. Use the second-order step and merge the adjacent half rotations.",
-      "low_fidelity": "The fidelity with the exact evolution is {fidelity}, below {target}. Check the angles (2·J·dt for rzz, h·dt for half steps) and the order of the gates."
+      "ok": "Fidelity {fidelity} with the exact evolution e^{{-iHt}}|00⟩, with {count} gates.",
+      "no_circuit": "There is no circuit `qc` with 2 qubits yet.",
+      "wrong_qubits": "The system has 2 qubits, but your circuit has {count}.",
+      "gates": "Only rzz and rx are allowed, and the circuit also uses {names}.",
+      "too_many": "The circuit has {count} gates and the limit is {limit}. Use the symmetric step and merge the half rotations that meet.",
+      "low_fidelity": "The fidelity with the exact evolution is {fidelity}, below {target}. Check the angles (2·J·dt for rzz, h·dt for a half step) and the order of the gates."
     }
   }
 }

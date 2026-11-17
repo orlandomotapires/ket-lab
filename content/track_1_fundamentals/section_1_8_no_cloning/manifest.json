@@ -15,7 +15,7 @@
     "source_marker": "prepare_input(",
     "target_qubit": 1
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "validation": {
     "type": "state_cases",
     "cases": [

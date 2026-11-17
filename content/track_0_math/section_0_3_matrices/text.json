@@ -2,38 +2,38 @@
   "title": "Matrices, Unitaries and Eigenvalues",
   "summary": "Matrix–vector products, the conjugate transpose, unitarity, the Pauli matrices, eigenvalues and expectation values of Hermitian matrices.",
   "objectives": [
-    "Test whether a matrix is unitary with the conjugate transpose",
-    "Write the Pauli matrices and compute the eigenvalues and eigenvectors of X",
-    "Check that a matrix is Hermitian and compute an expectation value ⟨ψ|A|ψ⟩"
+    "Decide whether a matrix can be a gate by testing whether it keeps lengths",
+    "Write the Pauli matrices and find the eigenvalues and eigenvectors of X",
+    "Compute the average result of a measurement on a given state, and recognize a Hermitian matrix"
   ],
-  "mission": "The editor defines the matrices A, B, X, Z, K and the state psi. Define Y (the Pauli Y matrix), a_unitary and b_unitary (True or False, for A and B), eigvals and eigvecs (from the eigenvalue decomposition of X, eigenvectors as columns), k_hermitian (True or False, for K), expect_z = ⟨ψ|Z|ψ⟩ and expect_y = ⟨ψ|Y|ψ⟩.",
+  "mission": "A gate has to keep a state normalized, so first sort the matrices in the editor. Define Y (the Pauli Y matrix), a_unitary and b_unitary (True or False: is A, and is B, unitary), eigvals and eigvecs (the eigenvalues of X and its eigenvectors as columns), k_hermitian (True or False: is K Hermitian), and expect_z and expect_y (the average results of measuring Z and Y on psi).",
   "prediction": {
-    "question": "For the state |+⟩ = (|0⟩ + |1⟩)/√2, what is the expectation value ⟨+|Z|+⟩?",
+    "question": "The state (|0⟩ + i|1⟩)/√2 is measured many times with the Y observable, whose possible results are +1 and −1. What is the average result?",
     "options": [
-      "1",
-      "0",
-      "−1"
+      "0, because |0⟩ and |1⟩ are equally likely",
+      "i, because the amplitude of |1⟩ is i",
+      "1"
     ],
-    "explanation": "Z|+⟩ = (|0⟩ − |1⟩)/√2 = |−⟩, and ⟨+|−⟩ = 0. Equivalently, the outcomes +1 and −1 of Z each occur with probability 1/2, so the average is 0."
+    "explanation": "Y applied to (1, i)/√2 returns (1, i)/√2 itself, so the state is an eigenvector of Y with eigenvalue +1 and every measurement of Y gives +1. The equal odds of 0 and 1 describe a measurement of Z, whose average is indeed 0. An average of Hermitian results is real, so i could never be the answer."
   },
   "hints": [
-    "A matrix U is unitary when U† U = I, where U† = U.conj().T. Floating-point products are not exact, so compare with np.allclose(U.conj().T @ U, np.eye(2)) instead of ==. The Pauli Y matrix is [[0, −i], [i, 0]].",
-    "For a Hermitian matrix use np.linalg.eigh(X), which returns the eigenvalues and the eigenvectors as columns. K is Hermitian when K equals its conjugate transpose. The expectation value of A in |ψ⟩ is np.vdot(psi, A @ psi).",
-    "Y = np.array([[0, -1j], [1j, 0]]); a_unitary = np.allclose(A.conj().T @ A, np.eye(2)); b_unitary likewise with B; eigvals, eigvecs = np.linalg.eigh(X); k_hermitian = np.allclose(K, K.conj().T); expect_z = np.vdot(psi, Z @ psi); expect_y = np.vdot(psi, Y @ psi)."
+    "What does a matrix have to do to a vector's length for the state to stay valid, and which product of the matrix with its own conjugate transpose expresses that?",
+    "A floating-point product is almost never exactly 1, so test the product against the identity with a tolerance. For the eigen-decomposition use the routine for Hermitian matrices, which returns the eigenvalues together with the eigenvectors as columns. K is Hermitian if it equals its own conjugate transpose.",
+    "An expectation value is the inner product of psi with the matrix applied to psi, and the conjugation sits on the left vector. You can check expect_z by hand: it is the probability of +1 minus the probability of −1. Y has the same shape as X, with the entries -i and i in place of 1 and 1."
   ],
   "messages": {
-    "ok": "All values are correct. X has eigenvalues {eigvals}, and for ψ the expectation values are ⟨Z⟩ = {expect_z} and ⟨Y⟩ = {expect_y}.",
+    "ok": "All values are correct. X has eigenvalues {eigvals}, and on ψ the average result is {expect_z} for Z and {expect_y} for Y.",
     "missing": "Define the variable {name}.",
     "not_array": "The variable {name} must be a numeric array with shape {shape}, but it holds {actual}.",
     "not_bool": "The variable {name} must be True or False, but it holds {actual}.",
-    "y_wrong": "Y should be [[0, −i], [i, 0]], but it is {actual}. In Python the entries are 0, -1j, 1j, 0.",
-    "a_unitary_wrong": "a_unitary should be True: A† A = I for A. If you compared with ==, rounding errors make the test fail; use np.allclose(A.conj().T @ A, np.eye(2)).",
-    "b_unitary_wrong": "b_unitary should be False: for B, B† B = {product}, which is not the identity.",
-    "eigvals_wrong": "eigvals should hold the eigenvalues of X, −1 and 1, but it holds {actual}.",
-    "eigvecs_wrong": "eigvecs should have the eigenvectors of X as columns, so that X @ eigvecs[:, k] equals eigvals[k] * eigvecs[:, k]. This fails for column {column}. np.linalg.eigh(X) returns both arrays together.",
-    "k_hermitian_wrong": "k_hermitian should be True: K equals its conjugate transpose K† (real diagonal, opposite off-diagonal entries conjugated). Use np.allclose(K, K.conj().T).",
-    "expect_z_wrong": "expect_z should be ⟨ψ|Z|ψ⟩ = {expected}, but it is {actual}. Use np.vdot(psi, Z @ psi).",
-    "expect_y_no_conjugate": "expect_y is {actual}, which comes from multiplying without conjugating ψ. Use np.vdot(psi, Y @ psi), where vdot conjugates the first vector.",
-    "expect_y_wrong": "expect_y should be ⟨ψ|Y|ψ⟩ = {expected}, but it is {actual}. Check Y and use np.vdot(psi, Y @ psi)."
+    "y_wrong": "Y is {actual}. It has zeros on the diagonal, and the two off-diagonal entries are imaginary and opposite: -i in the top right and i in the bottom left. Swapping them gives -Y.",
+    "a_unitary_wrong": "a_unitary is not True. A is the Hadamard matrix, and A† A is the identity up to rounding, with entries like 0.9999999999999998. An exact == comparison fails on those, so compare with a tolerance.",
+    "b_unitary_wrong": "b_unitary is not False. B† B is {product}, which is not the identity, so B stretches some vectors and cannot be a gate.",
+    "eigvals_wrong": "eigvals holds {actual}, but the eigenvalues of X are -1 and 1. Check that you decomposed X and not another matrix, and that the array has two real entries.",
+    "eigvecs_wrong": "Column {column} of eigvecs is not an eigenvector of X for its eigenvalue: X applied to it does not give eigvals[{column}] times the column. Check that the eigenvectors are in the columns and not the rows, and that each is paired with its own eigenvalue.",
+    "k_hermitian_wrong": "k_hermitian is not True. K has a real diagonal and its off-diagonal entries 1-i and 1+i are conjugates of each other, so K equals its own conjugate transpose. Compare with a tolerance.",
+    "expect_z_wrong": "expect_z is {actual}, but the average result of Z on psi is {expected}. It is the probability of +1 minus the probability of -1, with |0⟩ the +1 outcome.",
+    "expect_y_no_conjugate": "expect_y is {actual}, which is what you get if psi is not conjugated on the left. The bra has every entry conjugated, and psi has an i in it, so the result changes.",
+    "expect_y_wrong": "expect_y is {actual}, but the average result of Y on psi is {expected}. Check your Y first, then that the bra of psi is the conjugated vector."
   }
 }

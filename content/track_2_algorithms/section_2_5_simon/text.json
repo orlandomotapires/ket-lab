@@ -2,51 +2,51 @@
   "title": "Simon's Algorithm",
   "summary": "Recover a hidden XOR mask from outcomes that are orthogonal to it.",
   "objectives": [
-    "Build Simon's circuit so that every measurement of the input register returns a string y with y·s = 0 (mod 2).",
-    "Collect several outcomes with run_shots and solve the linear system y·s = 0 modulo 2 to compute the hidden string s.",
-    "Explain why n − 1 independent equations determine s, and why s = 000 is recognized by the absence of a nonzero solution."
+    "Say what each measurement of Simon's circuit tells you about s",
+    "Collect outcomes and solve y·s = 0 (mod 2) to find the hidden string",
+    "Explain why n − 1 independent outcomes fix s, and how s = 000 shows up"
   ],
-  "mission": "The function f takes 3 bits to 3 bits and satisfies f(x) = f(y) if and only if y = x or y = x ⊕ s, for a hidden string s (possibly 000, when f is one-to-one). Call oracle(qc) once (input register: qubits 0 to 2, output register: qubits 3 to 5), measure the input register into bits 0 to 2, and use run_shots to collect outcomes. Then compute, from the outcomes alone, the bit string s_found equal to s. Qubit 0 is the last character of every string, so s = s2 s1 s0 and an outcome is y2 y1 y0.",
+  "mission": "Find the hidden mask s of a function f from 3 bits to 3 bits with f(x) = f(y) if and only if y = x or y = x ⊕ s (s may be 000, when f is one-to-one). Call oracle(qc) once (input register: qubits 0 to 2, output register: qubits 3 to 5), measure the input register into bits 0 to 2, and collect outcomes with run_shots. Then compute from the outcomes alone the bit string s_found equal to s. Qubit 0 is the last character of every string, so s = s2 s1 s0 and an outcome is y2 y1 y0.",
   "prediction": {
-    "question": "For n = 3, how many linearly independent equations y·s = 0 (mod 2) are needed to determine a nonzero secret s?",
+    "question": "For n = 3 you have measured y = 011 and y = 101. A third run gives 110. How much does it add?",
     "options": [
-      "1",
-      "2",
-      "3"
+      "Nothing new: 110 = 011 ⊕ 101, so it is not an independent equation",
+      "A third independent equation, which fixes s",
+      "Nothing new: it repeats one of the earlier outcomes"
     ],
-    "explanation": "The outcomes y lie in the subspace orthogonal to s, which has dimension n − 1 = 2. Two independent outcomes span it, and s is the only nonzero string orthogonal to both. One equation leaves 3 nonzero candidates. A third independent equation would force s = 000."
+    "explanation": "Adding 011 and 101 bit by bit gives 110, so the equation for 110 follows from the other two and cuts nothing off. Only independent outcomes reduce the solution space, and here two already left a single nonzero s. The third outcome is not a repeat of an earlier string either."
   },
   "hints": [
-    "Apply Hadamard gates to qubits 0 to 2 before and after oracle(qc), and leave qubits 3 to 5 in |0⟩. Finish with qc.measure([0, 1, 2], [0, 1, 2]) and counts = run_shots(qc).",
-    "Each key of counts is a string y2y1y0 with y·s = 0 (mod 2). Compute the inner product of two bit strings with bin(int(a, 2) & int(b, 2)).count(\"1\") % 2.",
-    "Loop over the nonzero candidates \"001\", \"010\", …, \"111\" and keep those whose inner product with every key of counts is 0. If exactly one remains, it is s. If none remains, the outcomes span all strings, f is one-to-one and s = \"000\"."
+    "Put Hadamard gates on qubits 0 to 2 before and after oracle(qc) and leave qubits 3 to 5 alone. Then measure qubits 0 to 2 and call run_shots.",
+    "Each key of counts is a y with y·s = 0 (mod 2). For two bit strings a and b, bin(int(a, 2) & int(b, 2)).count(\"1\") % 2 is the inner product.",
+    "Which of the nonzero strings \"001\" to \"111\" have inner product 0 with every key? If one is left, it is s. If none is left, f is one-to-one and s is \"000\"."
   ],
   "messages": {
-    "ok": "All {total} hidden strings were recovered, including 000. For each one, every outcome satisfied y·s = 0 and s_found equaled s.",
-    "no_circuit": "Define the circuit qc with 6 qubits and 3 classical bits.",
-    "wrong_qubits": "The circuit needs 3 input qubits and 3 output qubits (6 in total), but it has {count}.",
-    "queries": "Call oracle(qc) exactly once. The circuit calls it {count} times.",
-    "no_measurement": "Measure the input register into the classical bits, with qc.measure([0, 1, 2], [0, 1, 2]).",
-    "wrong_distribution": "With the hidden string {secret}, the input register gave outcomes that are not orthogonal to it (for example {bad}). The outcomes must be uniform over the strings y with y·s = 0. Check the Hadamard gates before and after the query.",
-    "variable_missing": "Store the result in the variable s_found, as a bit string such as \"110\".",
-    "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep the nonzero strings orthogonal to every outcome; if none remains, s is 000."
+    "ok": "All {total} hidden strings were recovered, 000 included. Every outcome satisfied y·s = 0, and s_found matched.",
+    "no_circuit": "There is no circuit `qc` with 6 qubits and 3 classical bits yet.",
+    "wrong_qubits": "Simon's circuit needs 3 input qubits and 3 output qubits, 6 in all. Yours has {count}.",
+    "queries": "The oracle must be called exactly once, and your circuit calls it {count} times.",
+    "no_measurement": "The input register is never measured. Measure qubits 0 to 2 into bits 0 to 2.",
+    "wrong_distribution": "With the hidden string {secret}, the outcomes of the input register are not all orthogonal to it (for example {bad}). That usually means a Hadamard layer is missing before or after the query.",
+    "variable_missing": "s_found is not set. Store the result as a bit string such as \"110\".",
+    "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep only the nonzero strings that are orthogonal to every outcome, and answer 000 if none is left."
   },
   "challenge": {
-    "mission": "Simon's problem with a compact oracle. The function f takes 3 bits to 2 bits and satisfies f(x) = f(y) if and only if y = x or y = x ⊕ s, for a hidden nonzero string s (s is never 000, because a function with 2 output bits cannot be one-to-one on 8 inputs). Use a circuit qc with 5 qubits (input register: qubits 0 to 2, output register: qubits 3 and 4) and 3 classical bits, call oracle(qc) once, measure the input register into bits 0 to 2, and store in s_found the string s computed from the outcomes. Qubit 0 is the last character of every string.",
+    "mission": "Simon's problem with a compact oracle. The function f takes 3 bits to 2 bits and satisfies f(x) = f(y) if and only if y = x or y = x ⊕ s, for a hidden nonzero string s (never 000: with 2 output bits, f cannot be one-to-one on 8 inputs). Use a circuit qc with 5 qubits (input register: qubits 0 to 2, output register: qubits 3 and 4) and 3 classical bits, call oracle(qc) once, measure the input register into bits 0 to 2, and store in s_found the string s computed from the outcomes. Qubit 0 is the last character of every string.",
     "hints": [
-      "The output register needs only n − 1 = 2 qubits here, so the circuit has 5 qubits, not 6.",
-      "The procedure is the same: Hadamard gates, one query, Hadamard gates, measure qubits 0 to 2.",
-      "Every outcome y satisfies y·s = 0 (mod 2). With a nonzero s the outcomes span a 2-dimensional space, so exactly one nonzero string is orthogonal to all of them."
+      "How many output qubits does this function need? Count the output bits.",
+      "The procedure is the same as in the lesson: Hadamard gates, one query, Hadamard gates, measure qubits 0 to 2.",
+      "With a nonzero s the outcomes span a 2-dimensional space, so exactly one nonzero string is orthogonal to all of them."
     ],
     "messages": {
-      "ok": "All {total} hidden strings were recovered. For each one, every outcome satisfied y·s = 0 and s_found equaled s.",
-      "no_circuit": "Define the circuit qc with 5 qubits and 3 classical bits.",
-      "wrong_qubits": "The circuit needs 3 input qubits and 2 output qubits (5 in total), but it has {count}.",
-      "queries": "Call oracle(qc) exactly once. The circuit calls it {count} times.",
-      "no_measurement": "Measure the input register into the classical bits, with qc.measure([0, 1, 2], [0, 1, 2]).",
-      "wrong_distribution": "With the hidden string {secret}, the input register gave outcomes that are not orthogonal to it (for example {bad}). Check the Hadamard gates before and after the query.",
-      "variable_missing": "Store the result in the variable s_found, as a bit string such as \"110\".",
-      "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep the nonzero strings orthogonal to every outcome."
+      "ok": "All {total} hidden strings were recovered. Every outcome satisfied y·s = 0, and s_found matched.",
+      "no_circuit": "There is no circuit `qc` with 5 qubits and 3 classical bits yet.",
+      "wrong_qubits": "This version needs 3 input qubits and 2 output qubits, 5 in all. Yours has {count}.",
+      "queries": "The oracle must be called exactly once, and your circuit calls it {count} times.",
+      "no_measurement": "The input register is never measured. Measure qubits 0 to 2 into bits 0 to 2.",
+      "wrong_distribution": "With the hidden string {secret}, the outcomes of the input register are not all orthogonal to it (for example {bad}). Check the Hadamard layers around the query.",
+      "variable_missing": "s_found is not set. Store the result as a bit string such as \"110\".",
+      "wrong_secret": "s_found is {found}, but the hidden string is {secret}. Keep only the nonzero strings that are orthogonal to every outcome."
     }
   }
 }

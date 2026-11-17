@@ -1,7 +1,7 @@
-"""Desafio da lição 2.8: fases θ que não são múltiplos de 1/8. Para cada uma, o circuito
-tem 4 qubits e usa c_u e qft_dagger; `theta` é a melhor estimativa (o múltiplo de 1/8 mais
-provável) e `p_best` é a probabilidade medida desse resultado, com erro de até 0,03
-em relação ao valor exato."""
+"""Challenge for lesson 2.8: phases θ that are not multiples of 1/8. For each one, the circuit
+has 4 qubits and uses c_u and qft_dagger; `theta` is the best estimate (the most likely
+multiple of 1/8) and `p_best` is the measured probability of that outcome, with an error of up to 0.03
+relative to the exact value."""
 
 from qiskit import QuantumCircuit
 

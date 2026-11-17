@@ -1,4 +1,4 @@
-"""Dados da lição 3.6: a curva de limiar do código de repetição."""
+"""Data for lesson 4.2: the threshold curve of the repetition code."""
 
 import numpy as np
 

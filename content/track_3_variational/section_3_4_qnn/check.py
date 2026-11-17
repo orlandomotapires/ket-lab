@@ -1,15 +1,15 @@
-"""Validação da lição 3.4: acurácia num conjunto de teste que o aluno nunca vê,
-calculada com o circuito e os pesos finais dele (não com valores informados)."""
+"""Validation for lesson 3.4: accuracy on a test set the learner never sees,
+computed with the learner's circuit and final weights (not with reported values)."""
 
 import numpy as np
 
 from qlp_engine import pl
 
 THRESHOLD = 0.92
-LAYERS_MIN_UPLOADS = 8  # recargas de dados (RX/RY com x): pelo menos 2 camadas em 2 qubits
+LAYERS_MIN_UPLOADS = 8  # data re-uploads (RX/RY with x): at least 2 layers on 2 qubits
 
 def make_circles(n, seed):
-    """Dois círculos concêntricos: raio 1,0 (classe +1) e 0,45 (classe −1), com ruído radial."""
+    """Two concentric circles: radius 1.0 (class +1) and 0.45 (class -1), with radial noise."""
     import numpy as _np
 
     rng = _np.random.default_rng(seed)

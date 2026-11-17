@@ -3,30 +3,30 @@
   "summary": "Factor 15 by reducing the problem to order finding.",
   "objectives": [
     "Find the period of aˣ mod N with phase estimation",
-    "Recover the order r from a measurement result with continued fractions",
-    "Compute the prime factors of N from gcd(a^(r/2) ± 1, N), discarding the results that fail"
+    "Recover the order r from a measured fraction, and recognize the results that fail",
+    "Turn r into factors of N with gcds, and recognize the runs that give nothing"
   ],
   "mission": "Factor 15. Find the period of 7^x mod 15 with phase estimation (counting qubits 0 to 3, measured into bits 0 to 3), then use the measurement results to store the prime factors in the variable factors.",
   "prediction": {
-    "question": "What is the period of 7^x mod 15?",
+    "question": "With 4 counting qubits for 7^x mod 15 you measure m = 8. What follows?",
     "options": [
-      "2",
-      "4",
-      "7"
+      "The period is 8, the number measured",
+      "The fraction 8/16 = 1/2 suggests r = 2, but 7² mod 15 = 4, so the run is discarded",
+      "The fraction 1/2 gives r = 2, which is correct, so factor with it"
     ],
-    "explanation": "The values of 7^x mod 15 are 1, 7, 4, 13, and then 1 again. The cycle has 4 values, so r = 4."
+    "explanation": "The register estimates s/r, and 8/16 = 1/2 comes from s = 2, which shares a factor with r = 4, so the denominator found is 2 instead of 4. Checking 7² mod 15 = 4 ≠ 1 shows the candidate is wrong, and another run is needed."
   },
   "hints": [
-    "This is the phase estimation circuit: Hadamard on qubits 0 to 3, the work register in |1⟩ with qc.x(4), and in a loop for j in range(4), apply_controlled_mod_mult(qc, j, 2**j).",
-    "Finish with inverse_qft(qc, [0, 1, 2, 3]) and measure qubits 0 to 3 into bits 0 to 3. Then counts = run_shots(qc).",
-    "For each result: r = Fraction(int(bits, 2), 16).limit_denominator(N).denominator. Use r only if pow(a, r, N) == 1 and r is even, and set half = pow(a, r // 2, N). If half == N - 1, discard the result. Otherwise compute gcd(half - 1, N) and gcd(half + 1, N), and store in factors the values other than 1 and N, without repeats."
+    "The first half is phase estimation of the multiplication by 7. Which register starts in |1⟩, and which gets the Hadamards?",
+    "Each outcome m gives a fraction m/16. Reduce it to find a candidate r, and accept r only if 7^r mod 15 is 1 and r is even.",
+    "From an accepted r, take half = 7^(r/2) mod 15. If half is 14 the run gives nothing. Otherwise gcd(half − 1, 15) and gcd(half + 1, 15) contain the factors, in the ones that are neither 1 nor 15."
   ],
   "challenge": {
     "mission": "The base a is now secret: apply_controlled_mod_mult(qc, control, power) multiplies the work register by a^power modulo N = 15 (a is one of 2, 4, 7, 8, 11, 13, and changes between tests). Use phase estimation with 4 counting qubits (qubits 0 to 3, measured into bits 0 to 3) and the work register in qubits 4 to 7, then store in the variable order the order r of a modulo 15, computed from the measurement results alone: the smallest r > 0 with a^r ≡ 1 (mod 15).",
     "hints": [
-      "The work register starts in |1⟩ (qc.x(4)). Each measured outcome y satisfies y/16 = s/r for some integer s.",
-      "Write y/16 in lowest terms with Fraction. The denominator divides r, and different outcomes may give different divisors of r.",
-      "The order is the least common multiple of all the denominators: order = lcm of Fraction(int(bits, 2), 16).denominator over the outcomes."
+      "Each outcome y gives y/16 = s/r for some s you do not know. What can you say about the denominator of y/16 in lowest terms?",
+      "It divides r. Different outcomes can give different divisors of r.",
+      "The order is the smallest number that all the denominators divide."
     ],
     "messages": {
       "ok": "The order was found for all {total} bases.",

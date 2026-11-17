@@ -3,30 +3,30 @@
   "summary": "Build the controlled-S gate from CNOT and T gates, and identities between gates.",
   "objectives": [
     "Build the controlled-S gate from CNOT, T and T† gates",
-    "Compute a relative phase from the parities of the control and target bits",
-    "Predict that conjugating a CNOT with Hadamard gates on both qubits exchanges control and target"
+    "Find the phase a circuit gives to each basis state from the bits and their parity",
+    "Rewrite a CNOT with Hadamard gates to swap its control and target"
   ],
-  "mission": "Build the controlled-S gate CS = diag(1, 1, 1, i) using only cx, t and tdg. It multiplies the amplitude of |11⟩ by i and leaves the others unchanged. The circuit must work for any input, including superpositions.",
+  "mission": "Hardware has no controlled-S gate, so build CS = diag(1, 1, 1, i) using only cx, t and tdg. It multiplies the amplitude of |11⟩ by i and leaves the others unchanged. The circuit must work for any input, including superpositions.",
   "hints": [
-    "Think of the phase as a sum: each qubit that is 1 receives e^(iπ/4) from a T gate. You need π/2 only when a = b = 1, and a + b − (a ⊕ b) = 2ab.",
-    "After qc.cx(0, 1), qubit 1 holds a ⊕ b. A gate applied to it now acts on the parity: use T† (qc.tdg(1)) to subtract π/4 when a ⊕ b = 1, then undo the CNOT.",
-    "Apply qc.t(0), qc.t(1), qc.cx(0, 1), qc.tdg(1) and qc.cx(0, 1)."
+    "Think of the phase as a sum. Each T adds π/4 for every qubit that is 1. For which pairs of bits (a, b) must the total be π/2, and for which 0?",
+    "After qc.cx(0, 1), qubit 1 holds a ⊕ b. A gate on it now acts on the parity. For bits, a + b − (a ⊕ b) = 2ab, so T on each qubit and T† on the parity leave π/2 only when a = b = 1.",
+    "qc.t(0), qc.t(1), qc.cx(0, 1), qc.tdg(1), qc.cx(0, 1). The last CNOT puts the parity back into b."
   ],
   "prediction": {
-    "question": "You apply Hadamard gates to both qubits, then a CNOT from qubit 0 to qubit 1, then Hadamard gates to both qubits again. What operation results?",
+    "question": "You apply Hadamard gates to both qubits, then a CNOT from qubit 0 to qubit 1, then Hadamard gates to both again, starting from |10⟩ (qubit 1 in 1, qubit 0 in 0). What do you get?",
     "options": [
-      "The same CNOT from 0 to 1, since the Hadamards cancel",
-      "A CNOT from 1 to 0, with control and target exchanged",
-      "A SWAP gate"
+      "|10⟩ unchanged, since qubit 0, the control, is 0",
+      "|11⟩, because the whole circuit is a CNOT from qubit 1 to qubit 0",
+      "|01⟩, because the circuit swaps the two qubits"
     ],
-    "explanation": "The Hadamard exchanges the X and Z bases. Conjugating a CNOT by H on both qubits exchanges control and target: (H⊗H) CNOT(0→1) (H⊗H) = CNOT(1→0)."
+    "explanation": "Conjugating a CNOT with Hadamard gates on both qubits exchanges control and target, so the circuit is CNOT from 1 to 0. Qubit 1 is 1, so qubit 0 flips and |10⟩ becomes |11⟩. A SWAP would need three CNOTs."
   },
   "challenge": {
     "mission": "Build the controlled-Hadamard gate with control qubit 0 and target qubit 1, using a single CNOT and single-qubit gates (ry, rz, s, sdg, t, tdg). The built-in qc.ch is not allowed. It applies H to qubit 1 when qubit 0 is 1 and does nothing otherwise. The circuit must work for any input, including superpositions.",
     "hints": [
-      "Find a single-qubit gate U with U X U† = H. Then (I ⊗ U) CNOT (I ⊗ U†) applies H to the target exactly when the control is 1.",
-      "H and X both have eigenvalues +1 and −1. A rotation about the Y axis takes the X axis to the axis (X + Z)/√2 of H, by an angle of 45°.",
-      "Apply ry(π/4) to qubit 1, then cx(0, 1), then ry(−π/4) to qubit 1. In circuit order the gate U† acts first, so check the sign of the angles against the input |11⟩ in the Q-sphere."
+      "A CNOT applies X to the target. Is there a one-qubit gate U with U X U† = H? Then conjugating the target by U turns the X into an H.",
+      "X and H both have eigenvalues +1 and −1. A rotation about the Y axis by 45° takes the X axis to the axis (X + Z)/√2 of H.",
+      "Apply ry(π/4) to qubit 1, then cx(0, 1), then ry(−π/4) to qubit 1. In circuit order the rightmost factor acts first, so if your result is wrong, test the sign of the angles on the input |11⟩."
     ]
   }
 }

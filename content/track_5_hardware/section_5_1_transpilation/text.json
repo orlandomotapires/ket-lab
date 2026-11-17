@@ -9,27 +9,45 @@
   ],
   "mission": "A device has 4 qubits in a line (0 - 1 - 2 - 3) and runs only rz, sx, x and cx. Prepare the GHZ state (|0000⟩ + |1111⟩)/√2 and store in qc the transpiled circuit, with at most 3 two-qubit gates. Every cx in qc must act on neighboring qubits.",
   "prediction": {
-    "question": "On a line 0 - 1 - 2, with logical qubits 0, 1, 2 placed on the physical qubits 0, 1, 2, a circuit contains one cx(0, 2). How many cx gates does the transpiled circuit contain?",
+    "question": "On the line 0 - 1 - 2 - 3, with logical qubit i placed on physical qubit i, a circuit holds one cx(0, 3) and nothing else. How many cx does the transpiled circuit have?",
     "options": [
-      "1: the gate is already a CNOT",
-      "3: one SWAP makes the qubits neighbors",
-      "4: one SWAP (3 cx) plus the cx itself"
+      "4, a single SWAP fixes it, as for qubits two steps apart",
+      "10, one SWAP for each of the three links between 0 and 3, plus the gate",
+      "7, two SWAPs bring the qubits next to each other, plus the gate itself"
     ],
-    "explanation": "Qubits 0 and 2 are not neighbors, so the transpiler moves one of them next to the other with a SWAP. A SWAP is 3 CNOTs, and the original CNOT still has to run. Total: 3 + 1 = 4."
+    "explanation": "Qubits 0 and 3 are three links apart, so the state has to travel two links before the two qubits are neighbors: two SWAPs, 6 cx, and then the cx itself, 7. The last link needs no SWAP because the two qubits are already adjacent there. Each extra step of distance costs 3 more cx."
   },
   "hints": [
-    "Run the starter code and read count_ops(): the star-shaped circuit (every cx starts at qubit 0) needs SWAPs on a line, so it ends with 6 cx. Each SWAP is 3 cx.",
-    "Transpilation does not change the algorithm, it only maps it to the device. The cost depends on the circuit you give it. Write a GHZ circuit in which every cx acts on a pair of neighbors of the line.",
-    "Apply h(0), then a chain of CNOTs: ghz.cx(0, 1), ghz.cx(1, 2), ghz.cx(2, 3). Transpile ghz into qc with the same coupling_map and basis_gates: three cx and no SWAP."
+    "Run the starter code and read count_ops(). Where do the six cx come from when the circuit only has three? Look at which qubit every cx starts from.",
+    "Transpiling does not change the algorithm, it only maps it to the device, so the cost depends on the circuit you hand it. Write a GHZ circuit in which every cx acts on a pair of neighbors of the line.",
+    "Think of the state spreading along the line: after h(0), qubit 0 can copy its branch onto qubit 1, qubit 1 onto qubit 2, and so on. Then transpile that circuit with the same coupling_map and basis_gates."
   ],
   "messages": {
     "ok": "The circuit uses only rz, sx, x and cx, every cx acts on neighbors, it prepares the GHZ state, and it has {count} two-qubit gates (depth {depth}).",
-    "no_circuit": "Store the transpiled circuit in the variable qc.",
-    "wrong_qubits": "The device has 4 qubits, but qc has {count}.",
-    "not_basis": "qc contains gates outside the basis: {gates}. Pass basis_gates to transpile.",
-    "not_adjacent": "A two-qubit gate acts on qubits {a} and {b}, which are not neighbors in the line 0 - 1 - 2 - 3. Pass coupling_map to transpile.",
-    "not_unitary": "qc contains measurements or other non-unitary operations. Keep only the gates that prepare the state.",
-    "wrong_state": "qc does not prepare the GHZ state: the fidelity with (|0000⟩ + |1111⟩)/√2 is {fidelity}.",
-    "too_many": "qc has {count} two-qubit gates, but the budget is {budget}. Change the circuit you transpile so that fewer SWAPs are needed."
+    "no_circuit": "There is no circuit in qc yet. Store the result of transpile in the variable qc.",
+    "wrong_qubits": "The device has 4 qubits, but qc has {count}. Build the GHZ circuit on QuantumCircuit(4).",
+    "not_basis": "qc still contains {gates}, which the device does not run. It usually means transpile was called without basis_gates.",
+    "not_adjacent": "A two-qubit gate acts on qubits {a} and {b}, which are not neighbors on the line 0 - 1 - 2 - 3. It usually means transpile was called without coupling_map, or the circuit was edited after transpiling.",
+    "not_unitary": "qc contains a measurement or another non-unitary operation, so its state cannot be compared. Keep only the gates that prepare the state.",
+    "wrong_state": "qc does not prepare the GHZ state (|0000⟩ + |1111⟩)/√2: the fidelity is {fidelity}. The CNOTs probably copy the 1 branch to the wrong qubits, or the Hadamard gate is missing.",
+    "too_many": "qc prepares the right state but has {count} two-qubit gates, and the budget is {budget}. The extra ones are SWAPs: change the circuit you transpile so that fewer of them are needed."
+  },
+  "challenge": {
+    "mission": "The line of the mission has a convenient end to start from. A device shaped like a T does not: qubits 0, 2 and 4 are ends, and the junction, qubit 1, touches three others. The device now has 5 qubits and the connected pairs are 0-1, 1-2, 1-3 and 3-4. Store in qc the transpiled circuit for the 5-qubit GHZ state (|00000⟩ + |11111⟩)/√2, using only rz, sx, x and cx, with every cx on a connected pair and at most 4 two-qubit gates. A fan-out from qubit 0 needs 7 at optimization level 1, and still 5 at level 3, where the transpiler already looks for a better layout.",
+    "hints": [
+      "Count the cx you need if no SWAP is allowed: every new qubit that joins the state needs a cx that reaches it. Which qubit has the most neighbors?",
+      "Grow the state along the edges of the device. After the Hadamard gate, every cx must copy the branch from a qubit that already holds it onto a neighbor that does not, so the order of the cx follows the shape of the T.",
+      "Put the Hadamard gate on the junction. Then three cx start from it, one to each neighbor, and a fourth continues from the neighbor that has another neighbor beyond it. Build the coupling map from the four edges, and make it symmetric with make_symmetric() so that a cx can point either way."
+    ],
+    "messages": {
+      "ch_ok": "The circuit prepares the 5-qubit GHZ state on the T with {count} two-qubit gates, one per new qubit and no SWAP (depth {depth}).",
+      "ch_no_circuit": "There is no circuit in qc yet. Store the result of transpile in the variable qc.",
+      "ch_wrong_qubits": "The device has 5 qubits, but qc has {count}. The editor still holds the 4-qubit line of the mission: build the GHZ circuit on QuantumCircuit(5) and the T as the coupling map.",
+      "ch_not_basis": "qc still contains {gates}, which the device does not run. It usually means transpile was called without basis_gates.",
+      "ch_not_connected": "A two-qubit gate acts on qubits {a} and {b}, which are not connected on this device (the pairs are 0-1, 1-2, 1-3 and 3-4). Either transpile was called without the T as coupling_map, or the circuit was edited after transpiling.",
+      "ch_not_unitary": "qc contains a measurement or another non-unitary operation, so its state cannot be compared. Keep only the gates that prepare the state.",
+      "ch_wrong_state": "qc does not prepare the 5-qubit GHZ state: the fidelity is {fidelity}. A qubit probably never received the branch, or the Hadamard gate is missing.",
+      "ch_too_many": "qc prepares the right state but has {count} two-qubit gates, and the budget is {budget}. The extra ones are SWAPs: start the state at a qubit that makes every cx a copy onto a neighbor."
+    }
   }
 }

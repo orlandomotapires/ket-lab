@@ -9,7 +9,7 @@
   "available_visualizers": [
     "variables"
   ],
-  "prediction_answer": 1,
+  "prediction_answer": 0,
   "validation": {
     "type": "custom"
   },
@@ -44,5 +44,10 @@
       "location": "Sections “Definition of stabilizer codes”, “Detecting errors” and “Correcting errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/stabilizer-formalism/stabilizer-codes"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

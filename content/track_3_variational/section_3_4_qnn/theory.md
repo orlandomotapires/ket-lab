@@ -1,42 +1,33 @@
-## Classification with a circuit
+## Two circles that no line separates
 
-A classifier maps a point $\vec x$ to a class. In a **variational quantum classifier**, the point enters the circuit as rotation angles, trainable weights are other rotation angles, and the class is read from a measurement. The weights are trained by gradient descent, as in lesson 3.1.
+Take 80 points in the plane on two concentric circles, radius 1 for class $+1$ and radius 0.45 for class $-1$. No straight line separates them, so a model that only draws straight boundaries fails. A circuit can do this job too: in a **variational quantum classifier** the point $\vec x$ enters as rotation angles, trainable weights are other rotation angles, and the class is the sign of a measured expectation value. The weights are trained by gradient descent as in lesson 3.1.
 
-## Encoding the data
+## Getting the numbers into the circuit
 
-Classical data must be loaded into a quantum state. Common choices:
+Classical data has to become a quantum state. The simplest choice is angle encoding: each coordinate is the angle of a rotation, $R_X(x_0)$ and $R_Y(x_1)$. Amplitude encoding stores $2^n$ numbers in the amplitudes of $n$ qubits, which is compact, but preparing such a state is expensive in general. Phase encoding puts the data in relative phases. This lesson uses angle encoding.
 
-- Angle encoding: each coordinate is the angle of a rotation, such as $R_X(x_0)$ and $R_Y(x_1)$. It is easy to prepare and uses one gate per coordinate.
-- Amplitude encoding: $2^n$ numbers become the amplitudes of $n$ qubits. It is compact, but preparing the state is costly in general.
-- Phase encoding: the data become relative phases.
-
-This lesson uses angle encoding.
-
-## Data re-uploading
-
-If $\vec x$ enters the circuit once, the output is a trigonometric polynomial of degree 1 in each coordinate, which is too restrictive for a curved boundary. **Data re-uploading** loads $\vec x$ several times, alternating with trainable layers:
+If $\vec x$ enters once, the output is a trigonometric polynomial of degree 1 in each coordinate. That is too stiff for a curved boundary. **Data re-uploading** loads $\vec x$ again between trainable blocks:
 
 $$
-U(\vec x, \vec w) = W_L\, S(\vec x)\, W_{L-1}\, S(\vec x) \cdots W_1\, S(\vec x)\, W_0
+U(\vec x, \vec w) = W_L\, S(\vec x)\, W_{L-1}\, S(\vec x) \cdots W_1\, S(\vec x)\, W_0 ,
 $$
 
-Here $S(\vec x)$ is the encoding block and each $W_l$ is a trainable block. Each upload adds higher frequencies to the function the circuit can represent, like extra terms in a Fourier series.
+where $S(\vec x)$ is the encoding block and each $W_l$ a trainable block.
 
-## The classifier
+Why one upload is limited: $R_X(x)$ contains $\cos\frac{x}{2}$ and $\sin\frac{x}{2}$, and an expectation value is quadratic in the amplitudes, so one upload gives $\cos x$, $\sin x$ and a constant (the argument of lesson 3.1). Trainable gates before and after change the coefficients, never the frequency. With two uploads the amplitudes contain products of two such factors and the output gains $\cos 2x$ and $\sin 2x$. With $L$ uploads of $R_X(x)$ the highest frequency is $L$.
 
-- Input: points $(x_0, x_1)$ on two concentric circles. The outer circle has class $+1$ and the inner one $-1$. No straight line separates them.
-- Output: $\langle Z_0\rangle \in [-1, 1]$. Its sign is the predicted class.
-- Training: minimize the mean squared error between $\langle Z_0\rangle$ and the labels, using the Adam optimizer.
+Here is a case you can follow on the Bloch sphere. One qubit starts in $|0\rangle$ and gets $R_X(x)$, then a trainable $R_Y(\pi/2)$, then $R_X(x)$ again. $R_X(x)$ takes $(0,0,1)$ to $(0,-\sin x,\cos x)$, $R_Y(\pi/2)$ takes that to $(\cos x,-\sin x,0)$, and the second $R_X(x)$ takes it to $(\cdot,\,-\sin x\cos x,\,-\sin^2 x)$. So
 
-When `x` has shape $(N, 2)$, PennyLane evaluates the circuit for all $N$ points in one call (broadcasting).
+$$
+\langle Z\rangle = -\sin^2 x = \tfrac{1}{2}\left(\cos 2x - 1\right),
+$$
 
-## Generalization
+which has frequency 2, out of reach for a single upload.
 
-A classifier is judged on points it has not seen, so validation uses a separate test set. High training accuracy with low test accuracy means the model has memorized the training points (overfitting).
+## Reading the answer, and trusting it
 
-## In the lab
+The output is $\langle Z_0\rangle \in [-1, 1]$ and its sign is the predicted class. The loss is the mean squared error between $\langle Z_0\rangle$ and the labels, $\frac{1}{N}\sum_n (\langle Z_0\rangle_n - y_n)^2$, minimized with the Adam optimizer. A loss of 0 means every output equals its label, and a constant output 0 gives a loss of 1. With $x$ of shape $(N, 2)$ PennyLane evaluates all $N$ points in one call (broadcasting).
 
-- Decision boundary: the circuit output over the plane, with the training points on top.
-- Convergence: the loss at each epoch.
+What counts is accuracy on points the model has not seen, so the check uses a separate test set. If the training accuracy is high and the test accuracy is low, the model has memorized the 80 training points and its noise: overfitting. Each layer adds $3\times 2$ weights and one more upload, which gives a more flexible model that also fits noise more easily. This is the case that usually goes wrong with more layers than the data justify.
 
-The starter code uses a single upload (`LAYERS = 1`). Click Run (or press Ctrl+Enter) to train.
+Before training, predict the accuracy of a single-upload circuit (`LAYERS = 1`) on the circles, then run it and compare. Then raise `LAYERS` and watch the test accuracy, not only the loss.

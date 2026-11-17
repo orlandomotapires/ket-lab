@@ -1,8 +1,8 @@
-"""Validação da lição 2.10: H = J Z⊗Z + h (X⊗I + I⊗X), J = 1, h = 0.8, t = 2.
+"""Validation for lesson 2.10: H = J Z⊗Z + h (X⊗I + I⊗X), J = 1, h = 0.8, t = 2.
 
-O estado alvo é calculado aqui, com a exponencial de matriz exata, e não vem da
-solução. O circuito do aluno só pode usar rzz e rx (e barreiras), no máximo 90 portas
-(30 passos de primeira ordem), e a fidelidade com e^{-iHt}|00⟩ precisa ser ≥ 0,99.
+The target state is computed here, with the exact matrix exponential, and does not come
+from the solution. The learner's circuit may only use rzz and rx (and barriers), at most 90 gates
+(30 first-order steps), and the fidelity with e^{-iHt}|00⟩ must be ≥ 0.99.
 """
 
 import numpy as np
@@ -22,7 +22,7 @@ _I = np.eye(2, dtype=complex)
 
 
 def exact_state():
-    # Qiskit: qubit 0 é o fator mais à direita do produto tensorial.
+    # Qiskit: qubit 0 is the rightmost factor of the tensor product.
     hamiltonian = J * np.kron(_Z, _Z) + H_FIELD * (np.kron(_I, _X) + np.kron(_X, _I))
     return expm(-1j * hamiltonian * TIME)[:, 0]
 

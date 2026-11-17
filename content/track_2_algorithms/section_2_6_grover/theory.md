@@ -1,28 +1,20 @@
-## Unstructured search
+## Searching without structure
 
-Among $N$ items, $M$ are marked and only an oracle can tell which. A classical algorithm must check about $N/2$ items on average to find a marked one when $M = 1$. Grover's algorithm needs about $\frac{\pi}{4}\sqrt{N}$ queries, a quadratic speedup.
+Sixteen boxes hide one prize, and the only way to learn anything is to ask the oracle about a box. Classically you open about 8 boxes on average. Grover's algorithm finds the prize with about $\frac{\pi}{4}\sqrt{16} \approx 3$ oracle calls. For $N$ items the cost is about $\frac{\pi}{4}\sqrt{N}$, a quadratic speedup, and $M$ of the items may be marked.
 
-## The phase oracle
-
-The oracle flips the sign of each marked state $|\omega\rangle$ and leaves the others unchanged:
+The oracle flips the sign of each marked state $|\omega\rangle$ and leaves the others alone. By itself it changes no probability, because only the sign of an amplitude moves. The second ingredient is the **diffusion operator**
 
 $$
-U_\omega|x\rangle = \begin{cases} -|x\rangle & \text{if } x \text{ is marked} \\ \phantom{-}|x\rangle & \text{otherwise} \end{cases}
+D = 2|s\rangle\langle s| - I
 $$
 
-By itself this changes no measurement probability, since only the sign of an amplitude changes.
+where $|s\rangle$ is the uniform superposition and $|s\rangle\langle s|$ is the outer product of $|s\rangle$ with itself: the operator that sends $|\psi\rangle$ to $\langle s|\psi\rangle\,|s\rangle$, the projection onto $|s\rangle$. $D$ reflects the state about $|s\rangle$. On the amplitudes this is an inversion about the mean, $a_x \to 2\bar a - a_x$.
 
-## The diffusion operator
+## The smallest case by hand
 
-The **diffusion operator** $D = 2|s\rangle\langle s| - I$, with $|s\rangle$ the uniform superposition, reflects every amplitude about their mean (inversion about the mean):
+Take $N = 4$ (two qubits) with one marked item. The four amplitudes start at $\tfrac12$. The oracle makes the marked one $-\tfrac12$, so the mean is $\bar a = (3\cdot\tfrac12 - \tfrac12)/4 = \tfrac14$. The inversion sends the marked amplitude to $2\cdot\tfrac14 + \tfrac12 = 1$ and each other one to $2\cdot\tfrac14 - \tfrac12 = 0$. One iteration finds the item with certainty.
 
-$$
-a_x \;\longrightarrow\; 2\bar{a} - a_x
-$$
-
-After the oracle, a marked amplitude is negative and lowers the mean slightly. The inversion sends it to a value well above the mean, and the other amplitudes decrease slightly.
-
-In the circuit, $D = H^{\otimes n}\,(2|0\rangle\langle 0| - I)\,H^{\otimes n}$. The reflection $2|0\rangle\langle 0| - I$ equals, up to a global phase, $X^{\otimes n}$ followed by a multi-controlled $Z$ followed by $X^{\otimes n}$. The multi-controlled $Z$ is a multi-controlled NOT between two Hadamards on the target:
+In the circuit, $D = H^{\otimes n}(2|0\rangle\langle 0| - I)H^{\otimes n}$. The reflection $2|0\rangle\langle 0| - I$ is, up to a global phase, $X^{\otimes n}$, then a Z controlled by all qubits, then $X^{\otimes n}$ again. The controlled Z is a multi-controlled NOT between two Hadamards on the target:
 
 ```python
 qc.h(3)
@@ -30,34 +22,14 @@ qc.mcx([0, 1, 2], 3)
 qc.h(3)
 ```
 
-## Number of iterations
+## How many iterations
 
-A **Grover iteration** is one oracle query followed by the diffusion operator. With $M$ marked items among $N$, let $\sin\theta = \sqrt{M/N}$. Each iteration rotates the state by $2\theta$ toward the uniform superposition of the marked items. After $k$ iterations the probability of measuring a marked item is
+A **Grover iteration** is one oracle call followed by $D$. Let $\sin\theta = \sqrt{M/N}$. Each iteration rotates the state by $2\theta$ toward the marked items, and after $k$ iterations the success probability is $\sin^2((2k+1)\theta)$. It peaks when $(2k+1)\theta$ is closest to $\pi/2$, so the exact rule is that $k$ is the integer nearest to $\frac{\pi}{4\theta} - \frac12$.
 
-$$
-\sin^2\big((2k+1)\theta\big)
-$$
+When $M$ is much smaller than $N$, $\theta \approx \sqrt{M/N}$ and the rule becomes the familiar $k = \lfloor \frac{\pi}{4}\sqrt{N/M} \rfloor$. For $N = 16$ this gives 3 iterations for $M = 1$ (probability 96.1%), 2 for $M = 2$ (94.5%) and 1 for $M = 4$ (100%). It fails when $M$ is a sizeable fraction of $N$: with $M = 8$ the probability is $1/2$ for every $k$, and with $M = 9$ one iteration lowers it from 56% to 32%.
 
-This is largest near $(2k+1)\theta = \pi/2$, so
-
-$$
-k = \left\lfloor \frac{\pi}{4}\sqrt{\frac{N}{M}} \right\rfloor
-$$
-
-For $N = 16$:
-
-| $M$ | $k$ | success probability |
-| :-: | :-: | :-: |
-| 1 | 3 | $96.1\%$ |
-| 2 | 2 | $94.5\%$ |
-| 4 | 1 | $100\%$ |
-
-More iterations than this rotate past the target and the probability decreases. A search that does not know $M$ must first estimate it, for example with quantum counting, which uses phase estimation.
+Past the peak the state rotates beyond the target and the probability falls; for $M=1$, six iterations leave 2%. If $M$ is unknown it has to be estimated first, for example with quantum counting, which uses phase estimation (lesson 2.8).
 
 ## Limits
 
-The speedup is quadratic ($\sqrt{N}$ against $N$), and it is optimal for unstructured search. Grover's algorithm does not make NP-complete problems tractable: searching over $n$-bit candidates still takes about $2^{n/2}$ queries, which is exponential in $n$.
-
-## In the lab
-
-The Amplitudes tab shows the 16 amplitudes with sign, and a dashed line at their mean. Step through the circuit: the oracle pushes the marked amplitude below zero and the diffusion operator sends it above the mean. The marked items are hidden. Validation runs your circuit with several sets of marked items.
+The speedup is quadratic and optimal for unstructured search. It does not make NP-complete problems easy: searching over $n$-bit candidates still takes about $2^{n/2}$ queries.

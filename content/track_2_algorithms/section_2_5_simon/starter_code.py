@@ -1,6 +1,6 @@
 from qiskit import QuantumCircuit
 
-# Qubits 0 a 2: input register. Qubits 3 a 5: output register.
+# Qubits 0 to 2: input register. Qubits 3 to 5: output register.
 # Three classical bits receive the measurement of the input register.
 qc = QuantumCircuit(6, 3)
 

@@ -26,7 +26,7 @@
       "id"
     ]
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "references": [
     {
       "kind": "book",
@@ -57,12 +57,11 @@
       "type": "state_fidelity",
       "tolerance": 0.999,
       "allowed_gates": [
-        "h",
-        "z"
+        "ry",
+        "rz"
       ],
       "required_gates": [
-        "h",
-        "z"
+        "ry"
       ]
     }
   }

@@ -20,7 +20,7 @@
     "qsphere",
     "bloch"
   ],
-  "prediction_answer": 1,
+  "prediction_answer": 0,
   "validation": {
     "type": "custom"
   },
@@ -47,5 +47,10 @@
       "location": "Single page, read in full",
       "url": "https://pennylane.ai/demos/tutorial_vqe/"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

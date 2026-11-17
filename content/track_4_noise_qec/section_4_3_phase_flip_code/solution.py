@@ -1,9 +1,12 @@
+# Idea: the Hadamard gate turns a phase flip into a bit flip, so the phase-flip code is the
+# bit-flip code written in the |±⟩ basis. Rotate, run the bit-flip recovery, rotate back.
 import pennylane as qml
 
 dev = qml.device("default.mixed", wires=5)
 
 
 def hadamards():
+    # Z becomes X and X becomes Z on every data qubit, and |0⟩, |1⟩ become |+⟩, |−⟩.
     for wire in range(3):
         qml.Hadamard(wires=wire)
 
@@ -19,11 +22,13 @@ def recover():
     # In the Hadamard basis a phase flip is a bit flip, so the bit-flip recovery applies.
     hadamards()
     # Syndrome: ancilla 3 = parity of qubits 0 and 1; ancilla 4 = parity of 1 and 2.
+    # This measures the stabilizers X⊗X on the original qubits without touching α and β.
     qml.CNOT(wires=[0, 3])
     qml.CNOT(wires=[1, 3])
     qml.CNOT(wires=[1, 4])
     qml.CNOT(wires=[2, 4])
-    # Correction: (a3, a4) = (1, 0) -> flip 0; (1, 1) -> flip 1; (0, 1) -> flip 2.
+    # Correction by deferred measurement: X on an ancilla before and after a Toffoli tests a 0 bit.
+    # (a3, a4) = (1, 0) -> flip 0; (1, 1) -> flip 1; (0, 1) -> flip 2.
     qml.PauliX(wires=4)
     qml.Toffoli(wires=[3, 4, 0])
     qml.PauliX(wires=4)
@@ -31,7 +36,7 @@ def recover():
     qml.PauliX(wires=3)
     qml.Toffoli(wires=[3, 4, 2])
     qml.PauliX(wires=3)
-    # Back to the code space.
+    # Back to the code space: without this the data qubits stay in the bit-flip basis.
     hadamards()
 
 

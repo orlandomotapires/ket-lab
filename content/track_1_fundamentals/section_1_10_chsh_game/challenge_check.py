@@ -1,11 +1,11 @@
-"""Desafio da lição 1.10 (jogo CHSH com Bob fixo).
+"""Challenge for lesson 1.10 (CHSH game with fixed Bob).
 
-Regras da lição, mais: a rotação de Bob é exatamente Ry(BOB[y]).
+Lesson rules, plus: Bob's rotation is exactly Ry(BOB[y]).
 
-Para as quatro perguntas (x, y): o circuito tem um único gate de dois qubits (o
-par de Bell); a rotação de Alice depende só de x e a de Bob só de y; a
-probabilidade exata de vitória, calculada aqui a partir do vetor de estado,
-chega a pelo menos 0,85; e `win_probability` do aluno coincide com ela.
+For the four questions (x, y): the circuit has a single two-qubit gate (the
+Bell pair); Alice's rotation depends only on x and Bob's only on y; the exact
+winning probability, computed here from the state vector, reaches at least
+0.85; and the learner's `win_probability` matches it.
 """
 
 from math import pi
@@ -16,7 +16,7 @@ from qlp_engine import simulator
 
 QUESTIONS = [(0, 0), (0, 1), (1, 0), (1, 1)]
 THRESHOLD = 0.85
-BOB = {0: round(pi / 3, 9), 1: round(-pi / 6, 9)}  # ângulos de Bob, fixos
+BOB = {0: round(pi / 3, 9), 1: round(-pi / 6, 9)}  # Bob's angles, fixed
 
 
 def single_qubit_gates(circuit, qubit):
@@ -34,7 +34,7 @@ def single_qubit_gates(circuit, qubit):
 def win_probability(play):
     total = 0.0
     for x, y in QUESTIONS:
-        distribution = simulator.register_distribution(play(x, y), [0, 1])  # rótulo "b a"
+        distribution = simulator.register_distribution(play(x, y), [0, 1])  # label "b a"
         for label, p in distribution.items():
             a, b = int(label[1]), int(label[0])
             if (a ^ b) == (x & y):

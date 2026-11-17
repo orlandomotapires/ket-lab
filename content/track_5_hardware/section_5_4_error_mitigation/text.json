@@ -2,32 +2,50 @@
   "title": "Error Mitigation",
   "summary": "Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction.",
   "objectives": [
-    "Correct a measured distribution by inverting the readout assignment matrix",
-    "Collect expectation values at noise scales 1, 3, 5 and extrapolate them to zero noise",
-    "Explain why mitigation increases the statistical uncertainty of the result"
+    "Recover a true distribution from a measured one when the readout error is known",
+    "Push an expectation value toward zero noise by running the circuit at higher noise and extrapolating",
+    "Say what mitigation costs in shots, and why it is not error correction"
   ],
-  "mission": "A qubit is measured with the assignment matrix A. Recover the true distribution from p_meas and store in z_readout the mitigated ⟨Z⟩ = P(0) − P(1). Then evaluate noisy_expectation(s) at the noise scales s = 1, 3, 5 (stored in scales and values) and extrapolate to zero noise: store the result in zne, within 0.006 of the exact value cos(0.9).",
+  "mission": "Two kinds of noise, two corrections. A qubit is measured with the assignment matrix A: recover the true distribution from p_meas and store in z_readout the mitigated ⟨Z⟩ = P(0) − P(1). Then evaluate noisy_expectation(s) at the noise scales s = 1, 3, 5 (stored in scales and values) and extrapolate to zero noise: store the result in zne, within 0.006 of the exact value cos(0.9).",
   "prediction": {
-    "question": "Each expectation value at scales 1, 3, 5 has shot noise σ. Extrapolating to scale 0 with a straight line, how does the shot noise of the extrapolated value compare with σ?",
+    "question": "One measurement with N shots has statistical error σ. You extrapolate a straight line through scales 1, 3, 5 and want the result to have the same error σ. How many shots do you need at each scale?",
     "options": [
-      "Smaller, because it combines three measurements",
-      "The same, because each measurement has noise σ",
-      "Larger, because the extrapolation amplifies the noise of the data"
+      "N/3 per scale, so that the total stays N",
+      "N per scale, since each point already has error σ",
+      "About 1.5·N per scale, 4.4·N in total"
     ],
-    "explanation": "The fitted value at scale 0 is a weighted sum of the three values with weights of different sign and magnitude. For a least-squares line through scales 1, 3, 5 its variance is σ²(1/3 + 9/8) ≈ 1.46σ², so the standard deviation is about 1.2σ. A quadratic through the three points gives about 2.3σ. Mitigation removes bias and adds variance, which is paid for with more shots."
+    "explanation": "The value at scale 0 is a weighted sum of the three points, and its variance for a line through 1, 3, 5 is σ²(1/3 + 9/8) ≈ 1.46σ². Variance falls as 1/shots, so each scale needs about 1.46 times the shots, which is 4.4 times in total. The line does not average the three points: it extends them past the end, and the extension amplifies the noise."
   },
   "hints": [
-    "Readout error maps the true distribution to the measured one: p_meas = A · p_true. To undo it, solve this linear system with np.linalg.solve(A, p_meas), then take P(0) − P(1) of the result.",
-    "Folding the circuit G as G G† G keeps the ideal result and triples the noise. noisy_expectation(s) already does this for s = 1, 3, 5. The values fall as the noise grows, so a curve through the points (s, value) can be extended to s = 0.",
-    "Fit with np.polyfit(scales, values, 1) for a straight line, or degree 2 for a quadratic (Richardson extrapolation). Read the fit at zero noise with np.polyval(coefficients, 0)."
+    "Readout error maps the true distribution to the measured one by a matrix. Which operation recovers the input of a linear map from its output? Once you have P(0) and P(1) of the true state, ⟨Z⟩ follows.",
+    "np.linalg.solve(A, p_meas) undoes the readout. For ZNE, noisy_expectation(s) already folds the circuit for you. The values fall as the noise grows: a curve through the points (s, value) can be continued to s = 0.",
+    "np.polyfit(scales, values, 1) fits a straight line, and degree 2 gives the quadratic. Evaluate the fit at zero noise with np.polyval(coefficients, 0)."
   ],
   "messages": {
     "ok": "z_readout matches the exact value, and the extrapolated value is within {error} of the exact result, while the unmitigated value at scale 1 is off by {raw_error}.",
-    "missing": "Store the result in the variable {name}.",
-    "readout_raw": "z_readout is {actual}, the unmitigated value. Solve A · p_true = p_meas for p_true first.",
-    "readout_wrong": "z_readout is {actual}, which is not the exact ⟨Z⟩ of the true distribution. Use np.linalg.solve(A, p_meas) and then P(0) − P(1).",
-    "wrong_values": "values must hold noisy_expectation(s) for the scales {scales}, in this order.",
-    "zne_raw": "zne is {actual}, the unmitigated value at scale 1. Extrapolate the values to scale 0.",
-    "zne_far": "zne is {actual}, which is not close enough to the exact value {ideal}. Fit the values against scales and evaluate the fit at 0."
+    "missing": "{name} is not defined. Store the result in the variable {name}.",
+    "readout_raw": "z_readout is {actual}, the same as the unmitigated value, so the readout correction has not been applied. Solve A · p_true = p_meas for p_true before you take P(0) − P(1).",
+    "readout_wrong": "z_readout is {actual}, which is neither the raw value nor the exact one. The probable slip is multiplying p_meas by A instead of solving for p_true, or taking P(1) − P(0).",
+    "wrong_values": "values does not match noisy_expectation(s) for the scales {scales}, in that order. Build the list from the scales you extrapolate over.",
+    "zne_raw": "zne is {actual}, exactly the unmitigated value at scale 1, so nothing has been extrapolated. Fit the values against the scales and read the fit at 0.",
+    "zne_far": "zne is {actual}, too far from the exact value {ideal}. Check that the fit is evaluated at scale 0 and not at 1, and that the scales and values are in the same order."
+  },
+  "challenge": {
+    "mission": "In the mission the line was enough. Now the circuit is deeper and every gate is noisier (depolarizing 0.15 and amplitude damping 0.05), so the curve bends, and a more flexible fit has a smaller bias but pays for it in shots. The variables scales, measured (what the device returned at scales 1, 3, 5), sigma (the shot noise of each of those numbers), ideal = cos(0.9) and deep_expectation(s) (the exact value at scale s with infinitely many shots) are given. Store the extrapolations to scale 0 of the line and of the parabola through the three points in zne_lin and zne_quad, their shot noise in sigma_lin and sigma_quad, and their total expected error sqrt(bias² + noise²) in total_lin and total_quad. The bias of a method is what it gets wrong with infinitely many shots: apply it to the exact values and subtract ideal. Then set best to \"linear\" or \"quadratic\", the one with the smaller total expected error. The validator recomputes every number to within 1%.",
+    "hints": [
+      "The extrapolated value is a sum of the three measured numbers, each multiplied by a fixed weight. Where could you read those weights off a fit? What happens to the noise of a sum of independent numbers when you multiply each by a weight?",
+      "Shot noise of the result: sigma times the square root of the sum of the squared weights. Bias: feed the same extrapolation with deep_expectation(1), (3), (5) instead of measured, and compare with ideal. The two errors are independent, so they add in quadrature.",
+      "The weights are the last row of np.linalg.pinv(np.vander(scales, degree + 1)), which gives the value of the fit at scale 0. Degree 1 is the line and degree 2 is the parabola. Compare the totals before you decide: a smaller bias does not make a smaller total."
+    ],
+    "messages": {
+      "ch_ok": "The {best} fit wins: total expected error {total_lin} for the line against {total_quad} for the parabola.",
+      "ch_missing": "{name} is not defined. Store the result in the variable {name}.",
+      "ch_wrong_zne": "{name} is {actual}, which is not the fit through `measured` evaluated at scale 0. Use degree 1 for the line and degree 2 for the parabola, and read each at 0.",
+      "ch_sigma_unamplified": "{name} is {actual}, the same as the noise of a single point. The extrapolation extends the points past the end, so its noise is larger: multiply sigma by the square root of the sum of the squared weights.",
+      "ch_wrong_sigma": "{name} is {actual}, which does not match the shot noise of the extrapolation. It is sigma times the square root of the sum of the squared weights that the fit puts on the three points.",
+      "ch_no_bias": "{name} is {actual}, which is only the shot noise. The expected error also has the bias of the method: apply it to deep_expectation(1), (3), (5), subtract ideal, and combine the two in quadrature.",
+      "ch_wrong_total": "{name} is {actual}, which is not sqrt(bias² + noise²). The bias comes from the exact values and not from `measured`, and the noise is the one of the extrapolation, not of a single point.",
+      "ch_wrong_best": "The totals are consistent ({total_lin} for the line, {total_quad} for the parabola), but best is not the smaller one. Choose by the total and not by the bias alone."
+    }
   }
 }

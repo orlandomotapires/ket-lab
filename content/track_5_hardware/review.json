@@ -1,0 +1,136 @@
+{
+  "questions": [
+    {
+      "lesson": "5.1",
+      "question": "On a device with qubits in a line 0 - 1 - 2 - 3, a GHZ circuit whose CNOT gates all start at qubit 0 needs more two-qubit gates than a chain 0→1, 1→2, 2→3. Why?",
+      "options": [
+        "A CNOT with control on qubit 0 is slower than one with control on another qubit",
+        "Qubit 0 has a single neighbor, so the transpiler inserts SWAP gates, each made of 3 CNOTs",
+        "The star circuit prepares a different state, which needs more gates"
+      ],
+      "answer": 1,
+      "explanation": "Both circuits prepare the same GHZ state. On a line only neighbors can interact, so the star circuit forces SWAPs, and every SWAP adds 3 CNOTs."
+    },
+    {
+      "lesson": "5.1",
+      "question": "On IBM devices the gate Rz costs almost nothing, unlike the CNOT. What is the reason?",
+      "options": [
+        "Rz commutes with CNOT, so the transpiler always removes it",
+        "Rz acts on the state of a single qubit, and single-qubit gates never have errors",
+        "It is done in software, by shifting the phase of the pulses that follow"
+      ],
+      "answer": 2,
+      "explanation": "An Rz rotation changes the reference phase of later pulses, so no pulse is applied to the qubit. Single-qubit gates in general do have errors, and Rz does not always commute with CNOT (it does only on the control)."
+    },
+    {
+      "lesson": "5.2",
+      "question": "You can only use a Sampler, and you want ⟨X⊗X⟩ for a two-qubit state. Which procedure works?",
+      "options": [
+        "Measure in the computational basis and compute ⟨Z⊗Z⟩ from the counts, which equals ⟨X⊗X⟩",
+        "Measure each qubit twice and multiply the results",
+        "Apply a Hadamard gate to each qubit, measure, and average (−1)^(b₀+b₁) over the shots"
+      ],
+      "answer": 2,
+      "explanation": "H X H = Z, so after the Hadamard gates a Z-basis measurement reads the eigenvalue of X on each qubit. ⟨Z⊗Z⟩ and ⟨X⊗X⟩ are different quantities in general; they are equal for |Φ⁺⟩ but differ in general."
+    },
+    {
+      "lesson": "5.2",
+      "question": "The Bell state (|00⟩ + |11⟩)/√2 is measured in the computational basis with many shots, and you compute ⟨Z⟩ of qubit 0 from the counts. What do you find?",
+      "options": [
+        "1, because the two qubits always give equal bits",
+        "A value close to 0, with a fluctuation of order 1/√shots",
+        "A value close to 0.5, the probability of '11'"
+      ],
+      "answer": 1,
+      "explanation": "Qubit 0 alone gives 0 and 1 with probability 1/2 each, so ⟨Z⟩ = 0. The equality of the two bits is a statement about ⟨Z⊗Z⟩ = 1, not about one qubit."
+    },
+    {
+      "lesson": "5.2",
+      "question": "For the Bell state, ⟨Z⊗Z⟩ is estimated from 100 shots of a Sampler. What is the statistical error of the result?",
+      "options": [
+        "0, because every shot gives the eigenvalue +1",
+        "1/√100 = 0.1, as for any Z expectation value",
+        "About 0.5, because only 100 shots were used"
+      ],
+      "answer": 0,
+      "explanation": "The error is √((1 − ⟨O⟩²)/N), and 1/√N is only the largest value, reached when ⟨O⟩ = 0. With ⟨ZZ⟩ = 1 every shot gives +1, so the average does not fluctuate."
+    },
+    {
+      "lesson": "5.3",
+      "question": "A qubit has T1 = 40 µs and no pure dephasing. What is its T2?",
+      "options": [
+        "40 µs, the same as T1",
+        "80 µs, twice T1",
+        "20 µs, half of T1"
+      ],
+      "answer": 1,
+      "explanation": "From 1/T2 = 1/(2·T1) + 1/T_φ, with 1/T_φ = 0 we get T2 = 2·T1 = 80 µs. This is the largest T2 allowed, because amplitude damping alone already shrinks the coherence as exp(−t/(2·T1))."
+    },
+    {
+      "lesson": "5.3",
+      "question": "A qubit prepared in |1⟩ waits for a time t = T1. What is the probability of measuring 1 (ignore readout error)?",
+      "options": [
+        "1/2, because T1 is the half-life",
+        "1 − e⁻¹ ≈ 0.63",
+        "e⁻¹ ≈ 0.37"
+      ],
+      "answer": 2,
+      "explanation": "The population decays as exp(−t/T1), so after t = T1 it is e⁻¹ ≈ 0.37. The value 0.63 is the probability that the qubit has already decayed, and the half-life is T1·ln 2, not T1."
+    },
+    {
+      "lesson": "5.3",
+      "question": "A qubit in |+⟩ is acted on by a phase damping channel only. What happens to its density matrix?",
+      "options": [
+        "The coherence ρ₀₁ shrinks and the populations ρ₀₀ and ρ₁₁ stay the same",
+        "The populations ρ₀₀ and ρ₁₁ shrink and the coherence ρ₀₁ stays the same",
+        "ρ₁₁ decays to 0, so the state ends at |0⟩"
+      ],
+      "answer": 0,
+      "explanation": "Phase damping multiplies ρ₀₁ by √(1 − λ) and leaves the diagonal alone, so the state loses its superposition but not its populations. Energy relaxation toward |0⟩ is amplitude damping, a different channel."
+    },
+    {
+      "lesson": "5.4",
+      "question": "Readout mitigation solves p_meas = A·p_true for p_true. Why does it not fix the error of a faulty CNOT gate in the circuit?",
+      "options": [
+        "The matrix A is too large to invert when the circuit has two-qubit gates",
+        "A describes only the errors of the measurement, and the gate error has already changed the state before it",
+        "A CNOT error is quantum and cannot be described by any linear map"
+      ],
+      "answer": 1,
+      "explanation": "The assignment matrix is measured by preparing basis states and reading them, so it contains the readout error alone. Gate errors need another technique, such as zero-noise extrapolation."
+    },
+    {
+      "lesson": "5.4",
+      "question": "In zero-noise extrapolation a gate G is replaced by G G† G. What does this do?",
+      "options": [
+        "It cancels the noise, because G† undoes the error of G",
+        "It doubles the noise and also changes the ideal result",
+        "It leaves the ideal result unchanged and, on a noisy device, runs three gates and so scales the noise by 3"
+      ],
+      "answer": 2,
+      "explanation": "G† G = I in an ideal circuit, so G G† G equals G. The noise does not cancel: each of the three gates adds its own error, which gives a noise level that can be varied on purpose."
+    },
+    {
+      "lesson": "5.4",
+      "question": "You invert the assignment matrix and the corrected distribution comes out as (1.03, −0.03). What is the most likely reason?",
+      "options": [
+        "Sampling noise: with a finite number of shots p_meas fluctuates, and the inverse can leave the set of valid distributions",
+        "The matrix A was measured wrongly, since a correct A never gives a negative entry",
+        "Readout mitigation can produce negative probabilities only for entangled states"
+      ],
+      "answer": 0,
+      "explanation": "The inverse is exact only for the exact p_meas. A sampled p_meas differs from it a little, and the inverse can amplify that into a slightly negative entry, which is why a least-squares fit restricted to valid distributions is used. Nothing in this depends on entanglement."
+    },
+    {
+      "lesson": "5.5",
+      "question": "You repeat the whole mitigated estimate (all three scales, readout inversion, extrapolation) with ten seeds, and the results have standard deviation 0.007. What does that number tell you?",
+      "options": [
+        "How much a single run's result fluctuates from shot noise, so it is the uncertainty to report with the value",
+        "How far the mitigated value still is from the exact value 1",
+        "The bias that the straight-line extrapolation leaves behind"
+      ],
+      "answer": 0,
+      "explanation": "The seeds change only the sampling of the shots, so the scatter measures statistical uncertainty. It says nothing about bias: a model that does not match the noise can be wrong by much more than 0.007 in every run."
+    }
+  ]
+}

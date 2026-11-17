@@ -38,7 +38,7 @@
     "histogram",
     "bloch"
   ],
-  "prediction_answer": 1,
+  "prediction_answer": 0,
   "validation": {
     "type": "custom"
   },

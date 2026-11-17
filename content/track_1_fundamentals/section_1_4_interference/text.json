@@ -2,24 +2,24 @@
   "title": "Interference and Measurement in Other Bases",
   "summary": "HH = I, HZH = X and how the relative phase decides a measurement outcome.",
   "objectives": [
-    "Measure a qubit in the X basis by applying a Hadamard gate before the measurement",
-    "Distinguish |+⟩ from |−⟩ with a single measurement",
-    "Predict how the order of two non-commuting gates, such as H and S, changes the final state"
+    "Tell |+⟩ from |−⟩ with a single measurement",
+    "Measure a qubit in the X basis by applying a Hadamard gate first",
+    "Predict how the order of two gates, such as H and S, changes the final state"
   ],
-  "mission": "Qubit 0 was prepared in |+⟩ or |−⟩, and you do not know which. Add gates and a measurement that identify it: |+⟩ must always give 0 and |−⟩ must always give 1. This is a measurement in the X basis.",
+  "mission": "Qubit 0 was prepared in |+⟩ or |−⟩, and you do not know which. Add gates and a measurement so that |+⟩ always gives 0 and |−⟩ always gives 1. This is a measurement in the X basis.",
   "hints": [
-    "A measurement in the computational basis gives 0 or 1 with probability 50% for both |+⟩ and |−⟩. Before measuring, you need a gate that sends |+⟩ and |−⟩ to different poles.",
-    "The Hadamard gate does this: H|+⟩ = |0⟩ and H|−⟩ = |1⟩, since HH = I and H|1⟩ = |−⟩.",
+    "In the computational basis both |+⟩ and |−⟩ give 0 or 1 at random. What would have to change about the states, just before the measurement, for the two outcomes to differ?",
+    "A gate has to send |+⟩ and |−⟩ to different poles. The Hadamard gate does: H|+⟩ = |0⟩ and H|−⟩ = |1⟩.",
     "Apply qc.h(0), then qc.measure(0, 0)."
   ],
   "prediction": {
-    "question": "Does applying H and then S to |0⟩ give the same state as applying S and then H?",
+    "question": "In H·H applied to |0⟩ you also measure the qubit between the two Hadamard gates and ignore the result. What is the probability that the final measurement gives 1?",
     "options": [
-      "Yes: the order of the gates does not matter",
-      "No: H then S gives |+i⟩, and S then H gives |+⟩",
-      "No: H then S gives |+⟩, and S then H gives |+i⟩"
+      "1/2: the middle measurement destroyed the interference",
+      "0: HH = I still holds, the middle measurement only reads the qubit",
+      "It is 1 for one middle result and 0 for the other"
     ],
-    "explanation": "H then S: H takes |0⟩ to |+⟩, and S rotates it by a quarter turn about Z to |+i⟩. S then H: S leaves |0⟩ unchanged (it only changes the phase of |1⟩), so H gives |+⟩. In general gates do not commute, so the order matters."
+    "explanation": "The middle measurement collapses the state to |0⟩ or |1⟩, so the second H starts from a basis state and gives |+⟩ or |−⟩. Each has probability 1/2 of giving 1. Without the middle measurement both paths reach the second H together and the |1⟩ terms cancel, which gives probability 0."
   },
   "challenge": {
     "mission": "Qubit 0 is now prepared in |+i⟩ = (|0⟩ + i|1⟩)/√2 or |−i⟩ = (|0⟩ − i|1⟩)/√2, and you do not know which. Add gates and a measurement so that |+i⟩ always gives 0 and |−i⟩ always gives 1. This is a measurement in the Y basis.",

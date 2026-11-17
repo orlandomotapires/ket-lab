@@ -1,8 +1,8 @@
-"""Validação da lição 4.4: o estado lógico do código de Shor sobrevive a qualquer
-erro X, Y ou Z em cada um dos nove qubits (e à ausência de erro), e também a uma
-rotação arbitrária em cada qubit (discretização dos erros).
+"""Validation for lesson 4.4: the logical state of the Shor code survives any
+X, Y or Z error on each of the nine qubits (and the no-error case), and also an
+arbitrary rotation on each qubit (error discretization).
 
-O critério é a fidelidade do qubit 0 com |ψ⟩ depois da decodificação.
+The criterion is the fidelity of qubit 0 with |ψ⟩ after decoding.
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ TOLERANCE = 0.999
 
 
 def qubit0_state(state, n):
-    """Matriz densidade do qubit 0 (o qubit 0 é o eixo menos significativo do vetor)."""
+    """Density matrix of qubit 0 (qubit 0 is the least significant axis of the vector)."""
     if state.ndim == 2:
         tensor = state.reshape((2,) * (2 * n))
         axes = "abcdefghi"[: n - 1]

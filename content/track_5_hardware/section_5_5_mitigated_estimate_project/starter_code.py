@@ -3,7 +3,7 @@ import numpy as np
 # The device (hidden) provides:
 #   run_device(gates, shots, seed)  counts such as {"000": 9021, "111": ...}, qubit 0 first
 #   calibrate(shots)                {prepared bitstring: counts} for the 8 basis states
-# Gates: ("h", q), ("x", q), ("cx", control, target); cx only between neighbours on the line 0-1-2.
+# Gates: ("h", q), ("x", q), ("cx", control, target); cx only between neighbors on the line 0-1-2.
 # The exact value of <Z0 Z2> for the GHZ state is 1.
 
 ghz = []  # gate list of the GHZ circuit

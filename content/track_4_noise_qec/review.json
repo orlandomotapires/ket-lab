@@ -1,0 +1,137 @@
+{
+  "questions": [
+    {
+      "lesson": "4.1",
+      "question": "A qubit is |0⟩ with probability 1/2 and |1⟩ with probability 1/2, with no phase relation between them. What is its purity Tr(ρ²)?",
+      "options": [
+        "1, because every qubit has purity 1",
+        "1/2, the minimum for one qubit",
+        "1/4, because each outcome has probability 1/2"
+      ],
+      "answer": 1,
+      "explanation": "The density matrix is I/2, so Tr(ρ²) = 1/4 + 1/4 = 1/2, the smallest value for one qubit. A purity of 1 needs a pure state such as |+⟩, which has a definite phase."
+    },
+    {
+      "lesson": "4.1",
+      "question": "Which set of Kraus operators describes a valid quantum channel on one qubit?",
+      "options": [
+        "√0.9·I and √0.2·X",
+        "0.7·I, 0.2·X and 0.1·Z",
+        "√0.7·I, √0.2·X and √0.1·Z"
+      ],
+      "answer": 2,
+      "explanation": "The completeness condition ΣK†K = I requires the probabilities to add up to 1: 0.7 + 0.2 + 0.1 = 1. The first set adds up to 1.1, and the third has the probabilities in place of their square roots, so ΣK†K = 0.54·I."
+    },
+    {
+      "lesson": "4.2",
+      "question": "In the three-qubit bit-flip code, the syndrome is 11 (the parities of qubits 0, 1 and of qubits 1, 2 are both odd). Which single error produced it?",
+      "options": [
+        "X on qubit 0",
+        "X on qubit 2",
+        "X on qubit 1",
+        "Z on qubit 1"
+      ],
+      "answer": 2,
+      "explanation": "Qubit 1 is the only one that takes part in both parity checks, so a flip there changes both. Z on any qubit changes no parity and gives the syndrome 00."
+    },
+    {
+      "lesson": "4.2",
+      "question": "Each of the three qubits of the bit-flip code flips independently with probability p = 0.1, and the correction is perfect. What is the probability that the logical state is wrong?",
+      "options": [
+        "0.028, from 3p² − 2p³",
+        "0.001, the probability that all three flip",
+        "0.1, the same as one qubit"
+      ],
+      "answer": 0,
+      "explanation": "The code fails when two or three qubits flip: 3p²(1 − p) + p³ = 3p² − 2p³ = 0.028. All three flipping is only one of those cases, and p = 0.1 is below the pseudo-threshold 1/2, so encoding helps."
+    },
+    {
+      "lesson": "4.3",
+      "question": "In the three-qubit phase-flip code the code states are |+++⟩ and |−−−⟩. What does a Z error on one qubit do?",
+      "options": [
+        "It leaves |+⟩ unchanged and multiplies |−⟩ by −1",
+        "It exchanges |+⟩ and |−⟩ on that qubit, which is a bit flip in the Hadamard basis",
+        "It changes no parity and so cannot be detected"
+      ],
+      "answer": 1,
+      "explanation": "Z|+⟩ = |−⟩ and Z|−⟩ = |+⟩, so in the |±⟩ basis Z plays the role X plays in the |0⟩, |1⟩ basis, and the stabilizers X⊗X detect it. The second option describes X, which this code does not detect."
+    },
+    {
+      "lesson": "4.4",
+      "question": "A Y error hits one qubit of the Shor code. Why is it corrected?",
+      "options": [
+        "Y is a rotation, and the code only corrects Pauli X and Z",
+        "Y = iXZ is a bit flip together with a phase flip, and the code corrects both",
+        "Y commutes with all the stabilizers, so it does nothing"
+      ],
+      "answer": 1,
+      "explanation": "Y = iXZ, so the inner code removes the bit flip and the outer code the phase flip. The same argument, by linearity, extends to any single-qubit error."
+    },
+    {
+      "lesson": "4.4",
+      "question": "Z errors hit qubits 0 and 3 of the Shor code, which are in different blocks. What is the result after decoding?",
+      "options": [
+        "Both are corrected, because they are in different blocks",
+        "A logical Z: the inner votes fail in both blocks",
+        "A logical X: the outer vote sees two block phase flips and corrects the third block"
+      ],
+      "answer": 2,
+      "explanation": "A Z in a block is a phase flip of the whole block. Two flipped blocks have the signature of a flip of the third block, so the outer vote adds a third Z and leaves one Z per block, which exchanges |0_L⟩ and |1_L⟩."
+    },
+    {
+      "lesson": "4.5",
+      "question": "Do the Pauli strings ZZI and IXX commute?",
+      "options": [
+        "No: Z and X clash on qubit 2, the only position where both are not I",
+        "Yes, because they share only one qubit",
+        "No, because each string has two non-identity entries"
+      ],
+      "answer": 0,
+      "explanation": "Count the positions where both strings are not I and differ. Only qubit 2 qualifies (Z against X), one clash, an odd number, so the strings anticommute. Sharing a single qubit is exactly what makes them anticommute, and the number of non-identity entries in each string plays no role."
+    },
+    {
+      "lesson": "4.5",
+      "question": "A stabilizer code on 7 qubits is defined by 6 independent commuting generators. How many logical qubits does it encode?",
+      "options": [
+        "6, one per generator",
+        "7, the number of physical qubits",
+        "1"
+      ],
+      "answer": 2,
+      "explanation": "Each independent generator halves the dimension of the code space, which is 2^(7−6) = 2. That is one qubit, k = n − m."
+    },
+    {
+      "lesson": "4.6",
+      "question": "The toric code on a 4×4 torus has one qubit on each edge. How many physical qubits does it use, and what is its distance?",
+      "options": [
+        "32 qubits, distance 4",
+        "16 qubits, distance 4",
+        "32 qubits, distance 16"
+      ],
+      "answer": 0,
+      "explanation": "There are L² horizontal and L² vertical edges, 2L² = 32. The shortest logical operator wraps around the torus and has L = 4 edges. The distance grows as L, not as the number of qubits."
+    },
+    {
+      "lesson": "4.7",
+      "question": "The map 3p² − 2p³ has its crossover at p = 1/2. Why is that not the threshold of fault-tolerant computation?",
+      "options": [
+        "The formula only holds below p = 0.01",
+        "The correcting circuit is noisy too, and a fault in it can spread to several data qubits, so many more pairs of faults can defeat the code and the break-even point is far below 1/2",
+        "Concatenation needs more than three qubits per level, which moves the crossover"
+      ],
+      "answer": 1,
+      "explanation": "The map assumes perfect syndrome extraction. In a real circuit the extraction gates fail as well and a single fault can reach more than one data qubit. Fault-tolerant design limits that spreading, but the number of pairs of fault locations that can fail together is much larger than 3, and the threshold is roughly its inverse."
+    },
+    {
+      "lesson": "4.8",
+      "question": "Under depolarizing noise with p = 0.2, a perfectly corrected Shor code is compared with a bare qubit. Which is right?",
+      "options": [
+        "The code is worse: 0.2 is above its pseudo-threshold of about 0.085",
+        "The code is better, since it corrects every single-qubit error",
+        "They are equal, since every code crosses the bare qubit at p = 1/2"
+      ],
+      "answer": 0,
+      "explanation": "Correcting every single error does not help once pairs of errors become likely. At p = 0.2 the exact logical failure probability is above 0.2, because the crossover p* is about 0.085. The value 1/2 belongs to the three-qubit bit-flip code under bit-flip noise, not to this code."
+    }
+  ]
+}

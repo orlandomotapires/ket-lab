@@ -1,0 +1,49 @@
+{
+  "id": "3.5",
+  "track": 3,
+  "estimated_minutes": 30,
+  "framework": "pennylane",
+  "live": false,
+  "timeout": 20,
+  "num_qubits": 2,
+  "max_qubits": 4,
+  "qnode": {
+    "name": "circuit",
+    "args": [
+      "params"
+    ]
+  },
+  "default_visualizer": "convergence",
+  "available_visualizers": [
+    "convergence",
+    "landscape",
+    "qsphere",
+    "bloch"
+  ],
+  "prediction_answer": 1,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets",
+      "authors": "A. Kandala, A. Mezzacapo, K. Temme, M. Takita, M. Brink, J. M. Chow, J. M. Gambetta",
+      "year": 2017,
+      "location": "Nature 549, 242–246: the article that introduced the hardware-efficient ansatz (short Letter, read in full)",
+      "url": "https://doi.org/10.1038/nature23879"
+    },
+    {
+      "kind": "course",
+      "title": "Ansatze and variational forms",
+      "authors": "IBM Quantum Learning, Variational algorithm design",
+      "location": "Sections “Variational Form and Ansatz” and “Heuristic ansaetze and trade-offs” (N-local circuits)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/variational-algorithm-design/ansaetze-and-variational-forms"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

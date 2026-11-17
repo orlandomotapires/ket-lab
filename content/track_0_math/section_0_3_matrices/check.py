@@ -1,4 +1,4 @@
-"""Validação da lição 0.3: unitariedade, Pauli, autovalores, hermitianas, valor esperado."""
+"""Validation for lesson 0.3: unitarity, Pauli, eigenvalues, Hermitian matrices, expectation value."""
 
 import numpy as np
 

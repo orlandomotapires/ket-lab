@@ -1,4 +1,4 @@
-"""Dados das visualizações da lição 3.1: paisagem do custo e trajetória do otimizador."""
+"""Data for the lesson 3.1 visualizations: cost landscape and optimizer trajectory."""
 
 import numpy as np
 
@@ -8,10 +8,10 @@ GRID = 41
 def analyze(ns):
     circuit = ns["circuit"]
     axis = np.linspace(-np.pi, np.pi, GRID)
-    a, b = np.meshgrid(axis, axis)  # linhas: θ₁; colunas: θ₀
-    try:  # broadcasting do PennyLane: uma chamada para a grade inteira
+    a, b = np.meshgrid(axis, axis)  # rows: θ₁; columns: θ₀
+    try:  # PennyLane broadcasting: one call for the whole grid
         values = np.asarray(circuit(np.array([a.ravel(), b.ravel()]))).reshape(GRID, GRID)
-    except Exception:  # noqa: BLE001 - circuito alterado sem suporte a broadcasting
+    except Exception:  # noqa: BLE001 - modified circuit without broadcasting support
         values = np.array([[float(circuit(np.array([x, y]))) for x in axis] for y in axis])
     history = [list(map(float, row[:3])) for row in (ns.get("history") or []) if len(row) >= 3]
     return {

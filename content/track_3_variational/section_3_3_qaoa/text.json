@@ -2,33 +2,33 @@
   "title": "QAOA for Max-Cut",
   "summary": "Max-Cut on a 5-vertex graph with a two-layer QAOA.",
   "objectives": [
-    "Build QAOA layers from a cost layer (IsingZZ on the edges) and a mixer layer (RX on every qubit)",
-    "Optimize the angles until the approximation ratio of the Max-Cut solution exceeds 0.85",
-    "Explain why one layer is not enough for this graph and more layers raise the best achievable ratio"
+    "Turn a coloring of a graph into a bit string and the number of cut edges into an energy",
+    "Build alternating cost and mixer layers and train their angles",
+    "Compare the best ratio of one layer with two on the same graph"
   ],
-  "mission": "Divide the 5 vertices of the graph into two groups so that as many edges as possible are cut. Build a QAOA circuit with cost layers (IsingZZ on the edges) and mixer layers (RX on every qubit), and optimize the angles until the approximation ratio exceeds 0.85.",
+  "mission": "Cutting more edges of this 5-vertex graph is a Max-Cut problem, and the circuit has to prepare a state whose expected cut is close to the best one. Build a QAOA circuit from Hadamards, cost layers (IsingZZ on every edge) and mixer layers (RX on every qubit), and optimize the angles until the approximation ratio of the state is above 0.85.",
   "prediction": {
-    "question": "With one layer (p = 1) and the best possible angles, does the approximation ratio for this graph exceed 0.85?",
+    "question": "You find the best angles for one layer (p = 1) on this graph, then add a second layer and optimize all four angles again. What can you say about the best achievable ratio?",
     "options": [
-      "Yes, one layer is always enough",
-      "No, the best ratio is about 0.82",
-      "Yes, it reaches 1"
+      "It cannot be lower than before: with both angles of the new layer at 0 the circuit is the p = 1 circuit, so that state is still reachable",
+      "It can be lower, because four angles are harder to optimize and the optimum moves",
+      "It stays the same, because both layers use the same cost Hamiltonian"
     ],
-    "explanation": "For p = 1 the best ratio on this graph is about 0.82. Each additional layer adds two angles and cannot lower the best achievable ratio; for p = 2 it is about 0.92."
+    "explanation": "A layer with γ = β = 0 is the identity, so every p = 1 state is also a p = 2 state and the best ratio cannot drop. The optimizer may fail to find it, but the best achievable value does not fall. It can rise, because the second layer reaches one edge further: on this graph it goes from about 0.82 to about 0.92."
   },
   "hints": [
-    "In layer(gamma, beta): for each edge (i, j) in edges apply qml.IsingZZ(gamma, wires=[i, j]); then apply qml.RX(2 * beta, wires=wire) on each qubit.",
-    "The circuit applies a Hadamard to each of the 5 qubits, then one layer for each pair (gamma, beta) in params. It returns qml.expval(cost_h), which the optimizer minimizes.",
-    "Use params of shape (2, 2), that is p = 2 layers, and optimizer = qml.AdamOptimizer(0.1) for about 80 steps, appending circuit(params) to history at each step."
+    "What does one layer do to a qubit and to an edge? The cost part acts on pairs of qubits joined by an edge, the mixer part acts on every qubit.",
+    "In layer(gamma, beta), apply qml.IsingZZ(gamma, wires=[i, j]) for each edge (i, j), then qml.RX(2 * beta, wires=wire) on each qubit. One layer is not enough to pass 0.85 on this graph.",
+    "Take params with one row (gamma, beta) per layer, so shape (2, 2) for two layers, and train with qml.AdamOptimizer(0.1) for about 80 steps. Append circuit(params) to history after each step."
   ],
   "messages": {
     "ok": "Approximation ratio {ratio} (threshold {threshold}): the expected cut is close to the maximum of {best} edges.",
-    "no_circuit": "Define the QNode circuit(params), which returns qml.expval(cost_h).",
-    "no_params": "Store the optimized angles in the variable params.",
-    "wrong_qubits": "The graph has 5 vertices, so the circuit needs 5 qubits, but it has {count}.",
-    "forbidden_op": "Use only the QAOA gates (Hadamard, IsingZZ, RX). Found: {names}.",
-    "no_mixer": "The mixer layer is missing. Without RX the probabilities never change, and the ratio stays at {ratio}.",
-    "p_too_small": "Ratio {ratio}, below {threshold}. With one layer QAOA reaches about 0.82 on this graph at best, so use p = 2.",
-    "low_ratio": "Ratio {ratio}, below {threshold}. Train for more steps or start from different initial angles."
+    "no_circuit": "The QNode circuit(params) is missing: define it so that it returns qml.expval(cost_h).",
+    "no_params": "The trained angles are missing: store them in the variable params.",
+    "wrong_qubits": "The graph has 5 vertices, one qubit each, but the circuit has {count} qubits.",
+    "forbidden_op": "This circuit steps outside QAOA: it uses {names}. Build it from Hadamards, IsingZZ and RX (rotations and CNOTs are accepted too).",
+    "no_mixer": "There is no mixer (RX) in the circuit, so the cost layers only change phases and the probabilities stay uniform: the ratio stays at {ratio}.",
+    "p_too_small": "Ratio {ratio}, below {threshold}. A single layer cannot get above that on this graph, whatever the angles: use two cost-and-mixer layers.",
+    "low_ratio": "Ratio {ratio}, below {threshold}. The circuit has enough layers, so the optimizer is stuck or stopped early: train for more steps or start from different angles."
   }
 }

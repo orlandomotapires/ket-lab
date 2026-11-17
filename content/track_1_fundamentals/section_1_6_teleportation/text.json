@@ -2,35 +2,35 @@
   "title": "Quantum Teleportation",
   "summary": "Bell pair, mid-circuit measurement and classically controlled corrections.",
   "objectives": [
-    "Build the teleportation circuit: a Bell pair, a Bell-basis measurement and classically controlled corrections",
-    "Apply the X and Z corrections on Bob's qubit according to Alice's two measurement bits",
-    "Explain why teleportation destroys the original state and does not violate the no-cloning theorem"
+    "Teleport an unknown qubit state with a Bell pair, a Bell-basis measurement and two classical bits",
+    "Work out Bob's qubit for each of Alice's four measurement results and the correction it needs",
+    "Explain why teleportation does not copy the state and cannot carry information faster than light"
   ],
-  "mission": "Teleport the state of qubit 0 (Alice) to qubit 2 (Bob). Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
+  "mission": "Alice's qubit 0 holds an unknown state. Teleport it to Bob's qubit 2, so that qubit 2 ends in that state. Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
   "hints": [
-    "First create a Bell pair on qubit 1 (Alice's half) and qubit 2 (Bob's half), as in lesson 1.5: qc.h(1) and qc.cx(1, 2).",
-    "Alice measures qubits 0 and 1 in the Bell basis: qc.cx(0, 1), qc.h(0), then qc.measure(0, 0) and qc.measure(1, 1).",
-    "Bob applies X if bit 1 is 1, then Z if bit 0 is 1: with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the same with qc.clbits[0] and qc.z(2). The order of the two corrections does not matter, since XZ = −ZX and a global sign cannot be observed."
+    "Which resource do Alice and Bob need before anything is sent, and on which two qubits does it live? Lesson 1.5 shows how to make it.",
+    "Alice has to learn how her qubit 0 relates to her half of the pair, qubit 1. That is a Bell measurement: CNOT from 0 to 1, then H on qubit 0, then measure both into the two classical bits.",
+    "Bob corrects with gates conditioned on the bits: X if the bit of qubit 1 is 1, then Z if the bit of qubit 0 is 1. A conditioned gate looks like with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the Z is the same with the other bit."
   ],
   "prediction": {
-    "question": "After teleportation, what has happened to the state that was in Alice's qubit?",
+    "question": "Alice teleports the state |+⟩. Before her two bits reach Bob, he measures his qubit in the X basis. What does he get?",
     "options": [
-      "It is still there, so there are now two copies",
-      "Alice's measurement destroyed it, and only Bob has the state",
-      "It has become a Bell state"
+      "Always +, since his qubit already holds |+⟩ up to a sign",
+      "+ and − with probability 1/2 each, whatever state Alice sent",
+      "A pattern that depends on |ψ⟩, so he learns something about the state"
     ],
-    "explanation": "Alice's measurement leaves qubits 0 and 1 in computational basis states, so the original state no longer exists. If a copy remained, teleportation would violate the no-cloning theorem, which forbids copying an unknown quantum state."
+    "explanation": "Without the bits, Bob's qubit is one of the four states of the table with equal probability. For |+⟩ these are |+⟩, |−⟩, |+⟩ and −|−⟩, so + and − each occur half the time. The same holds for every |ψ⟩, since the mixture is maximally mixed. This is why the transfer needs the classical message."
   },
   "comparison": {
     "source_label": "Alice, original state",
     "target_label": "Bob, current state"
   },
   "challenge": {
-    "mission": "Teleport the state of qubit 0 to qubit 2 again, without measurements or classical bits. Measurements and the classically controlled corrections are replaced by controlled gates on Bob's qubit (deferred measurement). Qubit 2 must end in the input state for every test input. The circuit must contain exactly 2 H, 3 CNOT and 1 CZ gates, and no measurement.",
+    "mission": "Teleport the state of qubit 0 to qubit 2 again, now without measurements or classical bits. Replace the measurements and the classically controlled corrections with controlled gates on Bob's qubit (deferred measurement). Qubit 2 must end in the input state for every test input. The circuit must contain exactly 2 H, 3 CNOT and 1 CZ gates, and no measurement.",
     "hints": [
-      "A correction applied if a measured bit is 1 is the same as a controlled gate with the measured qubit as control, when the measurement is moved to the end.",
-      "The correction X on Bob's qubit depended on Alice's qubit 1, and Z depended on qubit 0. Use cx(1, 2) and cz(0, 2).",
-      "Build the Bell pair on 1 and 2, apply cx(0, 1) and h(0), and finish with cx(1, 2) and cz(0, 2). Nothing is measured, so qubits 0 and 1 end in a state that carries no information about the input."
+      "Moving a measurement to the end of the circuit turns \"if this bit is 1, apply a gate\" into a controlled gate whose control is that qubit.",
+      "In the mission, X on Bob's qubit depended on qubit 1 and Z on qubit 0. So the corrections become cx(1, 2) and cz(0, 2).",
+      "Build the Bell pair on 1 and 2, then cx(0, 1) and h(0), and finish with cx(1, 2) and cz(0, 2). Nothing is measured, so qubits 0 and 1 end in a state that holds no information about the input."
     ]
   }
 }

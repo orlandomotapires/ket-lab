@@ -2,36 +2,36 @@
   "title": "Project: Design a Grover Oracle",
   "summary": "Build the oracle for a three-variable Boolean formula, then search its solutions with Grover's algorithm.",
   "objectives": [
-    "Find the satisfying assignments of a Boolean formula and encode them as a phase oracle",
-    "Verify that an oracle flips the sign of exactly the solutions and restores its ancilla qubits",
-    "Choose the optimal number of Grover iterations for N = 8 items and M = 2 solutions"
+    "Find the assignments that satisfy a Boolean formula and encode them as a phase oracle",
+    "Check that an oracle flips the sign of exactly the solutions and leaves its ancillas in |0⟩",
+    "Choose the number of Grover iterations for N = 8 and the number of solutions you found"
   ],
-  "mission": "Find the bit strings that satisfy f(a, b, c) = (a OR b) AND (NOT a OR c) AND (NOT b OR NOT c), where a, b, c are qubits 0, 1, 2. Write oracle(qc), which flips the sign of exactly the satisfying states and leaves qubits 3 and 4 (ancillas) in |0⟩. Write diffuser(qc) on qubits 0 to 2, set iterations to the optimal number for N = 8 and M = 2, run the search on qc with run_shots, and store the bit strings found in the list solutions.",
+  "mission": "Search for the settings that satisfy f(a, b, c) = (a OR b) AND (NOT a OR c) AND (NOT b OR NOT c), where a, b, c are qubits 0, 1, 2. Write oracle(qc), which flips the sign of exactly the satisfying states and leaves qubits 3 and 4 (ancillas) in |0⟩. Write diffuser(qc) on qubits 0 to 2, set iterations to the optimal number for N = 8 and M = 2, run the search on qc with run_shots, and store the bit strings found in the list solutions.",
   "hints": [
-    "Evaluate f on the 8 assignments by hand. Only two of them satisfy all three clauses. A result is written as the bit string \"c b a\" because qubit 0 is the rightmost character.",
-    "Mark one solution at a time: apply X to the qubits that are 0 in that solution, then a controlled-controlled-Z (qc.h(2), qc.ccx(0, 1, 2), qc.h(2)), then the same X gates again. Do it for each solution. An alternative is to compute each clause into an ancilla, mark the state where all are 1, and uncompute.",
-    "With sin θ = √(M/N) = 1/2, k = floor(π/4 · √(N/M)) = 1 iteration. Build qc with h on qubits 0 to 2, one oracle(qc) and one diffuser(qc), then qc.measure([0, 1, 2], [0, 1, 2]). Keep the strings whose counts exceed about 20% of the shots."
+    "Before any circuit, evaluate f on the eight assignments on paper. How many pass? Remember that a result is written \"c b a\".",
+    "For one solution: X on the qubits that are 0 in it, a Z controlled by all three (qc.h(2), qc.ccx(0, 1, 2), qc.h(2)), then the same X gates again. Do this once per solution.",
+    "Test the oracle alone first. For the search, the strings that appear far more often than the rest are the solutions; the rule of lesson 2.6 gives the number of iterations."
   ],
   "prediction": {
-    "question": "With N = 8 and M = 2, what is the probability of measuring a solution after 2 Grover iterations instead of 1?",
+    "question": "Your oracle computes a clause into ancilla qubit 3 and never uncomputes it. The ancilla is never measured. What goes wrong?",
     "options": [
-      "Higher than after 1 iteration, since more iterations amplify more",
-      "Lower, about 25%, because the state rotates past the solutions",
-      "The same, 100%"
+      "The ancilla stays entangled with the search qubits, so the amplification works less well or not at all",
+      "Nothing, since a qubit that is never measured has no effect",
+      "The oracle flips the sign of the wrong states"
     ],
-    "explanation": "The probability after k iterations is sin²((2k+1)θ) with sin θ = 1/2, so θ = 30°. For k = 1 the angle is 90° and the probability is 100%. For k = 2 the angle is 150° and the probability falls to sin²(150°) = 25%."
+    "explanation": "The ancilla holds a record of the clause, which entangles it with the search register. States with different ancilla values no longer interfere, so the diffuser cannot concentrate the amplitude. Not measuring a qubit does not remove its effect."
   },
   "messages": {
     "ok": "The oracle marks exactly the solutions ({found}), and the search finds them with probability {probability}.",
-    "no_oracle": "Define a function `oracle(qc)` that adds the oracle's gates to the circuit qc.",
-    "oracle_error": "oracle(qc) failed on a circuit with 5 qubits: {detail}. Use only qubits 0 to 4 and unitary gates (no measurements).",
-    "oracle_not_clean": "On its own, the oracle changes more than a sign for the inputs {states} (with the ancillas in |0⟩). A phase oracle may only multiply each basis state by +1 or −1, and the ancillas must return to |0⟩: uncompute them.",
-    "oracle_extra": "The oracle flips the sign of {states}, which do not satisfy f. Check the formula on these assignments.",
-    "oracle_missing": "The oracle does not flip the sign of {states}, which satisfy f. Mark every solution.",
-    "iterations": "iterations = {value}, but the optimal number for N = 8 and M = 2 is floor(π/4 · √(N/M)).",
-    "no_circuit": "Define the circuit `qc` with at least 3 qubits.",
-    "circuit_error": "The circuit could not be simulated: {detail}. Keep the measurements at the end of the circuit.",
-    "success_low": "The circuit measures a solution with probability {probability}; the project requires at least 0.95. Check the diffuser, the initial superposition and the number of iterations in qc.",
-    "solutions": "`solutions` is {found}, but the search should find both satisfying strings. Keep the strings whose counts are large (about 50% each) and write them as \"c b a\"."
+    "no_oracle": "There is no function `oracle(qc)` yet. It must add the oracle's gates to the circuit qc.",
+    "oracle_error": "oracle(qc) failed on a circuit with 5 qubits: {detail}. Use qubits 0 to 4 and unitary gates only, no measurements.",
+    "oracle_not_clean": "On its own the oracle does more than change signs for the inputs {states}. A phase oracle may only multiply each basis state by +1 or −1 and must return the ancillas to |0⟩, so uncompute whatever you wrote into them.",
+    "oracle_extra": "The oracle flips the sign of {states}, which do not satisfy f. Re-evaluate the formula on these assignments.",
+    "oracle_missing": "The oracle leaves {states} alone, but they satisfy f. Every solution has to be marked.",
+    "iterations": "iterations is {value}. With sin θ = √(M/N) = 1/2 each iteration rotates by 60°; look for the count that brings (2k+1)θ closest to 90°.",
+    "no_circuit": "There is no circuit `qc` with at least 3 qubits yet.",
+    "circuit_error": "The circuit could not be simulated: {detail}. Keep the measurements at the end.",
+    "success_low": "The circuit measures a solution with probability {probability}, below the 0.95 the project needs. Look at the diffuser, the initial superposition and the number of iterations.",
+    "solutions": "`solutions` is {found}, but the search finds both satisfying strings. Take the strings with large counts (about half of the shots each) and write them as \"c b a\"."
   }
 }

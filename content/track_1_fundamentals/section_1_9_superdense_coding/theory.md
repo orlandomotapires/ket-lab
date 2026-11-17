@@ -1,48 +1,29 @@
-## The task
+## Two bits in one qubit
 
-Alice wants to send Bob two classical bits $b_1 b_0$. Sending one qubit cannot carry more than one classical bit by itself, a bound given by Holevo's theorem. If Alice and Bob already share a Bell pair, one qubit sent from Alice to Bob is enough for two bits. The protocol is **superdense coding**.
+Without any prior arrangement, one qubit carries at most one classical bit to the receiver (Holevo's theorem). Suppose now that Alice and Bob met earlier and each took one qubit of a Bell pair. Alice can then send two bits by acting on her half and shipping that single qubit to Bob. This is **superdense coding**, and the qubit that travels is the only quantum communication in the protocol.
 
-## The shared pair
-
-Before the protocol, a source prepares
-
-$$|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}$$
-
-and gives one qubit to each party. In this lesson Alice holds qubit 1 and Bob holds qubit 0.
+Here Alice holds qubit 1 and Bob holds qubit 0, so a two-qubit label $|q_1q_0\rangle$ lists Alice's qubit first. The pair is $|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$.
 
 ## Encoding
 
-Alice applies a Pauli operator to her qubit, chosen by the message. The four results are the four Bell states, which are orthogonal:
-
-| Message $b_1 b_0$ | Alice applies | Joint state |
-| :-- | :-- | :-- |
-| 00 | $I$ | $\dfrac{\lvert 00\rangle + \lvert 11\rangle}{\sqrt{2}}$ |
-| 01 | $X$ | $\dfrac{\lvert 01\rangle + \lvert 10\rangle}{\sqrt{2}}$ |
-| 10 | $Z$ | $\dfrac{\lvert 00\rangle - \lvert 11\rangle}{\sqrt{2}}$ |
-| 11 | $ZX$ | $\dfrac{\lvert 01\rangle - \lvert 10\rangle}{\sqrt{2}}$ |
-
-The first bit selects $Z$ and the second selects $X$, so the gate is $Z^{b_1}X^{b_0}$ applied to Alice's qubit, with $X$ acting first.
-
-Alice then sends qubit 1 to Bob. This is the only qubit that travels.
+A Pauli gate on one qubit of $|\Phi^+\rangle$ turns it into another Bell state, and the four Bell states are orthogonal. Applying $Z$ to qubit 1 gives $(|00\rangle - |11\rangle)/\sqrt{2}$; applying $X$ gives $(|01\rangle + |10\rangle)/\sqrt{2}$; applying both gives $(|01\rangle - |10\rangle)/\sqrt{2}$ up to a global sign. Alice assigns the four messages $b_1b_0$ in the order $00 \to I$, $01 \to X$, $10 \to Z$, $11 \to ZX$. The first bit selects whether $Z$ is applied and the second whether $X$ is, with $X$ acting first.
 
 ## Decoding
 
-Bob holds both qubits. Four orthogonal states can be told apart with certainty by a measurement in the Bell basis. Bob implements it by changing from the Bell basis to the computational basis: a CNOT with qubit 1 as control and qubit 0 as target, then $H$ on qubit 1. For $|\Phi^-\rangle$ the CNOT gives $(|0\rangle - |1\rangle)|0\rangle/\sqrt{2}$ in the order $q_1, q_0$, and $H$ turns the first factor into $|1\rangle$. The four cases are
+Bob now has both qubits and must tell four orthogonal states apart. He measures in the Bell basis, which in lesson 1.6 meant running the pair-creation circuit backwards. Take the message $10$, so the state is $|\Phi^-\rangle = (|00\rangle - |11\rangle)/\sqrt{2}$. A CNOT with qubit 1 as control and qubit 0 as target turns $|11\rangle$ into $|10\rangle$, leaving
 
-$$|\Phi^+\rangle \to |00\rangle, \quad |\Psi^+\rangle \to |01\rangle, \quad |\Phi^-\rangle \to |10\rangle, \quad |\Psi^-\rangle \to |11\rangle ,$$
+$$
+\frac{|00\rangle - |10\rangle}{\sqrt{2}} = \frac{|0\rangle - |1\rangle}{\sqrt{2}}\otimes|0\rangle = |-\rangle|0\rangle .
+$$
 
-where each ket is $|q_1 q_0\rangle$. Measuring in the computational basis then returns the message with probability 1.
+Then $H$ on qubit 1 takes $|-\rangle$ to $|1\rangle$, so the state is $|10\rangle$ and measuring returns the message $10$. The other three cases end in $|00\rangle$, $|01\rangle$ and $|11\rangle$ for $|\Phi^+\rangle$, $|\Psi^+\rangle$ and $|\Psi^-\rangle$. It is easy to read the two bits in the wrong order here: qubit 1 holds the first bit of the message, and it is the left one in the label.
 
-## What the receiver sees alone
+## What Bob has before the qubit arrives
 
-Each Bell state has the reduced state $I/2$ on each qubit. Alice's operation on qubit 1 leaves Bob's reduced state unchanged, so Bob learns nothing about the message from his own qubit before the transfer. The information is in the joint state, and Bob has it only when both qubits are in his hands. This is consistent with the no-signaling principle: Alice cannot send information by acting on her half of the pair alone.
+Each qubit of a Bell pair, taken alone, is in the maximally mixed state $I/2$ (the reduced state of lesson 1.6). Alice's gate on qubit 1 does not change what Bob's qubit looks like, so nothing about the message can be read from it. The message is in the correlations between the two qubits, which Bob can use only once he holds both. The same argument shows that someone who intercepts the traveling qubit alone also learns nothing.
 
-## Counting resources
+Teleportation (lesson 1.6) uses the same resource in the opposite direction: a Bell pair and two classical bits move one qubit, while here a Bell pair and one qubit move two classical bits.
 
-The protocol uses one shared Bell pair and one transmitted qubit for two classical bits. Quantum teleportation (lesson 1.6) uses the same resource the other way: one Bell pair and two classical bits move one qubit.
+## Check it
 
-## In the lab
-
-The qubit labels follow Qiskit: $|q_1 q_0\rangle$ has qubit 0 on the right, so the message $b_1 b_0$ reads as the final label. Nielsen & Chuang put qubit 0 on the left, which swaps the roles of the two qubits in their equations.
-
-The validator runs your code with each of the four messages. Between the two CNOT gates only qubit 1 may be touched, and the pair creation and the decoding must be identical for every message.
+The validator runs your code for all four messages. Before you do, predict the amplitude table after Alice's gates for the message $01$, then compare. The creation of the pair and Bob's decoding must be the same for every message, and between the two CNOT gates only qubit 1 may be touched.

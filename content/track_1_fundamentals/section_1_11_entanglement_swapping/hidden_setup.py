@@ -1,46 +1,47 @@
-# Setup oculto da lição 1.11: final_state(circuit, seed=0) devolve o vetor de estado
-# final de UMA execução do circuito (medições no meio, portas condicionadas por
-# if_test), como qiskit.quantum_info.Statevector. A seed escolhe o ramo de medição.
-def _criar_final_state():
+# Hidden setup for lesson 1.11: final_state(circuit, seed=0) returns the final
+# state vector of ONE run of the circuit (mid-circuit measurements, gates
+# conditioned by if_test), as qiskit.quantum_info.Statevector. The seed picks the
+# measurement branch.
+def _build_final_state():
     import numpy as _np
     from qiskit.quantum_info import Statevector as _Statevector
 
-    def _aplicar(estado, circuito, qubits, bits, clbits, rng):
-        indice = {q: i for i, q in enumerate(circuito.qubits)}
-        indice_cl = {c: i for i, c in enumerate(circuito.clbits)}
-        for item in circuito.data:
-            nome = item.operation.name
-            alvo = [qubits[indice[q]] for q in item.qubits]
-            if nome == "barrier":
+    def _apply(state, sub_circuit, qubits, bits, clbits, rng):
+        qubit_index = {q: i for i, q in enumerate(sub_circuit.qubits)}
+        clbit_index = {c: i for i, c in enumerate(sub_circuit.clbits)}
+        for item in sub_circuit.data:
+            name = item.operation.name
+            target = [qubits[qubit_index[q]] for q in item.qubits]
+            if name == "barrier":
                 continue
-            if nome == "measure":
-                prob1 = float(_np.real(estado.probabilities([alvo[0]])[1]))
-                resultado = int(rng.random() < prob1)
-                projetor = _np.diag([1 - resultado, resultado]).astype(complex)
-                estado = estado.evolve(projetor, alvo)
-                estado = _Statevector(estado.data / _np.linalg.norm(estado.data))
-                bits[clbits[indice_cl[item.clbits[0]]]] = resultado
-            elif nome == "if_else":
-                alvo_cl, valor = item.operation.condition
-                bit = alvo_cl if not hasattr(alvo_cl, "__iter__") else alvo_cl[0]
-                if bits[clbits[indice_cl[bit]]] == valor:
-                    corpo = item.operation.blocks[0]
-                    estado = _aplicar(estado, corpo, alvo, bits,
-                                      [clbits[indice_cl[c]] for c in item.clbits], rng)
+            if name == "measure":
+                prob1 = float(_np.real(state.probabilities([target[0]])[1]))
+                outcome = int(rng.random() < prob1)
+                projector = _np.diag([1 - outcome, outcome]).astype(complex)
+                state = state.evolve(projector, target)
+                state = _Statevector(state.data / _np.linalg.norm(state.data))
+                bits[clbits[clbit_index[item.clbits[0]]]] = outcome
+            elif name == "if_else":
+                target_cl, value = item.operation.condition
+                bit = target_cl if not hasattr(target_cl, "__iter__") else target_cl[0]
+                if bits[clbits[clbit_index[bit]]] == value:
+                    body = item.operation.blocks[0]
+                    state = _apply(state, body, target, bits,
+                                   [clbits[clbit_index[c]] for c in item.clbits], rng)
             else:
-                estado = estado.evolve(item.operation, alvo)
-        return estado
+                state = state.evolve(item.operation, target)
+        return state
 
     def final_state(circuit, seed=0):
-        """Estado final de uma execução; a seed escolhe os resultados das medições."""
+        """Final state of one run; the seed picks the measurement outcomes."""
         rng = _np.random.default_rng(seed)
         bits = [0] * circuit.num_clbits
-        estado = _Statevector.from_label("0" * circuit.num_qubits)
-        return _aplicar(estado, circuit, list(range(circuit.num_qubits)), bits,
-                        list(range(circuit.num_clbits)), rng)
+        state = _Statevector.from_label("0" * circuit.num_qubits)
+        return _apply(state, circuit, list(range(circuit.num_qubits)), bits,
+                       list(range(circuit.num_clbits)), rng)
 
     return final_state
 
 
-final_state = _criar_final_state()
-del _criar_final_state
+final_state = _build_final_state()
+del _build_final_state

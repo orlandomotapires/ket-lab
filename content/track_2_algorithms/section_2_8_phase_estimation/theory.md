@@ -1,40 +1,33 @@
-## The problem
+## Reading a phase that kickback leaves behind
 
-A unitary operator $U$ has an eigenvector $|\psi\rangle$ with eigenvalue $e^{2\pi i\theta}$:
+A unitary $U$ has an eigenvector $|\psi\rangle$ with eigenvalue $e^{2\pi i\theta}$, $0 \le \theta < 1$. Phase kickback (lesson 2.1) puts that eigenvalue on a control qubit as a relative phase, where a measurement cannot see it. **Phase estimation** reads $\theta$, given $|\psi\rangle$ and the ability to apply controlled powers of $U$. It is the quantum part of order finding, and so of Shor's algorithm.
 
-$$
-U|\psi\rangle = e^{2\pi i\theta}|\psi\rangle, \qquad 0 \le \theta < 1
-$$
-
-**Phase estimation** computes $\theta$, given the ability to apply controlled powers of $U$ and to prepare $|\psi\rangle$. It is the quantum part of order finding, and so of Shor's algorithm.
-
-## The idea
-
-By phase kickback, a controlled-$U$ with the target in $|\psi\rangle$ applies the phase $e^{2\pi i\theta}$ to the $|1\rangle$ term of the control. Take $t$ counting qubits in $|+\rangle$ and apply $U^{2^j}$ controlled by counting qubit $j$. That qubit acquires the relative phase $e^{2\pi i\,2^j\theta}$, and the counting register is in
+Take $t$ counting qubits in $|+\rangle$ and apply $U^{2^j}$ controlled by counting qubit $j$. That qubit gets the relative phase $e^{2\pi i\,2^j\theta}$, and the counting register holds
 
 $$
 \frac{1}{\sqrt{2^t}}\sum_{k=0}^{2^t-1} e^{2\pi i\,\theta k}\,|k\rangle
 $$
 
-This is the QFT of the basis state $|2^t\theta\rangle$, when $2^t\theta$ is an integer. The inverse QFT therefore returns $|2^t\theta\rangle$.
+Compare this with the QFT of lesson 2.7. Let $\theta = 3/8$ and $t = 3$. Counting qubit 0 gets $3/8$ of a turn, qubit 1 gets $6/8$ and qubit 2 gets $12/8 \equiv 1/2$. These are the phases of $\text{QFT}\,|3\rangle$, whose qubit $j$ has $3\cdot 2^j/8$ of a turn. So the inverse QFT returns $|3\rangle = |011\rangle$, and $\theta = 3/8$. In general, when $2^t\theta$ is an integer $m$, the register is $\text{QFT}\,|m\rangle$ and the inverse QFT gives $|m\rangle$.
 
 ## The circuit
 
-1. Hadamard gates on the counting qubits (0, 1 and 2) and the eigenvector $|\psi\rangle$ on qubit 3.
-2. For each counting qubit $j$, the controlled power $U^{2^j}$: `apply_controlled_u(qc, j, 2**j)`.
-3. The inverse QFT from the previous lesson: `inverse_qft(qc, [0, 1, 2])`.
-4. Measure the counting register. A result $m$ gives $\theta \approx m/2^t$.
+Hadamard gates on the counting qubits (0, 1 and 2) and the eigenvector on qubit 3. For each counting qubit $j$, the controlled power $U^{2^j}$, in the lab `apply_controlled_u(qc, j, 2**j)`. Then `inverse_qft(qc, [0, 1, 2])` and a measurement of the counting register. A result $m$ gives $\theta \approx m/2^t$.
 
-With $t = 3$ the resolution is $1/8$. If $\theta$ is a multiple of $1/8$, the result is exact. Otherwise the probability concentrates on the values nearest to $2^t\theta$, and more counting qubits give a finer estimate.
+Counting qubit $j$ has weight $2^j$ and Qiskit writes qubit 0 on the right, so a measured string such as `"101"` is read directly with `int(bits, 2)`. A textbook that writes the first qubit on the left shows the string mirrored.
 
-## Qubit ordering
+## When $\theta$ is not a multiple of $1/2^t$
 
-Counting qubit $j$ is the bit of weight $2^j$, so qubit 0 is the least significant bit. Nielsen & Chuang write the most significant bit first, with the first qubit on the left. Qiskit, and this lab, write qubit 0 on the right, so a measured string such as `"101"` is read directly with `int(bits, 2)`.
+With $t = 3$ the resolution is $1/8$. If $\delta = \theta - m/2^t$ is the distance from $\theta$ to the outcome $m$, the probability of measuring $m$ is
 
-## An input that is not an eigenvector
+$$
+P(m) = \frac{\sin^2(\pi\, 2^t \delta)}{2^{2t}\,\sin^2(\pi\delta)}
+$$
 
-Suppose qubit 3 starts in $|+\rangle = (|0\rangle + |1\rangle)/\sqrt{2}$. This is a superposition of two eigenvectors of $U$: $|0\rangle$ with eigenvalue $1$ ($\theta = 0$) and $|1\rangle$ with eigenvalue $e^{2\pi i\theta}$. The measurement gives $0$ or $\theta$, with probability $1/2$ each.
+For $\theta = 0.3$ and $t = 3$: $m = 2$ ($\delta = 0.05$) has probability 0.578, $m = 3$ ($\delta = -0.075$) has 0.259, and the rest is spread over other values. The best outcome always has probability at least $4/\pi^2 \approx 0.405$. With $t = 6$ the best outcome, $19/64 = 0.297$, has probability 0.875. To get $\theta$ correct to $n$ bits with probability at least $1-\epsilon$, use $t = n + \lceil \log_2(2 + \frac{1}{2\epsilon}) \rceil$ counting qubits.
+
+If qubit 3 starts in $|+\rangle$, which is a superposition of the eigenvectors $|0\rangle$ (eigenvalue 1, $\theta = 0$) and $|1\rangle$, the measurement gives $0$ or $\theta$ with probability $1/2$ each.
 
 ## In the lab
 
-$U$ is a phase gate, $U = \begin{pmatrix} 1 & 0 \\ 0 & e^{2\pi i\theta} \end{pmatrix}$, with eigenvector $|1\rangle$. The value of $\theta$ is hidden. `run_shots(qc)` runs the circuit 1024 times and returns the counts, from which you compute `theta` in Python. The Register tab shows the probability of each counting value and the fraction it represents.
+$U$ is a phase gate, $\mathrm{diag}(1, e^{2\pi i\theta})$, with eigenvector $|1\rangle$, and $\theta$ is hidden. `run_shots(qc)` returns the counts for 1024 runs, from which you compute `theta`.

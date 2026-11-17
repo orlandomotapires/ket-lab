@@ -1,38 +1,38 @@
-# Setup oculto da lição 2.5: oráculo de fase que marca uma lista de itens secretos
-# e a variável num_marked (M), a quantidade de itens marcados.
-# O validador troca a lista (via _QLP_INPUT) para testar vários casos.
+# Hidden setup for lesson 2.6: phase oracle that marks a list of secret items
+# and the variable num_marked (M), the number of marked items.
+# The validator swaps the list (via _QLP_INPUT) to test several cases.
 try:
-    _marcados = _QLP_INPUT
+    _marked_items = _QLP_INPUT
     del _QLP_INPUT
 except NameError:
-    _marcados = ["1011"]
-if isinstance(_marcados, str):
-    _marcados = [_marcados]
+    _marked_items = ["1011"]
+if isinstance(_marked_items, str):
+    _marked_items = [_marked_items]
 
-num_marked = len(_marcados)
+num_marked = len(_marked_items)
 
 
-def _criar_oraculo(marcados):
+def _build_oracle(marked_items):
     from qiskit import QuantumCircuit as _QuantumCircuit
 
-    circuito = _QuantumCircuit(4, name="grover_oracle")
-    for marcado in marcados:
-        zeros = [qubit for qubit, bit in enumerate(reversed(marcado)) if bit == "0"]
+    circuit = _QuantumCircuit(4, name="grover_oracle")
+    for marked_item in marked_items:
+        zeros = [qubit for qubit, bit in enumerate(reversed(marked_item)) if bit == "0"]
         for qubit in zeros:
-            circuito.x(qubit)
-        circuito.h(3)
-        circuito.mcx([0, 1, 2], 3)
-        circuito.h(3)
+            circuit.x(qubit)
+        circuit.h(3)
+        circuit.mcx([0, 1, 2], 3)
+        circuit.h(3)
         for qubit in zeros:
-            circuito.x(qubit)
-    porta = circuito.to_gate()
+            circuit.x(qubit)
+    gate = circuit.to_gate()
 
     def oracle(qc):
-        """Inverte o sinal de cada estado marcado (secretos)."""
-        qc.append(porta, [0, 1, 2, 3])
+        """Flips the sign of each marked (secret) state."""
+        qc.append(gate, [0, 1, 2, 3])
 
     return oracle
 
 
-oracle = _criar_oraculo(_marcados)
-del _criar_oraculo, _marcados
+oracle = _build_oracle(_marked_items)
+del _build_oracle, _marked_items

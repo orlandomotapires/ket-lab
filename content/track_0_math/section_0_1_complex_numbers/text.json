@@ -2,36 +2,36 @@
   "title": "Complex Numbers and Phases",
   "summary": "Complex arithmetic, modulus, polar form and the difference between global and relative phase.",
   "objectives": [
-    "Multiply complex numbers and compute modulus and argument",
-    "Write a complex number in polar form and explain why e^{iφ} has modulus 1",
-    "Tell a global phase from a relative phase and compute the relative phase of two amplitudes"
+    "Multiply complex numbers and find the distance and angle of the result",
+    "Write a number as a length and an angle, and see why a number of length 1 never changes a modulus",
+    "Tell a global phase, which cannot be measured, from a relative phase, which can"
   ],
-  "mission": "The editor defines z, w, theta, a and b. Compute product = z·w, modulus = |z|, phi = the argument of z, z_polar = modulus·e^{iφ} (it must equal z), unit = e^{iθ}, unit_modulus = |unit|, and rel_phase, the relative phase of the amplitudes a and b (the phase of b minus the phase of a).",
+  "mission": "Phases are the reason the amplitudes of a qubit are complex, so start with the numbers in the editor. Define product (z times w), modulus and phi (the distance of z from the origin and its angle), z_polar (z rebuilt from modulus and phi, so it must equal z), unit and unit_modulus (the number e^{iθ} and its modulus), and rel_phase, the relative phase of the amplitudes a and b (the phase of b minus the phase of a).",
   "prediction": {
-    "question": "The state (|0⟩ + |1⟩)/√2 is multiplied as a whole by e^{iγ}, which gives (e^{iγ}|0⟩ + e^{iγ}|1⟩)/√2. Does the relative phase between the two amplitudes change?",
+    "question": "Two qubit states, (|0⟩ + |1⟩)/√2 and (|0⟩ + i|1⟩)/√2, are each prepared many times and measured in the computational basis. What do the two sets of results look like?",
     "options": [
-      "Yes: both amplitudes now have a phase γ",
-      "No: the phase of the second amplitude minus the phase of the first is still 0",
-      "Yes: it becomes 2γ"
+      "Different: the second state has a complex amplitude, so its odds change",
+      "The same, about half 0 and half 1, although the states are different",
+      "The same, because the two states differ only by a global phase"
     ],
-    "explanation": "The relative phase is arg(b) − arg(a). With both amplitudes shifted by γ the difference is (0 + γ) − (0 + γ) = 0. A common factor e^{iγ} is a global phase and has no measurable effect."
+    "explanation": "Both amplitudes have modulus 1/√2 in both states, so each outcome has probability 1/2 either way. The states are still different: the relative phase is 0 in the first and π/2 in the second, and a global phase would have to multiply both amplitudes. Only a measurement that is sensitive to the relative phase, such as one after a Hadamard gate, can tell them apart."
   },
   "hints": [
-    "Python writes the imaginary unit as 1j. abs(z) is the modulus, cmath.phase(z) or np.angle(z) is the argument, and np.exp(1j * x) is e^{ix}.",
-    "Use product = z * w, modulus = abs(z), phi = np.angle(z), z_polar = modulus * np.exp(1j * phi), unit = np.exp(1j * theta), unit_modulus = abs(unit). The relative phase is a difference of arguments, not a single one.",
-    "rel_phase = np.angle(b) - np.angle(a) (or np.angle(b / a)). The other lines are product = z * w, modulus = abs(z), phi = np.angle(z), z_polar = modulus * np.exp(1j * phi), unit = np.exp(1j * theta), unit_modulus = abs(unit)."
+    "Which of the quantities you are asked for are plain lengths, which are angles, and which are complex numbers? Python writes the imaginary unit as 1j.",
+    "NumPy has one function for the modulus and one for the angle of a complex number, and e^{ix} is np.exp(1j * x) with the 1j inside. z_polar is the same number as z written from its length and angle, so a wrong z_polar usually means a wrong angle or a missing 1j.",
+    "The relative phase is a difference of two angles, one for each amplitude. Work out the order from the task: b relative to a. The value of unit_modulus should not depend on theta at all."
   ],
   "messages": {
-    "ok": "All values are correct: z = {modulus}·e^(i{phi}), |e^(iθ)| = {unit_modulus} and the relative phase of a and b is {rel_phase}.",
+    "ok": "All values are correct: z has modulus {modulus} and phase {phi}, e^(iθ) has modulus {unit_modulus}, and the amplitudes a and b differ in phase by {rel_phase}.",
     "missing": "Define the variable {name}.",
     "not_number": "The variable {name} must be a single number, but it holds {actual}.",
-    "product_wrong": "product should be z·w = {expected}, but it is {actual}. Multiply the two numbers; Python handles 1j directly.",
-    "modulus_wrong": "modulus should be |z| = √(3² + 4²) = {expected}, but it is {actual}. Use abs(z), which returns a real number.",
-    "phi_wrong": "phi should be the argument of z, {expected} rad, but it is {actual}. Use np.angle(z) or cmath.phase(z).",
-    "z_polar_wrong": "z_polar should equal z = {expected}, but it is {actual}. Compute modulus * np.exp(1j * phi).",
-    "unit_wrong": "unit should be e^(iθ) = {expected}, but it is {actual}. Use np.exp(1j * theta), with the 1j inside the exponent.",
-    "unit_modulus_wrong": "unit_modulus should be |e^(iθ)| = {expected}, but it is {actual}. Take abs(unit).",
-    "rel_phase_single": "rel_phase is {actual}, which is the phase of b alone. The relative phase is the phase of b minus the phase of a.",
-    "rel_phase_wrong": "rel_phase should be arg(b) − arg(a) = {expected}, but it is {actual}. Use np.angle(b) - np.angle(a)."
+    "product_wrong": "product is {actual}, but z times w is {expected}. If only the real part is off, check the term where i times i appears, which is -1. A result like z + w would mean the numbers were added.",
+    "modulus_wrong": "modulus is {actual}, but the distance of 3 + 4i from the origin is {expected}. It is a real number, the square root of the sum of the squares of the real and imaginary parts.",
+    "phi_wrong": "phi is {actual}, but the angle of z from the real axis is {expected} rad. Check that it is an angle in radians, and that it is not the modulus or an angle measured from the imaginary axis.",
+    "z_polar_wrong": "z_polar is {actual}, and rebuilding z from its modulus and angle should give {expected}. The angle belongs inside an exponential, multiplied by the imaginary unit.",
+    "unit_wrong": "unit is {actual}, but e^(iθ) is {expected}. Without the imaginary unit in the exponent you get an ordinary growing exponential, not a point on the unit circle.",
+    "unit_modulus_wrong": "unit_modulus is {actual}, but every point of the unit circle is at distance {expected} from the origin. Measure the length of unit.",
+    "rel_phase_single": "rel_phase is {actual}, which is the phase of b on its own. A relative phase compares the two amplitudes, so a's phase has to come off.",
+    "rel_phase_wrong": "rel_phase is {actual}, but the phases of a and b differ by {expected}. Check the order: it is b relative to a, and each amplitude contributes only its angle."
   }
 }

@@ -1,9 +1,10 @@
-"""Validação da lição 1.9 (codificação superdensa).
+"""Validation for lesson 1.9 (superdense coding).
 
-Para cada uma das quatro mensagens: (1) o circuito tem exatamente duas portas de
-dois qubits, a que cria o par e a que inicia a decodificação; (2) Alice só atua
-no qubit 1, entre as duas; (3) o par e a decodificação de Bob não dependem da
-mensagem; (4) o resultado em |q1 q0⟩ é a mensagem.
+For each of the four messages: (1) the circuit has exactly two
+two-qubit gates, the one that creates the pair and the one that starts the
+decoding; (2) Alice acts only on qubit 1, between the two; (3) the pair and
+Bob's decoding do not depend on the message; (4) the result in |q1 q0⟩ is the
+message.
 """
 
 from qiskit import QuantumCircuit
@@ -15,7 +16,7 @@ TOLERANCE = 0.999
 
 
 def signature(circuit, instructions):
-    """Nome, qubits e parâmetros de cada instrução, ignorando barreiras e medições."""
+    """Name, qubits and parameters of each instruction, ignoring barriers and measurements."""
     result = []
     for item in instructions:
         name = item.operation.name

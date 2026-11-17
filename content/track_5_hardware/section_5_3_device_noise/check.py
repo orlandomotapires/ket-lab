@@ -1,12 +1,12 @@
-"""Validação da lição 5.3: o QNode `idle(T1, T2, t_wait)` deve reproduzir a matriz densidade
-de um qubit em |+⟩ após t_wait: ρ11 = e^(-t/T1)/2 e |ρ01| = e^(-t/T2)/2. O estado é
-reconstruído das portas e canais do aluno."""
+"""Validation for lesson 5.3: the QNode `idle(T1, T2, t_wait)` must reproduce the density matrix
+of a qubit in |+⟩ after t_wait: ρ11 = e^(-t/T1)/2 and |ρ01| = e^(-t/T2)/2. The state is
+rebuilt from the learner's gates and channels."""
 
 import numpy as np
 
 from qlp_engine import pl, simulator
 
-CASES = [(100.0, 80.0, 50.0), (100.0, 200.0, 30.0), (50.0, 30.0, 100.0)]  # (T1, T2, t) em µs
+CASES = [(100.0, 80.0, 50.0), (100.0, 200.0, 30.0), (50.0, 30.0, 100.0)]  # (T1, T2, t) in µs
 
 
 def reference(T1, T2, t):

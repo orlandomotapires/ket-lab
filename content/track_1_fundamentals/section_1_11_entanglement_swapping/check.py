@@ -1,9 +1,9 @@
-"""Validação do projeto 1.11 (troca de emaranhamento).
+"""Validation for project 1.11 (entanglement swapping).
 
-Rubrica: (1) tamanho do circuito; (2) nenhuma porta atua em 0 e 3 ao mesmo
-tempo; (3) os qubits 0 e 3 não são medidos; (4) o estado reduzido de (0, 3) é
-|Φ+⟩ em todos os ramos de medição; (5) c_before ≈ 0 e c_after ≈ 1, a
-concorrência de (0, 3), conferidas contra o cálculo feito aqui.
+Rubric: (1) circuit size; (2) no gate acts on 0 and 3 at the same time;
+(3) qubits 0 and 3 are not measured; (4) the reduced state of (0, 3) is
+|Φ+⟩ in every measurement branch; (5) c_before ≈ 0 and c_after ≈ 1, the
+concurrence of (0, 3), checked against the calculation done here.
 """
 
 import numpy as np
@@ -16,9 +16,9 @@ PHI_PLUS = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
 
 
 def pair_state(state, n=4):
-    """Matriz densidade de (0, 3), com a convenção de ordem do Qiskit (qubit 0 à direita)."""
+    """Density matrix of (0, 3), using Qiskit's ordering convention (qubit 0 on the right)."""
     tensor = np.asarray(state).reshape((2,) * n)  # eixo k = qubit n-1-k
-    moved = np.moveaxis(tensor, [0, n - 1], [0, 1])  # eixos: qubit 3, qubit 0, o resto
+    moved = np.moveaxis(tensor, [0, n - 1], [0, 1])  # axes: qubit 3, qubit 0, the rest
     matrix = moved.reshape(4, -1)
     return matrix @ matrix.conj().T
 

@@ -40,6 +40,6 @@ Quantum theory has its own limit: for any state and any observables with outcome
 
 The shared pair does not let Alice and Bob communicate. Each marginal distribution of $a$ or $b$ is uniform and independent of the other player's question, which is the no-signaling condition.
 
-## In the lab
+## Check it
 
-The function `play(x, y)` builds the circuit for one question pair, with qubit 0 for Alice and qubit 1 for Bob. The helper `outcome_probabilities(circuit)` returns the exact probabilities of the answer pairs $(a, b)$, computed from the state vector, so no sampling error enters the result. The validator computes the winning probability itself and also checks that Alice's rotation depends only on $x$ and Bob's only on $y$.
+In the editor, `play(x, y)` builds the circuit for one question pair, with qubit 0 for Alice and qubit 1 for Bob, and `outcome_probabilities(circuit)` returns the exact probabilities of the answer pairs $(a, b)$. Before choosing angles, predict the winning probability for all angles equal to $0$ (three question pairs out of four), then confirm it. The validator computes the winning probability itself and also checks that Alice's rotation depends only on $x$ and Bob's only on $y$.

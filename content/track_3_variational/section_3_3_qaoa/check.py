@@ -1,5 +1,5 @@
-"""Validação da lição 3.3: razão de aproximação do Max-Cut, medida no estado que o
-circuito do aluno prepara (não no valor que ele informa)."""
+"""Validation for lesson 3.3: Max-Cut approximation ratio, measured on the state the
+learner's circuit prepares (not on a value the learner reports)."""
 
 import itertools
 
@@ -17,7 +17,7 @@ def cut_value(bits):
 def expected_cut(probabilities):
     total = 0.0
     for index, p in enumerate(probabilities):
-        bits = [(index >> node) & 1 for node in range(5)]  # qubit k = vértice k
+        bits = [(index >> node) & 1 for node in range(5)]  # qubit k = vertex k
         total += p * cut_value(bits)
     return total
 

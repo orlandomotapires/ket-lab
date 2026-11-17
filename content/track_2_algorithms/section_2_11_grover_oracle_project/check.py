@@ -1,10 +1,10 @@
-"""Validação do projeto 2.11 (desenhar um oráculo de Grover).
+"""Validation for project 2.11 (design a Grover oracle).
 
-Rubrica: (1) `oracle(qc)` existe e é unitário; (2) sozinho, o oráculo dá fase −1
-exatamente nas soluções de f e +1 nas outras, com os ancillas de volta em |0⟩;
-(3) `iterations` é o ótimo para N = 8 e M = 2; (4) a probabilidade de sucesso
-do circuito completo é ao menos 0,95; (5) `solutions` lista as soluções
-encontradas por run_shots.
+Rubric: (1) `oracle(qc)` exists and is unitary; (2) on its own, the oracle gives phase −1
+exactly on the solutions of f and +1 on the others, with the ancillas back in |0⟩;
+(3) `iterations` is the optimum for N = 8 and M = 2; (4) the success probability
+of the full circuit is at least 0.95; (5) `solutions` lists the solutions
+found by run_shots.
 """
 
 import numpy as np
@@ -29,12 +29,12 @@ def check(ns, run_case):
     try:
         oracle(probe)
         unitary = Operator(probe).data
-    except Exception as exc:  # noqa: BLE001 - erro do aluno ao construir o oráculo
+    except Exception as exc:  # noqa: BLE001 - learner error while building the oracle
         return {"passed": False, "key": "oracle_error", "params": {"detail": str(exc)[:120]}}
 
     wrong_sign, not_diagonal = [], []
     for x in range(8):
-        column = unitary[:, x]  # entrada |x⟩ com os ancillas em |0⟩ (índice x)
+        column = unitary[:, x]  # input |x⟩ with the ancillas in |0⟩ (index x)
         sign = -1.0 if f(x) else 1.0
         if abs(column[x] - sign) < 1e-6:
             continue

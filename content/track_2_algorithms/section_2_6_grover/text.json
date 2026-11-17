@@ -2,31 +2,31 @@
   "title": "Grover's Algorithm",
   "summary": "Amplitude amplification by an oracle and inversion about the mean.",
   "objectives": [
-    "Build the diffuser (inversion about the mean) from Hadamard, X and multi-controlled Z gates",
-    "Compute the number of Grover iterations from the number of items N and the number of marked items M",
-    "Predict how the number of marked items changes the best iteration count"
+    "Build the inversion about the mean from Hadamard, X and multi-controlled Z gates",
+    "Work out the number of Grover iterations from the number of items and of marked items",
+    "Say when the usual iteration formula stops being the best choice"
   ],
-  "mission": "Find the marked items among 16 possibilities. The variable num_marked holds the number M of items the oracle marks, which differs between tests. Compute the number of Grover iterations (oracle followed by the diffuser) from N and num_marked instead of fixing it. At the end, the marked items must have the highest probability this circuit can give.",
+  "mission": "Find the marked items among 16 possibilities. The number of marked items M is the variable num_marked, and it differs between tests, so the number of Grover iterations (oracle, then diffuser) must be computed from N and num_marked, not fixed. At the end the marked items must have the highest probability this circuit can give.",
   "prediction": {
-    "question": "With 4 of the 16 items marked, how many Grover iterations give the highest success probability?",
+    "question": "Half of the 16 items are marked, so the success probability starts at 1/2. What does one Grover iteration do to it?",
     "options": [
-      "1",
-      "2",
-      "3"
+      "Raises it to about 90%, as for a single marked item",
+      "Leaves it at 1/2",
+      "Lowers it to 1/4, because the state rotates past the target"
     ],
-    "explanation": "Here sin θ = √(M/N) = 1/2, so θ = 30°. Each iteration rotates the state by 2θ = 60°, and after one iteration the angle is (2·1+1)θ = 90°, which gives probability 100%. Three iterations, as for a single marked item, would rotate past the target. In general k = ⌊π/4·√(N/M)⌋."
+    "explanation": "Here sin θ = √(8/16), so θ = 45° and each iteration rotates by 90°. After one iteration the angle is 3θ = 135° and sin²(135°) = 1/2. The same holds for every k: with half the items marked the oracle and the diffuser only swap two states of equal probability."
   },
   "hints": [
-    "Write the diffuser as a function: Hadamard on all qubits, X on all qubits, a multi-controlled Z, X on all qubits, Hadamard on all qubits.",
-    "Build the multi-controlled Z as qc.h(3), qc.mcx([0, 1, 2], 3), qc.h(3). The circuit starts with a Hadamard on each of the 4 qubits, followed by the iterations: oracle(qc), then diffuser(qc).",
-    "iterations = floor(pi / 4 * sqrt(N / num_marked)), with floor, pi and sqrt imported from math. Repeat oracle(qc) and diffuser(qc) that many times."
+    "The diffuser reflects about the uniform state. If you undo the Hadamards, which single state is reflected, and how do you flip the sign of only that state?",
+    "Flipping only |0000⟩: X on all qubits, a Z controlled by the other three (h, mcx, h on qubit 3), X on all qubits. Wrap the whole thing in Hadamards.",
+    "Each iteration rotates by 2θ with sin θ = √(M/N), and for the sets of marked items tested here floor(pi / 4 * sqrt(N / num_marked)) is the best count."
   ],
   "challenge": {
-    "mission": "Find the number of Grover iterations that maximizes the probability of measuring a marked item, for any number of marked items M (num_marked) among N = 16, including cases where the best choice is to apply fewer iterations than the formula ⌊π/4·√(N/M)⌋ suggests, or none. At the end, the marked items must have the highest probability this circuit can give. The tests include M = 1, 2, 6, 9 and 12.",
+    "mission": "Find the number of Grover iterations that gives the highest probability of a marked item, for any number of marked items M (num_marked) among N = 16, including cases where fewer iterations than ⌊π/4·√(N/M)⌋ is better, or none. The target is the count from 0 to 7 with the highest probability (the smaller count when two tie). The tests include M = 1, 2, 6, 9 and 12.",
     "hints": [
-      "After k iterations the probability of a marked item is sin²((2k + 1)θ) with sin θ = √(M/N). The formula ⌊π/4·√(N/M)⌋ assumes M is small.",
-      "For M = 9 one iteration gives about 0.30, while no iteration gives 9/16 ≈ 0.56. Compare sin²((2k + 1)θ) for k = 0, 1, 2, … and take the largest.",
-      "theta = asin(sqrt(num_marked / N)); iterations = max(range(8), key=lambda k: sin((2k + 1) * theta) ** 2)."
+      "After k iterations the probability is sin²((2k + 1)θ) with sin θ = √(M/N). The usual formula assumes that M is small.",
+      "For M = 9 one iteration gives 0.32, less than the 0.56 you start with, yet four give 0.95. Compare sin²((2k + 1)θ) for every k from 0 to 7.",
+      "Compute θ with asin, evaluate the probability for each k, and keep the k with the largest value."
     ]
   }
 }

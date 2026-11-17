@@ -1,10 +1,10 @@
-"""Validação do projeto 3.5 (curva de dissociação variacional do H₂).
+"""Validation for project 3.9 (variational dissociation curve of H₂).
 
-Rubrica: (1) dados completos, ≥ 5 distâncias entre 0,5 e 2,0 Å, ≥ 3 delas entre 0,5 e
-1,0; (2) no máximo 40 passos por distância; (3) o ansatz é o químico e as energias
-relatadas coincidem com as recalculadas aqui a partir dos ângulos, sem ficar
-abaixo da energia exata; (4) cada energia recalculada está a até 1,6 mHa da exata
-(diagonalização do Hamiltoniano); (5) r_eq fica a até 0,05 Å do mínimo exato.
+Rubric: (1) complete data, ≥ 5 distances between 0.5 and 2.0 Å, ≥ 3 of them between 0.5 and
+1.0; (2) at most 40 steps per distance; (3) the ansatz is the chemistry one and the reported
+energies match the ones recomputed here from the angles, without falling below the exact
+energy; (4) each recomputed energy is within 1.6 mHa of the exact one (Hamiltonian
+diagonalization); (5) r_eq is within 0.05 Å of the exact minimum.
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ from qlp_engine import pl
 CHEMICAL_ACCURACY = 1.6e-3
 MAX_STEPS = 40
 BOHR_PER_ANGSTROM = 1.0 / 0.529177210903
-EQUILIBRIUM = 0.734  # mínimo exato da curva STO-3G (varredura com passo de 0,002 Å)
+EQUILIBRIUM = 0.734  # exact minimum of the STO-3G curve (scan with a 0.002 Å step)
 EQUILIBRIUM_TOLERANCE = 0.05
 CONSISTENCY = 1e-6
 
@@ -28,7 +28,7 @@ def exact_hamiltonian(distance):
 
 
 def ansatz_energy(matrix, theta):
-    """⟨ψ|H|ψ⟩ para cos(θ/2)|1100⟩ − sin(θ/2)|0011⟩ (fio 0 é o bit mais significativo)."""
+    """⟨ψ|H|ψ⟩ for cos(θ/2)|1100⟩ − sin(θ/2)|0011⟩ (wire 0 is the most significant bit)."""
     state = np.zeros(16, dtype=complex)
     state[0b1100] = np.cos(theta / 2)
     state[0b0011] = -np.sin(theta / 2)

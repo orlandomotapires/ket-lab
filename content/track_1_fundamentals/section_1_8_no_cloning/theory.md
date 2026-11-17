@@ -22,11 +22,11 @@ The ideal copy is
 
 $$|\psi\rangle|\psi\rangle = \alpha^2|00\rangle + \alpha\beta|01\rangle + \alpha\beta|10\rangle + \beta^2|11\rangle .$$
 
-These two states are equal only if $\alpha\beta = 0$, that is, for $|0\rangle$ and $|1\rangle$ up to a global phase. For $|+\rangle$ the output is the Bell state $|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$, and its fidelity with the ideal copy is
+These two states are equal only if $\alpha\beta = 0$, that is, for $|0\rangle$ and $|1\rangle$ up to a global phase. For $|+\rangle$ the output is the Bell state $|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$, and its **fidelity** with the ideal copy, the overlap $|\langle \text{ideal}|\text{output}\rangle|^2$ (it is 1 when two pure states are the same), is
 
 $$|\langle ++|\Phi^+\rangle|^2 = \left(\tfrac{1}{\sqrt{2}}\right)^2 = \tfrac{1}{2} .$$
 
-The copy is wrong in a specific way: each qubit alone is in the maximally mixed state, because the pair is entangled.
+The copy is wrong in a specific way. Look at one qubit and ignore the other, which gives its **reduced state**: here each qubit alone is in the **maximally mixed state**, a fair coin in every basis, because the pair is entangled. Measuring both qubits gives 00 or 11 and never 01 or 10, whereas two real copies of $|+\rangle$ would give all four outcomes.
 
 ## Proof sketch
 
@@ -46,8 +46,6 @@ Measuring a qubit does not help: it gives one classical bit and changes the stat
 
 The theorem does not forbid copying a known state, which can be prepared as many times as needed, and it does not forbid correlating one basis with several qubits, as in the three-qubit bit-flip code of Track 4.
 
-## In the lab
+## Check it
 
-The editor prepares $|+\rangle$ on qubit 0 with `prepare_input`. The compare view shows qubit 0 before the CNOT and qubit 1 at the end. Qubit 1 ends at the center of the Bloch sphere, which marks a maximally mixed state, because it is entangled with qubit 0.
-
-The validator also runs your circuit on $|0\rangle$, $|1\rangle$ and a state with a complex phase. The circuit must reproduce the CNOT output for all of them, so the single CNOT is the only copier you need.
+The editor prepares $|+\rangle$ on qubit 0 with `prepare_input`. Before you place the CNOT, predict where qubit 1 will end on the Bloch sphere (the center marks the maximally mixed state), then check. The validator also runs your circuit on $|0\rangle$, $|1\rangle$ and a state with a complex phase, and requires the CNOT output for all of them, so the single CNOT is the only copier you need.

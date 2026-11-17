@@ -1,0 +1,136 @@
+{
+  "questions": [
+    {
+      "lesson": "1.2",
+      "question": "A qubit is in |−⟩. You apply a Hadamard gate and then measure in the computational basis. What do you get?",
+      "options": [
+        "0 or 1, each with probability 1/2, as for |+⟩",
+        "Always 1",
+        "Always 0"
+      ],
+      "answer": 1,
+      "explanation": "Since |−⟩ = H|1⟩ and HH = I, H|−⟩ = |1⟩. Measuring |−⟩ directly gives a 50/50 result, but the Hadamard turns the sign of the |1⟩ amplitude into a difference between the outcomes."
+    },
+    {
+      "lesson": "1.3",
+      "question": "A qubit is not entangled with anything. How do R_z(θ) and the phase gate P(θ) = diag(1, e^{iθ}) compare on it?",
+      "options": [
+        "They differ only by the global phase e^{−iθ/2}, so no measurement tells them apart",
+        "R_z(θ) rotates the Bloch vector about Z, but P(θ) leaves it fixed",
+        "They give different measurement probabilities after a Hadamard gate"
+      ],
+      "answer": 0,
+      "explanation": "R_z(θ) = e^{−iθ/2} P(θ), and a global phase changes nothing observable. Both gates rotate the Bloch vector by θ about the Z axis, so the probabilities after any later gate are the same."
+    },
+    {
+      "lesson": "1.4",
+      "question": "Which circuit tells |+i⟩ = (|0⟩ + i|1⟩)/√2 from |−i⟩ with certainty?",
+      "options": [
+        "A Hadamard gate, then a measurement",
+        "An S gate, then a measurement",
+        "An S† gate, then a Hadamard gate, then a measurement"
+      ],
+      "answer": 2,
+      "explanation": "S† takes |±i⟩ to |±⟩ and H takes those to |0⟩ and |1⟩, so the measurement is in the Y basis. H alone leaves both states at 50/50, and S changes only the phase, so a measurement right after it cannot see it."
+    },
+    {
+      "lesson": "1.4",
+      "question": "You apply H, then T, then H to |0⟩ and measure. What is the probability of getting 1?",
+      "options": [
+        "About 0.15: T turns the phase by π/4, and the last H makes that phase visible",
+        "0, because T changes only a phase and the Hadamard gates cancel",
+        "1/2, because H puts the qubit on the equator"
+      ],
+      "answer": 0,
+      "explanation": "H gives |+⟩ with φ = 0 and T moves it to φ = π/4. The last H gives 1 with probability (1 − cos φ)/2 = (1 − 0.707)/2 ≈ 0.146. If T were missing, HH = I would give 0."
+    },
+    {
+      "lesson": "1.5",
+      "question": "You prepare |Φ⁺⟩ and measure qubit 0, getting 1. What does a measurement of qubit 1 give?",
+      "options": [
+        "0, because the two qubits are measured separately",
+        "Always 1, because the pair is correlated",
+        "0 or 1 at random, because qubit 1 alone is a fair coin"
+      ],
+      "answer": 1,
+      "explanation": "In |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 the two bits always agree, so qubit 1 gives 1 as well. Qubit 1 alone looks like a fair coin, but once qubit 0 has been measured the outcome is fixed. Compare with a product state of two independent coins, where the first result says nothing about the second."
+    },
+    {
+      "lesson": "1.5",
+      "question": "In Qiskit, a two-qubit circuit starts in |00⟩ and applies only qc.x(0). Which state results?",
+      "options": [
+        "|10⟩",
+        "|11⟩",
+        "|01⟩"
+      ],
+      "answer": 2,
+      "explanation": "Qubit 0 is the rightmost label in |q₁q₀⟩, so flipping it gives |01⟩. Nielsen & Chuang write qubit 0 on the left and would call the same state |10⟩."
+    },
+    {
+      "lesson": "1.6",
+      "question": "In teleportation, Alice's measurement gives 1 for qubit 1 and 0 for qubit 0. Which correction does Bob apply to his qubit?",
+      "options": [
+        "Z",
+        "X",
+        "X, then Z"
+      ],
+      "answer": 1,
+      "explanation": "The bit of qubit 1 selects X and the bit of qubit 0 selects Z. Here only the first is 1: Bob's state is β|0⟩ + α|1⟩, and X restores α|0⟩ + β|1⟩."
+    },
+    {
+      "lesson": "1.7",
+      "question": "How does controlled-R_z(θ) compare with controlled-P(θ)?",
+      "options": [
+        "They differ: the global phase e^{−iθ/2} becomes a relative phase between the control states 0 and 1",
+        "They are the same gate, because R_z and P differ only by a global phase",
+        "Controlled-R_z cannot be built from CNOT and single-qubit gates"
+      ],
+      "answer": 0,
+      "explanation": "A phase that is global for one qubit is applied only on the branch where the control is 1, so it becomes a relative phase of the control qubit. Controlled-R_z(θ) multiplies the control-1 states by e^{−iθ/2} and e^{iθ/2}, while controlled-P(θ) multiplies them by 1 and e^{iθ}."
+    },
+    {
+      "lesson": "1.8",
+      "question": "Which pair of states can one unitary operation clone, as U|ψ⟩|0⟩ = |ψ⟩|ψ⟩?",
+      "options": [
+        "|0⟩ and |+⟩",
+        "|+⟩ and |+i⟩",
+        "|0⟩ and |1⟩"
+      ],
+      "answer": 2,
+      "explanation": "A single unitary can copy two states only if they are equal or orthogonal, and |0⟩ and |1⟩ are orthogonal (the CNOT does it). |0⟩ and |+⟩ have overlap 1/√2, and |+⟩ and |+i⟩ also overlap, so neither pair works."
+    },
+    {
+      "lesson": "1.9",
+      "question": "In superdense coding Alice wants to send 11 but applies only Z to her qubit. What does Bob read?",
+      "options": [
+        "11, because Bob's decoding is the same for every message",
+        "01, because Z acts on the second bit",
+        "10, because Z alone is the gate for the message 10"
+      ],
+      "answer": 2,
+      "explanation": "Z alone turns |Φ⁺⟩ into |Φ⁻⟩, which Bob's decoding maps to |10⟩. The message 11 needs ZX, which gives |Ψ⁻⟩. Bob's circuit never changes, so any mistake of Alice's shows up as another message."
+    },
+    {
+      "lesson": "1.10",
+      "question": "Why can no classical strategy win the CHSH game with probability above 3/4?",
+      "options": [
+        "Alice and Bob cannot guess the questions of the other player",
+        "Adding the four winning conditions a(x) ⊕ b(y) = x ∧ y modulo 2 gives 0 = 1, so one pair always loses",
+        "The referee picks the questions to defeat the players"
+      ],
+      "answer": 1,
+      "explanation": "Each a(x) and b(y) appears twice, so the left sides add to 0, while the right sides add to 1. At most 3 of the 4 question pairs can be won, and shared randomness only mixes deterministic strategies."
+    },
+    {
+      "lesson": "1.11",
+      "question": "In entanglement swapping the Bell measurement of qubits 1 and 2 gives q2 = 1 and q1 = 0. In what state are qubits 0 and 3 before any correction?",
+      "options": [
+        "|Ψ⁺⟩, since q2 = 1 exchanges the bits and q1 = 0 leaves the sign",
+        "|Φ⁻⟩, since q1 gives the sign",
+        "|Ψ⁻⟩, since both results are used"
+      ],
+      "answer": 0,
+      "explanation": "The bit of qubit 2 tells whether the two surviving terms have a ≠ b, which selects Ψ rather than Φ. The bit of qubit 1 gives the sign (−1)^(a m₁), and with q1 = 0 it is +. So the state is (|01⟩ + |10⟩)/√2. The corrections are X on qubit 3 for the bit of qubit 2 and Z for the bit of qubit 1."
+    }
+  ]
+}

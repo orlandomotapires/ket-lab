@@ -1,5 +1,5 @@
-# Setup oculto da lição 1.9: a mensagem de Alice, dois bits como string "ab".
-# O validador troca a mensagem (via _QLP_INPUT) para testar as quatro.
+# Hidden setup for lesson 1.9: Alice's message, two bits as a string "ab".
+# The validator swaps the message (via _QLP_INPUT) to test all four.
 try:
     message = _QLP_INPUT
     del _QLP_INPUT

@@ -1,6 +1,6 @@
-# Setup oculto da lição 4.4: o estado a proteger e o erro injetado.
-# A interface escolhe o erro pelos botões; o validador varia estado e erro (via _QLP_INPUT).
-# O erro é descrito por pares letra+qubit: "y4", "x0x1", "z0z3"; "u4" é uma rotação arbitrária.
+# Hidden setup for lesson 4.4: the state to protect and the injected error.
+# The UI picks the error with its buttons; the validator varies state and error (via _QLP_INPUT).
+# The error is described by letter+qubit pairs: "y4", "x0x1", "z0z3"; "u4" is an arbitrary rotation.
 try:
     _config = dict(_QLP_INPUT)
     del _QLP_INPUT
@@ -8,7 +8,7 @@ except NameError:
     _config = {}
 
 
-def _criar_funcoes(config):
+def _build_functions(config):
     import pennylane as _qml
 
     theta, phi = config.get("input", (1.1, 0.7))
@@ -16,12 +16,12 @@ def _criar_funcoes(config):
     errors = [(error[i], int(error[i + 1])) for i in range(0, len(error), 2)] if error != "none" else []
 
     def prepare_input():
-        """Prepara no qubit 0 o estado |ψ⟩ que será protegido."""
+        """Prepare the state |ψ⟩ to be protected on qubit 0."""
         _qml.RY(theta, wires=0)
         _qml.RZ(phi, wires=0)
 
     def inject_error():
-        """Aplica o erro escolhido nos nove qubits de dados."""
+        """Apply the chosen error to the nine data qubits."""
         for kind, wire in errors:
             if kind == "x":
                 _qml.PauliX(wires=wire)
@@ -37,5 +37,5 @@ def _criar_funcoes(config):
     return prepare_input, inject_error
 
 
-prepare_input, inject_error = _criar_funcoes(_config)
-del _criar_funcoes, _config
+prepare_input, inject_error = _build_functions(_config)
+del _build_functions, _config

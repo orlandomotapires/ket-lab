@@ -1,13 +1,13 @@
-"""Circuitos PennyLane no laboratório.
+"""PennyLane circuits in the lab.
 
-Executa a função de um QNode uma vez, gravando cada operação com a linha do
-código do aluno que a criou, e converte tudo para as operações do simulador
-(as mesmas usadas pelos circuitos Qiskit). Assim a linha do tempo, o diagrama e
-as visualizações funcionam igual. Canais de ruído (BitFlip, DepolarizingChannel…)
-viram operadores de Kraus e levam a simulação para matriz densidade.
+Runs a QNode's function once, recording each operation with the line of the
+student's code that created it, and converts everything to the simulator's operations
+(the same ones used by Qiskit circuits). This way the timeline, the diagram and
+the visualizations work the same way. Noise channels (BitFlip, DepolarizingChannel…)
+become Kraus operators and move the simulation to density matrices.
 
-Convenção: o fio (wire) de índice k no dispositivo é o qubit k da plataforma, e os
-rótulos seguem a ordem do Qiskit (|q_{n-1} … q_0⟩), a mesma das outras trilhas.
+Convention: the wire of index k on the device is the platform's qubit k, and the
+labels follow Qiskit's order (|q_{n-1} … q_0⟩), the same as in the other tracks.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from .tracer import USER_FILENAME, UserCodeError
 
 MAX_EXPANSION_DEPTH = 8
 
-# nome PennyLane -> (nome na plataforma, nº de controles, porta base)
+# PennyLane name -> (platform name, number of controls, base gate)
 NAMES: dict[str, tuple[str, int, str | None]] = {
     "PauliX": ("x", 0, None),
     "PauliY": ("y", 0, None),
@@ -53,7 +53,7 @@ NAMES: dict[str, tuple[str, int, str | None]] = {
     "Adjoint(S)": ("sdg", 0, None),
     "Adjoint(T)": ("tdg", 0, None),
     "QubitChannel": ("kraus", 0, None),
-    # Excitações da química: mantidas como uma porta só (decompostas, viram dezenas de portas).
+    # Chemistry excitations: kept as a single gate (decomposed, they become dozens of gates).
     "SingleExcitation": ("singleexcitation", 0, None),
     "DoubleExcitation": ("doubleexcitation", 0, None),
     "BitFlip": ("bitflip", 0, None),
@@ -71,7 +71,7 @@ def is_qnode(value) -> bool:
 
 
 def find_qnode(namespace: dict, name: str | None = None):
-    """O QNode indicado pela lição, ou o último definido no código."""
+    """The QNode named by the lesson, or the last one defined in the code."""
     if name and is_qnode(namespace.get(name)):
         return namespace[name]
     qnodes = [value for key, value in namespace.items() if not key.startswith("_") and is_qnode(value)]
@@ -81,7 +81,7 @@ def find_qnode(namespace: dict, name: str | None = None):
 
 
 def qnode_arguments(qnode, namespace: dict, names: list[str] | None) -> list:
-    """Argumentos para desenhar o circuito: variáveis do código do aluno (ex.: os parâmetros treinados)."""
+    """Arguments for drawing the circuit: variables from the student's code (e.g. the trained parameters)."""
     if names is None:
         names = required_parameters(qnode)
     values = []
@@ -93,8 +93,8 @@ def qnode_arguments(qnode, namespace: dict, names: list[str] | None) -> list:
 
 
 def required_parameters(qnode) -> list[str]:
-    """Parâmetros sem valor padrão da função do QNode: no laboratório livre, `circuit(params)`
-    é desenhado com a variável `params` do código, se ela existir."""
+    """Parameters without a default value of the QNode function: in the free lab, `circuit(params)`
+    is drawn with the code's `params` variable, if it exists."""
     import inspect
 
     try:
@@ -108,7 +108,7 @@ def required_parameters(qnode) -> list[str]:
 
 
 def trace_qnode(qnode, args: list) -> tuple[list[Op], list[int], int]:
-    """Executa a função do QNode uma vez e devolve (operações, linhas, nº de qubits)."""
+    """Runs the QNode function once and returns (operations, lines, number of qubits)."""
     import pennylane as qml
     from pennylane.measurements import MeasurementProcess
     from pennylane.queuing import AnnotatedQueue
@@ -143,7 +143,7 @@ def trace_qnode(qnode, args: list) -> tuple[list[Op], list[int], int]:
                 sys.settrace(previous)
     except UserCodeError:
         raise
-    except Exception as exc:  # noqa: BLE001 - erro no corpo do QNode
+    except Exception as exc:  # noqa: BLE001 - error in the QNode body
         from .tracer import _describe, _user_line
 
         raise UserCodeError(_describe(exc), _user_line(exc)) from None
@@ -167,7 +167,7 @@ def trace_qnode(qnode, args: list) -> tuple[list[Op], list[int], int]:
 
 
 def _expand(op, depth: int) -> list:
-    """Decompõe templates (AngleEmbedding, camadas…) até portas conhecidas."""
+    """Decomposes templates (AngleEmbedding, layers…) down to known gates."""
     import pennylane as qml
 
     if op.name in NAMES or isinstance(op, qml.operation.Channel) or depth >= MAX_EXPANSION_DEPTH:
@@ -176,7 +176,7 @@ def _expand(op, depth: int) -> list:
         raise UserCodeError(t("pl.unsupported", name=op.name), kind="runtime")
     try:
         parts = op.decomposition()
-    except Exception:  # noqa: BLE001 - sem decomposição: usa a matriz inteira
+    except Exception:  # noqa: BLE001 - no decomposition: use the whole matrix
         return [op]
     return [leaf for part in parts for leaf in _expand(part, depth + 1)]
 
@@ -189,7 +189,7 @@ def _convert(op, index: dict) -> Op:
     except KeyError as exc:
         raise UserCodeError(t("pl.unknown_wire", wire=exc.args[0]), kind="runtime") from None
     name, num_ctrl, base = NAMES.get(op.name, (op.name, 0, None))
-    # Com broadcasting (lote de 1 exemplo), parâmetros chegam como arrays de tamanho 1.
+    # With broadcasting (batch of 1 example), parameters arrive as arrays of size 1.
     params = tuple(_scalar(p) for p in op.parameters if np.size(p) == 1)
     k = len(qubits)
     if isinstance(op, qml.operation.Channel):
@@ -199,14 +199,14 @@ def _convert(op, index: dict) -> Op:
         matrix = np.asarray(qml.matrix(op), dtype=complex)
     except Exception:  # noqa: BLE001
         raise UserCodeError(t("pl.unsupported", name=op.name), kind="runtime") from None
-    if matrix.ndim == 3:  # broadcasting: desenha o primeiro exemplo do lote
+    if matrix.ndim == 3:  # broadcasting: draw the first example of the batch
         matrix = matrix[0]
     return Op("gate", name, qubits, matrix=_little_endian(matrix, k), params=params, num_ctrl=num_ctrl, base=base)
 
 
 def _little_endian(matrix: np.ndarray, k: int) -> np.ndarray:
-    """PennyLane indexa a matriz com o primeiro fio como bit mais significativo; o
-    simulador espera o primeiro qubit da lista como o menos significativo."""
+    """PennyLane indexes the matrix with the first wire as the most significant bit; the
+    simulator expects the first qubit in the list to be the least significant."""
     if k == 1:
         return matrix
     tensor = matrix.reshape((2,) * (2 * k))

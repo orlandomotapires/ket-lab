@@ -1,3 +1,3 @@
-"""Motor científico local da Quantum Learning Platform."""
+"""Local scientific engine of the Quantum Learning Platform."""
 
 __version__ = "0.1.0"

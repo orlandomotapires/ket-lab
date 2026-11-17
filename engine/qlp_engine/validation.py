@@ -1,15 +1,15 @@
-"""Oráculo de validação.
+"""Validation oracle.
 
-Tipos (campo `validation.type` do manifest):
-  state_fidelity       estado final ≈ o da solução (Nível 1)
-  counts_distribution  estatística das medições ≈ a da solução
-  reduced_state        estado de UM qubit, para várias entradas e todos os ramos de medição
-  oracle_cases         distribuição de um registrador, para vários oráculos secretos (Nível 2)
-  state_cases          estado final, para várias entradas de teste (Nível 2)
+Types (the manifest's `validation.type` field):
+  state_fidelity       final state ≈ the solution's (Level 1)
+  counts_distribution  measurement statistics ≈ the solution's
+  reduced_state        state of ONE qubit, for several inputs and all measurement branches
+  oracle_cases         distribution of a register, for several secret oracles (Level 2)
+  state_cases          final state, for several test inputs (Level 2)
 
-O alvo nunca é digitado à mão: vem da execução do `solution.py` da lição com a
-mesma entrada. Entradas chegam ao setup oculto pela variável `_QLP_INPUT`.
-Regras comuns: allowed_gates, required_gates, max_gates, forbidden_pairs, expected_variables.
+The target is never typed by hand: it comes from running the lesson's `solution.py` with the
+same input. Inputs reach the hidden setup through the variable `_QLP_INPUT`.
+Common rules: allowed_gates, required_gates, max_gates, forbidden_pairs, expected_variables.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ DEFAULT_SHOTS = 4096
 REDUCED_STATE_TRIALS = 4
 BRANCH_SEEDS = 32
 
-# Portas criadas pelos setups ocultos, mostradas pelo nome da função que o aluno chama.
+# Gates created by the hidden setups, shown by the name of the function the student calls.
 FRIENDLY_NAMES = {
     "c_mod_mult": "apply_controlled_mod_mult",
     "c_u": "apply_controlled_u",
@@ -41,7 +41,7 @@ FRIENDLY_NAMES = {
 
 
 def validate(code: str, lesson: dict) -> dict:
-    """Valida o código do aluno contra as regras da lição. Nunca levanta exceção."""
+    """Validates the student's code against the lesson's rules. Never raises an exception."""
     rules = lesson.get("validation") or {}
     kind = rules.get("type")
     checker = {
@@ -72,7 +72,7 @@ def validate(code: str, lesson: dict) -> dict:
             return _check_variables(result, student.namespace, rules["expected_variables"])
         return result
     except tracer.UserCodeError as exc:
-        return _result(False, "error", exc.message, line=exc.line)
+        return _with_stdout(_result(False, "error", exc.message, line=exc.line), exc.stdout)
     except simulator.SimulationError as exc:
         return _result(False, "error", exc.message, line=exc.line)
 
@@ -82,37 +82,66 @@ def _first_case(rules: dict) -> dict | None:
     return {"_QLP_INPUT": cases[0]} if cases else None
 
 
+SUBCIRCUIT_PREFIX = "circuit-"
+MAX_SUBCIRCUIT_DEPTH = 16
+
+
+def flatten(circuit, _depth: int = 0, _qubits: tuple[int, ...] | None = None) -> list[tuple[str, tuple[int, ...]]]:
+    """(gate name, qubit indices) of every instruction, opening the learner's own sub-circuits.
+
+    `qc.append(sub.to_gate(), ...)` puts one instruction named "circuit-<n>" in the circuit; the
+    rules are about the gates inside it. Sub-circuits the lesson itself defines carry other names
+    (oracle, c_u...) and stay opaque, because the lessons count them as one gate. `qc.compose`
+    already copies the instructions inline.
+    """
+    index = {bit: i for i, bit in enumerate(circuit.qubits)}
+    outer = _qubits if _qubits is not None else tuple(range(circuit.num_qubits))
+    flat: list[tuple[str, tuple[int, ...]]] = []
+    for instruction in circuit.data:
+        operation = instruction.operation
+        qubits = tuple(outer[index[q]] for q in instruction.qubits)
+        inner = getattr(operation, "definition", None) if operation.name.startswith(SUBCIRCUIT_PREFIX) else None
+        if inner is not None and _depth < MAX_SUBCIRCUIT_DEPTH:
+            flat.extend(flatten(inner, _depth + 1, qubits))
+        else:
+            flat.append((operation.name, qubits))
+    return flat
+
+
 def _structural_problem(circuit, rules: dict) -> dict | None:
-    forbidden = _forbidden_gates(circuit, rules.get("allowed_gates"))
+    gates = flatten(circuit)
+    names = [name for name, _ in gates]
+    forbidden = _forbidden_gates(names, rules.get("allowed_gates"))
     if forbidden:
-        names = ", ".join(f"`{name}`" for name in forbidden)
-        return _result(False, "forbidden_gate", t("val.forbidden_gate", names=names))
-    missing = sorted(set(rules.get("required_gates") or []) - {i.operation.name for i in circuit.data})
+        shown = ", ".join(f"`{name}`" for name in forbidden)
+        return _result(False, "forbidden_gate", t("val.forbidden_gate", names=shown))
+    missing = sorted(set(rules.get("required_gates") or []) - set(names))
     if missing:
-        names = ", ".join(f"`{FRIENDLY_NAMES.get(name, 'qc.' + name)}`" for name in missing)
-        return _result(False, "required_gate", t("val.required_gate", names=names))
+        shown = ", ".join(f"`{FRIENDLY_NAMES.get(name, 'qc.' + name)}`" for name in missing)
+        return _result(False, "required_gate", t("val.required_gate", names=shown))
     for name, expected in (rules.get("gate_counts") or {}).items():
-        actual = sum(1 for i in circuit.data if i.operation.name == name)
+        actual = names.count(name)
         if actual != expected:
             friendly = FRIENDLY_NAMES.get(name, "qc." + name)
             return _result(False, "gate_count", t("val.gate_count", name=friendly, expected=expected, actual=actual))
-    pair = _forbidden_pair(circuit, rules.get("forbidden_pairs"))
+    pair = _forbidden_pair(gates, rules.get("forbidden_pairs"))
     if pair:
         return _result(False, "forbidden_pair", t("val.forbidden_pair", a=pair[0], b=pair[1]))
     max_gates = rules.get("max_gates")
-    if max_gates is not None and _gate_count(circuit) > max_gates:
-        return _result(False, "too_many_gates", t("val.too_many_gates", limit=max_gates, count=_gate_count(circuit)))
+    count = sum(1 for name in names if name != "barrier")
+    if max_gates is not None and count > max_gates:
+        return _result(False, "too_many_gates", t("val.too_many_gates", limit=max_gates, count=count))
     return None
 
 
 # --------------------------------------------------------------------------- #
-# Nível 1
+# Level 1
 # --------------------------------------------------------------------------- #
 
 
 def _check_state(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
-    student_state = simulator.run_trajectory(circuit, seed=VALIDATION_SEED, max_qubits=max_qubits).states[-1]
-    target_state = target_statevector(lesson)
+    student_state = simulator.final_state(circuit, seed=VALIDATION_SEED, max_qubits=max_qubits)
+    target_state = target_statevector(lesson, max_qubits)
     if student_state.shape != target_state.shape:
         expected = int(np.log2(target_state.size))
         return _result(False, "qubit_mismatch", t("val.qubit_count", expected=expected, actual=circuit.num_qubits))
@@ -129,10 +158,10 @@ def _check_state(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
 
 
 def _check_counts(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
-    """Compara a distribuição das medições com a da solução de referência.
+    """Compares the distribution of the measurements with the reference solution's.
 
-    Usado quando a missão termina em medição: o estado final colapsa, então o
-    que caracteriza a resposta é a estatística dos resultados.
+    Used when the mission ends in a measurement: the final state collapses, so what
+    characterizes the answer is the statistics of the outcomes.
     """
     if not any(instruction.operation.name == "measure" for instruction in circuit.data):
         return _result(False, "no_measurement", t("val.no_measurement"))
@@ -142,9 +171,13 @@ def _check_counts(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
         return _result(
             False, "qubit_mismatch", t("val.clbit_count", expected=reference.num_clbits, actual=circuit.num_clbits)
         )
-    expected = _distribution(reference, shots, VALIDATION_SEED, simulator.DEFAULT_MAX_QUBITS)
-    observed = _distribution(circuit, shots, VALIDATION_SEED + 1, max_qubits)
-    if total_variation(expected, observed) <= float(rules.get("tolerance", DEFAULT_DISTRIBUTION_TOLERANCE)):
+    expected, expected_exact = _distribution(reference, shots, VALIDATION_SEED, max_qubits)
+    observed, observed_exact = _distribution(circuit, shots, VALIDATION_SEED + 1, max_qubits)
+    tolerance = float(rules.get("tolerance", DEFAULT_DISTRIBUTION_TOLERANCE))
+    if not (expected_exact and observed_exact):
+        # A sampled distribution wobbles: size the tolerance by outcomes and shots, never below the lesson's.
+        tolerance = max(tolerance, sampling_tolerance(len(set(expected) | set(observed)), shots))
+    if total_variation(expected, observed) <= tolerance:
         return _result(True, "ok", t("val.distribution_ok", observed=describe(observed)))
     return _result(
         False,
@@ -154,8 +187,8 @@ def _check_counts(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
 
 
 def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
-    """O estado de UM qubit ao final precisa coincidir com o da solução, para vários
-    estados de entrada (pares de ângulos em `_QLP_INPUT`) e todos os ramos de medição.
+    """The state of ONE qubit at the end must match the solution's, for several
+    input states (angle pairs in `_QLP_INPUT`) and all measurement branches.
     """
     qubit = int(rules["qubit"])
     if circuit.num_qubits <= qubit:
@@ -164,8 +197,8 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
     rng = np.random.default_rng(VALIDATION_SEED)
     worst = 1.0
     branches_ok = branches_total = 0
-    # Entradas fixas primeiro (ex.: |0⟩ e |+⟩, onde cada correção do teletransporte
-    # fica invisível), depois sorteadas longe dos polos.
+    # Fixed inputs first (e.g. |0⟩ and |+⟩, where each teleportation correction
+    # is invisible), then drawn away from the poles.
     fixed = [tuple(map(float, pair)) for pair in rules.get("inputs") or []]
     random_trials = [
         (float(rng.uniform(0.4, np.pi - 0.4)), float(rng.uniform(0, 2 * np.pi)))
@@ -174,10 +207,10 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
     for angles in fixed + random_trials:
         inputs = {"_QLP_INPUT": angles}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
-        target = _bloch(simulator.run_trajectory(reference, seed=0).states[-1], reference.num_qubits, qubit)
+        target = _bloch(simulator.final_state(reference, seed=0, max_qubits=max_qubits), reference.num_qubits, qubit)
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
         for seed in range(BRANCH_SEEDS):
-            state = simulator.run_trajectory(student, seed=seed, max_qubits=max_qubits).states[-1]
+            state = simulator.final_state(student, seed=seed, max_qubits=max_qubits)
             fidelity = (1.0 + float(np.dot(target, _bloch(state, student.num_qubits, qubit)))) / 2.0
             worst = min(worst, fidelity)
             branches_total += 1
@@ -190,13 +223,13 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
 
 
 # --------------------------------------------------------------------------- #
-# Nível 2
+# Level 2
 # --------------------------------------------------------------------------- #
 
 
 def _check_oracle_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
-    """Para cada oráculo secreto, a distribuição do registrador precisa bater com a
-    da solução. Garante que a solução é geral e não foi escrita para um caso só."""
+    """For each secret oracle, the register's distribution must match the
+    solution's. Ensures the solution is general and was not written for a single case."""
     register = [int(q) for q in rules["register"]]
     tolerance = float(rules.get("tolerance", DEFAULT_ORACLE_TOLERANCE))
     failures = []
@@ -206,7 +239,7 @@ def _check_oracle_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> 
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
         if student.num_qubits <= max(register):
             return _result(False, "qubit_mismatch", t("val.qubit_count", expected=reference.num_qubits, actual=student.num_qubits))
-        expected = simulator.register_distribution(reference, register)
+        expected = simulator.register_distribution(reference, register, max_qubits=max_qubits)
         observed = simulator.register_distribution(student, register, max_qubits=max_qubits)
         if total_variation(expected, observed) > tolerance:
             failures.append((expected, observed))
@@ -220,7 +253,7 @@ def _check_oracle_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> 
 
 
 def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
-    """Para cada entrada de teste, o estado final precisa coincidir com o da solução."""
+    """For each test input, the final state must match the solution's."""
     tolerance = float(rules.get("tolerance", DEFAULT_TOLERANCE))
     worst, ok = 1.0, 0
     for case in rules["cases"]:
@@ -229,8 +262,8 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
         if student.num_qubits != reference.num_qubits:
             return _result(False, "qubit_mismatch", t("val.qubit_count", expected=reference.num_qubits, actual=student.num_qubits))
-        target = simulator.run_trajectory(reference, seed=VALIDATION_SEED).states[-1]
-        state = simulator.run_trajectory(student, seed=VALIDATION_SEED, max_qubits=max_qubits).states[-1]
+        target = simulator.final_state(reference, seed=VALIDATION_SEED, max_qubits=max_qubits)
+        state = simulator.final_state(student, seed=VALIDATION_SEED, max_qubits=max_qubits)
         fidelity = state_fidelity(target, state)
         worst = min(worst, fidelity)
         ok += fidelity >= tolerance
@@ -243,12 +276,12 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
 
 
 def _check_custom(student, lesson: dict, rules: dict) -> dict:
-    """Validação própria da lição: `check.py` define check(ns, run_case).
+    """The lesson's own validation: `check.py` defines check(ns, run_case).
 
-    `ns` é o namespace do aluno; `run_case(entrada)` executa o código de novo com
-    `_QLP_INPUT = entrada` e devolve o namespace. check() devolve
-    {"passed", "key", "params"}; a mensagem vem de `messages[key]` no text.json
-    da lição.
+    `ns` is the student's namespace; `run_case(input)` runs the code again with
+    `_QLP_INPUT = input` and returns the namespace. check() returns
+    {"passed", "key", "params"}; the message comes from `messages[key]` in the text.json
+    of the lesson.
     """
     qiskit = lesson.get("framework", "qiskit") == "qiskit"
 
@@ -256,15 +289,15 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
         return tracer.execute(
             lesson["code"], lesson.get("hidden_setup"), {"_QLP_INPUT": case},
             trace=qiskit, require_circuit=qiskit,
-        ).namespace
+        ).full_namespace()
 
     module: dict = {"__name__": "qlp_check"}
     exec(compile(lesson["check"], "<check>", "exec"), module)
     try:
-        outcome = module["check"](student.namespace, run_case)
+        outcome = module["check"](student.full_namespace(), run_case)
     except tracer.UserCodeError:
         raise
-    except Exception as exc:  # noqa: BLE001 - erro do aluno ao ser avaliado (ex.: função com assinatura errada)
+    except Exception as exc:  # noqa: BLE001 - student error when evaluated (e.g. function with the wrong signature)
         from .tracer import _describe
 
         return _result(False, "error", _describe(exc))
@@ -274,34 +307,62 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
 
 
 def _format_param(value):
-    """Números com até 4 casas; o resto como texto."""
+    """Numbers with up to 4 decimal places; the rest as text."""
     if isinstance(value, float):
-        if 0 < abs(value) < 1e-4:  # erros desprezíveis: "< 0.0001" em vez de notação científica
+        if 0 < abs(value) < 1e-4:  # negligible errors: "< 0.0001" instead of scientific notation
             return "< 0.0001"
         return f"{value:.4f}".rstrip("0").rstrip(".")
     return value
 
 
+DEFAULT_VARIABLE_TOLERANCE = 1e-6
+
+
 def _check_variables(result: dict, namespace: dict, expected: dict) -> dict:
-    """Confere variáveis que o aluno precisa calcular (ex.: os fatores no Shor)."""
-    for name, value in expected.items():
+    """Checks variables the student must compute (e.g. the factors in Shor).
+
+    A manifest entry is either the expected value, or `{"value": ..., "tolerance": ...}` to
+    set that variable's tolerance (relative or absolute, whichever is looser).
+    """
+    for name, spec in expected.items():
+        value, tolerance = _variable_spec(spec)
         if name not in namespace:
             return _result(False, "variable_missing", t("val.variable_missing", name=name))
         actual = namespace[name]
-        if not _same_value(actual, value):
+        if not _same_value(actual, value, tolerance):
             return _result(False, "variable_wrong", t("val.variable_wrong", name=name, actual=_show(actual), expected=_show(value)))
-    name, value = next(iter(expected.items()))
-    return {**result, "message": t("val.all_ok", first=result["message"], name=name, value=_show(value))}
+    name, spec = next(iter(expected.items()))
+    return {**result, "message": t("val.all_ok", first=result["message"], name=name, value=_show(_variable_spec(spec)[0]))}
 
 
-def _same_value(actual, expected) -> bool:
+def _variable_spec(spec) -> tuple[object, float | None]:
+    if isinstance(spec, dict) and "value" in spec:
+        return spec["value"], (None if spec.get("tolerance") is None else float(spec["tolerance"]))
+    return spec, None
+
+
+def _close(actual, expected, tolerance: float) -> bool:
+    return abs(actual - expected) <= max(tolerance, tolerance * abs(expected))
+
+
+def _same_value(actual, expected, tolerance: float | None = None) -> bool:
+    """Lists are compared item by item, in any order, exactly (3.9 is not 3) unless the manifest
+    gives a tolerance; numbers use 1e-6 relative-or-absolute by default."""
     if isinstance(expected, list):
         try:
-            return sorted(int(v) for v in actual) == sorted(int(v) for v in expected)
+            got, want = sorted(actual), sorted(expected)
+        except TypeError:
+            return False
+        if len(got) != len(want):
+            return False
+        if tolerance is None:
+            return all(a == b for a, b in zip(got, want))
+        try:
+            return all(_close(float(a), float(b), tolerance) for a, b in zip(got, want))
         except (TypeError, ValueError):
             return False
     try:
-        return abs(float(actual) - float(expected)) < 1e-9
+        return _close(float(actual), float(expected), DEFAULT_VARIABLE_TOLERANCE if tolerance is None else tolerance)
     except (TypeError, ValueError):
         return actual == expected
 
@@ -313,7 +374,7 @@ def _show(value) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Auxiliares
+# Helpers
 # --------------------------------------------------------------------------- #
 
 
@@ -324,25 +385,36 @@ def _bloch(state: np.ndarray, n: int, qubit: int) -> np.ndarray:
     return np.array(vectors[qubit])
 
 
-def _forbidden_pair(circuit, pairs: list[list[int]] | None) -> tuple[int, int] | None:
+def _forbidden_pair(gates: list[tuple[str, tuple[int, ...]]], pairs: list[list[int]] | None) -> tuple[int, int] | None:
     if not pairs:
         return None
-    index = {bit: i for i, bit in enumerate(circuit.qubits)}
-    for instruction in circuit.data:
-        touched = {index[q] for q in instruction.qubits}
+    for _, qubits in gates:
+        touched = set(qubits)
         for a, b in pairs:
             if a in touched and b in touched:
                 return a, b
     return None
 
 
-def _distribution(circuit, shots: int, seed: int, max_qubits: int) -> dict[str, float]:
-    """Distribuição exata quando as medições são só no final; senão, por amostragem."""
+SAMPLING_SIGMAS = 3.0
+
+
+def sampling_tolerance(outcomes: int, shots: int) -> float:
+    """How far two sampled distributions can sit apart by chance: about 3 sqrt(k / shots) for k outcomes
+    (the distance between two samples grows with the number of outcomes and shrinks with the shots)."""
+    return SAMPLING_SIGMAS * float(np.sqrt(max(outcomes, 1) / max(shots, 1)))
+
+
+def _distribution(circuit, shots: int, seed: int, max_qubits: int) -> tuple[dict[str, float], bool]:
+    """(distribution, exact). Exact when the measurements are only at the end, or when every branch of
+    the mid-circuit measurements can be followed (small circuits); otherwise sampled."""
     exact = simulator.exact_distribution(circuit, max_qubits)
+    if exact is None:
+        exact = simulator.branching_distribution(circuit, max_qubits)
     if exact is not None:
-        return exact
+        return exact, True
     sampled = simulator.sample_counts(circuit, shots, seed=seed, max_qubits=max_qubits)
-    return {key: count / sampled["shots"] for key, count in sampled["counts"].items()}
+    return {key: count / sampled["shots"] for key, count in sampled["counts"].items()}, False
 
 
 def total_variation(p: dict[str, float], q: dict[str, float]) -> float:
@@ -351,35 +423,30 @@ def total_variation(p: dict[str, float], q: dict[str, float]) -> float:
 
 
 def describe(distribution: dict[str, float], limit: int = 4) -> str:
-    """Os resultados mais prováveis, ex.: '000: 100%' ou '0: 50%, 1: 50%'."""
+    """The most likely outcomes, e.g. '000: 100%' or '0: 50%, 1: 50%'."""
     top = sorted(((v, k) for k, v in distribution.items() if v > 0.005), reverse=True)[:limit]
     return ", ".join(f"{key}: {percent(value, 0)}" for value, key in sorted(top, key=lambda item: item[1]))
 
 
-def target_statevector(lesson: dict) -> np.ndarray:
-    """Estado alvo, obtido executando a solução de referência da lição."""
+def target_statevector(lesson: dict, max_qubits: int | None = None) -> np.ndarray:
+    """Target state, obtained by running the lesson's reference solution."""
     solution = lesson.get("solution")
     if not solution:
-        raise ValueError(f"A lição {lesson.get('id')} não tem solution.py.")
+        raise ValueError(f"Lesson {lesson.get('id')} has no solution.py.")
     reference = tracer.execute(solution, lesson.get("hidden_setup"))
-    return simulator.run_trajectory(reference.circuit, seed=VALIDATION_SEED).states[-1]
+    cap = max_qubits or int(lesson.get("max_qubits") or simulator.DEFAULT_MAX_QUBITS)
+    return simulator.final_state(reference.circuit, seed=VALIDATION_SEED, max_qubits=cap)
 
 
 def state_fidelity(target: np.ndarray, state: np.ndarray) -> float:
-    """F = |<alvo|estado>|^2 — invariante a fase global."""
+    """F = |<target|state>|^2, invariant under global phase."""
     return float(abs(np.vdot(target, state)) ** 2)
 
 
-def _forbidden_gates(circuit, allowed: list[str] | None) -> list[str]:
+def _forbidden_gates(names: list[str], allowed: list[str] | None) -> list[str]:
     if allowed is None:
         return []
-    permitted = set(allowed) | {"barrier"}
-    used = {instruction.operation.name for instruction in circuit.data}
-    return sorted(used - permitted)
-
-
-def _gate_count(circuit) -> int:
-    return sum(1 for instruction in circuit.data if instruction.operation.name != "barrier")
+    return sorted(set(names) - (set(allowed) | {"barrier"}))
 
 
 def _result(passed: bool, code: str, message: str, fidelity: float | None = None, line: int | None = None) -> dict:
@@ -390,3 +457,9 @@ def _result(passed: bool, code: str, message: str, fidelity: float | None = None
         "fidelity": None if fidelity is None else round(fidelity, 6),
         "line": line,
     }
+
+
+def _with_stdout(result: dict, stdout: str) -> dict:
+    if stdout:  # what the code printed before it failed
+        result["stdout"] = stdout
+    return result

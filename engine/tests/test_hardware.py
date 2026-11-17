@@ -1,4 +1,4 @@
-"""Execução em hardware real, com um serviço falso no lugar do IBM Quantum."""
+"""Execution on real hardware, with a fake service in place of IBM Quantum."""
 
 
 import pytest
@@ -81,7 +81,7 @@ def test_submit_transpiles_adds_measurements_and_returns_the_job(fake_ibm):
     assert result["job_id"] == "job-123" and result["backend"]
     (isa,), shots = FakeSampler.submitted
     assert shots == hardware.MAX_SHOTS
-    assert any(i.operation.name == "measure" for i in isa.data)  # medição acrescentada
+    assert any(i.operation.name == "measure" for i in isa.data)  # measurement added
 
 
 def test_bad_token_and_status(fake_ibm):
@@ -118,3 +118,76 @@ def test_server_flow_and_public_mode(fake_ibm, library):
             assert refused["ok"] is False and "own computer" in refused["error"]["message"]
 
     with_public_server(public, library)
+
+
+# -- one login per burst of polls, and timeouts ---------------------------------------------------------
+
+
+@pytest.fixture
+def counted_login(monkeypatch):
+    qiskit_ibm_runtime = pytest.importorskip("qiskit_ibm_runtime")
+    logins = []
+
+    class CountingService(FakeService):
+        def __init__(self, channel, token, instance=None):
+            logins.append(token)
+            super().__init__(channel, token, instance)
+
+    monkeypatch.setattr(qiskit_ibm_runtime, "QiskitRuntimeService", CountingService)
+    hardware.clear_cache()
+    yield logins
+    hardware.clear_cache()
+
+
+def test_status_polls_reuse_the_logged_in_service(counted_login):
+    for _ in range(4):
+        assert hardware.status("job-123", "chave-certa")["status"] == "DONE"
+    assert len(counted_login) == 1
+    hardware.status("job-123", "chave-certa", instance="crn:other")  # another account: a new login
+    assert len(counted_login) == 2
+
+
+def test_cached_service_expires(counted_login, monkeypatch):
+    hardware.status("job-123", "chave-certa")
+    monkeypatch.setattr(hardware, "SERVICE_TTL_S", 0.0)
+    hardware.status("job-123", "chave-certa")
+    assert len(counted_login) == 2
+
+
+def test_a_bad_key_is_not_cached(counted_login):
+    for _ in range(2):
+        with pytest.raises(hardware.HardwareError):
+            hardware.status("job-123", "errada")
+    assert len(counted_login) == 2
+
+
+def test_a_hung_login_gives_a_clear_message(monkeypatch):
+    import time
+
+    qiskit_ibm_runtime = pytest.importorskip("qiskit_ibm_runtime")
+
+    class Hung:
+        def __init__(self, *args, **kwargs):
+            time.sleep(5)
+
+    monkeypatch.setattr(qiskit_ibm_runtime, "QiskitRuntimeService", Hung)
+    monkeypatch.setattr(hardware, "LOGIN_TIMEOUT_S", 0.2)
+    hardware.clear_cache()
+    start = time.monotonic()
+    with pytest.raises(hardware.HardwareError, match="did not answer within"):
+        hardware.status("job-123", "chave-certa")
+    assert time.monotonic() - start < 2
+
+
+def test_a_hung_status_call_gives_a_clear_message_and_drops_the_cached_login(counted_login, monkeypatch):
+    import time
+
+    class HungJob(FakeJob):
+        def status(self):
+            time.sleep(5)
+
+    monkeypatch.setattr(FakeService, "job", lambda self, job_id: HungJob())
+    monkeypatch.setattr(hardware, "CALL_TIMEOUT_S", 0.2)
+    with pytest.raises(hardware.HardwareError, match="reading the job status"):
+        hardware.status("job-123", "chave-certa")
+    assert not hardware._service_cache

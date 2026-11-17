@@ -22,7 +22,7 @@ MINUS = lesson("qc = QuantumCircuit(1)\nqc.h(0)\nqc.z(0)\n")
     [
         "qc = QuantumCircuit(1)\nqc.x(0)\n",
         "qc = QuantumCircuit(1)\nqc.h(0)\nqc.z(0)\nqc.h(0)\n",  # HZH = X
-        "qc = QuantumCircuit(1)\nqc.y(0)\n",  # difere só por fase global
+        "qc = QuantumCircuit(1)\nqc.y(0)\n",  # differs only by a global phase
         "import math\nqc = QuantumCircuit(1)\nqc.rx(math.pi, 0)\n",
     ],
 )
@@ -80,7 +80,7 @@ QRNG = {
     [
         "qc = QuantumCircuit(1, 1)\nqc.h(0)\nqc.measure(0, 0)\n",
         "import math\nqc = QuantumCircuit(1, 1)\nqc.ry(math.pi / 2, 0)\nqc.measure(0, 0)\n",
-        "qc = QuantumCircuit(1, 1)\nqc.x(0)\nqc.h(0)\nqc.measure(0, 0)\n",  # |-> também é 50/50
+        "qc = QuantumCircuit(1, 1)\nqc.x(0)\nqc.h(0)\nqc.measure(0, 0)\n",  # |-> is also 50/50
     ],
 )
 def test_counts_distribution_accepts_any_uniform_source(body):
@@ -144,7 +144,7 @@ def test_teleport_correction_order_matters_only_up_to_global_phase():
         "with qc.if_test((qc.clbits[0], 1)):\n    qc.z(2)\n"
         "with qc.if_test((qc.clbits[1], 1)):\n    qc.x(2)\n"
     )
-    assert validation.validate(code, lesson)["passed"]  # ZX e XZ diferem só por fase global
+    assert validation.validate(code, lesson)["passed"]  # ZX and XZ differ only by a global phase
 
 
 def test_teleport_rejects_direct_gates_between_alice_and_bob():
@@ -180,5 +180,5 @@ def test_reduced_state_tests_fixed_inputs_first():
     rules = {**lesson["validation"], "inputs": [[0.0, 0.0], [1.5707963, 0.0]], "trials": 0}
     only_x = TELEPORT_PREFIX + "with qc.if_test((qc.clbits[1], 1)):\n    qc.x(2)\n"
     result = validation.validate(only_x, {**lesson, "validation": rules})
-    # Em |0⟩ a correção Z não faz falta, mas em |+⟩ faz: o erro é pego mesmo sem sorteio.
+    # On |0⟩ the Z correction is not needed, but on |+⟩ it is: the error is caught even without random draws.
     assert result["code"] == "partial", result

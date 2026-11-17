@@ -1,10 +1,10 @@
-"""Projetos de fim de trilha 1.11, 2.11 e 3.5: verificações independentes dos validadores."""
+"""End-of-track projects 1.11, 2.11 and 3.9: checks independent of the validators."""
 
 import numpy as np
 import pennylane as qml
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.quantum_info import DensityMatrix, Operator, Statevector, partial_trace
+from qiskit.quantum_info import Operator, Statevector, partial_trace
 
 from qlp_engine import validation
 
@@ -21,12 +21,12 @@ def run(library, lesson_id, code):
 
 
 # --------------------------------------------------------------------------- #
-# 1.11 troca de emaranhamento
+# 1.11 entanglement swapping
 # --------------------------------------------------------------------------- #
 
 
 def test_swapping_solution_gives_phi_plus_for_every_branch():
-    """Independente do motor: para cada resultado (m1, m2), pós-seleciona e corrige à mão."""
+    """Independent of the engine: for each outcome (m1, m2), post-selects and corrects by hand."""
     phi = Statevector([1, 0, 0, 1]) / np.sqrt(2)
     for m1 in (0, 1):
         for m2 in (0, 1):
@@ -34,7 +34,7 @@ def test_swapping_solution_gives_phi_plus_for_every_branch():
             qc.h(0), qc.cx(0, 1), qc.h(2), qc.cx(2, 3)
             qc.cx(1, 2), qc.h(1)
             state = Statevector(qc)
-            # projeta os qubits 1 e 2 no resultado (m1, m2)
+            # project qubits 1 and 2 onto the outcome (m1, m2)
             data = state.data.reshape(2, 2, 2, 2)  # eixos: q3, q2, q1, q0
             projected = np.zeros_like(data)
             projected[:, m2, m1, :] = data[:, m2, m1, :]
@@ -72,7 +72,7 @@ def test_swapping_validator_rubric(library):
 
 
 # --------------------------------------------------------------------------- #
-# 2.11 oráculo de Grover
+# 2.11 Grover oracle
 # --------------------------------------------------------------------------- #
 
 FORMULA_SOLUTIONS = {"010", "101"}
@@ -90,7 +90,7 @@ def test_formula_has_exactly_the_two_solutions():
 def solution_oracle(library):
     namespace = {}
     code = bundle(library, "2.11")["solution"]
-    exec(code.split("N = 8")[0], namespace)  # só as definições de oracle e diffuser
+    exec(code.split("N = 8")[0], namespace)  # only the oracle and diffuser definitions
     return namespace["oracle"]
 
 
@@ -101,7 +101,7 @@ def test_grover_oracle_marks_exactly_the_solutions(library):
     for x in range(8):
         label = format(x, "03b")
         expected = -1 if label in FORMULA_SOLUTIONS else 1
-        column = unitary[:, x]  # ancillas em |00⟩
+        column = unitary[:, x]  # ancillas in |00⟩
         assert column[x] == pytest.approx(expected)
         assert np.allclose(np.delete(column, x), 0)
 
@@ -132,7 +132,7 @@ def test_grover_validator_accepts_solution_and_rubric(library):
 
 
 # --------------------------------------------------------------------------- #
-# 3.5 curva de dissociação
+# 3.9 dissociation curve
 # --------------------------------------------------------------------------- #
 
 
@@ -145,10 +145,10 @@ def exact_energy(d):
 
 
 def test_validator_energy_matches_the_pennylane_circuit():
-    """O estado cos|1100⟩ − sin|0011⟩ do validador é o do DoubleExcitation."""
+    """The validator's state cos|1100⟩ − sin|0011⟩ is the one from DoubleExcitation."""
     from importlib.util import module_from_spec, spec_from_file_location
 
-    path = CONTENT_DIR / "track_3_variational" / "section_3_5_dissociation_project" / "check.py"
+    path = CONTENT_DIR / "track_3_variational" / "section_3_9_dissociation_project" / "check.py"
     spec = spec_from_file_location("check35", path)
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -171,7 +171,7 @@ def test_validator_energy_matches_the_pennylane_circuit():
 def test_dissociation_solution_energies_against_exact_diagonalization(library):
     from qlp_engine import tracer
 
-    b = bundle(library, "3.5")
+    b = bundle(library, "3.9")
     ns = tracer.execute(b["solution"], b.get("hidden_setup"), trace=False, require_circuit=False).namespace
     assert len(ns["distances"]) >= 5
     for d, e in zip(ns["distances"], ns["energies"]):
@@ -180,27 +180,27 @@ def test_dissociation_solution_energies_against_exact_diagonalization(library):
         assert e - exact <= 1.6e-3
     assert abs(ns["r_eq"] - 0.734) < 0.05
     assert all(len(h) - 1 <= 40 for h in ns["histories"])
-    # a curva tem mínimo interior perto de 0,74 Å e cresce para 2,0 Å
+    # the curve has an interior minimum near 0.74 Å and rises toward 2.0 Å
     energies = dict(zip(ns["distances"], ns["energies"]))
     assert min(energies, key=energies.get) in (0.7, 0.8)
     assert energies[2.0] > energies[1.0] > energies[0.7]
 
 
 def test_dissociation_validator_rubric(library):
-    solution = bundle(library, "3.5")["solution"]
-    assert run(library, "3.5", solution)["passed"]
+    solution = bundle(library, "3.9")["solution"]
+    assert run(library, "3.9", solution)["passed"]
 
     short = solution.replace("steps = 40", "steps = 8")
-    assert run(library, "3.5", short)["code"] == "accuracy"
+    assert run(library, "3.9", short)["code"] == "accuracy"
 
     over = solution.replace("steps = 40", "steps = 60")
-    assert run(library, "3.5", over)["code"] == "budget"
+    assert run(library, "3.9", over)["code"] == "budget"
 
     few = solution.replace("distances = [0.5, 0.6, 0.7, 0.8, 1.0, 1.5, 2.0]", "distances = [0.5, 0.7, 1.0, 2.0]")
-    assert run(library, "3.5", few)["code"] == "distances"
+    assert run(library, "3.9", few)["code"] == "distances"
 
     cheat = solution.replace("energies = [history[-1] for history in histories]", "energies = [e - 0.01 for e in [h[-1] for h in histories]]")
-    assert run(library, "3.5", cheat)["code"] in ("below_exact", "inconsistent")
+    assert run(library, "3.9", cheat)["code"] in ("below_exact", "inconsistent")
 
     wrong_r = solution + "\nr_eq = 1.2"
-    assert run(library, "3.5", wrong_r)["code"] == "r_eq_wrong"
+    assert run(library, "3.9", wrong_r)["code"] == "r_eq_wrong"

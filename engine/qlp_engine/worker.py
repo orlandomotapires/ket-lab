@@ -1,7 +1,7 @@
-"""Processo worker: é aqui (e só aqui) que o código do aluno é executado.
+"""Worker process: this is where (and only where) the student's code is executed.
 
-O worker importa o Qiskit ao nascer (pré-aquecimento) e depois atende um job
-por vez. Se travar ou estourar a memória, o pool o mata e cria outro.
+The worker imports Qiskit on startup (warm-up) and then serves one job
+at a time. If it hangs or runs out of memory, the pool kills it and creates another.
 """
 
 from __future__ import annotations
@@ -12,8 +12,8 @@ MEMORY_LIMIT_BYTES = 4 * 1024**3
 
 
 def _limit_memory() -> None:
-    # RLIMIT_AS só é confiável no Linux. No Windows/macOS a proteção é o teto
-    # de qubits + timeout; um Job Object no Windows fica para a fase de empacotamento.
+    # RLIMIT_AS is only reliable on Linux. On Windows/macOS the protection is the qubit
+    # cap + timeout; a Job Object on Windows is left for the packaging phase.
     if sys.platform != "linux":
         return
     import resource
@@ -24,9 +24,9 @@ def _limit_memory() -> None:
 
 
 def handle(job: dict, emit=None) -> dict:
-    """Atende um job. Erros do aluno voltam como {ok: False, error: {...}}.
+    """Serves one job. Student errors come back as {ok: False, error: {...}}.
 
-    `emit` envia eventos ao servidor enquanto o job roda (progresso de treino).
+    `emit` sends events to the server while the job runs (training progress).
     """
     from . import geometry, messages, simulator, tracer, validation
 
@@ -36,22 +36,27 @@ def handle(job: dict, emit=None) -> dict:
             return {"ok": True, **_run_python(job)}
         if kind == "run":
             reporter = tracer.Reporter(emit if job.get("stream") else None)
-            trajectory, execution = _simulate(job, reporter)
-            result = {"ok": True, "stdout": execution.stdout, **geometry.describe_trajectory(trajectory)}
+            collector = geometry.SnapshotCollector()
+            trajectory, execution = _simulate(job, reporter, collector)
+            result = {"ok": True, "stdout": execution.stdout, **geometry.describe_trajectory(trajectory, collector)}
             if execution.reports:
                 result["training"] = {"series": execution.reports}
             if job.get("analysis"):
-                result["analysis"] = run_analysis(job["analysis"], execution.namespace)
+                result["analysis"] = run_analysis(job["analysis"], execution.full_namespace())
             return result
         if kind == "shots":
-            trajectory, execution = _simulate(job)
-            if execution.circuit is not None:
+            execution = _execute(job)
+            if emit is not None:
+                emit({"event": "phase", "name": "sampling"})  # a timeout from here on is a heavy run, not a stuck loop
+            if execution.circuit is not None and job.get("framework") != "pennylane":
+                # Straight to sampling: the step-by-step trajectory is not needed for counts.
                 return {"ok": True, **simulator.sample_counts(
                     execution.circuit,
                     shots=int(job.get("shots", 1024)),
                     seed=int(job.get("seed", 0)),
                     max_qubits=_max_qubits(job),
                 )}
+            trajectory = _trajectory(job, execution, simulator.FinalOnly())
             return {"ok": True, **_sample_final_state(trajectory, int(job.get("shots", 1024)), int(job.get("seed", 0)))}
         if kind == "export":
             return {"ok": True, **export_circuit(job)}
@@ -61,23 +66,27 @@ def handle(job: dict, emit=None) -> dict:
             return {"ok": True}
         return _error(messages.t("run.unknown_job", kind=kind), kind="internal")
     except tracer.UserCodeError as exc:
-        return _error(exc.message, exc.line, exc.kind)
+        return _error(exc.message, exc.line, exc.kind, exc.stdout)
     except simulator.SimulationError as exc:
-        return _error(exc.message, exc.line, "simulation")
+        return _error(exc.message, exc.line, "simulation", getattr(exc, "stdout", ""))
     except MemoryError:
         return _error(messages.t("run.memory"), kind="memory")
-    except Exception as exc:  # noqa: BLE001 - o worker nunca deve morrer por um job
+    except KeyboardInterrupt:
+        raise
+    except SystemExit:  # raised outside the traced execution (e.g. inside a lesson check): same report
+        return _error(messages.t("run.exit"), kind="runtime")
+    except Exception as exc:  # noqa: BLE001 - the worker must never die because of a job
         return _error(messages.t("run.internal", detail=f"{type(exc).__name__}: {exc}"), kind="internal")
 
 
 def _run_python(job: dict) -> dict:
-    """Lição sem circuito (kit de matemática): executa e mostra as variáveis do aluno."""
+    """Lesson without a circuit (math kit): runs and shows the student's variables."""
     from . import tracer
 
     execution = tracer.execute(
         job["code"], job.get("hidden_setup"), job.get("inputs"), trace=False, require_circuit=False
     )
-    return {
+    reply = {
         "stdout": execution.stdout,
         "num_qubits": 0,
         "num_clbits": 0,
@@ -87,6 +96,9 @@ def _run_python(job: dict) -> dict:
         "has_measurement": False,
         "variables": describe_variables(execution.namespace),
     }
+    if job.get("analysis"):  # same field and shape as the circuit branch; a failing analysis is {"error": ...}
+        reply["analysis"] = run_analysis(job["analysis"], execution.full_namespace())
+    return reply
 
 
 HIDDEN_NAMES = {"run_shots", "report"}
@@ -94,7 +106,7 @@ MAX_VARIABLES = 40
 
 
 def describe_variables(namespace: dict) -> list[dict]:
-    """Variáveis numéricas do aluno, na ordem em que foram criadas, prontas para exibir."""
+    """The student's numeric variables, in the order they were created, ready to display."""
     import numpy as np
 
     rows = []
@@ -135,24 +147,35 @@ def _max_qubits(job: dict) -> int:
     return int(job.get("max_qubits") or DEFAULT_MAX_QUBITS)
 
 
-def _simulate(job: dict, reporter=None):
-    """Executa o código e devolve (trajetória, execução), para Qiskit ou PennyLane.
+def _execute(job: dict, reporter=None):
+    """Runs the learner's code (Qiskit with line tracing; PennyLane without it)."""
+    from . import tracer
 
-    Lições PennyLane rodam sem rastreamento linha a linha (treinos ficam rápidos);
-    no laboratório livre, um QNode é usado quando não há QuantumCircuit.
+    pennylane = job.get("framework") == "pennylane"
+    return tracer.execute(
+        job["code"], job.get("hidden_setup"), job.get("inputs"),
+        trace=not pennylane, require_circuit=False, reporter=reporter,
+    )
+
+
+def _trajectory(job: dict, execution, observer=None):
+    """Step-by-step simulation of what the code built, for Qiskit or PennyLane.
+
+    In the free lab, a QNode is used when there is no QuantumCircuit. With an `observer` the states are
+    handed over one by one instead of being kept (see simulator.run_trajectory).
     """
     from . import pl, simulator, tracer
 
     pennylane = job.get("framework") == "pennylane"
-    execution = tracer.execute(
-        job["code"], job.get("hidden_setup"), job.get("inputs"),
-        trace=not pennylane, require_circuit=False, reporter=reporter,
-    )
     if execution.circuit is not None and not pennylane:
-        trajectory = simulator.run_trajectory(
-            execution.circuit, execution.lines, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job)
-        )
-        return trajectory, execution
+        try:
+            return simulator.run_trajectory(
+                execution.circuit, execution.lines, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job),
+                observer=observer,
+            )
+        except simulator.SimulationError as exc:
+            exc.stdout = execution.stdout  # print debugging still works when the circuit is refused
+            raise
     spec = job.get("qnode") or {}
     try:
         qnode = pl.find_qnode(execution.namespace, spec.get("name"))
@@ -161,15 +184,25 @@ def _simulate(job: dict, reporter=None):
             raise
         raise tracer.UserCodeError(_no_circuit_message(), kind="no_circuit") from None
     ops, lines, n = pl.trace_qnode(qnode, pl.qnode_arguments(qnode, execution.namespace, spec.get("args")))
-    trajectory = simulator.run_ops_trajectory(ops, lines, n, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job))
-    return trajectory, execution
+    return simulator.run_ops_trajectory(
+        ops, lines, n, seed=int(job.get("seed", 0)), max_qubits=_max_qubits(job), observer=observer
+    )
+
+
+def _simulate(job: dict, reporter=None, observer=None):
+    """Runs the code and returns (trajectory, execution), for Qiskit or PennyLane.
+
+    PennyLane lessons run without line-by-line tracing (training stays fast).
+    """
+    execution = _execute(job, reporter)
+    return _trajectory(job, execution, observer), execution
 
 
 EXPORT_FORMATS = {"qasm2": "OpenQASM 2.0", "qasm3": "OpenQASM 3.0"}
 
 
 def export_circuit(job: dict) -> dict:
-    """O circuito do código em OpenQASM 2 ou 3 (Qiskit ou o QNode PennyLane)."""
+    """The code's circuit in OpenQASM 2 or 3 (Qiskit or the PennyLane QNode)."""
     from qiskit import qasm2, qasm3
 
     from . import messages, pl, tracer
@@ -200,7 +233,7 @@ def export_circuit(job: dict) -> dict:
             if fmt == "qasm2":
                 return {"format": fmt, "text": source}
             circuit = qasm2.loads(source, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
-        except Exception as exc:  # noqa: BLE001 - porta sem equivalente em OpenQASM
+        except Exception as exc:  # noqa: BLE001 - gate with no OpenQASM equivalent
             raise tracer.UserCodeError(messages.t("export.unsupported", format=label, detail=_short(exc)), kind="export") from None
     try:
         text = qasm2.dumps(circuit) if fmt == "qasm2" else qasm3.dumps(circuit)
@@ -238,11 +271,11 @@ def _sample_final_state(trajectory, shots: int, seed: int) -> dict:
 
 
 def run_analysis(code: str, namespace: dict) -> dict:
-    """Roda o analysis.py da lição (conteúdo confiável) sobre o namespace do aluno.
+    """Runs the lesson's analysis.py (trusted content) over the student's namespace.
 
-    O resultado alimenta as visualizações de treino (paisagem de custo, curva de
-    convergência, grafo, fronteira de decisão). Erros viram {"error": ...} e não
-    impedem o resto da visualização.
+    The result feeds the training visualizations (cost landscape, convergence
+    curve, graph, decision boundary). Errors become {"error": ...} and do not
+    block the rest of the visualization.
     """
     try:
         module: dict = {"__name__": "qlp_analysis"}
@@ -253,7 +286,7 @@ def run_analysis(code: str, namespace: dict) -> dict:
 
 
 def to_json(value):
-    """Converte arrays e números do NumPy/PennyLane em tipos JSON."""
+    """Converts NumPy/PennyLane arrays and numbers into JSON types."""
     import numpy as np
 
     if isinstance(value, dict):
@@ -270,16 +303,19 @@ def to_json(value):
     return value
 
 
-def _error(message: str, line: int | None = None, kind: str = "runtime") -> dict:
-    return {"ok": False, "error": {"message": message, "line": line, "kind": kind}}
+def _error(message: str, line: int | None = None, kind: str = "runtime", stdout: str = "") -> dict:
+    response = {"ok": False, "error": {"message": message, "line": line, "kind": kind}}
+    if stdout:  # what the code printed before it failed, under the same field a successful run uses
+        response["stdout"] = stdout
+    return response
 
 
 def worker_main(connection) -> None:
-    """Ponto de entrada do processo filho."""
+    """Entry point of the child process."""
     _limit_memory()
-    from . import geometry, simulator, tracer, validation  # noqa: F401 - pré-aquecimento
+    from . import geometry, simulator, tracer, validation  # noqa: F401 - warm-up
 
-    try:  # o PennyLane leva ~1 s para importar: melhor agora do que na primeira lição
+    try:  # PennyLane takes ~1 s to import: better now than on the first lesson
         import pennylane  # noqa: F401
     except ImportError:
         pass

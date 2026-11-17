@@ -1,4 +1,4 @@
-"""Suíte de conteúdo: toda lição precisa ser válida, completa e resolvível."""
+"""Content suite: every lesson must be valid, complete and solvable."""
 
 import json
 
@@ -43,7 +43,7 @@ def test_every_lesson_has_its_text(library, lesson_id):
     lesson = library.lesson(lesson_id)
     assert lesson["theory"].strip()
     section = next(s for t in library.catalog()["tracks"] for s in t["sections"] if s["id"] == lesson_id)
-    assert lesson["title"] == section["title"], "o título da lição precisa ser igual ao do catálogo"
+    assert lesson["title"] == section["title"], "the lesson title must match the catalog's"
 
 
 def test_every_lesson_is_in_the_catalog(library):
@@ -86,11 +86,11 @@ def test_engine_messages_format_without_errors():
 def test_every_lesson_has_theoretical_and_practical_references(library, lesson_id):
     references = library.lesson(lesson_id).get("references") or []
     kinds = {ref["kind"] for ref in references}
-    assert len(references) >= 2, f"{lesson_id}: pelo menos 2 referências"
-    assert kinds & {"book", "paper"}, f"{lesson_id}: falta uma referência teórica (livro ou artigo)"
-    assert kinds & {"course", "tutorial"}, f"{lesson_id}: falta uma referência prática (curso ou tutorial)"
+    assert len(references) >= 2, f"{lesson_id}: at least 2 references"
+    assert kinds & {"book", "paper"}, f"{lesson_id}: missing a theoretical reference (book or paper)"
+    assert kinds & {"course", "tutorial"}, f"{lesson_id}: missing a practical reference (course or tutorial)"
     assert all(ref["location"].strip() and "TODO" not in ref["location"] for ref in references), (
-        f"{lesson_id}: local de leitura ausente ou não verificado"
+        f"{lesson_id}: reading location missing or unverified"
     )
     urls = [ref["url"] for ref in references]
     assert len(set(urls)) == len(urls), f"{lesson_id}: links repetidos"
@@ -107,7 +107,7 @@ def test_every_lesson_has_theoretical_and_practical_references(library, lesson_i
         ("quantum fourier", "2.7"),  # duas palavras
         ("teleportation", "1.6"),
         ("max-cut", "3.3"),
-        ("deutsch-jozsa", "2.3"),  # hífen do teclado acha o título com traço (–)
+        ("deutsch-jozsa", "2.3"),  # keyboard hyphen finds the title with an en dash (–)
     ],
 )
 def test_search_finds_the_right_lesson_first(library, query, expected):
@@ -145,14 +145,14 @@ def test_challenge_text_and_rules_come_together(library, lesson_id):
 @pytest.mark.parametrize("lesson_id", CHALLENGE_IDS or ["-"])
 def test_challenge_is_solvable_and_harder_than_the_mission(library, lesson_id):
     if lesson_id == "-":
-        pytest.skip("nenhuma lição com desafio ainda")
+        pytest.skip("no lesson with a challenge yet")
     bundle = library.validation_bundle(lesson_id, challenge=True)
     solved = validation.validate(bundle["solution"], bundle)
     assert solved["passed"], (lesson_id, solved)
     starter = validation.validate(library.starter_code(lesson_id), bundle)
     assert not starter["passed"], lesson_id
     mission_solution = library.validation_bundle(lesson_id)["solution"]
-    assert not validation.validate(mission_solution, bundle)["passed"], f"{lesson_id}: a solução da missão já resolve o desafio"
+    assert not validation.validate(mission_solution, bundle)["passed"], f"{lesson_id}: the mission solution already solves the challenge"
 
 
 def test_bibliography_gathers_every_reference_once(library):
@@ -161,8 +161,28 @@ def test_bibliography_gathers_every_reference_once(library):
     cited = {(ref["url"] if ref["kind"] != "book" else ref["title"])
              for lesson_id in library.lesson_ids for ref in library.lesson(lesson_id)["references"]}
     keys = [(w["url"] if w["kind"] != "book" else w["title"]) for w in works]
-    assert sorted(keys) == sorted(cited)  # todas, sem repetição
+    assert sorted(keys) == sorted(cited)  # all of them, without repetition
     nc = next(w for w in works if w["title"].startswith("Quantum Computation and Quantum Information"))
     assert "1.5" in nc["lessons"] and nc["lessons"] == sorted(nc["lessons"], key=lambda i: tuple(map(int, i.split("."))))
     assert data["lectures"] and data["software"]
     assert all(s.get("url", "https://").startswith("https://") for s in data["lectures"] + data["software"])
+
+
+def test_prediction_answers_are_spread_over_the_positions(library):
+    """A learner must not be able to win by always clicking the same option, or the longest one."""
+    positions: dict[int, int] = {}
+    longest = 0
+    total = 0
+    for lesson_id in library.lesson_ids:
+        folder = library._lessons[lesson_id]
+        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+        if "prediction_answer" not in manifest:
+            continue
+        options = json.loads((folder / "text.json").read_text(encoding="utf-8"))["prediction"]["options"]
+        answer = manifest["prediction_answer"]
+        positions[answer] = positions.get(answer, 0) + 1
+        longest += len(options[answer]) == max(len(option) for option in options)
+        total += 1
+    assert max(positions.values()) <= 0.45 * total, positions
+    assert min(positions.get(i, 0) for i in range(3)) >= 0.2 * total, positions
+    assert longest <= 0.5 * total, f"the correct option is the longest in {longest} of {total} lessons"

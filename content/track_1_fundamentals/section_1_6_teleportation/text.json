@@ -1,0 +1,36 @@
+{
+  "title": "Quantum Teleportation",
+  "summary": "Bell pair, mid-circuit measurement and classically controlled corrections.",
+  "objectives": [
+    "Teleport an unknown qubit state with a Bell pair, a Bell-basis measurement and two classical bits",
+    "Work out Bob's qubit for each of Alice's four measurement results and the correction it needs",
+    "Explain why teleportation does not copy the state and cannot carry information faster than light"
+  ],
+  "mission": "Alice's qubit 0 holds an unknown state. Teleport it to Bob's qubit 2, so that qubit 2 ends in that state. Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
+  "hints": [
+    "Which resource do Alice and Bob need before anything is sent, and on which two qubits does it live? Lesson 1.5 shows how to make it.",
+    "Alice has to learn how her qubit 0 relates to her half of the pair, qubit 1. That is a Bell measurement: CNOT from 0 to 1, then H on qubit 0, then measure both into the two classical bits.",
+    "Bob corrects with gates conditioned on the bits: X if the bit of qubit 1 is 1, then Z if the bit of qubit 0 is 1. A conditioned gate looks like with qc.if_test((qc.clbits[1], 1)): qc.x(2), and the Z is the same with the other bit."
+  ],
+  "prediction": {
+    "question": "Alice teleports the state |+⟩. Before her two bits reach Bob, he measures his qubit in the X basis. What does he get?",
+    "options": [
+      "Always +, since his qubit already holds |+⟩ up to a sign",
+      "+ and − with probability 1/2 each, whatever state Alice sent",
+      "A pattern that depends on |ψ⟩, so he learns something about the state"
+    ],
+    "explanation": "Without the bits, Bob's qubit is one of the four states of the table with equal probability. For |+⟩ these are |+⟩, |−⟩, |+⟩ and −|−⟩, so + and − each occur half the time. The same holds for every |ψ⟩, since the mixture is maximally mixed. This is why the transfer needs the classical message."
+  },
+  "comparison": {
+    "source_label": "Alice, original state",
+    "target_label": "Bob, current state"
+  },
+  "challenge": {
+    "mission": "Teleport the state of qubit 0 to qubit 2 again, now without measurements or classical bits. Replace the measurements and the classically controlled corrections with controlled gates on Bob's qubit (deferred measurement). Qubit 2 must end in the input state for every test input. The circuit must contain exactly 2 H, 3 CNOT and 1 CZ gates, and no measurement.",
+    "hints": [
+      "Moving a measurement to the end of the circuit turns \"if this bit is 1, apply a gate\" into a controlled gate whose control is that qubit.",
+      "In the mission, X on Bob's qubit depended on qubit 1 and Z on qubit 0. So the corrections become cx(1, 2) and cz(0, 2).",
+      "Build the Bell pair on 1 and 2, then cx(0, 1) and h(0), and finish with cx(1, 2) and cz(0, 2). Nothing is measured, so qubits 0 and 1 end in a state that holds no information about the input."
+    ]
+  }
+}

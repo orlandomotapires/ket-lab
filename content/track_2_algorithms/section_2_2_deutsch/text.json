@@ -1,0 +1,32 @@
+{
+  "title": "Deutsch's Algorithm",
+  "summary": "One query decides whether a one-bit function is constant or balanced.",
+  "objectives": [
+    "Explain why one query with the auxiliary qubit in |0⟩ tells you nothing about f",
+    "Use phase kickback to write (−1)^f(x) on the input qubit",
+    "Decide with one query whether a one-bit function is constant or balanced"
+  ],
+  "mission": "Call oracle(qc) once so that qubit 0 ends in |0⟩ if the hidden one-bit function f is constant and in |1⟩ if it is balanced.",
+  "prediction": {
+    "question": "The auxiliary qubit is in |−⟩ and the input in |+⟩, but you leave out the final Hadamard and measure the input after the query. What do you get?",
+    "options": [
+      "Always 0 if f is constant, always 1 if it is balanced",
+      "Always the value of f(0)",
+      "0 or 1 with 50% each, whatever f is"
+    ],
+    "explanation": "After the query the input is ±|+⟩ or ±|−⟩, and both give 0 and 1 with probability 1/2 in the computational basis. The information is in the relative sign, which only the final Hadamard turns into a bit."
+  },
+  "hints": [
+    "Which state of the auxiliary qubit makes the query write its answer as a sign on the input, as in lesson 2.1?",
+    "The input needs |+⟩ before the query. After it the information is a relative sign, and one more gate turns that into 0 or 1.",
+    "qc.x(1) then qc.h(1) prepares |−⟩. The input qubit gets a Hadamard on each side of oracle(qc)."
+  ],
+  "challenge": {
+    "mission": "Build the oracle yourself, to see what a query contains. The list table = [f(0), f(1)] is the truth table of the hidden function, and there is no oracle(qc) to call. Write a 2-qubit circuit qc (qubit 0: input, qubit 1: auxiliary) that implements U_f, |x⟩|y⟩ → |x⟩|y ⊕ f(x)⟩, with x and cx gates chosen from table, inside Deutsch's circuit. Qubit 0 must end in |0⟩ if f is constant and in |1⟩ if f is balanced, for all four tables.",
+    "hints": [
+      "What does a constant function do to the auxiliary qubit? It does not depend on x.",
+      "A balanced function has to read x. Which gate copies x into the auxiliary qubit, and what flips the output if f(0) = 1?",
+      "Branch on table in plain Python: if f0 == f1, use an x on qubit 1 only when f0 is 1. Otherwise use cx(0, 1), plus an x on qubit 1 when f0 is 1. This sits between the two Hadamards of the input."
+    ]
+  }
+}

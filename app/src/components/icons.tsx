@@ -11,7 +11,7 @@ function Icon({ children, size = 16, ...props }: SVGProps<SVGSVGElement> & { chi
   );
 }
 
-/** Marca do produto: esfera de Bloch com o vetor de estado. */
+/** Product mark: Bloch sphere with the state vector. */
 export const LogoMark = ({ size = 22 }: { size?: number }) => (
   <svg className="brand-mark" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
     <circle cx="12" cy="12" r="9.25" strokeWidth="1.6" />
@@ -20,6 +20,14 @@ export const LogoMark = ({ size = 22 }: { size?: number }) => (
     <circle cx="17.6" cy="6.2" r="1.7" fill="currentColor" stroke="none" />
     <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
   </svg>
+);
+
+export const InfoIcon = () => (
+  <Icon>
+    <circle cx="8" cy="8" r="6.25" />
+    <path d="M8 7.25v4" />
+    <circle cx="8" cy="4.9" r="0.55" fill="currentColor" stroke="none" />
+  </Icon>
 );
 
 export const SunIcon = () => (
@@ -87,5 +95,29 @@ export const LastIcon = () => (
 export const ExportIcon = () => (
   <Icon>
     <path d="M8 2v8M5 7l3 3 3-3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />
+  </Icon>
+);
+export const BookIcon = () => (
+  <Icon>
+    <path d="M3 3.5A1.5 1.5 0 0 1 4.5 2H13v10H4.5A1.5 1.5 0 0 0 3 13.5zM3 13.5A1.5 1.5 0 0 0 4.5 15H13v-3" />
+  </Icon>
+);
+export const ImportIcon = () => (
+  <Icon>
+    <path d="M8 10V2M5 5l3-3 3 3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />
+  </Icon>
+);
+
+export const GlossaryIcon = () => (
+  <Icon>
+    <path d="M2.5 13 6 3l3.5 10M3.8 9.5h4.4" />
+    <path d="M11 6.5h3M11 9.5h3M11 12.5h3" />
+  </Icon>
+);
+
+export const NoteIcon = () => (
+  <Icon>
+    <path d="M3.5 2.5h9v11h-9z" />
+    <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" />
   </Icon>
 );

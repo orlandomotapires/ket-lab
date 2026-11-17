@@ -1,0 +1,208 @@
+/* Notes: text box, drawer in the lab, notes page, dots, search group and shortcuts list.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour, review, notes. */
+.note-field {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: 14px/1.6 var(--font-ui);
+  resize: vertical;
+}
+.note-field::placeholder {
+  color: var(--muted);
+}
+.note-field:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.note-field.is-large {
+  min-height: 160px;
+}
+.note-field.is-drawer {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  resize: none;
+}
+.note-status {
+  font-size: 12.5px;
+  color: var(--muted);
+  min-width: 4.5em;
+  text-align: right;
+}
+.note-status.is-error {
+  color: var(--error);
+}
+.note-dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  align-self: center;
+}
+.notes-button {
+  gap: 6px;
+}
+.notes-button .note-dot {
+  margin-left: 0;
+}
+
+/* drawer: one more column of the lab grid; a sheet above the bottom bar on narrow screens */
+.lab.has-notes {
+  grid-template-columns: minmax(260px, 21%) minmax(0, 1fr) minmax(320px, 27%) minmax(240px, 22%);
+}
+.notes-drawer {
+  grid-column: 4;
+  grid-row: 1;
+}
+.notes-drawer .panel-head {
+  gap: 8px;
+}
+.notes-lesson {
+  font: 12.5px var(--font-mono);
+  color: var(--muted);
+}
+.notes-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 10px;
+}
+@media (max-width: 1080px) {
+  .lab.has-notes {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+  }
+  .notes-drawer {
+    grid-column: 1;
+    grid-row: auto;
+    height: min(34vh, 240px);
+  }
+}
+
+/* notes page */
+.notes-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+}
+.notes-page-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 10px 0 6px;
+}
+.notes-page h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+.notes-track {
+  margin: 30px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.note-card {
+  margin-top: 14px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.note-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.note-card-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.note-card .note-field {
+  min-height: 88px;
+  background: var(--surface-2);
+}
+.notes-empty {
+  margin: 28px 0 0;
+  padding: 18px 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-size: 14px;
+}
+@media (max-width: 560px) {
+  .notes-page {
+    padding: 16px 16px 40px;
+  }
+}
+
+/* search: notes group */
+.search-group {
+  padding: 10px 10px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  margin-top: 6px;
+}
+
+/* help menu opens downwards from the top bar */
+.help-popover {
+  top: calc(100% + 8px);
+  bottom: auto;
+  width: 200px;
+}
+
+/* shortcuts */
+.shortcuts-dialog {
+  width: min(460px, calc(100vw - 32px));
+}
+.shortcuts-list {
+  margin: 12px 18px 4px;
+  display: flex;
+  flex-direction: column;
+}
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.shortcut-row dt {
+  display: flex;
+  gap: 4px;
+  order: 2;
+}
+.shortcut-row dd {
+  margin: 0;
+  color: var(--text-2);
+}
+.shortcut-row kbd {
+  min-width: 24px;
+  padding: 2px 7px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font: 12px var(--font-mono);
+  text-align: center;
+}
+.shortcuts-dialog .dialog-actions {
+  padding: 14px 18px 16px;
+}

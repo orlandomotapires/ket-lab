@@ -1,0 +1,35 @@
+{
+  "title": "Project: A Mitigated Estimate on a Noisy Device",
+  "summary": "Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty.",
+  "objectives": [
+    "Combine readout mitigation and zero-noise extrapolation in one estimate",
+    "Build and fold a circuit for a device with three qubits on a line",
+    "Report a result together with its statistical uncertainty"
+  ],
+  "mission": "An estimate from a noisy device is only worth something with a number for how far to trust it. The device has three qubits on a line (0-1-2) and run_device(gates, shots, seed) returns counts. Gates are tuples: (\"h\", q), (\"x\", q), (\"cx\", control, target), with cx between neighbors. Count keys write qubit 0 first. Estimate ⟨Z₀Z₂⟩ of the three-qubit GHZ state, whose exact value is 1. Define: ghz, the gate list of the GHZ circuit; fold(gates, scale), which returns gates followed by (reversed gates, gates) repeated (scale − 1)/2 times; shots (between 5000 and 200000); A, the 8×8 assignment matrix from calibrate(shots) with A[i, j] = P(read i | prepared j) and the index of a bitstring read as a binary number; raw, the unmitigated ⟨Z₀Z₂⟩ of ghz from run_device with seed 0; mitigated, the estimate from one run per scale (1, 3, 5, seed 0) after readout mitigation and extrapolation to zero noise; and sigma, the standard deviation of that estimate over repeated runs with different seeds. The mitigated error must be at most one fifth of the raw error, and sigma must agree with an independent estimate of the scatter within a factor of about 3.",
+  "prediction": {
+    "question": "Readout mitigation takes ⟨Z₀Z₂⟩ from about 0.80 to about 0.94. You double the shots from 20000 to 40000 and repeat. What happens to the remaining deficit of about 0.06?",
+    "options": [
+      "It falls to about 0.04, because it is shot noise and shrinks as 1/√shots",
+      "It stays near 0.06: it comes from the gates, and more shots only sharpen the same biased value",
+      "It falls to nearly 0, because A is also calibrated with more shots and the inversion becomes exact"
+    ],
+    "explanation": "Shot noise for 20000 shots is about 1/√20000 ≈ 0.007, ten times smaller than the deficit, so sampling is not the cause. Inverting the assignment matrix removes the readout error, and more calibration shots sharpen A only slightly. What remains is the depolarizing noise after the Hadamard and the two CNOT gates, a bias that does not depend on the number of shots. Folding scales it and zero-noise extrapolation removes most of it."
+  },
+  "hints": [
+    "Write the circuit as a list of tuples, with an H and then CNOTs along the line. For fold, ask yourself what the list G† G looks like when every gate is its own inverse, and how many times it repeats for scale 5. For A, calibrate(shots) gives counts for each prepared bitstring: which index does int(prepared, 2) give?",
+    "Turn each run's counts into a probability vector of length 8 (index int(key, 2)), mitigate with np.linalg.solve(A, p_meas), and compute ⟨Z₀Z₂⟩ as the sum over keys of probability times (−1) to the power (bit 0 + bit 2), where bit 0 is the first character. Do it at scales 1, 3, 5, then fit a line and read it at 0.",
+    "For sigma you need many runs of the whole estimate, all three scales included, with different seeds. What number describes how much they scatter? Use ddof=1 for the sample standard deviation."
+  ],
+  "messages": {
+    "ok": "All six criteria are met. raw = {raw} (error {raw_error}), mitigated = {mitigated} (error {mitigated_error}), sigma = {sigma} (independent estimate of the scatter {reference_sigma}).",
+    "missing": "{name} is not defined. Define it as the mission describes.",
+    "circuit": "Criterion 1, circuit: ghz does not prepare (|000⟩ + |111⟩)/√2 with neighbor-only gates ({detail}). The usual cause is a CNOT between qubits 0 and 2, which are not neighbors, or a missing Hadamard gate.",
+    "folding": "Criterion 2, folding: fold(gates, {scale}) returned {actual} for {gates}. The folded list should be the original, then the reversed list followed by the original, repeated (scale − 1)/2 times. A frequent slip is repeating the original list or reversing it only once.",
+    "shots": "shots must be an integer between 5000 and 200000, but it is {actual}. Fewer shots hide the effect under noise, and more are not allowed by the device.",
+    "readout": "Criterion 3, readout matrix: A differs from the true assignment matrix by {error} (tolerance 0.02). It probably is the transpose, or the counts were not divided by shots: column j should hold what is read when state j was prepared, and rows are what was read.",
+    "raw": "Criterion 4, raw value: raw is {actual}, but the noisy device gives {expected} for ghz without mitigation (tolerance {tolerance}). Compute ⟨Z₀Z₂⟩ directly from run_device(ghz, shots, 0), with no inversion of A and no folding.",
+    "mitigated": "Criterion 5, mitigated value: the error is {mitigated_error}, and it has to be at most one fifth of the raw error {raw_error}. Correcting the readout alone is not enough, because the gate noise is still there: mitigate at every scale and then extrapolate to scale 0.",
+    "sigma": "Criterion 6, uncertainty: sigma is {actual}, but repeated runs of the same estimate scatter by about {expected} (accepted between {low} and {high}). The usual cause is taking the scatter of a single measurement, or of the readout step only: repeat the full estimate (all scales, mitigation, extrapolation) with different seeds."
+  }
+}

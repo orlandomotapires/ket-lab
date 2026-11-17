@@ -1,320 +1,316 @@
 {
   "tracks": [
     {
+      "id": 0,
+      "title": "Mathematical Toolkit",
+      "level": "Optional",
+      "sections": [
+        {
+          "id": "0.1",
+          "title": "Complex Numbers and Phases",
+          "summary": "Complex arithmetic, modulus, polar form and the difference between global and relative phase."
+        },
+        {
+          "id": "0.2",
+          "title": "Vectors and Inner Products",
+          "summary": "Column vectors in C² and C⁴, the inner product with conjugation, normalization and the computational and ± bases."
+        },
+        {
+          "id": "0.3",
+          "title": "Matrices, Unitaries and Eigenvalues",
+          "summary": "Matrix–vector products, the conjugate transpose, unitarity, the Pauli matrices, eigenvalues and expectation values of Hermitian matrices."
+        },
+        {
+          "id": "0.4",
+          "title": "Tensor Products",
+          "summary": "The Kronecker product of vectors and matrices, product and entangled states, and Qiskit's qubit ordering."
+        }
+      ]
+    },
+    {
       "id": 1,
-      "title": {
-        "pt": "Fundamentos Quânticos",
-        "en": "Quantum Fundamentals",
-        "de": "Quantengrundlagen"
-      },
-      "level": {
-        "pt": "Iniciante",
-        "en": "Beginner",
-        "de": "Einsteiger"
-      },
+      "title": "Basics of Quantum Information",
+      "level": "Beginner",
       "sections": [
         {
           "id": "1.1",
-          "title": {
-            "pt": "O Qubit e a Base Computacional",
-            "en": "The Qubit and the Computational Basis",
-            "de": "Das Qubit und die Rechenbasis"
-          },
-          "summary": {
-            "pt": "Vetor de estado, normalização e a porta X na Esfera de Bloch.",
-            "en": "State vector, normalization and the X gate on the Bloch sphere.",
-            "de": "Zustandsvektor, Normierung und das X-Gatter auf der Bloch-Kugel."
-          }
+          "title": "Qubits and the Computational Basis",
+          "summary": "State vector, normalization and the X gate on the Bloch sphere."
         },
         {
           "id": "1.2",
-          "title": {
-            "pt": "Superposição e a Porta Hadamard",
-            "en": "Superposition and the Hadamard Gate",
-            "de": "Superposition und das Hadamard-Gatter"
-          },
-          "summary": {
-            "pt": "Estados |+⟩ e |−⟩ e um gerador quântico de números aleatórios.",
-            "en": "The states |+⟩ and |−⟩ and a quantum random number generator.",
-            "de": "Die Zustände |+⟩ und |−⟩ und ein Quanten-Zufallszahlengenerator."
-          }
+          "title": "Superposition and the Hadamard Gate",
+          "summary": "The states |+⟩ and |−⟩, measurement and a quantum random number generator."
         },
         {
           "id": "1.3",
-          "title": {
-            "pt": "Fase Relativa e Rotações",
-            "en": "Relative Phase and Rotations",
-            "de": "Relative Phase und Rotationen"
-          },
-          "summary": {
-            "pt": "Portas Z, S, T e Rz: mesmas probabilidades, estados diferentes.",
-            "en": "Z, S, T and Rz gates: same probabilities, different states.",
-            "de": "Z-, S-, T- und Rz-Gatter: gleiche Wahrscheinlichkeiten, verschiedene Zustände."
-          }
+          "title": "Relative Phase and Rotation Operators",
+          "summary": "Z, S, T and Rz gates: same probabilities, different states."
         },
         {
           "id": "1.4",
-          "title": {
-            "pt": "Interferência e Medição em Outras Bases",
-            "en": "Interference and Measuring in Other Bases",
-            "de": "Interferenz und Messung in anderen Basen"
-          },
-          "summary": {
-            "pt": "HH = I, HZH = X e por que a fase decide o resultado.",
-            "en": "HH = I, HZH = X and why the phase decides the outcome.",
-            "de": "HH = I, HZH = X und warum die Phase das Ergebnis bestimmt."
-          }
+          "title": "Interference and Measurement in Other Bases",
+          "summary": "HH = I, HZH = X and how the relative phase decides a measurement outcome."
         },
         {
           "id": "1.5",
-          "title": {
-            "pt": "Emaranhamento e Estados de Bell",
-            "en": "Entanglement and Bell States",
-            "de": "Verschränkung und Bell-Zustände"
-          },
-          "summary": {
-            "pt": "Produto tensorial, CNOT e a convenção de ordem dos qubits.",
-            "en": "Tensor product, CNOT and the qubit ordering convention.",
-            "de": "Tensorprodukt, CNOT und die Reihenfolge der Qubits."
-          }
+          "title": "Entanglement and the Bell States",
+          "summary": "Tensor products, the CNOT gate, Bell states and qubit ordering."
         },
         {
           "id": "1.6",
-          "title": {
-            "pt": "Teletransporte Quântico",
-            "en": "Quantum Teleportation",
-            "de": "Quantenteleportation"
-          },
-          "summary": {
-            "pt": "Par de Bell, medição no meio do circuito e correções condicionais.",
-            "en": "Bell pair, mid-circuit measurement and conditional corrections.",
-            "de": "Bell-Paar, Messung mitten im Schaltkreis und bedingte Korrekturen."
-          }
+          "title": "Quantum Teleportation",
+          "summary": "Bell pair, mid-circuit measurement and classically controlled corrections."
         },
         {
           "id": "1.7",
-          "title": {
-            "pt": "Portas Controladas e Identidades",
-            "en": "Controlled Gates and Identities",
-            "de": "Kontrollierte Gatter und Identitäten"
-          },
-          "summary": {
-            "pt": "Construa a porta CS com CNOT e T, e conheça identidades entre portas.",
-            "en": "Build the CS gate from CNOT and T, and learn identities between gates.",
-            "de": "Baue das CS-Gatter aus CNOT und T und lerne Identitäten zwischen Gattern."
-          }
+          "title": "Controlled Operations",
+          "summary": "Build the controlled-S gate from CNOT and T gates, and identities between gates."
+        },
+        {
+          "id": "1.8",
+          "title": "The No-Cloning Theorem",
+          "summary": "No unitary operation copies an unknown quantum state; the CNOT copier works only for basis states."
+        },
+        {
+          "id": "1.9",
+          "title": "Superdense Coding",
+          "summary": "Two classical bits travel in one qubit when sender and receiver share a Bell pair."
+        },
+        {
+          "id": "1.10",
+          "title": "The CHSH Game",
+          "summary": "A shared Bell pair wins the CHSH game with probability cos²(π/8) ≈ 0.854, above the classical limit of 3/4."
+        },
+        {
+          "id": "1.11",
+          "title": "Project: Entanglement Swapping",
+          "summary": "Entangle two qubits that never interacted by measuring their partners in the Bell basis."
         }
       ]
     },
     {
       "id": 2,
-      "title": {
-        "pt": "Algoritmos Quânticos",
-        "en": "Quantum Algorithms",
-        "de": "Quantenalgorithmen"
-      },
-      "level": {
-        "pt": "Intermediário",
-        "en": "Intermediate",
-        "de": "Fortgeschritten"
-      },
+      "title": "Fundamentals of Quantum Algorithms",
+      "level": "Intermediate",
       "sections": [
         {
           "id": "2.1",
-          "title": {
-            "pt": "Phase Kickback",
-            "en": "Phase Kickback",
-            "de": "Phase Kickback"
-          },
-          "summary": {
-            "pt": "Como o qubit alvo devolve fase ao qubit de controle.",
-            "en": "How the target qubit kicks a phase back to the control.",
-            "de": "Wie das Zielqubit eine Phase auf das Kontrollqubit zurückwirft."
-          }
+          "title": "Phase Kickback",
+          "summary": "A controlled gate acting on an eigenstate of its target changes the control, not the target."
         },
         {
           "id": "2.2",
-          "title": {
-            "pt": "Algoritmo de Deutsch",
-            "en": "Deutsch's Algorithm",
-            "de": "Deutsch-Algorithmus"
-          },
-          "summary": {
-            "pt": "Uma consulta decide se f de um bit é constante ou balanceada.",
-            "en": "One query decides whether a one-bit f is constant or balanced.",
-            "de": "Eine Abfrage entscheidet, ob eine Ein-Bit-Funktion konstant oder balanciert ist."
-          }
+          "title": "Deutsch's Algorithm",
+          "summary": "One query decides whether a one-bit function is constant or balanced."
         },
         {
           "id": "2.3",
-          "title": {
-            "pt": "Oráculos e Deutsch-Jozsa",
-            "en": "Oracles and Deutsch–Jozsa",
-            "de": "Orakel und Deutsch-Jozsa"
-          },
-          "summary": {
-            "pt": "Constante ou balanceada com uma única consulta.",
-            "en": "Constant or balanced with a single query.",
-            "de": "Konstant oder balanciert mit einer einzigen Abfrage."
-          }
+          "title": "The Deutsch–Jozsa Algorithm",
+          "summary": "Decide constant or balanced for an n-bit function with one query."
         },
         {
           "id": "2.4",
-          "title": {
-            "pt": "Bernstein-Vazirani",
-            "en": "Bernstein–Vazirani",
-            "de": "Bernstein-Vazirani"
-          },
-          "summary": {
-            "pt": "Recuperar uma string secreta inteira em uma consulta.",
-            "en": "Recover a whole secret string in one query.",
-            "de": "Eine ganze geheime Bitfolge mit einer Abfrage finden."
-          }
+          "title": "The Bernstein–Vazirani Algorithm",
+          "summary": "Find a whole secret string with one query."
         },
         {
           "id": "2.5",
-          "title": {
-            "pt": "Busca de Grover",
-            "en": "Grover's Search",
-            "de": "Grover-Suche"
-          },
-          "summary": {
-            "pt": "Amplificação de amplitude e inversão em torno da média.",
-            "en": "Amplitude amplification and inversion about the mean.",
-            "de": "Amplitudenverstärkung und Spiegelung am Mittelwert."
-          }
+          "title": "Simon's Algorithm",
+          "summary": "Recover a hidden XOR mask from outcomes that are orthogonal to it."
         },
         {
           "id": "2.6",
-          "title": {
-            "pt": "Transformada Quântica de Fourier",
-            "en": "Quantum Fourier Transform",
-            "de": "Quanten-Fourier-Transformation"
-          },
-          "summary": {
-            "pt": "Da base computacional para a base de fase.",
-            "en": "From the computational basis to the phase basis.",
-            "de": "Von der Rechenbasis in die Phasenbasis."
-          }
+          "title": "Grover's Algorithm",
+          "summary": "Amplitude amplification by an oracle and inversion about the mean."
         },
         {
           "id": "2.7",
-          "title": {
-            "pt": "Estimação de Fase Quântica",
-            "en": "Quantum Phase Estimation",
-            "de": "Quanten-Phasenschätzung"
-          },
-          "summary": {
-            "pt": "Ler um autovalor com potências controladas e QFT inversa.",
-            "en": "Read out an eigenvalue with controlled powers and an inverse QFT.",
-            "de": "Einen Eigenwert mit kontrollierten Potenzen und inverser QFT auslesen."
-          }
+          "title": "The Quantum Fourier Transform",
+          "summary": "Moves the information about x from the basis states into the phases."
         },
         {
           "id": "2.8",
-          "title": {
-            "pt": "Algoritmo de Shor",
-            "en": "Shor's Algorithm",
-            "de": "Shor-Algorithmus"
-          },
-          "summary": {
-            "pt": "Fatorar 15 reduzindo o problema a encontrar um período.",
-            "en": "Factor 15 by reducing it to finding a period.",
-            "de": "15 faktorisieren, indem man eine Periode findet."
-          }
+          "title": "Phase Estimation",
+          "summary": "Read an eigenvalue phase with controlled powers of U and an inverse QFT."
+        },
+        {
+          "id": "2.9",
+          "title": "Shor's Algorithm",
+          "summary": "Factor 15 by reducing the problem to order finding."
+        },
+        {
+          "id": "2.10",
+          "title": "Hamiltonian Simulation",
+          "summary": "Approximate the evolution under a sum of terms with Trotter steps."
+        },
+        {
+          "id": "2.11",
+          "title": "Project: Design a Grover Oracle",
+          "summary": "Build the oracle for a three-variable Boolean formula, then search its solutions with Grover's algorithm."
         }
       ]
     },
     {
       "id": 3,
-      "title": {
-        "pt": "Fronteiras e Aplicações",
-        "en": "Frontiers and Applications",
-        "de": "Grenzen und Anwendungen"
-      },
-      "level": {
-        "pt": "Avançado",
-        "en": "Advanced",
-        "de": "Experten"
-      },
+      "title": "Variational Algorithms",
+      "level": "Advanced",
       "sections": [
         {
           "id": "3.1",
-          "title": {
-            "pt": "Circuitos Variacionais",
-            "en": "Variational Circuits",
-            "de": "Variationelle Schaltkreise"
-          },
-          "summary": {
-            "pt": "Ansatz parametrizado e a regra de parameter-shift.",
-            "en": "Parameterized ansatz and the parameter-shift rule.",
-            "de": "Parametrisierter Ansatz und die Parameter-Shift-Regel."
-          }
+          "title": "Variational Circuits and the Parameter-Shift Rule",
+          "summary": "Ansatz, parameter-shift gradients and gradient descent."
         },
         {
           "id": "3.2",
-          "title": {
-            "pt": "VQE para Química Quântica",
-            "en": "VQE for Quantum Chemistry",
-            "de": "VQE für Quantenchemie"
-          },
-          "summary": {
-            "pt": "Energia do estado fundamental da molécula de H₂.",
-            "en": "Ground-state energy of the H₂ molecule.",
-            "de": "Grundzustandsenergie des H₂-Moleküls."
-          }
+          "title": "The Variational Quantum Eigensolver",
+          "summary": "Ground-state energy of H₂ with a variational circuit."
         },
         {
           "id": "3.3",
-          "title": {
-            "pt": "QAOA e Max-Cut",
-            "en": "QAOA and Max-Cut",
-            "de": "QAOA und Max-Cut"
-          },
-          "summary": {
-            "pt": "Otimização combinatória num grafo, com p = 2 camadas.",
-            "en": "Combinatorial optimization on a graph, with p = 2 layers.",
-            "de": "Kombinatorische Optimierung auf einem Graphen mit p = 2 Schichten."
-          }
+          "title": "QAOA for Max-Cut",
+          "summary": "Max-Cut on a 5-vertex graph with a two-layer QAOA."
         },
         {
           "id": "3.4",
-          "title": {
-            "pt": "Redes Neurais Quânticas",
-            "en": "Quantum Neural Networks",
-            "de": "Quanten-neuronale Netze"
-          },
-          "summary": {
-            "pt": "Classificador variacional com data re-uploading.",
-            "en": "Variational classifier with data re-uploading.",
-            "de": "Variationeller Klassifikator mit Data Re-Uploading."
-          }
+          "title": "Variational Quantum Classifiers",
+          "summary": "Classify points in the plane with two qubits and data re-uploading."
         },
         {
           "id": "3.5",
-          "title": {
-            "pt": "Matrizes Densidade e Ruído",
-            "en": "Density Matrices and Noise",
-            "de": "Dichtematrizen und Rauschen"
-          },
-          "summary": {
-            "pt": "Estados mistos, canais de Kraus e por que a probabilidade de erro não é a de resposta errada.",
-            "en": "Mixed states, Kraus channels, and why the error probability is not the wrong-answer probability.",
-            "de": "Gemischte Zustände, Kraus-Kanäle und warum die Fehlerwahrscheinlichkeit nicht die Wahrscheinlichkeit einer falschen Antwort ist."
-          }
+          "title": "Ansatz Design: Expressivity and Entanglement",
+          "summary": "Compare variational forms by number of parameters, entangling layers and the states they can reach."
         },
         {
           "id": "3.6",
-          "title": {
-            "pt": "Correção de Erros Quânticos",
-            "en": "Quantum Error Correction",
-            "de": "Quantenfehlerkorrektur"
-          },
-          "summary": {
-            "pt": "Código de bit flip de 3 qubits, síndromes e o limiar de erro.",
-            "en": "The 3-qubit bit-flip code, syndromes and the error threshold.",
-            "de": "Der 3-Qubit-Bitflip-Code, Syndrome und die Fehlerschwelle."
-          }
+          "title": "Optimizers and the Cost of a Gradient",
+          "summary": "Gradient descent, SPSA and COBYLA compared by the number of circuit evaluations they need."
+        },
+        {
+          "id": "3.7",
+          "title": "Barren Plateaus",
+          "summary": "Gradients of random deep circuits vanish exponentially with the number of qubits."
+        },
+        {
+          "id": "3.8",
+          "title": "VQE with a Hardware-Efficient Ansatz",
+          "summary": "Find the H₂ ground state with a general multi-parameter ansatz instead of a chemistry-inspired one."
+        },
+        {
+          "id": "3.9",
+          "title": "Project: A Variational Dissociation Curve",
+          "summary": "Compute the H₂ ground-state energy with VQE at several bond lengths and locate the equilibrium distance."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Quantum Noise and Error Correction",
+      "level": "Advanced",
+      "sections": [
+        {
+          "id": "4.1",
+          "title": "Density Operators and Quantum Noise",
+          "summary": "Density operators, Kraus operators, and the difference between error probability and wrong-answer probability."
+        },
+        {
+          "id": "4.2",
+          "title": "The Three-Qubit Bit-Flip Code",
+          "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold."
+        },
+        {
+          "id": "4.3",
+          "title": "The Three-Qubit Phase-Flip Code",
+          "summary": "A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers."
+        },
+        {
+          "id": "4.4",
+          "title": "The Shor Code",
+          "summary": "Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit."
+        },
+        {
+          "id": "4.5",
+          "title": "The Stabilizer Formalism",
+          "summary": "Describe a code by commuting Pauli operators and read the syndrome from commutation with them."
+        },
+        {
+          "id": "4.6",
+          "title": "The Toric Code",
+          "summary": "A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops."
+        },
+        {
+          "id": "4.7",
+          "title": "The Threshold Theorem",
+          "summary": "Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold."
+        },
+        {
+          "id": "4.8",
+          "title": "Project: The Shor Code Under Noise",
+          "summary": "Build the nine-qubit Shor code, compute its logical failure probability under depolarizing noise exactly, and find the physical error rate below which encoding helps."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Running on Quantum Hardware",
+      "level": "Advanced",
+      "sections": [
+        {
+          "id": "5.1",
+          "title": "Transpilation and Qubit Connectivity",
+          "summary": "Basis gates, coupling maps, SWAP insertion, and why the number of two-qubit gates is the cost of a circuit on hardware."
+        },
+        {
+          "id": "5.2",
+          "title": "The Qiskit Primitives",
+          "summary": "Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots."
+        },
+        {
+          "id": "5.3",
+          "title": "Noise on Real Devices",
+          "summary": "T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence."
+        },
+        {
+          "id": "5.4",
+          "title": "Error Mitigation",
+          "summary": "Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction."
+        },
+        {
+          "id": "5.5",
+          "title": "Project: A Mitigated Estimate on a Noisy Device",
+          "summary": "Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Adiabatic Computing and Quantum Annealing",
+      "level": "Advanced",
+      "sections": [
+        {
+          "id": "6.1",
+          "title": "Optimization as Energy: Ising Models and QUBO",
+          "summary": "Write number partitioning and Max-Cut as the energy of spins, convert between the Ising and QUBO forms, and find the ground state by brute force."
+        },
+        {
+          "id": "6.2",
+          "title": "The Adiabatic Theorem and the Energy Gap",
+          "summary": "Interpolate slowly from an easy Hamiltonian to the problem Hamiltonian; the minimum gap sets how slow is slow enough."
+        },
+        {
+          "id": "6.3",
+          "title": "Quantum Annealing as a Circuit",
+          "summary": "Cut the anneal into Trotter steps on three qubits and compare it with QAOA and with thermal simulated annealing."
+        },
+        {
+          "id": "6.4",
+          "title": "Annealing Hardware: Embedding and Limits",
+          "summary": "Map a problem onto sparse hardware with chains of qubits, choose the chain strength, and see what is and is not known about speedups."
+        },
+        {
+          "id": "6.5",
+          "title": "Project: A Constrained Choice by Annealing",
+          "summary": "Choose two of four jobs with the best total value: write the constraint as a penalty, check the QUBO by brute force, and anneal it."
         }
       ]
     }

@@ -14,7 +14,7 @@ export function setTheme(theme: ThemeName): void {
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {
-    // Sem armazenamento disponível: o tema vale só para esta sessão.
+    // No storage available: the theme only applies to this session.
   }
   listeners.forEach((listener) => listener());
 }
@@ -32,7 +32,7 @@ export function useTheme(): ThemeName {
   return useSyncExternalStore(subscribe, current);
 }
 
-/** Cores usadas fora do CSS (cena 3D e editor). Espelham os tokens de styles.css. */
+/** Colors used outside CSS (3D scene and editor). They mirror the tokens in styles/*.css. */
 export interface Palette {
   surface: string;
   stage: string;
@@ -51,8 +51,8 @@ export const PALETTES: Record<ThemeName, Palette> = {
     stage: "#f8f9fb",
     text: "#15171c",
     muted: "#646a76",
-    line: "#dfe2e7",
-    lineStrong: "#b9bec7",
+    line: "#d3d7de",
+    lineStrong: "#a8aeb8",
     accent: "#2f5bd3",
     sphere: "#8a919c",
     editorLine: "#f5f6f8",
@@ -62,8 +62,8 @@ export const PALETTES: Record<ThemeName, Palette> = {
     stage: "#13161a",
     text: "#e6e8ec",
     muted: "#9aa1ad",
-    line: "#2b3038",
-    lineStrong: "#454c57",
+    line: "#383e48",
+    lineStrong: "#5a626e",
     accent: "#7d9ef0",
     sphere: "#7d8591",
     editorLine: "#1c2026",

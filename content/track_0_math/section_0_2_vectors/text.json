@@ -1,0 +1,40 @@
+{
+  "title": "Vectors and Inner Products",
+  "summary": "Column vectors in C² and C⁴, the inner product with conjugation, normalization and the computational and ± bases.",
+  "objectives": [
+    "Find the length of a complex vector and rescale it to length 1",
+    "Compute how much of one state lies along another, including the conjugation that makes it work",
+    "Build the ± basis and use it to find the odds of a measurement in that basis"
+  ],
+  "mission": "A state is measured in the ± basis, so you need its coefficients there. Work with the vectors in the editor. Define norm and v_hat (the length of v, and v scaled to length 1), inner and prob (the inner product of a with b, and its squared modulus), minus (the vector |−⟩ as an array: orthogonal to plus, of length 1, with a positive first entry), amp_plus and amp_minus (the coefficients of psi along plus and minus), and inner4 (the same inner product for the four-entry vectors phi_plus and q).",
+  "prediction": {
+    "question": "The state (0.6, 0.8i) gives outcome 0 with probability 0.36 when measured in the computational basis. It is now measured in the ± basis. What is the probability of finding |+⟩?",
+    "options": [
+      "0.36, the probability carries over from outcome 0",
+      "0.64, since the larger amplitude is on the second entry",
+      "0.5"
+    ],
+    "explanation": "The coefficient is ⟨+|ψ⟩ = (0.6 + 0.8i)/√2, and |0.6 + 0.8i|² = 0.36 + 0.64 = 1, so the probability is 1/2. The factor i changes the phase of the second entry and not its size, but in the ± basis it is the phase that decides the odds."
+  },
+  "hints": [
+    "Before computing anything, decide which of your quantities need a conjugate and which do not. In an inner product, which of the two vectors is conjugated?",
+    "NumPy has an inner product that conjugates its first argument, and a different one that does not. The norm of v is the square root of the inner product of v with itself. For minus, ask which sign change in plus makes the inner product with plus equal to 0, and then what rescales it to length 1.",
+    "Each coefficient in the ± basis is an inner product with the basis vector placed first. The probability is a squared modulus, so take the absolute value of the complex number before squaring it. inner4 uses the same function as inner, with longer arrays."
+  ],
+  "messages": {
+    "ok": "All values are correct. The inner product of a with b is {inner}, giving probability {prob}, and ψ has coefficients {amp_plus} and {amp_minus} in the ± basis.",
+    "missing": "Define the variable {name}.",
+    "not_array": "The variable {name} must be an array of numbers with shape {shape}, but it holds {actual}.",
+    "norm_wrong": "norm is {actual}, but the length of v is {expected}. The length is the square root of the sum of the squared moduli of the entries, with every entry counted, including the imaginary parts.",
+    "v_hat_wrong": "v_hat is {actual}, but v scaled to length 1 is {expected}. Every entry is divided by the same number, the norm of v.",
+    "inner_conjugate": "inner is {actual}, which is the conjugate of the inner product of a with b. Either nothing was conjugated, or the conjugation went onto b. It belongs on the first vector.",
+    "inner_wrong": "inner is {actual}, but the inner product of a with b is {expected}. Multiply entry by entry, conjugating a's entries first, then add.",
+    "prob_wrong": "prob is {actual}, but the probability is {expected}. It is the squared modulus of the inner product, which is a real number between 0 and 1, not the inner product itself.",
+    "minus_not_unit": "minus has length {actual}, and a basis vector must have length 1. The entries have the right signs only if you also rescale them.",
+    "minus_not_orthogonal": "minus is not orthogonal to plus: their inner product is {actual} and it must be 0. Check the sign of the second entry.",
+    "minus_wrong": "minus is {actual}. It has length 1 and is orthogonal to plus, but the task asks for {expected}: the first entry positive.",
+    "amp_plus_wrong": "amp_plus is {actual}, but the coefficient of psi along plus is {expected}. A coefficient is an inner product with the basis vector in the first slot, and it is a complex number in general.",
+    "amp_minus_wrong": "amp_minus is {actual}, but the coefficient of psi along minus is {expected}. Same recipe as for plus, with the minus vector in the first slot.",
+    "inner4_wrong": "inner4 is {actual}, but the inner product of phi_plus with q is {expected}. Nothing changes for four entries: multiply entry by entry, conjugating the first vector, then add."
+  }
+}

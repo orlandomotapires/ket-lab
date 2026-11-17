@@ -1,0 +1,32 @@
+{
+  "id": "0.4",
+  "track": 0,
+  "estimated_minutes": 25,
+  "framework": "python",
+  "num_qubits": 0,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 2.2.8, “Composite systems”, pp. 93–96"
+    },
+    {
+      "kind": "course",
+      "title": "Multiple systems: Quantum information",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Section “Quantum states”, subsections “Tensor products of quantum state vectors” and “Entangled states”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information"
+    }
+  ]
+}

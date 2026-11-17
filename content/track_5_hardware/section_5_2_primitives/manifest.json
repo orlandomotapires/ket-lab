@@ -1,0 +1,41 @@
+{
+  "id": "5.2",
+  "track": 5,
+  "estimated_minutes": 25,
+  "num_qubits": 2,
+  "max_qubits": 4,
+  "default_visualizer": "qsphere",
+  "available_visualizers": [
+    "qsphere",
+    "bloch",
+    "histogram"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 2.2.3, “Quantum measurement”, pp. 84–86; Section 2.2.5, “Projective measurements”, pp. 87–90"
+    },
+    {
+      "kind": "course",
+      "title": "Running quantum circuits",
+      "authors": "IBM Quantum Learning, Quantum computing in practice",
+      "location": "Section “Designing a quantum circuit: Qiskit patterns”, subsection “Execute” (Sampler, Estimator)",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/quantum-computing-in-practice/running-quantum-circuits"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Introduction to primitives",
+      "authors": "IBM Quantum Documentation",
+      "location": "Sections “What is a primitive?” and “Primitive definition and implementations”",
+      "url": "https://quantum.cloud.ibm.com/docs/en/qiskit/primitives"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "title": "The Three-Qubit Bit-Flip Code",
+  "summary": "The three-qubit bit-flip code, syndrome measurement and the threshold.",
+  "objectives": [
+    "Spread one qubit over three with two CNOT gates and explain why this is not copying",
+    "Read the position of a single bit flip from two parities, without measuring the data qubits",
+    "Correct a single flip with gates controlled by the syndrome",
+    "Work out the logical error rate 3p² − 2p³ and the range of p where the code helps"
+  ],
+  "mission": "A bit flip is the simplest error to fight, and three qubits are enough to do it. Encode qubit 0 into three qubits (encode), store the syndrome in two ancillas without measuring the data qubits, and correct the flipped qubit (recover). The logical state must survive an X error on any one of the three qubits, for any input state. The code must also reproduce the theory for noise: when every qubit suffers a bit flip with probability p = 0.1, the logical state survives with probability 1 − 3p² + 2p³ = 0.972, against 0.9 for an unprotected qubit.",
+  "prediction": {
+    "question": "The input is |0⟩, encoded as |000⟩, and X errors hit qubits 0 and 1. What do the three data qubits hold after the recovery?",
+    "options": [
+      "|111⟩, the logical |1⟩: the recovery flips qubit 2 as well",
+      "|000⟩: the syndrome sees both flips and undoes them",
+      "A mixture of |000⟩ and |111⟩, because the syndrome cannot say which qubit to fix"
+    ],
+    "explanation": "The parities of qubits 0, 1 and of qubits 1, 2 are 0 and 1, the syndrome of a single flip on qubit 2. The syndrome is a definite pair of bits, so the recovery applies X to qubit 2 with certainty, and all three qubits are flipped: a logical X, not a mixture. The code corrects one flip, not two."
+  },
+  "hints": [
+    "The encoded state has to be entangled, not copied. What happens to |000⟩ and |111⟩ if you apply a CNOT from qubit 0 to qubit 1 and another from qubit 0 to qubit 2 to α|0⟩ + β|1⟩ on qubit 0?",
+    "The syndrome is two parities. Ancilla 3 gets CNOTs from qubits 0 and 1, ancilla 4 gets CNOTs from qubits 1 and 2. Work out the two bits for X on each data qubit: they must be different for the three qubits (10, 11 and 01).",
+    "For the correction, qml.Toffoli(wires=[3, 4, target]) fires when both ancillas are 1. For a pattern with a 0, apply qml.PauliX to that ancilla before and after the Toffoli. Once recover() fixes every single flip, the noisy case follows by itself."
+  ],
+  "controls": {
+    "error": {
+      "label": "Injected error",
+      "options": {
+        "none": "None",
+        "x0": "X on 0",
+        "x1": "X on 1",
+        "x2": "X on 2",
+        "x0x1": "X on 0 and 1",
+        "z0": "Z on 0",
+        "bitflip": "Bit flip p = 0.1"
+      }
+    }
+  },
+  "messages": {
+    "ok": "The logical state survives any single bit flip. With bit-flip noise p = 0.1 on every qubit, the fidelity is {fidelity}, against {bare} for an unprotected qubit.",
+    "no_circuit": "Define the QNode circuit() on a default.mixed device with 5 qubits.",
+    "wrong_qubits": "The code uses 3 data qubits and 2 ancillas, 5 in total, but the circuit has {count}.",
+    "encode_wrong": "With no error at all the final state is not α|000⟩ + β|111⟩ (fidelity {fidelity}). Either the encoding is off, or the recovery acts when the syndrome is 00 and spoils a good state.",
+    "single_fail": "With the error {error} the logical state was not recovered (fidelity {fidelity}). Probably one syndrome pattern corrects the wrong qubit: check which qubit each pair of parities points to.",
+    "noisy_mismatch": "Every single flip is corrected, but with bit-flip noise p = 0.1 the fidelity is {fidelity} instead of {expected}. Check that the noise reaches all three data qubits before the recovery and that the recovery itself is noiseless."
+  }
+}

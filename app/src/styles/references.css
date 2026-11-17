@@ -1,0 +1,260 @@
+/* Lesson references and the references page.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
+/* lesson references */
+
+.references {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.references-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.references-intro {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+/* A single grid for the whole list: the label column has the width of the
+   widest, and all titles start on the same vertical line. */
+.references ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: baseline;
+}
+.references li {
+  display: contents;
+}
+.references li + li .ref-kind,
+.references li + li a {
+  margin-top: 12px;
+}
+.references a {
+  color: var(--accent-text);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+}
+.references a:hover {
+  text-decoration: underline;
+}
+.ref-meta {
+  grid-column: 2;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.ref-location {
+  grid-column: 2;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.ref-kind {
+  justify-content: center;
+  justify-self: stretch;
+  grid-row: span 3;
+  align-self: start;
+}
+.ref-kind.is-book,
+.ref-kind.is-paper {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+.ref-kind.is-course,
+.ref-kind.is-tutorial {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* References page */
+.bibliography {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+}
+.bibliography h1 {
+  margin: 10px 0 6px;
+  font-size: 22px;
+}
+.bibliography h2 {
+  margin: 30px 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  scroll-margin-top: 16px;
+}
+.bibliography section {
+  scroll-margin-top: 16px;
+}
+.bibliography h3 {
+  margin: 16px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.bib-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 18px 0 6px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.bib-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.bib-toc-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.bib-toc-item:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.bib-count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+.bib-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bib-link {
+  color: var(--accent-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+.bib-link:hover,
+.bib-link:focus-visible {
+  text-decoration: underline;
+}
+.bib-authors {
+  color: var(--muted);
+  font-weight: 400;
+}
+.bib-note {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+.bib-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.bib-book {
+  margin-top: 14px;
+  padding: 14px 16px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.bib-book h3 {
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  color: var(--text);
+}
+.bib-sections {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bib-sections li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.bib-location {
+  flex: 1 1 340px;
+  color: var(--text-2);
+}
+.bib-lessons {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: 6px;
+  vertical-align: baseline;
+}
+.bib-list .bib-lessons {
+  display: flex;
+  margin: 3px 0 0;
+}
+.bib-lesson {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 1px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+}
+.bib-lesson .mono {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.bib-lesson:hover {
+  border-color: var(--accent);
+}
+.bib-lesson-title {
+  color: var(--text-2);
+}
+
+.bib-more {
+  color: var(--accent-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+.bib-filter > span {
+  font-weight: 500;
+  color: var(--text-2);
+}
+.hw-about {
+  font-size: 13px;
+}
+.hw-about summary {
+  cursor: pointer;
+  color: var(--accent-text);
+  width: fit-content;
+}
+.hw-about p {
+  margin: 6px 0 0;
+}

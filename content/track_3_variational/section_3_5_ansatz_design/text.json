@@ -1,0 +1,54 @@
+{
+  "title": "Ansatz Design: Expressivity and Entanglement",
+  "summary": "Compare variational forms by number of parameters, entangling layers and the states they can reach.",
+  "objectives": [
+    "Say why a product ansatz cannot reach an entangled state, and what the best fidelity is",
+    "Tell the number of parameters of an ansatz apart from the number of directions in which its state can move",
+    "Add an entangling gate to a rotation layer so that a circuit prepares a Bell state"
+  ],
+  "mission": "The cost −F, where F is the fidelity with the Bell state |Φ⁺⟩, stalls at −0.5 with the starter ansatz R_Y ⊗ R_Y. Change the ansatz so that after training the circuit prepares |Φ⁺⟩ with fidelity at least 0.99, using at most 4 rotation angles (R_X, R_Y, R_Z) and one CNOT or CZ as the entangling gate, with one entry of params per angle.",
+  "prediction": {
+    "question": "An ansatz applies R_Y(θ₀) on qubit 0 and later, with no gate in between, a second R_Y(θ₂) on the same qubit. How many new independent directions does the reachable set gain from θ₂?",
+    "options": [
+      "One: every new parameter adds a direction",
+      "None: the two rotations combine into R_Y(θ₀ + θ₂), so θ₂ repeats θ₀",
+      "Two: the new rotation acts on both amplitudes of the qubit"
+    ],
+    "explanation": "Rotations about the same axis add their angles, so the pair depends only on θ₀ + θ₂ and the reachable set does not grow. The parameter count rises, and the redundant parameter only slows the optimizer."
+  },
+  "hints": [
+    "What does the product ansatz lack? It prepares a product state, and the fidelity of a product state with |Φ⁺⟩ is at most 1/2.",
+    "Add an entangling gate: qml.CNOT(wires=[0, 1]) after the two R_Y rotations. A single R_Y(π/2) on qubit 0 followed by it already gives |Φ⁺⟩.",
+    "A second pair of rotations after the CNOT makes training easier from a generic start. params must have one entry per rotation angle, for example np.array([0.4, 1.2, 0.3, 0.8], requires_grad=True)."
+  ],
+  "messages": {
+    "ok": "The circuit prepares |Φ⁺⟩ with fidelity {fidelity} using {count} rotation angles.",
+    "no_circuit": "The QNode circuit(params) is missing: define it so that it returns qml.expval(H).",
+    "no_params": "The trained angles are missing: store them in the variable params.",
+    "wrong_qubits": "The target |Φ⁺⟩ lives on two qubits, but the circuit has {count}.",
+    "forbidden_op": "This ansatz is not made of rotations and entanglers: it uses {names}. Preparing |Φ⁺⟩ directly would skip the point of the lesson.",
+    "too_many_angles": "The circuit has {count} rotation angles and the limit is {limit}. Look for rotations that add nothing, such as two in a row on the same qubit and axis.",
+    "no_entangler": "The fidelity with |Φ⁺⟩ is {fidelity} and the circuit has no two-qubit gate: a product state cannot go above 0.5, so add an entangling gate.",
+    "not_converged": "The fidelity with |Φ⁺⟩ is {fidelity}, below 0.99. The entangler is there, so the circuit may lack a rotation that can reach |Φ⁺⟩, params may have too few entries for the angles, or the optimizer needs more steps.",
+    "energies_inconsistent": "The state is right, but the last entry of energies is not the cost of the final state. Append float(circuit(params)) after every step."
+  },
+  "challenge": {
+    "mission": "The mission allowed four rotation angles. How few are enough? Reach |Φ⁺⟩ with fidelity at least 0.999 using exactly one rotation angle: params has one entry, and the circuit uses a single R_X, R_Y or R_Z plus a CNOT, CZ or CY. No Hadamard and no other gate. Train it with the same cost as in the mission. The validator counts the rotations in the traced circuit and recomputes the fidelity of the final state.",
+    "hints": [
+      "Write the state after your rotation and after the CNOT by hand, for a general angle. What amplitudes must |Φ⁺⟩ have, and which angle gives them?",
+      "A rotation of |0⟩ about the y axis gives cos(θ/2)|0⟩ + sin(θ/2)|1⟩. The CNOT then copies the value of qubit 0 onto qubit 1.",
+      "One R_Y on wire 0 followed by the CNOT is the whole circuit. The fidelity then depends on θ alone, so a start of 0.4 and the mission's descent work."
+    ],
+    "messages": {
+      "ok": "|Φ⁺⟩ with fidelity {fidelity} using {count} rotation angle.",
+      "ch_no_circuit": "There is no circuit with a qnode yet.",
+      "ch_no_params": "params is missing, with one entry for the single angle.",
+      "ch_wrong_qubits": "The state lives on 2 qubits, but the circuit uses {count}.",
+      "ch_forbidden_op": "Only one rotation and a CNOT, CZ or CY are allowed, and the circuit also uses {names}. A Hadamard would make the superposition without an angle, which is not the exercise.",
+      "ch_too_many_angles": "The circuit has {count} rotation angles and the limit is {limit}. Ask which rotation does work the CNOT cannot do.",
+      "ch_no_entangler": "Fidelity {fidelity}: without an entangling gate the state is a product and cannot go above 1/2.",
+      "ch_not_converged": "Fidelity {fidelity}, below {target}. Check that the rotation puts equal weight on |0⟩ and |1⟩ on the control qubit and that the training reached it.",
+      "ch_energies_inconsistent": "The last value of energies should be the cost of the final circuit, the fidelity with a minus sign: {fidelity}."
+    }
+  }
+}

@@ -1,7 +1,9 @@
 import type { Complex, Step, Vec3 } from "../engine/types";
-import { formatNumber, t } from "../i18n";
+import { t } from "../strings";
 
-/** Rótulo do estado da base no padrão do Qiskit: |q_{n-1} ... q_0⟩ (qubit 0 à direita). */
+const fixed = (value: number, decimals: number) => value.toFixed(decimals);
+
+/** Basis state label in Qiskit's convention: |q_{n-1} ... q_0⟩ (qubit 0 on the right). */
 export function basisLabel(index: number, numQubits: number): string {
   return `|${index.toString(2).padStart(numQubits, "0")}⟩`;
 }
@@ -15,13 +17,13 @@ export function phaseOf([re, im]: Complex): number {
 }
 
 /**
- * Cor da fase em uma roda cíclica: 0 = azul, π = laranja.
- * A cor nunca é a única pista: quem usa a fase também mostra o ângulo.
+ * Phase color on a cyclic wheel: 0 = blue, π = orange.
+ * Color is never the only cue: whoever uses the phase also shows the angle.
  */
 export function phaseColor(phase: number, dark: boolean): string {
   const degrees = (((phase * 180) / Math.PI) % 360 + 360) % 360;
   const hue = (212 + degrees) % 360;
-  // Sintaxe com vírgulas: aceita tanto pelo CSS quanto pelo THREE.Color.
+  // Comma syntax: accepted by both CSS and THREE.Color.
   return `hsl(${hue.toFixed(0)}, ${dark ? 52 : 58}%, ${dark ? 62 : 42}%)`;
 }
 
@@ -48,15 +50,15 @@ export function formatAmplitude([re, im]: Complex): string {
 
 export function formatPercent(p: number): string {
   const value = p * 100;
-  if (value > 0 && value < 0.1) return `<${formatNumber(0.1, 1)}%`;
-  return `${formatNumber(value, value >= 99.95 || value < 0.05 ? 0 : 1)}%`;
+  if (value > 0 && value < 0.1) return `<${fixed(0.1, 1)}%`;
+  return `${fixed(value, value >= 99.95 || value < 0.05 ? 0 : 1)}%`;
 }
 
 export function vectorLength([x, y, z]: Vec3): number {
   return Math.hypot(x, y, z);
 }
 
-/** Descrição curta de um passo para legendas: "CX q0 → q1", "H q0", "Medição q0 → c0". */
+/** Short description of a step for captions: "CX q0 → q1", "H q0", "Measure q0 → c0". */
 export function describeStep(step: Step): string {
   const qubits = step.qubits.map((q) => `q${q}`);
   if (step.kind === "measure") return t("step.measure", { qubit: qubits[0], clbit: step.clbits[0] });
@@ -70,7 +72,7 @@ export function describeStep(step: Step): string {
   return `${step.label} ${qubits.join(", ")}`;
 }
 
-/** Eixo de rotação (em coordenadas de Bloch) de portas de 1 qubit conhecidas. */
+/** Rotation axis (in Bloch coordinates) of known 1-qubit gates. */
 export function rotationAxis(step: Step | undefined): Vec3 | null {
   if (!step || step.kind !== "gate" || step.qubits.length !== 1) return null;
   switch (step.name) {
@@ -101,30 +103,30 @@ function multiply([a, b]: Complex, [c, d]: Complex): Complex {
 }
 
 /**
- * Concorrência de um estado puro de 2 qubits: 0 = separável, 1 = maximamente
- * emaranhado. C = 2|a00·a11 − a01·a10| (índices na ordem |q1 q0⟩).
+ * Concurrence of a pure 2-qubit state: 0 = separable, 1 = maximally
+ * entangled. C = 2|a00·a11 − a01·a10| (indices in |q1 q0⟩ order).
  */
 export function concurrence(amplitudes: readonly Complex[]): number {
-  if (amplitudes.length !== 4) throw new Error("A concorrência é definida aqui só para 2 qubits.");
+  if (amplitudes.length !== 4) throw new Error("Concurrence is defined here only for 2 qubits.");
   const [re1, im1] = multiply(amplitudes[0], amplitudes[3]);
   const [re2, im2] = multiply(amplitudes[1], amplitudes[2]);
   return Math.min(1, 2 * Math.hypot(re1 - re2, im1 - im2));
 }
 
 /**
- * Emaranhamento de um qubit com o restante, pela pureza do estado reduzido:
- * 2(1 − Tr ρ²) vai de 0 (estado puro, sem emaranhamento) a 1 (máximo).
+ * Entanglement of a qubit with the rest, from the purity of the reduced state:
+ * 2(1 − Tr ρ²) goes from 0 (pure state, no entanglement) to 1 (maximum).
  */
 export function entanglementWithRest(purity: number): number {
   return Math.max(0, Math.min(1, 2 * (1 - purity)));
 }
 
-/** Fidelidade entre dois estados de 1 qubit pelos vetores de Bloch (exata se um deles é puro). */
+/** Fidelity between two 1-qubit states from their Bloch vectors (exact if one of them is pure). */
 export function blochFidelity(a: Vec3, b: Vec3): number {
   return (1 + a[0] * b[0] + a[1] * b[1] + a[2] * b[2]) / 2;
 }
 
-/** Posição de cada estado da base na Q-Sphere: latitude pelo número de 1s, longitude espalhada. */
+/** Position of each basis state on the Q-Sphere: latitude by number of 1s, longitude spread out. */
 export function qspherePositions(numQubits: number): Vec3[] {
   const size = 2 ** numQubits;
   const groups = new Map<number, number[]>();
@@ -137,7 +139,7 @@ export function qspherePositions(numQubits: number): Vec3[] {
     const theta = (Math.PI * weight) / numQubits;
     members.forEach((index, k) => {
       const phi = (2 * Math.PI * k) / members.length + (weight % 2 ? Math.PI / members.length : 0);
-      // Coordenadas de cena: y para cima (|0…0⟩ no polo norte).
+      // Scene coordinates: y up (|0…0⟩ at the north pole).
       positions[index] = [Math.sin(theta) * Math.cos(phi), Math.cos(theta), Math.sin(theta) * Math.sin(phi)];
     });
   }
@@ -151,18 +153,18 @@ function popcount(value: number): number {
 }
 
 export interface RegisterState {
-  /** Amplitudes do registrador (2^k), ou null se ele estiver emaranhado com o resto. */
+  /** Register amplitudes (2^k), or null if it is entangled with the rest. */
   amplitudes: Complex[] | null;
   probabilities: number[];
 }
 
 /**
- * Estado de um registrador (subconjunto de qubits).
+ * State of a register (a subset of qubits).
  *
- * Se o registrador não está emaranhado com os demais qubits (ex.: auxiliar em
- * |−⟩ em Deutsch-Jozsa), o estado dele é puro e pode ser extraído projetando o
- * resto no ramo de maior peso. A fase global é escolhida para que a maior
- * amplitude seja real e positiva. Se estiver emaranhado, sobram as probabilidades.
+ * If the register is not entangled with the other qubits (e.g. ancilla in
+ * |−⟩ in Deutsch-Jozsa), its state is pure and can be extracted by projecting the
+ * rest onto the heaviest branch. The global phase is chosen so that the largest
+ * amplitude is real and positive. If it is entangled, only the probabilities remain.
  */
 export function registerState(amplitudes: readonly Complex[], numQubits: number, register: readonly number[]): RegisterState {
   const size = 2 ** register.length;
@@ -191,7 +193,7 @@ export function registerState(amplitudes: readonly Complex[], numQubits: number,
   const scale = 1 / Math.sqrt(bestNorm);
   const unit = best.map(([re, im]): Complex => [re * scale, im * scale]);
 
-  // Produto (não emaranhado) se a soma das projeções de todos os ramos no ramo escolhido for 1.
+  // Product (not entangled) if the sum of the projections of all branches onto the chosen branch is 1.
   let overlap = 0;
   for (const branch of branches.values()) {
     let re = 0;
@@ -203,23 +205,23 @@ export function registerState(amplitudes: readonly Complex[], numQubits: number,
     });
     overlap += re * re + im * im;
   }
-  // Tolerância relativa: as amplitudes chegam arredondadas a 6 casas.
+  // Relative tolerance: amplitudes arrive rounded to 6 places.
   const total = probabilities.reduce((sum, p) => sum + p, 0);
   if (overlap < total * (1 - 1e-4)) return { amplitudes: null, probabilities };
 
   let peak = 0;
   unit.forEach((a, i) => {
-    // Empates (comuns, com amplitudes arredondadas) ficam com o primeiro estado: |0…0⟩ vira a referência de fase.
+    // Ties (common, with rounded amplitudes) go to the first state: |0…0⟩ becomes the phase reference.
     if (probability(a) > probability(unit[peak]) + 1e-5) peak = i;
   });
   const [pr, pi] = unit[peak];
   const magnitude = Math.hypot(pr, pi) || 1;
-  const [cr, ci] = [pr / magnitude, -pi / magnitude]; // multiplica por e^{-i·fase do pico}
+  const [cr, ci] = [pr / magnitude, -pi / magnitude]; // multiplies by e^{-i·peak phase}
   const rotated = unit.map(([re, im]): Complex => [re * cr - im * ci, re * ci + im * cr]);
   return { amplitudes: rotated, probabilities };
 }
 
-/** Probabilidade de cada valor de um registrador, a partir das probabilidades da base inteira. */
+/** Probability of each value of a register, from the probabilities of the whole basis. */
 export function registerProbabilities(probabilities: readonly number[], register: readonly number[]): number[] {
   const result = new Array<number>(2 ** register.length).fill(0);
   probabilities.forEach((p, index) => {
@@ -230,7 +232,7 @@ export function registerProbabilities(probabilities: readonly number[], register
   return result;
 }
 
-/** Valores de a^x mod N para x = 0 … count−1 e o período (ou null). */
+/** Values of a^x mod N for x = 0 … count−1 and the period (or null). */
 export function modularSequence(a: number, N: number, count: number): { values: number[]; period: number | null } {
   const values: number[] = [];
   let value = 1 % N;

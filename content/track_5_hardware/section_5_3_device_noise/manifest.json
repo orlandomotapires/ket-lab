@@ -1,0 +1,53 @@
+{
+  "id": "5.3",
+  "track": 5,
+  "estimated_minutes": 25,
+  "framework": "pennylane",
+  "timeout": 10,
+  "num_qubits": 1,
+  "max_qubits": 2,
+  "qnode": {
+    "name": "idle",
+    "args": [
+      "T1",
+      "T2",
+      "t_wait"
+    ]
+  },
+  "register": {
+    "qubits": [
+      0
+    ]
+  },
+  "default_visualizer": "bloch",
+  "available_visualizers": [
+    "bloch",
+    "histogram"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 8.3.5, “Amplitude damping”, pp. 380–383; Section 8.3.6, “Phase damping”, pp. 383–386"
+    },
+    {
+      "kind": "course",
+      "title": "Hardware",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Section “3. Qubit properties” (median T1 and T2) and subsection “3.2 Gate and readout errors”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/hardware"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

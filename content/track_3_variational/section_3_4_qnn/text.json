@@ -1,0 +1,32 @@
+{
+  "title": "Variational Quantum Classifiers",
+  "summary": "Classify points in the plane with two qubits and data re-uploading.",
+  "objectives": [
+    "Load data into a circuit as rotation angles and load it again between trainable layers",
+    "Train a classifier and judge it on points it has not seen",
+    "Recognize overfitting from the gap between training and test accuracy"
+  ],
+  "mission": "No straight line separates the two concentric circles, so the classifier needs a curved boundary. Train a quantum classifier whose sign of ⟨Z⟩ on qubit 0 is the predicted class, with at least 92% accuracy on a test set that you do not see.",
+  "prediction": {
+    "question": "The data enter the circuit only once (LAYERS = 1), and everything else is trained as well as possible. What accuracy can you expect on the two circles?",
+    "options": [
+      "Above 95%: the trainable rotations make up for loading the data once",
+      "It does not exceed 50%: with so little freedom the output is no better than chance",
+      "Around 70%: above chance, but the output is too low in frequency to fit circles"
+    ],
+    "explanation": "With a single upload the output is a trigonometric function of degree 1 in each coordinate, so the boundary is stiff, but it still carries some information about the radius and beats chance. Training gives about 70% on this data. Re-uploading the data in several layers raises the frequencies the circuit can represent, and with 3 layers the test accuracy is above 95%."
+  },
+  "hints": [
+    "The starter circuit uses LAYERS = 1. What would change if the data entered several times instead of once?",
+    "Raise LAYERS to 3: each layer applies trainable rotations and loads x again. Then train with qml.AdamOptimizer(0.1), updating weights = optimizer.step(loss, weights) for about 40 epochs.",
+    "Append float(loss(weights)) to history at every epoch. If training accuracy is high but test accuracy is low, the model has memorized the points: train for fewer epochs or use fewer layers."
+  ],
+  "messages": {
+    "ok": "Accuracy of {test}% on the test set (threshold {threshold}%), and {train}% on the training set.",
+    "no_circuit": "The QNode circuit(weights, x) is missing: define it so that it returns qml.expval(qml.PauliZ(0)).",
+    "no_weights": "The trained weights are missing: store them in the variable weights.",
+    "overfit": "Accuracy {train}% on the training set but only {test}% on the test set: the model has memorized the training points. Use fewer layers or fewer epochs.",
+    "no_reupload": "Accuracy {test}% on the test set (threshold {threshold}%). The data enter the circuit only {uploads} times, too few to curve the boundary: load x again in several layers.",
+    "low_accuracy": "Accuracy {test}% on the test set (threshold {threshold}%). The circuit loads the data enough times, so the training is the problem: more epochs or a different learning rate."
+  }
+}

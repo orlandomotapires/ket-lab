@@ -1,4 +1,4 @@
-"""Gerencia o processo worker: pré-aquecimento, timeout com kill e reinício."""
+"""Manages the worker process: warm-up, timeout with kill, and restart."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import multiprocessing
 import threading
 import time
 
-from .i18n import t
+from .messages import t
 from .worker import worker_main
 
 STARTUP_TIMEOUT_S = 120.0
@@ -16,7 +16,7 @@ POLL_INTERVAL_S = 0.05
 
 
 class WorkerPool:
-    """Um worker aquecido, um job por vez. Jobs que estouram o tempo matam o worker."""
+    """A warmed-up worker, one job at a time. Jobs that exceed the time limit kill the worker."""
 
     def __init__(self, job_timeout: float = DEFAULT_JOB_TIMEOUT_S):
         self.job_timeout = job_timeout
@@ -27,13 +27,13 @@ class WorkerPool:
         self._thread_lock = threading.Lock()
         self._async_lock = asyncio.Lock()
         self._closed = False
-        # Cancelamento: o job em execução (pela etiqueta) e etiquetas canceladas ainda na fila.
+        # Cancellation: the running job (by tag) and cancelled tags still in the queue.
         self._running_tag = None
         self._cancel = threading.Event()
         self._cancelled: set = set()
         self._queued: set = set()
 
-    # -- ciclo de vida ------------------------------------------------------ #
+    # -- lifecycle ------------------------------------------------------ #
 
     def _spawn(self) -> None:
         parent, child = self._context.Pipe()
@@ -63,7 +63,7 @@ class WorkerPool:
             self._ready = True
 
     def warm_up(self) -> None:
-        """Inicia o worker em segundo plano para a primeira execução não esperar o import."""
+        """Starts the worker in the background so the first run does not wait for the import."""
         threading.Thread(target=self._warm, daemon=True).start()
 
     def _warm(self) -> None:
@@ -72,7 +72,7 @@ class WorkerPool:
                 return
             try:
                 self._ensure_ready()
-            except Exception:  # noqa: BLE001 - nova tentativa no próximo job
+            except Exception:  # noqa: BLE001 - retry on the next job
                 pass
 
     def close(self) -> None:
@@ -80,7 +80,7 @@ class WorkerPool:
             self._closed = True
             self._kill()
 
-    # -- execução ----------------------------------------------------------- #
+    # -- execution ----------------------------------------------------------- #
 
     def _roundtrip(self, job: dict, timeout: float, on_event=None) -> dict:
         with self._thread_lock:
@@ -90,6 +90,7 @@ class WorkerPool:
                 self._ensure_ready()
                 self._connection.send(job)
                 deadline = time.monotonic() + timeout
+                phase = None  # last phase the worker announced ("sampling"), to explain a timeout
                 while True:
                     if self._cancel.is_set():
                         self._restart()
@@ -97,12 +98,17 @@ class WorkerPool:
                     remaining = deadline - time.monotonic()
                     if remaining <= 0:
                         self._restart()
-                        return _failure(t("run.timeout", seconds=f"{timeout:.0f}"), "timeout")
+                        failure = _failure(t("run.timeout", seconds=f"{timeout:.0f}"), "timeout")
+                        if phase:
+                            failure["error"]["phase"] = phase
+                        return failure
                     if not self._connection.poll(min(POLL_INTERVAL_S, remaining)):
                         continue
                     message = self._connection.recv()
-                    if isinstance(message, dict) and message.get("event") == "progress":
-                        if on_event is not None:
+                    if isinstance(message, dict) and "event" in message:  # not the final reply
+                        if message["event"] == "phase":
+                            phase = message.get("name")
+                        elif on_event is not None:
                             on_event(message)
                         continue
                     return message
@@ -114,13 +120,13 @@ class WorkerPool:
 
     def _restart(self) -> None:
         self._kill()
-        self._spawn()  # já deixa o próximo aquecendo
+        self._spawn()  # already leave the next one warming up
 
     async def submit(self, job: dict, timeout: float | None = None, is_stale=None, on_event=None, tag=None) -> dict:
-        """Executa um job. `is_stale()` é consultado ao chegar a vez: se True, o job é descartado.
+        """Runs a job. `is_stale()` is consulted when its turn comes: if True, the job is discarded.
 
-        `on_event` recebe os eventos de progresso do worker (em outra thread).
-        `tag` identifica o job para `cancel(tag)`.
+        `on_event` receives the worker's progress events (on another thread).
+        `tag` identifies the job for `cancel(tag)`.
         """
         if tag is not None:
             self._queued.add(tag)
@@ -143,7 +149,7 @@ class WorkerPool:
             self._cancelled.discard(tag)
 
     def cancel(self, tag) -> None:
-        """Interrompe o job com essa etiqueta (matando o worker) ou o tira da fila."""
+        """Interrupts the job with this tag (killing the worker) or removes it from the queue."""
         if tag is None:
             return
         if self._running_tag == tag:
@@ -154,3 +160,55 @@ class WorkerPool:
 
 def _failure(message: str, kind: str) -> dict:
     return {"ok": False, "error": {"message": message, "line": None, "kind": kind}}
+
+
+class WorkerGroup:
+    """Several WorkerPools in parallel (hosted engine with several students).
+
+    Each job goes to a free worker; the rest wait in the queue. The interface is the
+    same as WorkerPool's, so the server does not need to know how many there are.
+    """
+
+    def __init__(self, size: int, job_timeout: float = DEFAULT_JOB_TIMEOUT_S):
+        self.pools = [WorkerPool(job_timeout=job_timeout) for _ in range(max(1, size))]
+        self._idle: asyncio.Queue | None = None
+        self._waiting: set = set()  # tags of jobs waiting for a free worker
+        self._cancelled_waiting: set = set()
+
+    def _queue(self) -> asyncio.Queue:
+        if self._idle is None:  # created inside the server loop
+            self._idle = asyncio.Queue()
+            for pool in self.pools:
+                self._idle.put_nowait(pool)
+        return self._idle
+
+    def warm_up(self) -> None:
+        for pool in self.pools:
+            pool.warm_up()
+
+    async def submit(self, job: dict, timeout: float | None = None, is_stale=None, on_event=None, tag=None) -> dict:
+        idle = self._queue()
+        if tag is not None:
+            self._waiting.add(tag)
+        try:
+            pool = await idle.get()
+        finally:
+            self._waiting.discard(tag)
+            cancelled = tag in self._cancelled_waiting
+            self._cancelled_waiting.discard(tag)
+        try:
+            if cancelled:
+                return _failure(t("run.cancelled"), "cancelled")
+            return await pool.submit(job, timeout=timeout, is_stale=is_stale, on_event=on_event, tag=tag)
+        finally:
+            idle.put_nowait(pool)
+
+    def cancel(self, tag) -> None:
+        if tag in self._waiting:  # still queued for a worker: no pool knows about it yet
+            self._cancelled_waiting.add(tag)
+        for pool in self.pools:
+            pool.cancel(tag)
+
+    def close(self) -> None:
+        for pool in self.pools:
+            pool.close()

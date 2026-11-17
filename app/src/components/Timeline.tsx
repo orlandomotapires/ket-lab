@@ -1,14 +1,16 @@
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { selectCurrentStep, useStore } from "../state/store";
 import { FirstIcon, LastIcon, NextIcon, PrevIcon } from "./icons";
 
 export function Timeline() {
-  useLocale();
   const count = useStore((s) => s.result?.steps.length ?? 0);
   const current = useStore(selectCurrentStep);
   const followCursor = useStore((s) => s.followCursor);
   const setStep = useStore((s) => s.setStep);
   const setFollowCursor = useStore((s) => s.setFollowCursor);
+
+  // Without instructions there is nothing to walk through: the controls would only show up disabled.
+  if (count === 0) return null;
 
   return (
     <div className="timeline">
@@ -37,7 +39,7 @@ export function Timeline() {
         onChange={(event) => setStep(Number(event.target.value))}
         aria-label={t("timeline.slider")}
       />
-      <label className="check">
+      <label className="check" title={t("lab.followHint")}>
         <input type="checkbox" checked={followCursor} onChange={(event) => setFollowCursor(event.target.checked)} />
         {t("timeline.follow")}
       </label>

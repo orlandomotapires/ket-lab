@@ -1,0 +1,32 @@
+{
+  "id": "0.2",
+  "track": 0,
+  "estimated_minutes": 20,
+  "framework": "python",
+  "num_qubits": 0,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Introduction to Quantum Mechanics (3rd edition)",
+      "authors": "D. J. Griffiths, D. F. Schroeter",
+      "year": 2018,
+      "url": "https://doi.org/10.1017/9781316995433",
+      "location": "Section 3.1, “Hilbert Space”, pp. 91–94, and Section 3.6.1, “Bases in Hilbert Space”, pp. 113–117"
+    },
+    {
+      "kind": "course",
+      "title": "Inner products and projections",
+      "authors": "IBM Quantum Learning, Basics of quantum information",
+      "location": "Sections “Inner products” and “Orthogonal and orthonormal sets”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections"
+    }
+  ]
+}

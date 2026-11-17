@@ -1,0 +1,40 @@
+{
+  "title": "Shor's Algorithm",
+  "summary": "Factor 15 by reducing the problem to order finding.",
+  "objectives": [
+    "Find the period of aˣ mod N with phase estimation",
+    "Recover the order r from a measured fraction, and recognize the results that fail",
+    "Turn r into factors of N with gcds, and recognize the runs that give nothing"
+  ],
+  "mission": "Factor 15. Find the period of 7^x mod 15 with phase estimation (counting qubits 0 to 3, measured into bits 0 to 3), then use the measurement results to store the prime factors in the variable factors.",
+  "prediction": {
+    "question": "With 4 counting qubits for 7^x mod 15 you measure m = 8. What follows?",
+    "options": [
+      "The period is 8, the number measured",
+      "The fraction 8/16 = 1/2 suggests r = 2, but 7² mod 15 = 4, so the run is discarded",
+      "The fraction 1/2 gives r = 2, which is correct, so factor with it"
+    ],
+    "explanation": "The register estimates s/r, and 8/16 = 1/2 comes from s = 2, which shares a factor with r = 4, so the denominator found is 2 instead of 4. Checking 7² mod 15 = 4 ≠ 1 shows the candidate is wrong, and another run is needed."
+  },
+  "hints": [
+    "The first half is phase estimation of the multiplication by 7. Which register starts in |1⟩, and which gets the Hadamards?",
+    "Each outcome m gives a fraction m/16. Reduce it to find a candidate r, and accept r only if 7^r mod 15 is 1 and r is even.",
+    "From an accepted r, take half = 7^(r/2) mod 15. If half is 14 the run gives nothing. Otherwise gcd(half − 1, 15) and gcd(half + 1, 15) contain the factors, in the ones that are neither 1 nor 15."
+  ],
+  "challenge": {
+    "mission": "The base a is now secret: apply_controlled_mod_mult(qc, control, power) multiplies the work register by a^power modulo N = 15 (a is one of 2, 4, 7, 8, 11, 13, and changes between tests). Use phase estimation with 4 counting qubits (qubits 0 to 3, measured into bits 0 to 3) and the work register in qubits 4 to 7, then store in the variable order the order r of a modulo 15, computed from the measurement results alone: the smallest r > 0 with a^r ≡ 1 (mod 15).",
+    "hints": [
+      "Each outcome y gives y/16 = s/r for some s you do not know. What can you say about the denominator of y/16 in lowest terms?",
+      "It divides r. Different outcomes can give different divisors of r.",
+      "The order is the smallest number that all the denominators divide."
+    ],
+    "messages": {
+      "ok": "The order was found for all {total} bases.",
+      "no_circuit": "Define the circuit qc with 8 qubits and 4 classical bits.",
+      "wrong_qubits": "The circuit needs 4 counting qubits and 4 work qubits (8 in total), but it has {count}.",
+      "gates": "Use apply_controlled_mod_mult and inverse_qft in the circuit.",
+      "variable_missing": "Store the result in the variable order, as an integer.",
+      "wrong_order": "The order of one of the hidden bases is wrong (the last base tried gave order = {found}). Each outcome y gives y/16 = s/r; combine the denominators of all outcomes."
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "title": "Relative Phase and Rotation Operators",
+  "summary": "Z, S, T and Rz gates: same probabilities, different states.",
+  "objectives": [
+    "Undo a sequence of gates by inverting each one and reversing the order",
+    "Use S† and T† as the inverses of S and T",
+    "Add up the rotations of Z, S and T to find the new relative phase of a qubit",
+    "Undo a phase gate with an R_z rotation and explain why the global phase does not matter"
+  ],
+  "mission": "Qubit 0 receives an unknown state and then the gates X, H, S, T, H and P(π/3). Undo the whole sequence, so that qubit 0 ends in its input state whatever that state was. Use an R_z rotation to undo P(π/3).",
+  "hints": [
+    "If you put on socks and then shoes, which comes off first? Start from the last gate of the sequence and work backwards.",
+    "H and X are their own inverses. S is undone by S† (qc.sdg(0)) and T by T† (qc.tdg(0)). Because R_z(θ) = e^{−iθ/2} P(θ), the gate R_z(−π/3) undoes P(π/3) up to a global phase.",
+    "After the line with qc.p(pi / 3, 0), the undoing is rz(−π/3), h, tdg, sdg, h, x, in that order. If your circuit still fails, check that you did not reverse only some of the gates."
+  ],
+  "prediction": {
+    "question": "Starting from |0⟩ you apply H, then S, then S, then H, and measure in the computational basis. What do you get?",
+    "options": [
+      "0 or 1 at random, because S gates change no probability",
+      "Always 1, because S·S = Z and HZH = X",
+      "Always 0, because the two Hadamard gates cancel"
+    ],
+    "explanation": "The two S gates together are a Z, which moves the vector from |+⟩ to |−⟩. The second H then sends |−⟩ to |1⟩. The Hadamard gates would cancel only if nothing came between them; the phase gates in the middle are what the second H reads out."
+  },
+  "challenge": {
+    "mission": "Repeat the mission with a smaller gate set: the only allowed gates are H and T (and prepare_input), and both must appear. The circuit must apply X, H, S, T, H to the input and then undo them, so that qubit 0 returns to its input state for every test input. You must write X, S, S† and T† in terms of H and T.",
+    "hints": [
+      "T has an inverse in the form of a power of itself: eight T gates make a full turn, so T⁸ = I. How many T gates make T†?",
+      "T† = T⁷. Also S = T² and Z = T⁴, so S† = T⁶, and X = HZH = H T⁴ H.",
+      "Write small helper functions x_gate, s_gate, sdg_gate and tdg_gate that append H and T gates. Call them in the order of the original sequence, then in the reverse order for the undoing."
+    ]
+  }
+}

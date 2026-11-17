@@ -1,0 +1,61 @@
+{
+  "id": "2.9",
+  "track": 2,
+  "estimated_minutes": 35,
+  "num_qubits": 8,
+  "max_qubits": 8,
+  "default_visualizer": "histogram",
+  "available_visualizers": [
+    "histogram",
+    "modular"
+  ],
+  "register": {
+    "qubits": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "modular": {
+    "a": 7,
+    "N": 15
+  },
+  "prediction_answer": 1,
+  "validation": {
+    "type": "counts_distribution",
+    "tolerance": 0.05,
+    "required_gates": [
+      "c_mod_mult",
+      "qft_dagger"
+    ],
+    "expected_variables": {
+      "factors": [
+        3,
+        5
+      ]
+    }
+  },
+  "references": [
+    {
+      "kind": "book",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
+      "authors": "M. A. Nielsen, I. L. Chuang",
+      "year": 2010,
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 5.3, “Applications: order-finding and factoring”, pp. 226–234 (5.3.1 order-finding, pp. 226–232; 5.3.2 factoring, pp. 232–234)"
+    },
+    {
+      "kind": "course",
+      "title": "Phase estimation and factoring: Shor’s algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Sections “The order-finding problem”, “Order finding through phase estimation” and “Factoring by order finding”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/phase-estimation-and-factoring/shor-algorithm"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

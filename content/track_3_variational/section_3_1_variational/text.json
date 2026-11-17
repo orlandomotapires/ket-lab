@@ -1,0 +1,50 @@
+{
+  "title": "Variational Circuits and the Parameter-Shift Rule",
+  "summary": "Ansatz, parameter-shift gradients and gradient descent.",
+  "objectives": [
+    "Compute a derivative of a circuit's expectation value from two runs of the same circuit",
+    "Lower an expectation value step by step with gradient descent",
+    "Say in advance where gradient descent will take the qubit for a simple cost"
+  ],
+  "mission": "Training a circuit needs its gradient, and on hardware the circuit is a black box. Write parameter_shift(params, i), which returns the derivative of the cost with respect to params[i] using exactly two runs of the circuit, then use it in a gradient descent loop that brings ⟨Z⟩ close to −1 and records each step in history. Click Run to train.",
+  "prediction": {
+    "question": "The cost is ⟨Z⟩ after RX(θ₀) and RY(θ₁), and you start at θ = (0.3, 0.2), close to the maximum. With a learning rate of 0.4 and enough steps, where does gradient descent take the Bloch vector?",
+    "options": [
+      "Nowhere: at a maximum the gradient is zero, so the first step does not move it",
+      "To the south pole, where ⟨Z⟩ = −1",
+      "To the equator, where ⟨Z⟩ = 0 and the cost is steepest"
+    ],
+    "explanation": "The start is near the maximum but not at it, so the gradient is small and nonzero and every step goes downhill. The equator is only where the cost passes on its way, because the slope there is steepest. The minimum ⟨Z⟩ = cos θ₀ cos θ₁ = −1 is the south pole, reached for example at θ₀ = π and θ₁ = 0."
+  },
+  "hints": [
+    "What do you have to change to differentiate with respect to params[i] only? Build a shift vector that is zero except at position i: shift = np.zeros_like(params), then shift[i] = np.pi / 2.",
+    "The derivative is half the difference of two evaluations of the circuit, one with params + shift and one with params − shift. The gradient is the array of these derivatives for i = 0 and 1.",
+    "In the loop, update params = params − learning_rate * gradient and append [params[0], params[1], cost] to history. A learning rate of 0.4 and about 60 steps are enough."
+  ],
+  "messages": {
+    "ok": "The parameter-shift gradient matches PennyLane's, and the cost reached {cost} in {steps} steps.",
+    "shift_missing": "parameter_shift is not defined yet. Define it as a function of params and i.",
+    "shift_wrong": "parameter_shift disagrees with PennyLane's gradient: at params = {point}, for i = {i}, the derivative is {expected}, but the function returned {actual}. Check that you shift only params[i], by π/2, and divide the difference by 2.",
+    "no_params": "The training result is missing: store the final parameters in the variable params.",
+    "not_converged": "The gradient is right, but the final cost is {cost} and the minimum is −1: the descent stopped early. Take more steps or a larger learning rate.",
+    "shift_executions": "parameter_shift ran the circuit {count} times, and the rule needs exactly 2 per derivative (θ + π/2 and θ − π/2). Calling qml.grad or finite differences inside it also adds runs.",
+    "history_missing": "history needs one row [θ₀, θ₁, cost] per training step. Append a row after every update.",
+    "history_inconsistent": "history does not match the circuit: each row must be [θ₀, θ₁, circuit([θ₀, θ₁])], and the last row must hold the final params."
+  },
+  "challenge": {
+    "mission": "The mission walked downhill with a gradient. But this cost is a sinusoid in each angle, f(θ) = a cos θ + b sin θ + c, and three numbers fix a sinusoid, so no walk is needed. Write recover(f), which takes a function of one angle (a circuit) and returns a, b, c and an angle theta_star where f is smallest, calling f at most three times and running no descent loop. The validator runs recover on three one-qubit circuits of its own, recomputes a, b and c, and checks that f(theta_star) equals the true minimum. A circuit mystery(theta) is defined for you to test on.",
+    "hints": [
+      "How many unknowns does f have? Choose angles where cos and sin are 0 or ±1, so that each run of the circuit gives one simple equation.",
+      "f(π/2) + f(−π/2) = 2c, f(π/2) − f(−π/2) = 2b, and f(0) = a + c. Once you have a, b and c, the minimum is a question about a cos θ + b sin θ alone.",
+      "Write a cos θ + b sin θ as R cos(θ − φ) with φ the angle of the vector (a, b). It is smallest when θ − φ = π, and np.arctan2(-b, -a) gives that angle."
+    ],
+    "messages": {
+      "ok": "recover found the coefficients and an angle where f reaches its minimum, {minimum}, with three runs of each circuit.",
+      "ch_no_recover": "There is no function recover(f) yet.",
+      "ch_bad_return": "recover must return four numbers: a, b, c and theta_star.",
+      "ch_too_many_calls": "recover called the circuit {count} times and the limit is 3. A sinusoid with three unknowns needs three runs, not a search.",
+      "ch_wrong_coefficients": "The coefficients are off: you returned a = {a}, b = {b}, c = {c}, and the circuit has a = {a_true}, b = {b_true}, c = {c_true}. Check which evaluation gives which combination.",
+      "ch_wrong_minimum": "The coefficients are right, but f at your theta_star is {value} and the minimum is {minimum}. The smallest value of a cos θ + b sin θ sits opposite the vector (a, b)."
+    }
+  }
+}

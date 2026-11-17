@@ -1,0 +1,36 @@
+{
+  "id": "3.6",
+  "track": 3,
+  "estimated_minutes": 30,
+  "framework": "python",
+  "live": false,
+  "timeout": 20,
+  "num_qubits": 2,
+  "max_qubits": 4,
+  "default_visualizer": "curve",
+  "available_visualizers": [
+    "curve",
+    "variables"
+  ],
+  "prediction_answer": 0,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Multivariate stochastic approximation using a simultaneous perturbation gradient approximation",
+      "authors": "J. C. Spall",
+      "year": 1992,
+      "location": "IEEE Trans. Automat. Contr. 37(3), 332–341: the article that introduced SPSA (the algorithm is in Section III)",
+      "url": "https://doi.org/10.1109/9.119632"
+    },
+    {
+      "kind": "course",
+      "title": "Optimization loops",
+      "authors": "IBM Quantum Learning, Variational algorithm design",
+      "location": "Section on optimizers: gradient-based and gradient-free methods and their cost in circuit evaluations",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/variational-algorithm-design/optimization-loops"
+    }
+  ]
+}

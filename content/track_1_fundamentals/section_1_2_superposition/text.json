@@ -1,0 +1,32 @@
+{
+  "title": "Superposition and the Hadamard Gate",
+  "summary": "The states |+⟩ and |−⟩, measurement and a quantum random number generator.",
+  "objectives": [
+    "Turn a qubit into an equal superposition and measure it",
+    "Judge from a list of counts whether a generator is fair or biased",
+    "Say why |+⟩ and |−⟩ look the same in a measurement and how a second Hadamard gate separates them"
+  ],
+  "mission": "Build a 3-bit quantum random number generator. Put all three qubits in an equal superposition and measure each qubit into the classical bit with the same index. The 8 outcomes (000 to 111) must be equally likely.",
+  "hints": [
+    "What does a qubit need to give 0 and 1 equally often? Equal-sized amplitudes, which is a point on the equator of the Bloch sphere. Which gate takes you there from |0⟩?",
+    "The Hadamard gate does it, one call per qubit. Then every qubit has to be measured into a classical bit: qc.measure(qubit, bit).",
+    "qc.h(0), qc.h(1), qc.h(2), then qc.measure(0, 0), qc.measure(1, 1), qc.measure(2, 2). A loop over range(3) saves typing."
+  ],
+  "prediction": {
+    "question": "You measure |+⟩ 10,000 times instead of 100. How does the number of zeros compare with the 100-shot case?",
+    "options": [
+      "It stays within about 5 of half the shots, as before",
+      "It is about 50 away from 5,000: more counts off, but a smaller fraction off",
+      "It lands on 5,000 exactly, because so many shots remove the fluctuation"
+    ],
+    "explanation": "The standard deviation of the count is √(N p (1−p)) = √(10000 / 4) = 50, ten times larger than the 5 of the 100-shot case. Relative to N it falls from 5% to 0.5%. The count never becomes exactly N/2 in a reliable way: the fraction converges, the count does not."
+  },
+  "challenge": {
+    "mission": "Build biased bits. Measure each qubit into the classical bit with the same index so that bit 0 is 1 with probability 1/4, bit 1 is 0 or 1 with probability 1/2, and bit 2 is always 1, all three independent. Only ry, h, z and id are allowed, and ry, h and z must appear. The distribution of the 8 outcomes must match this product distribution within a total variation distance of 0.05.",
+    "hints": [
+      "A qubit in cos(θ/2)|0⟩ + sin(θ/2)|1⟩ gives 1 with probability sin²(θ/2), and ry(θ) prepares it from |0⟩. Which θ makes that 1/4?",
+      "sin²(θ/2) = 1/4 gives θ = π/3. Qubit 1 keeps its Hadamard gate. Qubit 2 needs a certain 1 and X is not allowed, but H, then Z, then H does the job: Z takes |+⟩ to |−⟩ and H takes |−⟩ to |1⟩.",
+      "qc.ry(pi / 3, 0), qc.h(1) and qc.h(2), qc.z(2), qc.h(2). Then measure each qubit into the classical bit with the same index. Import pi from math."
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { saveTextFile } from "../engine/client";
 import type { ExportFormat } from "../engine/types";
-import { t, useLocale } from "../i18n";
+import { t } from "../strings";
 import { useStore } from "../state/store";
 import { ExportIcon } from "./icons";
 
@@ -10,9 +10,8 @@ const FORMATS: { id: ExportFormat; label: string }[] = [
   { id: "qasm2", label: "OpenQASM 2" },
 ];
 
-/** Botão do painel do circuito: abre a exportação em OpenQASM. */
+/** Circuit panel button: opens the OpenQASM export. */
 export function ExportButton() {
-  useLocale();
   const [open, setOpen] = useState(false);
   const offline = useStore((s) => s.connection !== "open");
   return (
@@ -29,7 +28,6 @@ export function ExportButton() {
 type Status = { kind: "idle" | "loading" | "copied" | "saved" } | { kind: "error"; message: string };
 
 function ExportDialog({ onClose }: { onClose: () => void }) {
-  useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
   const [format, setFormat] = useState<ExportFormat>("qasm3");
   const [text, setText] = useState<string | null>(null);
@@ -78,7 +76,7 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
   async function save() {
     if (text === null) return;
     try {
-      if (await saveTextFile(text, fileName)) setStatus({ kind: "saved" });
+      if (saveTextFile(text, fileName)) setStatus({ kind: "saved" });
     } catch (error) {
       setStatus({ kind: "error", message: String(error instanceof Error ? error.message : error) });
     }
@@ -95,9 +93,9 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
       <div className="dialog-head">
         <h2 id="export-title">{t("export.title")}</h2>
         <span className="grow" />
-        <div className="segmented" role="tablist" aria-label={t("export.format")}>
+        <div className="segmented" role="group" aria-label={t("export.format")}>
           {FORMATS.map((option) => (
-            <button key={option.id} role="tab" aria-selected={format === option.id} onClick={() => setFormat(option.id)}>
+            <button key={option.id} aria-pressed={format === option.id} onClick={() => setFormat(option.id)}>
               {option.label}
             </button>
           ))}

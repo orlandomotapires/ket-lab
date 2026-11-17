@@ -1,0 +1,44 @@
+{
+  "id": "5.4",
+  "track": 5,
+  "estimated_minutes": 25,
+  "framework": "python",
+  "num_qubits": 1,
+  "default_visualizer": "variables",
+  "available_visualizers": [
+    "variables"
+  ],
+  "prediction_answer": 2,
+  "validation": {
+    "type": "custom"
+  },
+  "references": [
+    {
+      "kind": "paper",
+      "title": "Error mitigation for short-depth quantum circuits",
+      "authors": "K. Temme, S. Bravyi, J. M. Gambetta",
+      "year": 2017,
+      "location": "Phys. Rev. Lett. 119, 180509; main-text paragraph “Extrapolation to the zero noise limit”, derivation in the supplement section “Reducing noise by Richardson extrapolation” (arXiv:1612.02058)",
+      "url": "https://doi.org/10.1103/PhysRevLett.119.180509"
+    },
+    {
+      "kind": "course",
+      "title": "Quantum noise and error mitigation",
+      "authors": "IBM Quantum Learning, Utility-scale quantum computing",
+      "location": "Subsections “2.2 Build a noise model” (readout error) and “3.3 Execute using Estimator (with different resilience levels)”",
+      "url": "https://quantum.cloud.ibm.com/learning/en/courses/utility-scale-quantum-computing/error-mitigation"
+    },
+    {
+      "kind": "tutorial",
+      "title": "Error mitigation and suppression techniques",
+      "authors": "IBM Quantum Documentation",
+      "location": "Subsections “Twirled Readout Error eXtinction (TREX)” and “Zero-noise extrapolation (ZNE)”",
+      "url": "https://quantum.cloud.ibm.com/docs/en/guides/error-mitigation-and-suppression-techniques"
+    }
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
+}

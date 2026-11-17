@@ -1,0 +1,34 @@
+{
+  "title": "QAOA for Max-Cut",
+  "summary": "Max-Cut on a 5-vertex graph with a two-layer QAOA.",
+  "objectives": [
+    "Turn a coloring of a graph into a bit string and the number of cut edges into an energy",
+    "Build alternating cost and mixer layers and train their angles",
+    "Compare the best ratio of one layer with two on the same graph"
+  ],
+  "mission": "Cutting more edges of this 5-vertex graph is a Max-Cut problem, and the circuit has to prepare a state whose expected cut is close to the best one. Build a QAOA circuit from Hadamards, cost layers (IsingZZ on every edge) and mixer layers (RX on every qubit), and optimize the angles until the approximation ratio of the state is above 0.85.",
+  "prediction": {
+    "question": "You find the best angles for one layer (p = 1) on this graph, then add a second layer and optimize all four angles again. What can you say about the best achievable ratio?",
+    "options": [
+      "It cannot be lower than before: with both angles of the new layer at 0 the circuit is the p = 1 circuit, so that state is still reachable",
+      "It can be lower, because four angles are harder to optimize and the optimum moves",
+      "It stays the same, because both layers use the same cost Hamiltonian"
+    ],
+    "explanation": "A layer with γ = β = 0 is the identity, so every p = 1 state is also a p = 2 state and the best ratio cannot drop. The optimizer may fail to find it, but the best achievable value does not fall. It can rise, because the second layer reaches one edge further: on this graph it goes from about 0.82 to about 0.92."
+  },
+  "hints": [
+    "What does one layer do to a qubit and to an edge? The cost part acts on pairs of qubits joined by an edge, the mixer part acts on every qubit.",
+    "In layer(gamma, beta), apply qml.IsingZZ(gamma, wires=[i, j]) for each edge (i, j), then qml.RX(2 * beta, wires=wire) on each qubit. One layer is not enough to pass 0.85 on this graph.",
+    "Take params with one row (gamma, beta) per layer, so shape (2, 2) for two layers, and train with qml.AdamOptimizer(0.1) for about 80 steps. Append circuit(params) to history after each step."
+  ],
+  "messages": {
+    "ok": "Approximation ratio {ratio} (threshold {threshold}): the expected cut is close to the maximum of {best} edges.",
+    "no_circuit": "The QNode circuit(params) is missing: define it so that it returns qml.expval(cost_h).",
+    "no_params": "The trained angles are missing: store them in the variable params.",
+    "wrong_qubits": "The graph has 5 vertices, one qubit each, but the circuit has {count} qubits.",
+    "forbidden_op": "This circuit steps outside QAOA: it uses {names}. Build it from Hadamards, IsingZZ and RX (rotations and CNOTs are accepted too).",
+    "no_mixer": "There is no mixer (RX) in the circuit, so the cost layers only change phases and the probabilities stay uniform: the ratio stays at {ratio}.",
+    "p_too_small": "Ratio {ratio}, below {threshold}. A single layer cannot get above that on this graph, whatever the angles: use two cost-and-mixer layers.",
+    "low_ratio": "Ratio {ratio}, below {threshold}. The circuit has enough layers, so the optimizer is stuck or stopped early: train for more steps or start from different angles."
+  }
+}

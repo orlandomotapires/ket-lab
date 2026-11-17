@@ -1,0 +1,32 @@
+{
+  "title": "The Bernstein–Vazirani Algorithm",
+  "summary": "Find a whole secret string with one query.",
+  "objectives": [
+    "Recover a hidden n-bit string with one query",
+    "Read the string from the final state, with qubit 0 as its last character",
+    "Say why a randomized classical program still needs n queries"
+  ],
+  "mission": "Find the hidden 4-bit string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in |s⟩. Qubit 0 is the last character of s, so s = s3 s2 s1 s0 and the state label is |q3 q2 q1 q0⟩.",
+  "prediction": {
+    "question": "The oracle is f(x) = s·x ⊕ 1, with a constant bias added. What does the input register end in?",
+    "options": [
+      "|s⟩, as without the bias",
+      "The complement of s, because the bias flips every bit",
+      "A random string, because the bias spoils the interference"
+    ],
+    "explanation": "The bias multiplies every term by the same sign (−1)^b, which is a global phase. Interference between terms is unchanged and the register still ends in |s⟩ with certainty."
+  },
+  "hints": [
+    "This is the Deutsch–Jozsa circuit with four input qubits. Where does the auxiliary qubit sit?",
+    "The auxiliary qubit is qubit 4 and goes to |−⟩. The four inputs get Hadamards before and after the query.",
+    "A loop over qubits 0 to 3 with qc.h does both layers. The auxiliary is qc.x(4) then qc.h(4)."
+  ],
+  "challenge": {
+    "mission": "Solve Bernstein–Vazirani with 4 qubits and no auxiliary qubit. The hidden oracle is now a phase oracle, phase_oracle(qc), which maps |x⟩ to (−1)^(s·x ⊕ b)|x⟩ on qubits 0 to 3 (the bias b only contributes a global phase). Call it once in a circuit qc with 4 qubits so that the register ends in |s⟩, with qubit 0 as the last character of s. The function oracle(qc) is not available.",
+    "hints": [
+      "The phase oracle already writes the sign (−1)^(s·x). What did the auxiliary qubit do for you before?",
+      "Without the auxiliary qubit, what remains of the circuit?",
+      "Hadamard on every qubit, phase_oracle(qc), Hadamard on every qubit."
+    ]
+  }
+}

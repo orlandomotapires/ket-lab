@@ -1,44 +1,16 @@
-import { getLocale } from "../i18n";
 import type { EngineError } from "./types";
 
 export interface EngineEndpoint {
-  port: number;
-  token: string;
+  url: string;
 }
 
-interface TauriGlobal {
-  core: { invoke<T>(command: string, args?: Record<string, unknown>): Promise<T> };
-}
-
-declare global {
-  interface Window {
-    /** Presente quando a interface roda dentro do shell desktop (Tauri). */
-    __TAURI__?: TauriGlobal;
-  }
-}
-
-export function isDesktop(): boolean {
-  return window.__TAURI__ !== undefined;
-}
-
-/**
- * Abre um link externo no navegador do sistema. Na janela desktop, um link comum
- * não sai do app; o plugin opener do Tauri faz isso.
- */
+/** Opens an external link in a new tab. */
 export function openExternal(url: string): void {
-  if (window.__TAURI__) {
-    void window.__TAURI__.core.invoke("plugin:opener|open_url", { url }).catch(() => undefined);
-  } else {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
-/**
- * Salva um arquivo de texto. No desktop, o shell abre a janela "Salvar como" do
- * sistema (devolve false se o aluno cancelar); no navegador, vira um download.
- */
-export async function saveTextFile(contents: string, fileName: string): Promise<boolean> {
-  if (window.__TAURI__) return window.__TAURI__.core.invoke<boolean>("save_text_file", { contents, fileName });
+/** Saves a text file (becomes a download in the browser). */
+export function saveTextFile(contents: string, fileName: string): boolean {
   const url = URL.createObjectURL(new Blob([contents], { type: "text/plain;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
@@ -48,20 +20,22 @@ export async function saveTextFile(contents: string, fileName: string): Promise<
   return true;
 }
 
-/** No desktop, envia uma linha de diagnóstico ao terminal do shell. */
-export function reportToShell(message: string): void {
-  void window.__TAURI__?.core.invoke("client_log", { message }).catch(() => undefined);
-}
-
 /**
- * Onde o motor está escutando. No desktop, o shell inicia o motor e informa a
- * porta e o token sorteados; no navegador (desenvolvimento), vêm do ambiente.
+ * Where the engine is listening.
+ * - Hosted: VITE_ENGINE_URL (e.g. "/engine"), on the same site as the interface.
+ * - Local (npm run dev): 127.0.0.1, with the port and token from VITE_ENGINE_PORT and VITE_ENGINE_TOKEN.
  */
 export async function resolveEndpoint(): Promise<EngineEndpoint> {
-  if (window.__TAURI__) return window.__TAURI__.core.invoke<EngineEndpoint>("engine_endpoint");
+  const hosted = import.meta.env.VITE_ENGINE_URL as string | undefined;
+  if (hosted) {
+    const url = new URL(hosted, window.location.href);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    return { url: url.toString() };
+  }
+  const port = Number(import.meta.env.VITE_ENGINE_PORT ?? 8765);
+  const token = String(import.meta.env.VITE_ENGINE_TOKEN ?? "dev");
   return {
-    port: Number(import.meta.env.VITE_ENGINE_PORT ?? 8765),
-    token: String(import.meta.env.VITE_ENGINE_TOKEN ?? "dev"),
+    url: `ws://127.0.0.1:${port}/?token=${encodeURIComponent(token)}`,
   };
 }
 
@@ -77,7 +51,7 @@ interface Pending {
   onEvent?: (event: Record<string, unknown>) => void;
 }
 
-/** Uma requisição em andamento: o id serve para cancelá-la. */
+/** A request in flight: the id is used to cancel it. */
 export interface Request<T> {
   id: number;
   done: Promise<EngineResponse<T>>;
@@ -86,7 +60,7 @@ export interface Request<T> {
 const RECONNECT_DELAY_MS = 1500;
 const OPEN_TIMEOUT_MS = 5000;
 
-/** Cliente RPC sobre WebSocket: cada requisição leva um id e recebe uma resposta. */
+/** RPC client over WebSocket: each request carries an id and receives a response. */
 export class EngineClient {
   private socket: WebSocket | null = null;
   private nextId = 1;
@@ -116,20 +90,17 @@ export class EngineClient {
     try {
       endpoint = await this.resolve();
     } catch (error) {
-      // O shell não conseguiu iniciar o motor: mostra o motivo e tenta de novo.
       this.onStatus("closed");
       const message = String(error instanceof Error ? error.message : error);
-      reportToShell(`motor indisponível: ${message}`);
       this.onFailure(message);
       this.scheduleReconnect();
-      throw new Error("O motor de simulação não iniciou.");
+      throw new Error("The simulation engine did not start.");
     }
     await new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(`ws://127.0.0.1:${endpoint.port}/?token=${encodeURIComponent(endpoint.token)}`);
+      const socket = new WebSocket(endpoint.url);
       this.socket = socket;
-      // Um handshake que nunca termina deixaria a interface presa em "conectando".
+      // A handshake that never finishes would leave the interface stuck on "connecting".
       const timeout = window.setTimeout(() => {
-        reportToShell(`WebSocket sem resposta em ${OPEN_TIMEOUT_MS} ms (porta ${endpoint.port})`);
         socket.close();
       }, OPEN_TIMEOUT_MS);
       socket.onopen = () => {
@@ -138,13 +109,12 @@ export class EngineClient {
         resolve();
       };
       socket.onmessage = (event) => this.handleMessage(String(event.data));
-      socket.onclose = (event) => {
+      socket.onclose = () => {
         window.clearTimeout(timeout);
-        reportToShell(`conexão encerrada (código ${event.code})`);
         if (this.socket === socket) this.socket = null;
         this.onStatus("closed");
-        this.failAll(new Error("Conexão com o motor encerrada."));
-        reject(new Error("Não foi possível conectar ao motor de simulação."));
+        this.failAll(new Error("Connection to the engine closed."));
+        reject(new Error("Could not connect to the simulation engine."));
         this.scheduleReconnect();
       };
     });
@@ -159,7 +129,7 @@ export class EngineClient {
     return (await this.start<T>(type, payload)).done;
   }
 
-  /** Como `call`, mas devolve o id e repassa eventos intermediários (progresso de treino). */
+  /** Like `call`, but returns the id and forwards intermediate events (training progress). */
   async start<T>(
     type: string,
     payload: Record<string, unknown> = {},
@@ -169,8 +139,7 @@ export class EngineClient {
     const id = this.nextId++;
     const done = new Promise<EngineResponse<T>>((resolve, reject) => {
       this.pending.set(id, { resolve: resolve as (value: unknown) => void, reject, onEvent });
-      // O idioma vai em toda requisição: o motor responde mensagens e conteúdo nele.
-      this.socket!.send(JSON.stringify({ id, type, lang: getLocale(), ...payload }));
+      this.socket!.send(JSON.stringify({ id, type, ...payload }));
     });
     return { id, done };
   }

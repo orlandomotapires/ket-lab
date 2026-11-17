@@ -14,7 +14,7 @@
       0
     ]
   },
-  "prediction_answer": 1,
+  "prediction_answer": 2,
   "validation": {
     "type": "oracle_cases",
     "register": [
@@ -62,24 +62,61 @@
   "references": [
     {
       "kind": "book",
-      "title": "Quantum Computation and Quantum Information",
+      "title": "Quantum Computation and Quantum Information (10th Anniversary Edition)",
       "authors": "M. A. Nielsen, I. L. Chuang",
       "year": 2010,
-      "section": "1.4.3",
-      "url": "https://doi.org/10.1017/CBO9780511976667"
-    },
-    {
-      "kind": "paper",
-      "title": "Quantum theory, the Church–Turing principle and the universal quantum computer",
-      "authors": "D. Deutsch",
-      "year": 1985,
-      "url": "https://doi.org/10.1098/rspa.1985.0070"
+      "url": "https://doi.org/10.1017/CBO9780511976667",
+      "location": "Section 1.4.3, “Deutsch’s algorithm”, pp. 32–34"
     },
     {
       "kind": "course",
-      "title": "Deutsch's algorithm",
-      "authors": "IBM Quantum Learning — Fundamentals of quantum algorithms",
+      "title": "Quantum query algorithms: Deutsch’s algorithm",
+      "authors": "IBM Quantum Learning, Fundamentals of quantum algorithms",
+      "location": "Sections “Quantum circuit description” and “Analysis”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/quantum-query-algorithms/deutsch-algorithm"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "oracle_cases",
+      "register": [
+        0
+      ],
+      "tolerance": 0.02,
+      "allowed_gates": [
+        "x",
+        "y",
+        "z",
+        "h",
+        "s",
+        "sdg",
+        "t",
+        "tdg",
+        "rx",
+        "ry",
+        "rz",
+        "p",
+        "id",
+        "cx"
+      ],
+      "cases": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    }
+  }
 }

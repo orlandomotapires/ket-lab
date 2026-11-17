@@ -5,21 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qlp-engine"
 version = "0.1.0"
-description = "Motor científico local (sidecar) da Quantum Learning Platform"
+description = "Local scientific engine of the Quantum Learning Platform"
 requires-python = ">=3.11"
-# Versões fixadas de propósito: a API do Qiskit muda entre versões maiores e
-# as lições dependem dela. Atualize aqui e rode a suíte de conteúdo.
+license = { text = "MIT" }
+# Versions are pinned on purpose: the Qiskit API changes between major versions and
+# the lessons depend on it. Update here and run the content suite.
 dependencies = [
     "qiskit==2.6.2",
-    # Trilha 3: circuitos variacionais, gradientes, química (dhf, sem PySCF) e ruído (default.mixed).
+    # Track 3: variational circuits, gradients, chemistry (dhf, no PySCF) and noise (default.mixed).
     "pennylane==0.45.1",
     "numpy>=2.2,<3",
     "websockets==17.4",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "jsonschema>=4.20"]
-package = ["pyinstaller>=6.10"]
+dev = ["pytest>=8", "jsonschema>=4.20", "ruff>=0.6"]
+# Execution on real IBM quantum computers (roadmap item 4.2).
+hardware = ["qiskit-ibm-runtime>=0.52,<0.53"]
 
 [project.scripts]
 qlp-engine = "qlp_engine.__main__:main"
@@ -29,3 +31,11 @@ include = ["qlp_engine*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 140
+
+[tool.ruff.lint]
+# Syntax errors, undefined names, unused imports and variables. No formatting rules.
+select = ["E9", "F"]

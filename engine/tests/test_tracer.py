@@ -113,3 +113,50 @@ def test_report_records_series_and_rejects_non_numbers():
     with _pytest.raises(tracer.UserCodeError) as error:
         tracer.execute("from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nreport('x')\n")
     assert error.value.line == 3
+
+
+# -- the watcher looks for new circuits only where one can appear ----------------------------------
+
+
+def _lines(code, **kwargs):
+    return tracer.execute(code, **kwargs).lines
+
+
+def test_rebinding_a_name_to_a_new_circuit_keeps_attribution():
+    code = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\nqc = QuantumCircuit(2)\nqc.x(0)\nqc.cx(0, 1)\n"
+    assert _lines(code) == [5, 6]
+
+
+def test_circuit_built_by_a_function_through_global():
+    code = (
+        "from qiskit import QuantumCircuit\nqc = None\nx = 1\n"
+        "def build():\n    global qc\n    qc = QuantumCircuit(1)\n    qc.h(0)\n"
+        "for i in range(3):\n    x += i\nbuild()\nqc.x(0)\n"
+    )
+    assert _lines(code) == [10, 11]
+
+
+def test_circuit_bound_by_for_with_and_walrus():
+    base = "from qiskit import QuantumCircuit\n"
+    assert _lines(base + "x = 0\nfor qc in [QuantumCircuit(1)]:\n    qc.h(0)\n") == [4]
+    assert _lines(base + "x = 0\nif (qc := QuantumCircuit(1)):\n    pass\nqc.h(0)\n") == [5]
+
+
+def test_a_circuit_in_a_name_that_held_something_else():
+    code = "from qiskit import QuantumCircuit\nqc = 0\nqc = QuantumCircuit(1)\nqc.h(0)\n"
+    assert _lines(code) == [4]
+
+
+def test_loop_with_many_iterations_is_not_slowed_by_namespace_scans():
+    code = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\ntotal = 0\nfor i in range(20000):\n    total += i\nqc.x(0)\n"
+    import time
+
+    start = time.perf_counter()
+    assert _lines(code) == [3, 7]
+    assert time.perf_counter() - start < 1.0
+
+
+def test_circuits_made_by_the_hidden_setup_are_still_seen():
+    setup = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.h(0)\n"
+    execution = tracer.execute("qc.x(0)\n", hidden_setup=setup)
+    assert execution.lines == [0, 1]

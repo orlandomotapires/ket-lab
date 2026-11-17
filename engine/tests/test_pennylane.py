@@ -1,7 +1,6 @@
-"""Circuitos PennyLane e simulação com ruído."""
+"""PennyLane circuits and noisy simulation."""
 
 import numpy as np
-import pennylane as qml
 import pytest
 
 from qlp_engine import geometry, pl, simulator, tracer
@@ -48,7 +47,7 @@ def test_state_matches_pennylane_in_qiskit_order(seed):
     )
     execution, ops, lines, n = trace(code)
     ours = simulator.run_ops_trajectory(ops, lines, n).states[-1]
-    theirs = np.asarray(execution.namespace["circuit"]())  # fio 0 = bit mais significativo
+    theirs = np.asarray(execution.namespace["circuit"]())  # wire 0 = most significant bit
     reordered = theirs.reshape((2,) * n).transpose(range(n)[::-1]).reshape(-1)
     assert abs(np.vdot(reordered, ours)) == pytest.approx(1.0)
 
@@ -79,7 +78,7 @@ def test_noise_channels_switch_to_density_matrix():
     trajectory = simulator.run_ops_trajectory(ops, lines, n)
     rho = trajectory.states[-1]
     theirs = np.asarray(execution.namespace["circuit"]())
-    swap = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]])  # ordem dos fios
+    swap = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]])  # wire order
     assert np.allclose(rho, swap @ theirs @ swap, atol=1e-9)
     snap = geometry.snapshot(rho, n)
     assert snap["amplitudes"] is None

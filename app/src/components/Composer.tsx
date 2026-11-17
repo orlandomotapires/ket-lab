@@ -2,7 +2,7 @@ import { useState } from "react";
 import { t } from "../strings";
 import { selectCurrentStep, useStore } from "../state/store";
 
-/** Portas do compositor: as usadas na Trilha 1. */
+/** Composer gates: the ones used in Track 1. */
 const GATES: { name: string; label: string; controlled?: boolean; measure?: boolean }[] = [
   { name: "h", label: "H" },
   { name: "x", label: "X" },
@@ -16,10 +16,10 @@ const GATES: { name: string; label: string; controlled?: boolean; measure?: bool
   { name: "measure", label: "Measure", measure: true },
 ];
 
-/** Uma linha que é só uma porta do compositor (pode ser removida pelo compositor). */
+/** A line that is just a composer gate (the composer may remove it). */
 const GATE_LINE = /^\s*qc\.(h|x|y|z|s|sdg|t|tdg|cx|measure)\(\s*\d+\s*(,\s*\d+\s*)?\)\s*(#.*)?$/;
 
-/** O compositor só funciona com um QuantumCircuit chamado qc (a convenção das lições Qiskit). */
+/** The composer only works with a QuantumCircuit named qc (the convention of the Qiskit lessons). */
 export function composerSupported(code: string, framework: string | undefined): boolean {
   return (framework ?? "qiskit") === "qiskit" && /^\s*qc\s*=\s*QuantumCircuit\(/m.test(code);
 }

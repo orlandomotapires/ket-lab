@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { t } from "../strings";
 import { selectManual, selectNextLessonId, useStore, type TrainingState } from "../state/store";
 import { AlertIcon, CheckIcon, DotIcon } from "./icons";
@@ -11,7 +12,6 @@ export function OracleBar() {
   const connection = useStore((s) => s.connection);
   const nextLessonId = useStore(selectNextLessonId);
   const running = useStore((s) => s.running);
-  const resultIsCurrentForManual = useStore((s) => s.resultIsCurrent);
   const training = useStore((s) => s.training);
   const manual = useStore(selectManual);
   const { validate, runShots, resetCode, openLesson, backToHub, runNow, stopRun } = useStore.getState();
@@ -42,15 +42,15 @@ export function OracleBar() {
         <span className="oracle-icon" aria-hidden="true">
           {tone === "success" ? <CheckIcon size={13} /> : tone === "neutral" ? <DotIcon /> : <AlertIcon />}
         </span>
-        {message}
+        <span className="oracle-text" title={message}>{message}</span>
       </p>
       <div className="oracle-actions">
-        <button className="btn btn-ghost" onClick={resetCode}>{t("oracle.reset")}</button>
+        <MoreMenu onReset={resetCode} />
         {manual && running && training?.active ? (
           <button className="btn" onClick={stopRun} title={t("oracle.stopTitle")}>{t("oracle.stop")}</button>
         ) : manual ? (
           <button
-            className={`btn${resultIsCurrentForManual ? "" : " btn-primary"}`}
+            className={`btn${resultIsCurrent ? " btn-quiet" : " btn-primary"}`}
             onClick={runNow}
             disabled={offline || running}
             title={t("oracle.runTitle")}
@@ -58,7 +58,14 @@ export function OracleBar() {
             {running ? t("oracle.running") : t("oracle.run")}
           </button>
         ) : lesson?.framework === "python" ? null : (
-          <button className="btn" onClick={() => void runShots()} disabled={offline}>{t("oracle.shots")}</button>
+          <button className="btn btn-quiet" onClick={() => void runShots()} disabled={offline} aria-label={t("oracle.shots")} title={t("oracle.shotsHint")}><span className="shots-long">{t("oracle.shots")}</span>
+            <span className="shots-short" aria-hidden="true">{t("oracle.shotsShort")}</span>
+          </button>
+        )}
+        {lesson && !validation?.passed && validating && (
+          <button className="btn" onClick={() => useStore.getState().stopValidation()} title={t("oracle.stopCheckHint")}>
+            {t("oracle.stopCheck")}
+          </button>
         )}
         {lesson && !validation?.passed && (
           <button className="btn btn-primary" onClick={() => void validate()} disabled={offline || validating}>
@@ -74,6 +81,67 @@ export function OracleBar() {
         )}
       </div>
     </footer>
+  );
+}
+
+/** Rare actions. "Reset code" throws the learner's code away, so it asks first. */
+function MoreMenu({ onReset }: { onReset: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const close = () => {
+    setOpen(false);
+    setConfirming(false);
+  };
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (root.current && !root.current.contains(event.target as Node)) close();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  return (
+    <div className="more-menu" ref={root}>
+      <button
+        className="btn btn-ghost"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => (open ? close() : setOpen(true))}
+      >
+        {t("oracle.more")}
+      </button>
+      {open && (
+        <div className="more-popover" role="group" aria-label={t("oracle.more")}>
+          {confirming ? (
+            <>
+              <p>{t("oracle.resetConfirm")}</p>
+              <div className="more-actions">
+                <button className="btn btn-sm" autoFocus onClick={close}>{t("oracle.resetKeep")}</button>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => {
+                    close();
+                    onReset();
+                  }}
+                >
+                  {t("oracle.reset")}
+                </button>
+              </div>
+            </>
+          ) : (
+            <button className="more-item" autoFocus onClick={() => setConfirming(true)}>{t("oracle.reset")}</button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

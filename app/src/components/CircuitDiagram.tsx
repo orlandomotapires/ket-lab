@@ -8,17 +8,17 @@ const COL = 48;
 const ROW = 40;
 const TOP = 26;
 const BOX = 28;
-/** O desenho é feito na escala acima e ampliado: portas legíveis sem refazer a geometria. */
+/** Drawing is done at the scale above and enlarged: legible gates without redoing the geometry. */
 const SCALE = 1.3;
 
-/** Largura da caixa de uma porta, pelo comprimento do rótulo (fonte mono de 12 px). */
+/** Width of a gate box, from the label length (12 px mono font). */
 function boxWidth(label: string): number {
   return Math.max(BOX, label.length * 7.2 + 12);
 }
 
-/** Largura da coluna: cabe a caixa mais larga, com folga (portas com parâmetro ficam largas). */
+/** Column width: fits the widest box, with some slack (parameterized gates get wide). */
 function columnWidth(step: Step): number {
-  const label = step.kind === "conditional" ? step.label.replace(/ se .*/, "") : step.label;
+  const label = step.kind === "conditional" ? step.label.replace(/ if .*/, "") : step.label;
   return Math.max(COL, boxWidth(label) + 14);
 }
 
@@ -82,9 +82,9 @@ function GateColumn({ step, x, classicalY }: { step: Step; x: number; classicalY
       </g>
     );
   }
-  // Porta comum (ou condicional): uma caixa por qubit, ligadas quando há mais de um.
+  // Plain (or conditional) gate: one box per qubit, linked when there is more than one.
   const dashed = step.kind === "conditional" && step.applied === false;
-  const label = step.kind === "conditional" ? step.label.replace(/ se .*/, "") : step.label;
+  const label = step.kind === "conditional" ? step.label.replace(/ if .*/, "") : step.label;
   return (
     <g>
       {rows.length > 1 && <line className="gate-link" x1={x} x2={x} y1={minY} y2={maxY} />}
@@ -105,14 +105,14 @@ export function CircuitDiagram() {
 
   const { num_qubits: n, num_clbits, steps } = result;
   const classicalY = num_clbits > 0 ? rowY(n) : null;
-  // Posição de cada coluna: soma das larguras anteriores.
+  // Position of each column: sum of the previous widths.
   const widths = steps.map(columnWidth);
   const starts: number[] = [];
   widths.reduce((offset, w, i) => ((starts[i] = offset), offset + w), LEFT);
   const width = LEFT + (widths.reduce((a, b) => a + b, 0) || COL) + 20;
   const height = rowY(n - 1 + (num_clbits > 0 ? 1 : 0)) + TOP;
 
-  // Teclado: setas, Home e End percorrem os passos; o passo atual é anunciado.
+  // Keyboard: arrows, Home and End walk through the steps; the current step is announced.
   const onKeyDown = (event: React.KeyboardEvent) => {
     const target = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: steps.length }[event.key];
     if (target === undefined) return;
@@ -125,7 +125,7 @@ export function CircuitDiagram() {
 
   return (
     <div
-      className="circuit-scroll"
+      className={`circuit-scroll${steps.length === 0 ? " is-empty" : ""}`}
       tabIndex={0}
       onKeyDown={onKeyDown}
       aria-label={t("circuit.keyboard")}

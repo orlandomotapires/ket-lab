@@ -4,12 +4,12 @@ export interface EngineEndpoint {
   url: string;
 }
 
-/** Abre um link externo numa aba nova. */
+/** Opens an external link in a new tab. */
 export function openExternal(url: string): void {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
-/** Salva um arquivo de texto (vira um download no navegador). */
+/** Saves a text file (becomes a download in the browser). */
 export function saveTextFile(contents: string, fileName: string): boolean {
   const url = URL.createObjectURL(new Blob([contents], { type: "text/plain;charset=utf-8" }));
   const link = document.createElement("a");
@@ -21,9 +21,9 @@ export function saveTextFile(contents: string, fileName: string): boolean {
 }
 
 /**
- * Onde o motor está escutando.
- * - Hospedado: VITE_ENGINE_URL (ex.: "/engine"), no mesmo site da interface.
- * - Local (npm run dev): 127.0.0.1, com a porta e o token de VITE_ENGINE_PORT e VITE_ENGINE_TOKEN.
+ * Where the engine is listening.
+ * - Hosted: VITE_ENGINE_URL (e.g. "/engine"), on the same site as the interface.
+ * - Local (npm run dev): 127.0.0.1, with the port and token from VITE_ENGINE_PORT and VITE_ENGINE_TOKEN.
  */
 export async function resolveEndpoint(): Promise<EngineEndpoint> {
   const hosted = import.meta.env.VITE_ENGINE_URL as string | undefined;
@@ -51,7 +51,7 @@ interface Pending {
   onEvent?: (event: Record<string, unknown>) => void;
 }
 
-/** Uma requisição em andamento: o id serve para cancelá-la. */
+/** A request in flight: the id is used to cancel it. */
 export interface Request<T> {
   id: number;
   done: Promise<EngineResponse<T>>;
@@ -60,7 +60,7 @@ export interface Request<T> {
 const RECONNECT_DELAY_MS = 1500;
 const OPEN_TIMEOUT_MS = 5000;
 
-/** Cliente RPC sobre WebSocket: cada requisição leva um id e recebe uma resposta. */
+/** RPC client over WebSocket: each request carries an id and receives a response. */
 export class EngineClient {
   private socket: WebSocket | null = null;
   private nextId = 1;
@@ -94,12 +94,12 @@ export class EngineClient {
       const message = String(error instanceof Error ? error.message : error);
       this.onFailure(message);
       this.scheduleReconnect();
-      throw new Error("O motor de simulação não iniciou.");
+      throw new Error("The simulation engine did not start.");
     }
     await new Promise<void>((resolve, reject) => {
       const socket = new WebSocket(endpoint.url);
       this.socket = socket;
-      // Um handshake que nunca termina deixaria a interface presa em "conectando".
+      // A handshake that never finishes would leave the interface stuck on "connecting".
       const timeout = window.setTimeout(() => {
         socket.close();
       }, OPEN_TIMEOUT_MS);
@@ -113,8 +113,8 @@ export class EngineClient {
         window.clearTimeout(timeout);
         if (this.socket === socket) this.socket = null;
         this.onStatus("closed");
-        this.failAll(new Error("Conexão com o motor encerrada."));
-        reject(new Error("Não foi possível conectar ao motor de simulação."));
+        this.failAll(new Error("Connection to the engine closed."));
+        reject(new Error("Could not connect to the simulation engine."));
         this.scheduleReconnect();
       };
     });
@@ -129,7 +129,7 @@ export class EngineClient {
     return (await this.start<T>(type, payload)).done;
   }
 
-  /** Como `call`, mas devolve o id e repassa eventos intermediários (progresso de treino). */
+  /** Like `call`, but returns the id and forwards intermediate events (training progress). */
   async start<T>(
     type: string,
     payload: Record<string, unknown> = {},

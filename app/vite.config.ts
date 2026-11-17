@@ -1,8 +1,8 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-// VITE_ENGINE_PROXY simula o deploy hospedado no desenvolvimento: /engine vai para o motor,
-// como faz o nginx em deploy/nginx.conf.
+// VITE_ENGINE_PROXY simulates the hosted deploy in development: /engine goes to the engine,
+// as nginx does in deploy/nginx.conf.
 const engineProxy = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.VITE_ENGINE_PROXY;
 
 export default defineConfig({

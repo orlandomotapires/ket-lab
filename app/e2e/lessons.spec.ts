@@ -9,7 +9,7 @@ const catalog = JSON.parse(
 );
 const ids: string[] = catalog.tracks.flatMap((track: { sections: { id: string }[] }) => track.sections.map((s) => s.id));
 
-test("todas as lições abrem, rodam o código inicial e não geram erros", async ({ page }) => {
+test("all lessons open, run the starting code and produce no errors", async ({ page }) => {
   test.setTimeout(10 * 60_000);
   const errors = collectErrors(page);
   await openHub(page);
@@ -18,8 +18,8 @@ test("todas as lições abrem, rodam o código inicial e não geram erros", asyn
     await expect(page.locator(".crumb-id")).toHaveText(id);
     await expect(page.locator(".lesson-title")).not.toBeEmpty();
     await expect(page.locator(".objectives li").first()).toBeVisible();
-    // O código inicial executa sem erro (lições de treino só rodam pelo botão, então não há erro a mostrar).
-    await expect(page.locator(".oracle"), `lição ${id}: o código inicial mostrou erro`).not.toHaveClass(/is-error/, { timeout: 20_000 });
+    // The starting code runs without error (training lessons only run from the button, so there is no error to show).
+    await expect(page.locator(".oracle"), `lesson ${id}: the starting code showed an error`).not.toHaveClass(/is-error/, { timeout: 20_000 });
     await expect(page.locator(".visualizer")).toBeVisible();
     await page.getByRole("button", { name: "Tracks" }).click();
     await expect(page.locator(".section-row").first()).toBeVisible();

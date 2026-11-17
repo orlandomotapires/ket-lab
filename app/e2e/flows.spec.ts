@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, solutionOf } from "./helpers";
 
-test("o hub carrega e a busca abre a lição certa", async ({ page }) => {
+test("the hub loads and search opens the right lesson", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await expect(page.locator(".hub-side h1")).toHaveText("Learning tracks");
@@ -10,7 +10,7 @@ test("o hub carrega e a busca abre a lição certa", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("lição da Trilha 1: resolver e validar", async ({ page }) => {
+test("Track 1 lesson: solve and validate", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await openLessonBySearch(page, "computational basis", "1.1");
@@ -23,7 +23,7 @@ test("lição da Trilha 1: resolver e validar", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("lição com oráculos secretos: código inicial falha, solução passa", async ({ page }) => {
+test("lesson with secret oracles: starting code fails, solution passes", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await openLessonBySearch(page, "Deutsch-Jozsa", "2.3");
@@ -35,14 +35,14 @@ test("lição com oráculos secretos: código inicial falha, solução passa", a
   expect(errors).toEqual([]);
 });
 
-test("laboratório livre: treino com curva ao vivo e Parar", async ({ page }) => {
+test("free lab: training run with live curve and Stop", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await page.getByRole("button", { name: "Free lab" }).click();
   await page.locator(".example-picker select").selectOption("training");
   await pressButton(page, "Run");
   await expect(page.locator(".oracle-message")).toContainText("Training finished after 80 steps", { timeout: 45_000 });
-  await expect(page.locator(".visualizer [role=tab][aria-selected=true]")).toHaveText("Convergence");
+  await expect(page.locator(".visualizer .segmented [aria-pressed=true]")).toHaveText("Convergence");
 
   await replaceCode(page, "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\ni = 0\nwhile True:\n    i += 1\n    if i % 200000 == 0:\n        report(i)\n");
   await pressButton(page, "Run");
@@ -52,7 +52,7 @@ test("laboratório livre: treino com curva ao vivo e Parar", async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
-test("exportação em OpenQASM 3 e 2", async ({ page }) => {
+test("export to OpenQASM 3 and 2", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await page.getByRole("button", { name: "Free lab" }).click();
@@ -60,18 +60,18 @@ test("exportação em OpenQASM 3 e 2", async ({ page }) => {
   await page.locator(".circuit-panel").getByRole("button", { name: "Export" }).click();
   await expect(page.locator(".export-code")).toContainText("OPENQASM 3.0;");
   await expect(page.locator(".export-code")).toContainText("cx q[0], q[1];");
-  await page.locator(".export-dialog").getByRole("tab", { name: "OpenQASM 2" }).click();
+  await page.locator(".export-dialog").getByRole("button", { name: "OpenQASM 2" }).click();
   await expect(page.locator(".export-code")).toContainText("OPENQASM 2.0;");
   await page.keyboard.press("Escape");
   await expect(page.locator(".export-dialog")).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test("os dois temas renderizam sem erros", async ({ page }) => {
+test("both themes render without errors", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   const before = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  await page.locator(".topbar .btn-icon").click();
+  await page.getByRole("button", { name: /^Switch to (dark|light) theme$/ }).click();
   const after = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(after).not.toEqual(before);
   await openLessonBySearch(page, "teleportation", "1.6");
@@ -80,7 +80,7 @@ test("os dois temas renderizam sem erros", async ({ page }) => {
 });
 
 for (const viewport of [{ width: 768, height: 1024 }, { width: 390, height: 844 }]) {
-  test(`tela estreita (${viewport.width}px): abas, lição resolvida, sem rolagem horizontal`, async ({ page }) => {
+  test(`narrow screen (${viewport.width}px): tabs, solved lesson, no horizontal scrolling`, async ({ page }) => {
     const errors = collectErrors(page);
     await page.setViewportSize(viewport);
     await openHub(page);
@@ -102,7 +102,7 @@ for (const viewport of [{ width: 768, height: 1024 }, { width: 390, height: 844 
   });
 }
 
-test("guia da primeira lição: aparece uma vez e reabre pelo botão", async ({ page }) => {
+test("first-lesson guide: appears once and reopens from the button", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page, { tour: true });
   await openLessonBySearch(page, "computational basis", "1.1");
@@ -115,11 +115,12 @@ test("guia da primeira lição: aparece uma vez e reabre pelo botão", async ({ 
   }
   await card.getByRole("button", { name: "Start" }).click();
   await expect(card).toHaveCount(0);
-  // Não volta sozinho ao abrir outra lição.
+  // Does not come back on its own when another lesson is opened.
   await page.getByRole("button", { name: "Tracks" }).click();
   await openLessonBySearch(page, "entanglement", "1.5");
   await page.waitForTimeout(1200);
   await expect(card).toHaveCount(0);
+  await page.getByRole("button", { name: "Help", exact: true }).click();
   await page.getByRole("button", { name: "Show the guide" }).click();
   await expect(card).toContainText("Your code runs as you type");
   await page.keyboard.press("Escape");
@@ -127,7 +128,7 @@ test("guia da primeira lição: aparece uma vez e reabre pelo botão", async ({ 
   expect(errors).toEqual([]);
 });
 
-test("hardware real (IBM simulado): envia, acompanha e compara com a simulação", async ({ page }) => {
+test("real hardware (simulated IBM): submits, tracks and compares with the simulation", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await page.getByRole("button", { name: "Free lab" }).click();
@@ -143,12 +144,12 @@ test("hardware real (IBM simulado): envia, acompanha e compara com a simulação
   await expect(dialog).toContainText("done");
   await expect(dialog.locator(".hw-compare tbody tr")).toHaveCount(4);
   await expect(dialog.locator(".hw-compare")).toContainText("48.6%");
-  // A chave não fica guardada sem pedir.
+  // The key is not stored without asking.
   expect(await page.evaluate(() => localStorage.getItem("qlp.ibm.key"))).toBeNull();
   expect(errors).toEqual([]);
 });
 
-test("link de compartilhamento: abre em revisão e só roda depois de aceito", async ({ page, context }) => {
+test("share link: opens in review and only runs after being accepted", async ({ page, context }) => {
   const errors = collectErrors(page);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await openHub(page);
@@ -174,7 +175,7 @@ test("link de compartilhamento: abre em revisão e só roda depois de aceito", a
   expect(errors).toEqual([]);
 });
 
-test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ page }) => {
+test("composer: lessons 1.1, 1.2 and 1.5 solved with clicks only", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   const compose = async (gate: string, ...qubits: string[]) => {
@@ -183,7 +184,7 @@ test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ 
   };
   const solveWith = async (query: string, id: string, steps: [string, ...string[]][]) => {
     await openLessonBySearch(page, query, id);
-    await pressButton(page, "Reset code"); // outros testes podem ter salvo uma solução nesta lição
+    await pressButton(page, "Reset code"); // other tests may have saved a solution in this lesson
     await page.getByRole("button", { name: "Compose" }).click();
     for (const [gate, ...qubits] of steps) await compose(gate, ...qubits);
     await expect(page.locator(".circuit .gate")).toHaveCount(steps.length);
@@ -195,9 +196,9 @@ test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ 
   await solveWith("Hadamard", "1.2", [["H", "q0"], ["H", "q1"], ["H", "q2"], ["Measure", "q0"], ["Measure", "q1"], ["Measure", "q2"]]);
   await solveWith("entanglement", "1.5", [["H", "q0"], ["CNOT", "q0", "q1"]]);
 
-  // Remover: seleciona a porta no circuito e apaga a linha correspondente.
+  // Remove: selects the gate in the circuit and deletes the matching line.
   await openLessonBySearch(page, "computational basis", "1.1");
-  await pressButton(page, "Reset code"); // a lição volta com a solução salva acima
+  await pressButton(page, "Reset code"); // the lesson comes back with the solution saved above
   await expect(page.locator(".circuit .gate")).toHaveCount(0);
   await page.getByRole("button", { name: "Compose" }).click();
   await compose("H", "q0");
@@ -208,16 +209,17 @@ test("compositor: lições 1.1, 1.2 e 1.5 resolvidas só com cliques", async ({ 
   expect(errors).toEqual([]);
 });
 
-test("exportar o progresso como cópia", async ({ page }) => {
+test("export progress as a backup", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
+  await page.getByRole("button", { name: /^Backup/ }).click();
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export progress" }).click();
   expect((await download).suggestedFilename()).toBe("quantum-learning-progress.json");
   expect(errors).toEqual([]);
 });
 
-test("página de referências: todas as fontes, e cada lição citada abre", async ({ page }) => {
+test("references page: all sources, and each cited lesson opens", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await page.getByRole("button", { name: /^References/ }).click();
@@ -227,14 +229,73 @@ test("página de referências: todas as fontes, e cada lição citada abre", asy
   }
   await expect(page.locator(".bibliography")).toContainText("Quantum Computation and Quantum Information");
   await expect(page.locator(".bibliography")).toContainText("Wegewijs");
-  // Livros: guia de leitura por seção, na ordem do livro.
+  // Books: reading guide by section, in book order.
   await expect(page.locator(".bib-book").first().locator(".bib-sections li").first()).toBeVisible();
-  // Filtro por trilha: só o que a Trilha 4 usa.
+  // Filter by track: only what Track 4 uses.
   await page.locator(".bib-filter select").selectOption("4");
   await expect(page.locator(".bibliography")).toContainText("The Shor code");
   await expect(page.locator(".bibliography")).not.toContainText("Deutsch’s algorithm");
   await page.locator(".bib-filter select").selectOption("");
   await page.locator(".bib-list li", { hasText: "Entanglement in action: CHSH game" }).getByRole("button", { name: /1\.10/ }).click();
   await expect(page.locator(".crumb-id")).toHaveText("1.10");
+  expect(errors).toEqual([]);
+});
+
+test("annotated solution: only after the hints and three attempts, and the hub records it", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await openLessonBySearch(page, "Controlled", "1.7");
+  const offer = page.getByRole("button", { name: "Show solution" });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await pressButton(page, "Check");
+    await expect(page.locator(".oracle")).toHaveClass(/is-(warn|error)/);
+    // Editing clears the result, so the next Check counts as a new attempt.
+    await page.locator(".editor .view-lines").click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.type(" ");
+    await expect(page.locator(".oracle")).not.toHaveClass(/is-(warn|error)/);
+  }
+  await expect(offer).toHaveCount(0); // the hints are still closed
+  for (let hint = 0; hint < 3; hint++) await page.getByRole("button", { name: /Show hint/ }).click();
+  await offer.click();
+  await expect(page.locator(".solution-card")).toHaveCount(0); // asks for confirmation first
+  await page.getByRole("button", { name: "Keep trying" }).click();
+  await offer.click();
+  await page.getByRole("button", { name: "Show it anyway", exact: true }).click();
+  await expect(page.locator(".solution-code .is-comment").first()).toBeVisible();
+  await page.getByRole("button", { name: "Copy into the editor" }).click();
+  await pressButton(page, "Check");
+  await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+  await page.locator(".crumb-home, .topbar").getByRole("button", { name: "Tracks" }).first().click();
+  const row = page.locator(".section-row", { has: page.locator(".section-id", { hasText: /^1\.7$/ }) });
+  await expect(row).toContainText("Completed with the solution");
+  expect(errors).toEqual([]);
+});
+
+test("challenge solution: offered once all the challenge hints are open", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await openLessonBySearch(page, "Superdense", "1.9");
+  await replaceCode(page, solutionOf("1.9"));
+  await pressButton(page, "Check");
+  await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+  await page.getByRole("button", { name: "Try the challenge" }).click();
+  const offer = page.getByRole("button", { name: "Show solution" });
+  await expect(offer).toHaveCount(0);
+  for (let hint = 0; hint < 2; hint++) await page.getByRole("button", { name: /Show hint/ }).click();
+  await expect(offer).toHaveCount(0); // one hint still closed
+  await page.getByRole("button", { name: /Show hint/ }).click();
+  await offer.click();
+  await expect(page.locator(".solution-card")).toHaveCount(0); // asks for confirmation first
+  await page.getByRole("button", { name: "Keep trying" }).click();
+  await offer.click();
+  await page.getByRole("button", { name: "Show it anyway", exact: true }).click();
+  await expect(page.locator(".solution-card")).toBeVisible();
+  await page.getByRole("button", { name: "Copy into the editor" }).click();
+  await pressButton(page, "Check");
+  await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+  await page.locator(".crumb-home, .topbar").getByRole("button", { name: "Tracks" }).first().click();
+  const row = page.locator(".section-row", { has: page.locator(".section-id", { hasText: /^1\.9$/ }) });
+  await expect(row).toContainText("Challenge completed with the solution");
   expect(errors).toEqual([]);
 });

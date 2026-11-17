@@ -1,7 +1,7 @@
 /**
- * Visualizações 2D da Trilha 2: amplitudes com sinal (e linha da média), mostradores
- * de fase, histograma de um registrador e a função periódica a^x mod N do Shor.
- * São SVG simples; as cores vêm dos tokens de tema em CSS.
+ * 2D visualizations for Track 2: signed amplitudes (and the mean line), phase dials,
+ * a register histogram and Shor's periodic function a^x mod N.
+ * They are plain SVG; colors come from the CSS theme tokens.
  */
 import { t } from "../strings";
 import type { Complex } from "../engine/types";
@@ -25,13 +25,13 @@ function bitLabel(value: number, width: number): string {
   return value.toString(2).padStart(width, "0");
 }
 
-/** Valor com sinal de uma amplitude: real quando ela é real; senão, o módulo. */
+/** Signed value of an amplitude: real when it is real; otherwise, the modulus. */
 function signedValue([re, im]: Complex): number {
   return Math.abs(im) < 1e-6 ? re : Math.hypot(re, im);
 }
 
 // --------------------------------------------------------------------------- //
-// Amplitudes com sinal
+// Signed amplitudes
 // --------------------------------------------------------------------------- //
 
 export function AmplitudesView({ amplitudes, numQubits, register, scale, note }: {
@@ -98,7 +98,7 @@ export function AmplitudesView({ amplitudes, numQubits, register, scale, note }:
   );
 }
 
-/** Escala fixa ao longo da execução: as barras não "pulam" ao navegar pelos passos. */
+/** Fixed scale across the run: bars do not "jump" when navigating the steps. */
 export function amplitudeScale(snapshots: { amplitudes: Complex[] | null }[], numQubits: number, register: number[]): number {
   let peak = 0;
   for (const snapshot of snapshots) {
@@ -111,7 +111,7 @@ export function amplitudeScale(snapshots: { amplitudes: Complex[] | null }[], nu
 }
 
 // --------------------------------------------------------------------------- //
-// Mostradores de fase
+// Phase dials
 // --------------------------------------------------------------------------- //
 
 export function DialsView({ amplitudes, numQubits, register, note }: {
@@ -167,10 +167,10 @@ export function DialsView({ amplitudes, numQubits, register, note }: {
 }
 
 // --------------------------------------------------------------------------- //
-// Histograma de um registrador
+// Histogram of a register
 // --------------------------------------------------------------------------- //
 
-/** Recebe as probabilidades da base inteira: funciona também para estados mistos. */
+/** Takes the probabilities of the whole basis: also works for mixed states. */
 export function HistogramView({ probabilities, register, note }: {
   probabilities: number[]; register: number[]; note?: string;
 }) {

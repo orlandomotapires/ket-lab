@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { Comparison, Lesson, RunResult, Snapshot, VisualizerKind } from "../engine/types";
 import { t } from "../strings";
@@ -12,8 +13,10 @@ import {
   vectorLength,
 } from "../lib/quantum";
 import { stepForLine } from "../lib/steps";
+import { useStoredFlag } from "../lib/storedFlag";
 import { selectCurrentStep, useStore, type TrainingState } from "../state/store";
 import { MixedProbabilities, Probabilities, ShotsHistogram } from "./Probabilities";
+import { CurveView } from "./viewsCurve";
 import { AmplitudesView, amplitudeScale, DialsView, HistogramView, ModularView } from "./views2d";
 import {
   ConvergenceView,
@@ -28,7 +31,7 @@ import {
   type LandscapeData,
 } from "./viewsTraining";
 
-// As cenas 3D são o módulo mais pesado; carregam separadas do resto da interface.
+// The 3D scenes are the heaviest module; they load apart from the rest of the interface.
 const BlochScene = lazy(() => import("./scene3d").then((module) => ({ default: module.BlochScene })));
 const QSphereScene = lazy(() => import("./scene3d").then((module) => ({ default: module.QSphereScene })));
 
@@ -58,12 +61,15 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const current = useStore(selectCurrentStep);
   const hasError = useStore((s) => s.error !== null);
   const training = useStore((s) => s.training);
+  const errorStdout = useStore((s) => s.errorStdout);
+  // After a failed run, what the code printed before failing; otherwise the output of the last run.
+  const printed = hasError ? errorStdout : (result?.stdout ?? "");
 
-  // No laboratório livre, um código com report(...) ganha a aba da curva de treino.
+  // In the free lab, code with report(...) gets the training curve tab.
   const sandboxTraining = !lesson && training !== null;
   const views = lesson ? lesson.available_visualizers : sandboxTraining ? ["convergence" as const, ...SANDBOX_VIEWS] : SANDBOX_VIEWS;
   const [chosen, setView] = useState<VisualizerKind>(lesson?.default_visualizer ?? "bloch");
-  // Ao começar um treino, a curva aparece sozinha; depois o aluno troca de aba à vontade.
+  // When a training run starts, the curve shows up by itself; afterwards the learner switches tabs freely.
   const trainingActive = sandboxTraining && training.active;
   useEffect(() => {
     if (trainingActive) setView("convergence");
@@ -72,12 +78,12 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
 
   const header = (
     <div className="panel-head">
-      <h2>{lesson?.framework === "python" ? t("viz.view.variables") : t("viz.title")}</h2>
+      <h2>{lesson?.framework === "python" && views.length === 1 ? t("viz.view.variables") : t("viz.title")}</h2>
       <span className="grow" />
       {views.length > 1 && (
-        <div className="segmented" role="tablist" aria-label={t("viz.views")}>
+        <div className="segmented" role="group" aria-label={t("viz.views")}>
           {views.map((kind) => (
-            <button key={kind} role="tab" aria-selected={view === kind} onClick={() => setView(kind)}>
+            <button key={kind} aria-pressed={view === kind} onClick={() => setView(kind)}>
               {tabLabel(kind, lesson?.comparison)}
             </button>
           ))}
@@ -90,7 +96,15 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
     return (
       <aside className="panel visualizer" aria-label={t("viz.aria")}>
         {header}
-        <VariablesTable result={result} stale={!resultIsCurrent} />
+        {view === "curve" ? (
+          <div className={`panel-scroll curve-stack${resultIsCurrent ? "" : " is-stale"}`} tabIndex={0}>
+            <CurveView data={result?.analysis?.error ? null : result?.analysis?.curve} />
+            {result?.analysis?.error && <p className="muted">{t("viz.analysisError", { error: result.analysis.error })}</p>}
+            {printed && <Stdout text={printed} />}
+          </div>
+        ) : (
+          <VariablesTable result={result} stale={!resultIsCurrent} printed={printed} />
+        )}
       </aside>
     );
   }
@@ -111,6 +125,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
       <aside className="panel visualizer" aria-label={t("viz.aria")}>
         {header}
         <p className="muted pad">{hasError ? t("viz.fixError") : t("viz.waiting")}</p>
+        {printed && <div className="panel-scroll"><Stdout text={printed} /></div>}
       </aside>
     );
   }
@@ -118,12 +133,13 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const snapshot = result.snapshots[Math.min(current, result.snapshots.length - 1)];
   const step = current > 0 ? result.steps[current - 1] : undefined;
   const measured = result.steps.slice(0, current).filter((s) => s.kind === "measure");
+  const showReadouts = !TRAINING_VIEWS.includes(view);
 
   return (
     <aside className={`panel visualizer${resultIsCurrent ? "" : " is-stale"}`} aria-label={t("viz.aria")}>
       {header}
       {lesson?.controls?.length ? <Controls lesson={lesson} /> : null}
-      {/* A cena 3D não é lida por leitores de tela: o mesmo estado, em texto. */}
+      {/* The 3D scene is not read by screen readers: the same state, as text. */}
       <p id="state-description" className="sr-only">
         {t("viz.stateDescription", {
           qubits: snapshot.bloch
@@ -160,14 +176,17 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         </Suspense>
       </div>
 
+      {(showReadouts || measured.length > 0 || shots || printed) && (
       <div className="panel-scroll" tabIndex={0}>
-        {snapshot.amplitudes === null ? (
+        {showReadouts && snapshot.reduced && <p className="footnote">{result.notice ?? t("viz.reducedStep")}</p>}
+        {showReadouts && !snapshot.reduced && (snapshot.amplitudes === null ? (
           <StatePurity value={snapshot.state_purity} />
         ) : (
           result.num_qubits >= 2 && <Entanglement snapshot={snapshot} numQubits={result.num_qubits} />
-        )}
+        ))}
 
-        <h3 className="section-label">{t("viz.blochVectors")}</h3>
+        {showReadouts && (
+        <ReadoutSection id="bloch" title={t("viz.blochVectors")}>
         <table className="readout">
           <thead>
             <tr>
@@ -197,6 +216,8 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
           </tbody>
         </table>
         {snapshot.bloch.some((vector) => vectorLength(vector) < 0.995) && <p className="footnote">{t("viz.mixedNote")}</p>}
+        </ReadoutSection>
+        )}
 
         {measured.length > 0 && (
           <p className="notice">
@@ -205,26 +226,35 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
           </p>
         )}
 
-        <h3 className="section-label">{t("viz.amplitudes")}</h3>
-        {snapshot.amplitudes ? (
-          <Probabilities amplitudes={snapshot.amplitudes} numQubits={result.num_qubits} />
-        ) : (
-          <MixedProbabilities probabilities={snapshot.probabilities} numQubits={result.num_qubits} />
+        {showReadouts && !snapshot.reduced && (
+        <ReadoutSection id="amplitudes" title={t("viz.amplitudes")}>
+          {snapshot.amplitudes ? (
+            <Probabilities amplitudes={snapshot.amplitudes} numQubits={result.num_qubits} />
+          ) : (
+            <MixedProbabilities probabilities={snapshot.probabilities} numQubits={result.num_qubits} />
+          )}
+        </ReadoutSection>
         )}
         {shots && <ShotsHistogram shots={shots} />}
-        {result.stdout && (
-          <>
-            <h3 className="section-label">{t("viz.stdout")}</h3>
-            <pre className="stdout">{result.stdout}</pre>
-          </>
-        )}
+        {printed && <Stdout text={printed} />}
       </div>
+      )}
     </aside>
   );
 }
 
-/** Lições sem circuito: tabela com as variáveis numéricas do aluno. */
-function VariablesTable({ result, stale }: { result: RunResult | null; stale: boolean }) {
+/** What the learner's code printed. */
+function Stdout({ text }: { text: string }) {
+  return (
+    <>
+      <h3 className="section-label">{t("viz.stdout")}</h3>
+      <pre className="stdout">{text}</pre>
+    </>
+  );
+}
+
+/** Lessons without a circuit: table with the learner's numeric variables. */
+function VariablesTable({ result, stale, printed }: { result: RunResult | null; stale: boolean; printed: string }) {
   const rows = result?.variables ?? [];
   return (
     <div className={`panel-scroll variables${stale ? " is-stale" : ""}`} tabIndex={0}>
@@ -253,17 +283,12 @@ function VariablesTable({ result, stale }: { result: RunResult | null; stale: bo
           <p className="footnote">{t("viz.variablesNote")}</p>
         </>
       )}
-      {result?.stdout && (
-        <>
-          <h3 className="section-label">{t("viz.stdout")}</h3>
-          <pre className="stdout">{result.stdout}</pre>
-        </>
-      )}
+      {printed && <Stdout text={printed} />}
     </div>
   );
 }
 
-/** Curva das métricas de report(...): ao vivo durante o treino, com troca de métrica. */
+/** Curve of the report(...) metrics: live during training, with metric switching. */
 function TrainingStage({ training }: { training: TrainingState }) {
   const names = Object.keys(training.series);
   const [picked, setPicked] = useState<string | null>(null);
@@ -275,9 +300,9 @@ function TrainingStage({ training }: { training: TrainingState }) {
     <div className="training-stage">
       <div className="training-head">
         {names.length > 1 ? (
-          <div className="segmented" role="tablist" aria-label={t("viz.metric")}>
+          <div className="segmented" role="group" aria-label={t("viz.metric")}>
             {names.map((option) => (
-              <button key={option} role="tab" aria-selected={option === name} onClick={() => setPicked(option)}>
+              <button key={option} aria-pressed={option === name} onClick={() => setPicked(option)}>
                 <span className="mono">{option}</span>
               </button>
             ))}
@@ -325,20 +350,22 @@ function Stage({ view, result, snapshot, current, code, lesson }: {
   }
   if (view === "amplitudes" || view === "dials" || view === "histogram") {
     if (!register.length) return <div className="stage-message">{t("viz.waiting")}</div>;
-    // Depois de medir o registrador, o estado colapsou num único valor. O que interessa
-    // (os picos da QPE e do Shor) é o estado logo antes da primeira medição dele.
+    // After measuring the register, the state collapsed to a single value. What matters
+    // (the QPE and Shor peaks) is the state right before its first measurement.
     const firstMeasure = result.steps.findIndex((s) => s.kind === "measure" && register.includes(s.qubits[0]));
     const collapsed = firstMeasure >= 0 && current > firstMeasure;
     const source = collapsed ? result.snapshots[firstMeasure] : snapshot;
     const amplitudes = source.amplitudes;
     const note = collapsed ? t("viz.beforeMeasurement") : undefined;
-    if (view === "histogram") return <HistogramView probabilities={source.probabilities} register={register} note={note} />;
+    if (view === "histogram" && !source.reduced) return <HistogramView probabilities={source.probabilities} register={register} note={note} />;
+    if (source.reduced) return <div className="stage-message">{result.notice ?? t("viz.reducedStep")}</div>;
     if (!amplitudes) return <div className="stage-message">{t("viz.mixedState")}</div>;
     if (view === "amplitudes") return <AmplitudesView amplitudes={amplitudes} numQubits={n} register={register} scale={scale} note={note} />;
     if (view === "dials") return <DialsView amplitudes={amplitudes} numQubits={n} register={register} note={note} />;
   }
   if (view === "qsphere") {
     if (n > MAX_QSPHERE_QUBITS) return <div className="stage-message">{t("viz.tooManyQsphere", { limit: MAX_QSPHERE_QUBITS })}</div>;
+    if (snapshot.reduced) return <div className="stage-message">{result.notice ?? t("viz.reducedStep")}</div>;
     if (!snapshot.amplitudes) return <div className="stage-message">{t("viz.mixedState")}</div>;
     return <QSphereScene amplitudes={snapshot.amplitudes} numQubits={n} />;
   }
@@ -363,7 +390,7 @@ function CompareStage({ result, snapshot, code, comparison }: {
   if (markerLine === 0) {
     return (
       <div className="stage-message">
-        <span>{t("viz.compareMarker", { marker: comparison.source_marker })}</span>
+        <span>{t("viz.compareMarker", { call: comparison.source_marker.endsWith("(") ? `${comparison.source_marker}…)` : comparison.source_marker })}</span>
       </div>
     );
   }
@@ -381,10 +408,29 @@ function CompareStage({ result, snapshot, code, comparison }: {
   );
 }
 
+/** Views that plot a training run: the numeric readouts of the circuit state say nothing about them. */
+const TRAINING_VIEWS: VisualizerKind[] = ["convergence", "landscape", "dissociation", "graph", "boundary", "threshold"];
+
+/** A readout that can be folded. Whether it is open is remembered per section. */
+function ReadoutSection({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+  const [open, setOpen] = useStoredFlag(`qlp.viz.${id}`, true);
+  const bodyId = `readout-${id}`;
+  return (
+    <section className="readout-section">
+      <h3 className="section-label">
+        <button className="section-toggle" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen(!open)}>
+          <span className="disclosure-caret" aria-hidden="true" />
+          {title}
+        </button>
+      </h3>
+      {open && <div id={bodyId}>{children}</div>}
+    </section>
+  );
+}
+
 function StatePurity({ value }: { value: number }) {
   return (
-    <>
-      <h3 className="section-label">{t("viz.statePurity")}</h3>
+    <ReadoutSection id="purity" title={t("viz.statePurity")}>
       <div className="entanglement">
         <span>Tr(ρ²)</span>
         <div className="meter" role="meter" aria-label={t("viz.statePurity")} aria-valuemin={0} aria-valuemax={1} aria-valuenow={value}>
@@ -393,7 +439,7 @@ function StatePurity({ value }: { value: number }) {
         <span className="value">{value.toFixed(2)}</span>
       </div>
       <p className="footnote">{t("viz.statePurityNote")}</p>
-    </>
+    </ReadoutSection>
   );
 }
 
@@ -403,8 +449,7 @@ function Entanglement({ snapshot, numQubits }: { snapshot: Snapshot; numQubits: 
       ? [{ label: t("viz.concurrence"), value: concurrence(snapshot.amplitudes) }]
       : snapshot.purity.map((purity, qubit) => ({ label: t("viz.withRest", { qubit }), value: entanglementWithRest(purity) }));
   return (
-    <>
-      <h3 className="section-label">{t("viz.entanglement")}</h3>
+    <ReadoutSection id="entanglement" title={t("viz.entanglement")}>
       <div className="entanglement">
         {rows.map(({ label, value }) => (
           <div key={label} style={{ display: "contents" }}>
@@ -417,7 +462,7 @@ function Entanglement({ snapshot, numQubits }: { snapshot: Snapshot; numQubits: 
         ))}
       </div>
       <p className="footnote">{numQubits === 2 ? t("viz.concurrenceNote") : t("viz.withRestNote")}</p>
-    </>
+    </ReadoutSection>
   );
 }
 
@@ -430,15 +475,13 @@ function Controls({ lesson }: { lesson: Lesson }) {
       {lesson.controls!.map((control) => (
         <div key={control.id} className="control">
           <span className="control-label">{control.label}</span>
-          <div className="segmented" role="radiogroup" aria-label={control.label}>
+          <div className="segmented" role="group" aria-label={control.label}>
             {control.options.map((option) => {
               const key = String(option);
               return (
                 <button
                   key={key}
-                  role="radio"
-                  aria-checked={values[control.id] === option}
-                  aria-selected={values[control.id] === option}
+                  aria-pressed={values[control.id] === option}
                   disabled={running}
                   onClick={() => setControl(control.id, option)}
                 >

@@ -1,0 +1,597 @@
+/* State panel: visualizer, readouts, 2D charts and training views.
+   Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
+/* visualizer */
+
+.stage {
+  position: relative;
+  /* Takes the free space of the panel; with many qubits, the tables below get the scrolling. */
+  flex: 1 1 330px;
+  min-height: 260px;
+  background: var(--stage);
+  border-bottom: 1px solid var(--line);
+}
+.stage-caption {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+}
+.stage-caption strong {
+  color: var(--text);
+  font-weight: 500;
+}
+.stage-caption .grow {
+  flex: 1;
+}
+.stage-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  right: 14px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+}
+.stage-footer strong {
+  color: var(--text);
+  font-weight: 500;
+}
+.stage-message {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.visualizer.is-stale .scene,
+.visualizer.is-stale .panel-scroll {
+  opacity: 0.5;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.scene:active {
+  cursor: grabbing;
+}
+.scene-label {
+  font: 12px var(--font-mono);
+  color: var(--text-2);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.scene-label.is-axis {
+  color: var(--faint);
+}
+.scene-label.is-caption {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th,
+td {
+  padding: 5px 6px;
+  text-align: left;
+  font-weight: 400;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+thead th {
+  font-size: 12px;
+  color: var(--muted);
+}
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+th.num,
+td.num {
+  text-align: right;
+}
+tr.is-zero {
+  color: var(--faint);
+}
+.probs td.bar-col {
+  width: 100%;
+}
+.bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-track {
+  flex: 1;
+  min-width: 40px;
+  height: 8px;
+  background: var(--surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--line-strong);
+  transition: width 0.3s ease;
+}
+.bar-fill.is-neutral {
+  background: var(--muted);
+}
+.bar-value {
+  width: 50px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+.phase {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dial circle {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.dial line {
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.footnote {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.entanglement {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 13px;
+}
+.entanglement .value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+.entanglement .meter {
+  height: 8px;
+}
+
+.notice {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+.stdout {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: 12.5px/1.5 var(--font-mono);
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill,
+  .meter > span {
+    transition: none;
+  }
+}
+
+/* 2D charts (Track 2) */
+
+.view2d {
+  position: absolute;
+  top: 36px;
+  left: 12px;
+  right: 12px;
+  bottom: 34px;
+  width: calc(100% - 24px);
+  height: calc(100% - 70px);
+}
+.chart-axis {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.chart-bar {
+  fill: var(--accent);
+  transition: y 0.25s ease, height 0.25s ease;
+}
+.chart-bar.is-neutral,
+.chart-bar.is-faint {
+  fill: var(--line-strong);
+}
+.chart-mean {
+  stroke: var(--text-2);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+}
+.chart-mean-label,
+.chart-tick,
+.chart-value {
+  font: 11px var(--font-mono);
+  fill: var(--muted);
+}
+.chart-value {
+  fill: var(--text-2);
+}
+.chart-label {
+  font: 11px var(--font-mono);
+  fill: var(--muted);
+}
+.chart-label.is-strong {
+  fill: var(--text);
+  font-weight: 500;
+}
+.chart-label.is-sub {
+  font-size: 10px;
+  fill: var(--faint);
+}
+.chart-line {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+.chart-dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.chart-dot.is-one {
+  fill: var(--accent);
+}
+.chart-period {
+  stroke: var(--accent);
+  stroke-opacity: 0.35;
+  stroke-dasharray: 3 4;
+}
+.dial-ring {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.dial-disc {
+  fill: var(--accent);
+  fill-opacity: 0.22;
+}
+.dial-hand {
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-bar {
+    transition: none;
+  }
+}
+
+/* Track 3: training charts and controls */
+
+.chart-frame {
+  fill: none;
+  stroke: var(--line-strong);
+}
+.chart-path {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.7));
+}
+.chart-path-start {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+.chart-path-end {
+  fill: #ffffff;
+  stroke: #15171c;
+  stroke-width: 1.5;
+}
+.chart-line.is-accent {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.chart-line.is-dashed {
+  stroke: var(--muted);
+  stroke-dasharray: 5 4;
+}
+.chart-target {
+  stroke: var(--success);
+  stroke-width: 1.2;
+  stroke-dasharray: 6 4;
+}
+.chart-band {
+  fill: var(--success);
+  fill-opacity: 0.14;
+}
+.chart-dot.is-highlight {
+  fill: var(--warn);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.control-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.controls .segmented {
+  flex-wrap: wrap;
+}
+
+.graph-edge {
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.graph-edge.is-cut {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+.graph-node {
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.graph-node.is-a {
+  fill: var(--accent);
+}
+.graph-node.is-b {
+  fill: var(--warn);
+}
+.graph-label {
+  font: 600 12px var(--font-mono);
+  fill: #ffffff;
+  pointer-events: none;
+}
+
+.graph-title {
+  font: 600 13px var(--font-ui);
+  fill: var(--text);
+}
+.graph-text {
+  font: 12.5px var(--font-mono);
+  fill: var(--text-2);
+}
+
+.boundary-point {
+  stroke: var(--surface);
+  stroke-width: 1.2;
+}
+.boundary-point.is-plus {
+  fill: #2f5bd3;
+}
+.boundary-point.is-minus {
+  fill: #c2660f;
+}
+
+.prose blockquote {
+  margin: 4px 0 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-2);
+}
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------------------ */
+/* Live training, examples and export                                      */
+/* ------------------------------------------------------------------------ */
+
+.training-stage {
+  position: absolute;
+  inset: 0;
+}
+.training-head {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  z-index: 2;
+}
+.training-head .grow {
+  flex: 1;
+}
+.training-head .segmented button {
+  height: 22px;
+  padding: 0 9px;
+}
+.pill-live {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.pill-live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pill-live::before {
+    animation: none;
+  }
+}
+
+.variables.is-stale {
+  opacity: 0.55;
+}
+.variables-table th[scope="row"] {
+  white-space: nowrap;
+  vertical-align: top;
+}
+.variables-table td {
+  vertical-align: top;
+}
+.variable-value {
+  margin: 0;
+  font: 12.5px/1.45 var(--font-mono);
+  white-space: pre;
+  color: var(--text);
+}
+
+.readout-section {
+  margin-top: 18px;
+}
+.readout-section:first-child {
+  margin-top: 0;
+}
+.readout-section > .section-label {
+  margin: 0 0 8px;
+}
+.section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.section-toggle:hover {
+  color: var(--text);
+}
+
+/* Generic curve charts (lessons without a circuit) */
+
+.curve-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.curve-chart {
+  margin: 0;
+}
+.curve-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.curve-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+.curve-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.curve-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--stage);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.curve-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.curve-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.curve-line.is-s0 { stroke: var(--accent); }
+.curve-line.is-s1 { stroke: var(--warn); }
+.curve-line.is-s2 { stroke: var(--success); }
+.curve-line.is-s3 { stroke: var(--error); }
+.curve-line.is-reference {
+  stroke: var(--muted);
+  stroke-width: 1.2;
+  stroke-dasharray: 6 4;
+}
+.curve-dot {
+  stroke: var(--surface);
+  stroke-width: 1;
+}
+.curve-dot.is-s0 { fill: var(--accent); }
+.curve-dot.is-s1 { fill: var(--warn); }
+.curve-dot.is-s2 { fill: var(--success); }
+.curve-dot.is-s3 { fill: var(--error); }
+.curve-marker {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.5;
+}
+.curve-summary {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.curve-summary p {
+  margin: 0;
+}
+.curve-marker-label {
+  paint-order: stroke;
+  stroke: var(--stage);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}

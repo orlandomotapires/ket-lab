@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
@@ -8,6 +8,7 @@ import { ExportButton } from "./ExportDialog";
 import { HardwareButton } from "./HardwareDialog";
 import { exampleCode, SANDBOX_EXAMPLES, type SandboxExample } from "../lib/examples";
 import { shareLink } from "../lib/share";
+import { NotesDrawer } from "./NotesDrawer";
 import { OracleBar } from "./OracleBar";
 import { TheoryPanel } from "./TheoryPanel";
 import { Timeline } from "./Timeline";
@@ -17,31 +18,61 @@ import { Visualizer } from "./Visualizer";
 export function Lab() {
   const lesson = useStore((s) => s.lesson);
   const key = lesson?.id ?? "sandbox";
-  // Lições sem circuito (kit de matemática) não têm painel de circuito.
+  // Lessons without a circuit (math kit) have no circuit panel.
   const hasCircuit = lesson?.framework !== "python";
   const code = useStore((s) => s.code);
   const canCompose = composerSupported(code, lesson?.framework);
   const [composing, setComposing] = useState(false);
-  // Telas estreitas: um painel por vez, escolhido nas abas (em telas largas as abas somem).
+  // Narrow screens: one panel at a time, chosen in the tabs (on wide screens the tabs disappear).
   const panes: Pane[] = lesson ? ["theory", "code", "state"] : ["code", "state"];
   const [chosen, setPane] = useState<Pane>(lesson ? "theory" : "code");
   const pane = panes.includes(chosen) ? chosen : panes[0];
-  const paneClass = (name: Pane) => `pane${pane === name ? " is-active" : ""}`;
+  const paneProps = (name: Pane) => ({
+    className: `pane${pane === name ? " is-active" : ""}`,
+    role: "tabpanel" as const,
+    id: `pane-${name}`,
+    "aria-labelledby": `pane-tab-${name}`,
+  });
+  const notesOpen = useStore((s) => s.notesOpen && lesson !== null);
+  useLabShortcuts(panes, setPane);
+
+  // Arrow keys move between the tabs (the tab in focus is the chosen one).
+  const onTabKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    const index = panes.indexOf(pane);
+    const target =
+      event.key === "ArrowRight" ? panes[(index + 1) % panes.length]
+      : event.key === "ArrowLeft" ? panes[(index - 1 + panes.length) % panes.length]
+      : event.key === "Home" ? panes[0]
+      : event.key === "End" ? panes[panes.length - 1]
+      : null;
+    if (!target) return;
+    event.preventDefault();
+    setPane(target);
+    document.getElementById(`pane-tab-${target}`)?.focus();
+  };
   return (
-    <div className={`lab${lesson ? "" : " is-sandbox"}`}>
-      <div className="lab-tabs segmented" role="tablist" aria-label={t("lab.panes")}>
+    <div className={`lab${lesson ? "" : " is-sandbox"}${notesOpen ? " has-notes" : ""}`}>
+      <div className="lab-tabs segmented" role="tablist" aria-label={t("lab.panes")} onKeyDown={onTabKey}>
         {panes.map((name) => (
-          <button key={name} role="tab" aria-selected={pane === name} onClick={() => setPane(name)}>
+          <button
+            key={name}
+            role="tab"
+            id={`pane-tab-${name}`}
+            aria-selected={pane === name}
+            aria-controls={`pane-${name}`}
+            tabIndex={pane === name ? 0 : -1}
+            onClick={() => setPane(name)}
+          >
             {t(`lab.pane.${name}`)}
           </button>
         ))}
       </div>
       {lesson && (
-        <div className={paneClass("theory")}>
+        <div {...paneProps("theory")}>
           <TheoryPanel />
         </div>
       )}
-      <div className={paneClass("code")}>
+      <div {...paneProps("code")}>
       <div className="column">
         <section className="panel editor-panel" aria-label={t("lab.codeAria")}>
           <div className="panel-head">
@@ -51,7 +82,7 @@ export function Lab() {
             {!lesson && <ExamplePicker />}
           </div>
           <SharedCodeNotice />
-          {/* A chave recria o editor ao trocar de lição (cursor e histórico de desfazer). */}
+          {/* The key recreates the editor when switching lessons (cursor and undo history). */}
           <CodeEditor key={key} />
         </section>
         {hasCircuit && <section className="panel circuit-panel" aria-label={t("lab.circuit")}>
@@ -77,9 +108,10 @@ export function Lab() {
         </section>}
       </div>
       </div>
-      <div className={paneClass("state")}>
+      <div {...paneProps("state")}>
         <Visualizer key={key} lesson={lesson} />
       </div>
+      <NotesDrawer />
       <OracleBar />
       <Tour />
     </div>
@@ -88,7 +120,61 @@ export function Lab() {
 
 type Pane = "theory" | "code" | "state";
 
-/** Copia um link com o código do laboratório livre. */
+const PANE_KEYS: Record<string, Pane> = { Digit1: "theory", Digit2: "code", Digit3: "state" };
+
+/** Moves the keyboard to a panel (on narrow screens, switching to its tab first). */
+function focusPane(name: Pane): void {
+  const find = (): HTMLElement | null =>
+    name === "theory"
+      ? document.querySelector<HTMLElement>(".theory-scroll")
+      : name === "code"
+        ? document.querySelector<HTMLElement>(".editor textarea")
+        : (document.querySelector<HTMLElement>(".visualizer .panel-scroll") ??
+          document.querySelector<HTMLElement>('.visualizer [aria-pressed="true"]') ??
+          document.querySelector<HTMLElement>(".visualizer"));
+  window.setTimeout(() => {
+    const element = find();
+    if (!element) return;
+    if (element.tabIndex < 0) element.tabIndex = -1;
+    element.focus();
+  }, 60);
+}
+
+/** Lab shortcuts: Check, panel switching and the notes drawer. They work while typing in the editor. */
+function useLabShortcuts(panes: Pane[], setPane: (pane: Pane) => void) {
+  const latest = useRef({ panes, setPane });
+  latest.current = { panes, setPane };
+  useEffect(() => {
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      const mod = event.ctrlKey || event.metaKey;
+      const state = useStore.getState();
+      if (mod && event.shiftKey && !event.altKey && event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (state.lesson && state.connection === "open" && !state.validating && !state.validation?.passed) void state.validate();
+        return;
+      }
+      if (!event.altKey || mod || event.shiftKey) return;
+      const name = PANE_KEYS[event.code];
+      if (name) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!latest.current.panes.includes(name)) return;
+        latest.current.setPane(name);
+        focusPane(name);
+      } else if (event.code === "KeyN" && state.lesson) {
+        event.preventDefault();
+        event.stopPropagation();
+        state.setNotesOpen(!state.notesOpen);
+      }
+    };
+    // Capture phase: the editor would otherwise use some of these keys itself.
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, []);
+}
+
+/** Copies a link with the free lab code. */
 function ShareButton() {
   const [copied, setCopied] = useState(false);
   return (
@@ -111,7 +197,7 @@ function ShareButton() {
   );
 }
 
-/** Código aberto por link: não roda até o aluno ler e confirmar. */
+/** Code opened by link: does not run until the learner reads and confirms. */
 function SharedCodeNotice() {
   const trusted = useStore((s) => s.codeTrusted);
   if (trusted) return null;
@@ -125,7 +211,7 @@ function SharedCodeNotice() {
   );
 }
 
-/** Laboratório livre: troca o código por um exemplo pronto (circuito ou treino). */
+/** Free lab: swaps the code for a ready example (circuit or training). */
 function ExamplePicker() {
   return (
     <label className="example-picker">

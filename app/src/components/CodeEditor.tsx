@@ -29,6 +29,7 @@ export function CodeEditor() {
       fontSize: 13.5,
       lineHeight: 22,
       minimap: { enabled: false },
+      wordWrap: "on",
       scrollBeyondLastLine: false,
       automaticLayout: true,
       tabSize: 4,
@@ -50,13 +51,13 @@ export function CodeEditor() {
     editor.focus();
 
     const onContent = editor.onDidChangeModelContent(() => setCode(editor.getValue()));
-    // Ctrl+Enter (Cmd+Enter no macOS) executa: essencial nas lições de treino.
+    // Ctrl+Enter (Cmd+Enter on macOS) runs: essential in the training lessons.
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       useStore.getState().setCode(editor.getValue());
       useStore.getState().runNow();
     });
     const onCursor = editor.onDidChangeCursorPosition((event) => {
-      // Só o aluno move o foco da inspeção; mudanças programáticas não contam.
+      // Only the learner moves the inspection focus; programmatic changes do not count.
       if (event.source !== "api" && event.source !== "modelChange") setCursorLine(event.position.lineNumber);
     });
     return () => {
@@ -65,7 +66,7 @@ export function CodeEditor() {
       editor.dispose();
       editorRef.current = null;
     };
-    // O editor é criado uma única vez; tema e código são sincronizados abaixo.
+    // The editor is created only once; theme and code are synced below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -73,13 +74,13 @@ export function CodeEditor() {
     monaco.editor.setTheme(MONACO_THEME[theme]);
   }, [theme]);
 
-  // Mudanças de código vindas de fora (trocar de lição, restaurar o código inicial).
+  // Code changes coming from outside (switching lessons, restoring the starter code).
   useEffect(() => {
     const editor = editorRef.current;
     if (editor && editor.getValue() !== code) editor.setValue(code);
   }, [code]);
 
-  // Erros do motor viram marcadores na linha correspondente.
+  // Engine errors become markers on the matching line.
   useEffect(() => {
     const model = editorRef.current?.getModel();
     if (!model) return;
@@ -101,7 +102,7 @@ export function CodeEditor() {
     );
   }, [error, resultIsCurrent, code]);
 
-  // Com a linha do tempo no controle, destaca a linha que gerou o passo em exibição.
+  // With the timeline in control, highlights the line that produced the step on display.
   useEffect(() => {
     const line = !followCursor && steps ? lineForStep(steps, currentStep) : null;
     decorations.current?.set(

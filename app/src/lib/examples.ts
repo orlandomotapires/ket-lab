@@ -1,7 +1,7 @@
 import { t } from "../strings";
 import { sandboxCode } from "../state/store";
 
-/** Pontos de partida do laboratório livre. */
+/** Starting points for the free lab. */
 export const SANDBOX_EXAMPLES = ["bell", "training"] as const;
 export type SandboxExample = (typeof SANDBOX_EXAMPLES)[number];
 

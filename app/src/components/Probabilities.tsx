@@ -7,7 +7,7 @@ const MAX_ROWS = 32;
 const EPSILON = 1e-9;
 
 function PhaseDial({ phase, color }: { phase: number; color: string }) {
-  // Ponteiro como num relógio matemático: 0 aponta para a direita, sentido anti-horário.
+  // Pointer like on a math clock: 0 points right, counterclockwise.
   return (
     <svg className="dial" width="18" height="18" viewBox="-9 -9 18 18" aria-hidden="true">
       <circle r="7.5" />
@@ -19,7 +19,7 @@ function PhaseDial({ phase, color }: { phase: number; color: string }) {
 export function Probabilities({ amplitudes, numQubits }: { amplitudes: Complex[]; numQubits: number }) {
   const dark = useTheme() === "dark";
   const all = amplitudes.map((amplitude, index) => ({ amplitude, index, p: probability(amplitude) }));
-  // Com poucos estados mostra todos; com muitos, só os que têm amplitude.
+  // With few states shows all of them; with many, only those with amplitude.
   const candidates = amplitudes.length <= 8 ? all : all.filter((row) => row.p > EPSILON);
   const rows = candidates.slice(0, MAX_ROWS);
 
@@ -76,7 +76,7 @@ export function Probabilities({ amplitudes, numQubits }: { amplitudes: Complex[]
   );
 }
 
-/** Estados mistos não têm amplitudes: só probabilidades. */
+/** Mixed states have no amplitudes: only probabilities. */
 export function MixedProbabilities({ probabilities, numQubits }: { probabilities: number[]; numQubits: number }) {
   const rows = probabilities
     .map((p, index) => ({ p, index }))

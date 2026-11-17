@@ -1,4 +1,4 @@
-/** Links de compartilhamento do laboratório livre: o código vai comprimido no fragmento (#lab=…). */
+/** Share links for the free lab: the code goes compressed in the fragment (#lab=…). */
 const PREFIX = "#lab=";
 const MAX_CODE = 20_000;
 
@@ -18,7 +18,7 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
   return new Uint8Array(await new Response(output).arrayBuffer());
 }
 
-/** Link com o código (o fragmento não vai ao servidor que hospeda a página). */
+/** Link with the code (the fragment does not go to the server hosting the page). */
 export async function shareLink(code: string): Promise<string> {
   const compressed = await pipe(new TextEncoder().encode(code), new CompressionStream("deflate-raw"));
   const url = new URL(window.location.href);
@@ -26,7 +26,7 @@ export async function shareLink(code: string): Promise<string> {
   return url.toString();
 }
 
-/** Código de um link aberto agora, ou null. */
+/** Code from the link opened right now, or null. */
 export async function readSharedCode(hash = window.location.hash): Promise<string | null> {
   if (!hash.startsWith(PREFIX)) return null;
   try {

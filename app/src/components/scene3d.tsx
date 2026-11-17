@@ -1,6 +1,6 @@
 /**
- * Cenas 3D: esferas de Bloch e Q-Sphere. Ficam num módulo separado, carregado
- * sob demanda, porque o Three.js é a parte mais pesada da interface.
+ * 3D scenes: Bloch spheres and Q-Sphere. They live in a separate module, loaded
+ * on demand, because Three.js is the heaviest part of the interface.
  */
 import { Html } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -11,11 +11,11 @@ import { t } from "../strings";
 import { phaseColor, phaseOf, probability, qspherePositions } from "../lib/quantum";
 import { PALETTES, useTheme, type Palette } from "../theme/theme";
 
-const CELL = 2.9; // largura de cada esfera na grade, em unidades da cena
+const CELL = 2.9; // width of each sphere in the grid, in scene units
 const ANIMATION_S = 0.45;
 const UP = new THREE.Vector3(0, 1, 0);
 
-/** Bloch (x, y, z) -> cena (y, z, x): Z para cima, X em direção ao observador. */
+/** Bloch (x, y, z) -> scene (y, z, x): Z up, X toward the viewer. */
 function toScene([x, y, z]: Vec3, out = new THREE.Vector3()): THREE.Vector3 {
   return out.set(y, z, x);
 }
@@ -45,7 +45,7 @@ const scratchA = new THREE.Vector3();
 const scratchB = new THREE.Vector3();
 const IDENTITY = new THREE.Quaternion();
 
-/** Interpola girando sobre a esfera (e não cortando pelo centro, o que pareceria um estado misto). */
+/** Interpolates by rotating over the sphere (not cutting through the center, which would look like a mixed state). */
 function interpolate(from: THREE.Vector3, to: THREE.Vector3, s: number, axis: THREE.Vector3 | null, out: THREE.Vector3) {
   const lengthFrom = from.length();
   const lengthTo = to.length();
@@ -53,7 +53,7 @@ function interpolate(from: THREE.Vector3, to: THREE.Vector3, s: number, axis: TH
   const a = scratchA.copy(from).divideScalar(lengthFrom);
   const b = scratchB.copy(to).divideScalar(lengthTo);
   if (a.dot(b) < -0.9995) {
-    // Antípodas: o caminho é ambíguo; usa o eixo da porta quando ele serve.
+    // Antipodes: the path is ambiguous; uses the gate axis when it fits.
     let rotation = axis && Math.abs(axis.dot(a)) < 1e-3 ? axis : null;
     if (!rotation) {
       rotation = new THREE.Vector3(1, 0, 0).cross(a);
@@ -69,7 +69,7 @@ function interpolate(from: THREE.Vector3, to: THREE.Vector3, s: number, axis: TH
 }
 
 // --------------------------------------------------------------------------- //
-// Peças comuns
+// Common pieces
 // --------------------------------------------------------------------------- //
 
 interface View {
@@ -77,7 +77,7 @@ interface View {
   pitch: number;
 }
 
-/** Contêiner com canvas, câmera ortográfica e rotação por arraste. */
+/** Container with canvas, orthographic camera and drag rotation. */
 function SceneFrame({ cols, rows, children }: { cols: number; rows: number; children: (view: View) => ReactNode }) {
   const [view, setView] = useState<View>({ yaw: -0.6, pitch: 0.32 });
   const drag = useRef<{ x: number; y: number } | null>(null);
@@ -117,7 +117,7 @@ function SceneFrame({ cols, rows, children }: { cols: number; rows: number; chil
 function FitCamera({ cols, rows }: { cols: number; rows: number }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
-    // Deixa espaço para a legenda no topo e no rodapé do palco.
+    // Leaves room for the caption at the top and the bottom of the stage.
     camera.zoom = Math.min(size.width / (cols * CELL), (size.height - 40) / (rows * CELL));
     camera.position.y = -6 / camera.zoom;
     camera.updateProjectionMatrix();
@@ -151,7 +151,7 @@ function WireSphere({ palette, showAxes = true }: { palette: Palette; showAxes?:
   );
 }
 
-/** Contorno fixo (não gira com o arraste), para a esfera manter a silhueta. */
+/** Fixed outline (does not rotate with the drag), so the sphere keeps its silhouette. */
 function Outline({ palette }: { palette: Palette }) {
   return (
     <lineLoop geometry={CIRCLE_XY}>
@@ -174,7 +174,7 @@ function grid(count: number): { cols: number; rows: number } {
 }
 
 // --------------------------------------------------------------------------- //
-// Esferas de Bloch
+// Bloch spheres
 // --------------------------------------------------------------------------- //
 
 function StateArrow({ target, axis, palette, dark, animate }: {
@@ -220,7 +220,7 @@ function StateArrow({ target, axis, palette, dark, animate }: {
       shaft.current.position.y = Math.max(length - 0.16, 0.001) / 2;
       arrow.current.children[1].position.y = Math.max(length - 0.08, 0.08);
     }
-    // Fase relativa = ângulo em torno do eixo Z de Bloch (cena: plano z-x).
+    // Relative phase = angle around the Bloch Z axis (scene: z-x plane).
     const equatorial = Math.hypot(m.current.z, m.current.x);
     material.color.setStyle(equatorial > 0.05 ? phaseColor(Math.atan2(m.current.x, m.current.z), dark) : palette.accent);
   });
@@ -323,7 +323,7 @@ function QSphereNodes({ amplitudes, numQubits, palette, dark }: {
   );
 }
 
-/** Rótulo afastado do ponto: nos polos vai para cima/baixo, no resto, para fora. */
+/** Label offset from the point: at the poles it goes up/down, elsewhere, outward. */
 function labelPosition([x, y, z]: Vec3, radius: number): [number, number, number] {
   if (Math.abs(y) > 0.95) return [0, y + Math.sign(y) * (radius + 0.16), 0];
   const out = 1 + radius + 0.2;

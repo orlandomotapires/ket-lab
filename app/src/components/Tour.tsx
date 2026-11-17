@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { t, type MessageKey } from "../strings";
 import { useStore } from "../state/store";
 
-/** Guia da primeira lição: quatro passos, mostrado uma vez (reabre pelo botão "?"). */
+/** Guide for the first lesson: four steps, shown once (reopens via the "?" button). */
 const STEPS: { target: string; title: MessageKey; body: MessageKey }[] = [
   { target: ".editor-panel", title: "tour.code.title", body: "tour.code.body" },
   { target: ".circuit-panel", title: "tour.timeline.title", body: "tour.timeline.body" },
@@ -28,11 +28,11 @@ function markSeen(): void {
   try {
     localStorage.setItem(SEEN_KEY, "1");
   } catch {
-    // sem armazenamento: o guia volta na próxima visita
+    // no storage: the guide comes back on the next visit
   }
 }
 
-/** Passos cujo alvo está visível (em telas estreitas, alguns painéis ficam em outras abas). */
+/** Steps whose target is visible (on narrow screens, some panels live in other tabs). */
 function visibleSteps() {
   return STEPS.filter((step) => {
     const element = document.querySelector<HTMLElement>(step.target);
@@ -56,7 +56,7 @@ export function Tour() {
     setOpen(true);
   }, []);
 
-  // Primeira lição aberta: o guia aparece sozinho, depois de a lição se montar.
+  // First lesson opened: the guide shows up by itself, after the lesson mounts.
   useEffect(() => {
     if (!lesson || seen()) return;
     const timer = window.setTimeout(start, 600);
@@ -92,7 +92,7 @@ export function Tour() {
   const last = index === steps.length - 1;
   const next = () => (last ? close() : setIndex(index + 1));
 
-  // O cartão fica ao lado do alvo, dentro da tela.
+  // The card sits next to the target, inside the screen.
   const width = 320;
   let left = box ? box.right + 12 : 24;
   if (box && left + width > window.innerWidth - 12) left = Math.max(12, box.left - width - 12);

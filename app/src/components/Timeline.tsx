@@ -9,7 +9,7 @@ export function Timeline() {
   const setStep = useStore((s) => s.setStep);
   const setFollowCursor = useStore((s) => s.setFollowCursor);
 
-  // Sem instruções, não há o que percorrer: os controles só apareceriam desativados.
+  // Without instructions there is nothing to walk through: the controls would only show up disabled.
   if (count === 0) return null;
 
   return (

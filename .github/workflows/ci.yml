@@ -64,7 +64,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: pip install -e "engine[dev]" -c engine/constraints.txt
+      # The hardware extra: the hardware dialog test sends a circuit through the simulated IBM service.
+      - run: pip install -e "engine[dev,hardware]" -c engine/constraints.txt
       - uses: actions/setup-node@v4
         with:
           node-version: 22

@@ -53,7 +53,8 @@ export function TopBar() {
       ) : (
         <div className="brand">
           <LogoMark />
-          {t("app.name")}
+          <span>{t("app.name")}</span>
+          <span className="brand-tagline">{t("app.tagline")}</span>
         </div>
       )}
       </div>

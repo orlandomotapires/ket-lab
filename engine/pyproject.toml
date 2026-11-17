@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qlp-engine"
 version = "0.1.0"
-description = "Local scientific engine of the Quantum Learning Platform"
+description = "Local scientific engine of Ket Lab"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 # Versions are pinned on purpose: the Qiskit API changes between major versions and

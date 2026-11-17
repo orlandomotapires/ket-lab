@@ -35,7 +35,10 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
       onClick={(event) => event.target === dialog.current && close()}
     >
       <div className="dialog-head">
-        <h2 id="about-title">{t("about.title")}</h2>
+        <div>
+          <h2 id="about-title">{t("about.title")}</h2>
+          <p className="about-subtitle">{t("about.subtitle")}</p>
+        </div>
       </div>
       <div className="about-body" tabIndex={0}>
         <p className="about-lead">{t("about.lead")}</p>

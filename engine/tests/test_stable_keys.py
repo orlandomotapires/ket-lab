@@ -57,7 +57,7 @@ def old_database(path):
 
 
 def test_every_lesson_has_a_unique_key_that_is_not_a_lesson_id(library):
-    declared = json.loads((library.root / "lesson_keys.json").read_text())
+    declared = json.loads((library.root / "lesson_keys.json").read_text(encoding="utf-8"))
     ids = library.lesson_ids
     assert [i for i in ids if i not in declared] == [], "add the new lesson to content/lesson_keys.json"
     keys = [declared[i] for i in ids]

@@ -111,7 +111,7 @@ def test_infinite_loop_is_killed_and_engine_recovers(library):
     async def test(url, _):
         async with connect(f"{url}/?token={TOKEN}") as websocket:
             client = Client(websocket)
-            await client.call(type="run", code=GOOD)  # aquece o worker
+            await client.call(type="run", code=GOOD)  # warm up the worker
             stuck = await client.call(type="run", code="while True:\n    pass\n")
             assert stuck["error"]["kind"] == "timeout"
             again = await client.call(type="run", code=GOOD)
@@ -180,7 +180,7 @@ def test_training_can_be_cancelled(library):
     async def test(url, _):
         async with connect(f"{url}/?token={TOKEN}") as websocket:
             client = Client(websocket)
-            await client.call(type="run", code=GOOD)  # aquece o worker
+            await client.call(type="run", code=GOOD)  # warm up the worker
             endless = "i = 0\nwhile True:\n    i += 1\n    if i % 100000 == 0:\n        report(i)\n"
             await websocket.send(json.dumps({"id": 50, "type": "run", "code": endless, "train": True}))
             first = json.loads(await websocket.recv())
@@ -289,11 +289,12 @@ def test_connection_limit(library):
 def test_worker_group_runs_jobs_in_parallel(library):
     import time
 
-    slow = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\n" + "x = sum(range(3_000_000))\n" * 3
+    # Long enough (about half a second) that timing noise on slow CI machines stays small.
+    slow = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\n" + "x = sum(range(3_000_000))\n" * 12
 
     async def test(url):
         async with connect(url, origin="https://quantum.example") as a, connect(url, origin="https://quantum.example") as b:
-            await Client(a).call(type="run", code=GOOD)  # aquece
+            await Client(a).call(type="run", code=GOOD)  # warm up
             await asyncio.gather(Client(a).call(type="shots", code=GOOD), Client(b).call(type="shots", code=GOOD))
             start = time.perf_counter()
             await Client(a).call(type="shots", code=slow)
@@ -302,7 +303,8 @@ def test_worker_group_runs_jobs_in_parallel(library):
             results = await asyncio.gather(Client(a).call(type="shots", code=slow), Client(b).call(type="shots", code=slow))
             together = time.perf_counter() - start
             assert all(r["ok"] for r in results), results
-            assert together < 1.6 * alone, (alone, together)
+            # In series two jobs take about twice as long as one; in parallel, well under that.
+            assert together < 1.8 * alone, (alone, together)
 
     with_public_server(test, library, workers=2)
 

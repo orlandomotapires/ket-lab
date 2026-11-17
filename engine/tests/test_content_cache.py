@@ -46,9 +46,9 @@ def test_an_edited_text_shows_up_at_once(copy):
     lib, root = copy
     folder = lib._lessons["1.1"]
     assert lib.lesson("1.1")["title"] != "Edited"
-    text = json.loads((folder / "text.json").read_text())
+    text = json.loads((folder / "text.json").read_text(encoding="utf-8"))
     text["title"] = "Edited"
-    (folder / "text.json").write_text(json.dumps(text))
+    (folder / "text.json").write_text(json.dumps(text), encoding="utf-8")
     bump(folder / "text.json")
     assert lib.lesson("1.1")["title"] == "Edited"
 
@@ -56,9 +56,9 @@ def test_an_edited_text_shows_up_at_once(copy):
 def test_manifest_edit_changes_timeout(copy):
     lib, _ = copy
     folder = lib._lessons["1.1"]
-    manifest = json.loads((folder / "manifest.json").read_text())
+    manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
     manifest["timeout"] = 17
-    (folder / "manifest.json").write_text(json.dumps(manifest))
+    (folder / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     bump(folder / "manifest.json")
     assert lib.timeout("1.1") == 17.0
 
@@ -67,7 +67,9 @@ def test_search_index_follows_edits(copy):
     lib, _ = copy
     folder = lib._lessons["1.1"]
     assert lib.search("zzyzxword") == []
-    (folder / "theory.md").write_text((folder / "theory.md").read_text() + "\nThe zzyzxword appears here.\n")
+    (folder / "theory.md").write_text(
+        (folder / "theory.md").read_text(encoding="utf-8") + "\nThe zzyzxword appears here.\n", encoding="utf-8"
+    )
     bump(folder / "theory.md")
     assert [hit["id"] for hit in lib.search("zzyzxword")] == ["1.1"]
     assert lib.search("zzyzxword")[0]["snippet"]
@@ -76,9 +78,9 @@ def test_search_index_follows_edits(copy):
 def test_new_removed_and_renumbered_lessons(copy):
     lib, root = copy
     first = lib._lessons["1.2"]
-    manifest = json.loads((first / "manifest.json").read_text())
+    manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))
     manifest["id"] = "1.9"
-    (first / "manifest.json").write_text(json.dumps(manifest))
+    (first / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     bump(first / "manifest.json")
     assert "1.9" in lib.lesson_ids and "1.2" not in lib.lesson_ids
     shutil.rmtree(first)
@@ -88,6 +90,6 @@ def test_new_removed_and_renumbered_lessons(copy):
 def test_a_broken_manifest_keeps_the_last_good_index(copy):
     lib, _ = copy
     folder = lib._lessons["1.2"]
-    (folder / "manifest.json").write_text("{ not json")
+    (folder / "manifest.json").write_text("{ not json", encoding="utf-8")
     bump(folder / "manifest.json")
     assert set(lib.lesson_ids) == {"1.1", "1.2"}  # still served while the author finishes the edit

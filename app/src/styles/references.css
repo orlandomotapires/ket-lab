@@ -12,10 +12,16 @@
   font-weight: 600;
   margin-bottom: 4px;
 }
-.references-intro {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 10px;
+/* Folded to one line until opened. */
+.references-title .objectives-toggle {
+  font-size: 14px;
+  color: var(--text);
+}
+.references-title .objectives-toggle:hover {
+  color: var(--accent-text);
+}
+.references ul {
+  margin-top: 8px;
 }
 /* A single grid for the whole list: the label column has the width of the
    widest, and all titles start on the same vertical line. */

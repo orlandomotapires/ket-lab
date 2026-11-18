@@ -96,6 +96,8 @@ export interface CatalogSection {
   project?: boolean;
   has_challenge?: boolean;
   estimated_minutes?: number | null;
+  /** What the learner will be able to do by the end of the lesson. */
+  objectives?: string[];
 }
 
 export interface GlossaryEntry {

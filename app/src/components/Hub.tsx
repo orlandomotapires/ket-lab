@@ -8,6 +8,7 @@ import { readLastLesson, resumeTarget } from "../lib/resume";
 import { useStoredFlag } from "../lib/storedFlag";
 import { NARROW, useMediaQuery } from "../lib/useMediaQuery";
 import { reviewKey, reviewScore, useStore } from "../state/store";
+import { LessonInfo } from "./LessonInfo";
 import { BookIcon, CheckIcon, ChevronRightIcon, ExportIcon, GlossaryIcon, ImportIcon, NoteIcon } from "./icons";
 
 type Status = "done" | "started" | "available" | "soon";
@@ -217,10 +218,12 @@ function Track({ track, progress, next, offline, action, openLesson }: {
           // The "Challenge" pill says nothing until the lesson is done.
           const challengeProgress = progress[`${section.id}:challenge`];
           const showChallengePill = section.has_challenge && Boolean(progress[section.id]?.completed || challengeProgress?.completed);
+          const hasGoals = section.available && Boolean(section.objectives?.length);
           return (
             <li key={section.id}>
               <button
                 className={`section-row is-${status}${isNext ? " is-next" : ""}`}
+                aria-describedby={hasGoals ? `goals-${section.id}` : undefined}
                 disabled={status === "soon" || offline}
                 onClick={() => void openLesson(section.id)}
               >
@@ -231,6 +234,7 @@ function Track({ track, progress, next, offline, action, openLesson }: {
                   <span className="section-title">
                     <span className="section-id">{section.id}</span>
                     {section.title}
+                    {hasGoals && <LessonInfo goals={section.objectives!} minutes={section.estimated_minutes} descriptionId={`goals-${section.id}`} />}
                     {notes[lessonNoteKey(section.id)] && <span className="note-dot" role="img" aria-label={t("notes.hasNote")} />}
                   </span>
                   <span className="section-summary">{section.summary}</span>

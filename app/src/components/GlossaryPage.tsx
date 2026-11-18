@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { filterTerms, initial, sortTerms, termId } from "../lib/glossarySearch";
 import { t } from "../strings";
 import { useStore } from "../state/store";
+import { ArrowLeftIcon } from "./icons";
 
 /** Every glossary term in one place: alphabetical, with a filter and the lesson that introduces each. */
 export function GlossaryPage() {
@@ -37,11 +38,10 @@ export function GlossaryPage() {
   return (
     <div className="hub-scroll">
       <main className="glossary-page">
-        <button className="btn btn-ghost btn-sm" onClick={closeGlossary}>
-          {returnsToLesson ? t("glossary.backToLesson") : t("notes.back")}
+        <button className="btn btn-sm btn-back" onClick={closeGlossary}>
+          <ArrowLeftIcon /> {returnsToLesson ? t("glossary.backToLesson") : t("notes.back")}
         </button>
         <h1>{t("glossary.title")}</h1>
-        <p className="muted">{t("glossary.intro")}</p>
 
         <div className="glossary-filter">
           <input

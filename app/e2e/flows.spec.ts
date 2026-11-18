@@ -6,7 +6,7 @@ test("the hub loads and search opens the right lesson", async ({ page }) => {
   await openHub(page);
   await expect(page.locator(".hub-side h1")).toHaveText("Learning tracks");
   await openLessonBySearch(page, "entanglement", "1.5");
-  await expect(page.locator(".lesson-title")).toContainText("Entanglement");
+  await expect(page.locator(".crumbs strong")).toContainText("Entanglement");
   expect(errors).toEqual([]);
 });
 
@@ -75,6 +75,8 @@ test("both themes render without errors", async ({ page }) => {
   const after = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(after).not.toEqual(before);
   await openLessonBySearch(page, "teleportation", "1.6");
+  // Further reading is folded at the end of the lesson; opening it shows the list.
+  await page.getByRole("button", { name: /^Further reading \(\d+\)/ }).click();
   await expect(page.locator(".references li")).not.toHaveCount(0);
   expect(errors).toEqual([]);
 });

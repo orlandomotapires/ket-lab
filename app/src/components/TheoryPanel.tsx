@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { readFlag, useStoredFlag, writeFlag } from "../lib/storedFlag";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { openExternal } from "../engine/client";
 import type { Prediction, Reference } from "../engine/types";
 import { t } from "../strings";
 import { selectSolutionOffer, useStore } from "../state/store";
-import { CheckIcon, TargetIcon } from "./icons";
+import { CheckIcon, ChevronRightIcon, TargetIcon } from "./icons";
 import { InlineText } from "./InlineText";
 import { Markdown } from "./Markdown";
 
@@ -42,52 +41,84 @@ function PredictionCard({ prediction }: { prediction: Prediction }) {
   );
 }
 
-function References({ items }: { items: Reference[] }) {
+/** "Further reading (3)" at the end of the lesson: one line until opened, so it does not
+ *  compete with the theory. The mission card links here once the lesson is solved. */
+const READING_ID = "further-reading";
+
+function References({ items, open, onToggle }: { items: Reference[]; open: boolean; onToggle: () => void }) {
   return (
-    <section className="references" aria-labelledby="references-title">
-      <h2 id="references-title" className="references-title">{t("theory.references")}</h2>
-      <p className="references-intro">{t("theory.referencesIntro")}</p>
-      <ul>
-        {items.map((ref) => (
-          <li key={ref.url}>
-            <span className={`pill ref-kind is-${ref.kind}`}>{t(`ref.${ref.kind}`)}</span>
-            <a
-              href={ref.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => {
-                event.preventDefault();
-                openExternal(ref.url);
-              }}
-            >
-              {ref.title}
-            </a>
-            <span className="ref-meta">
-              {ref.authors}
-              {ref.year ? `, ${ref.year}` : ""}
-            </span>
-            <span className="ref-location">{ref.location}</span>
-          </li>
-        ))}
-      </ul>
+    <section className="references" id={READING_ID} aria-labelledby="references-title">
+      <h2 id="references-title" className="references-title">
+        <button className="objectives-toggle" aria-expanded={open} aria-controls="references-list" onClick={onToggle}>
+          <span className="disclosure-caret" aria-hidden="true" />
+          {t("theory.referencesCount", { n: items.length })}
+        </button>
+      </h2>
+      {open && (
+        <div id="references-list">
+          <ul>
+            {items.map((ref) => (
+              <li key={ref.url}>
+                <span className={`pill ref-kind is-${ref.kind}`}>{t(`ref.${ref.kind}`)}</span>
+                <a
+                  href={ref.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    openExternal(ref.url);
+                  }}
+                >
+                  {ref.title}
+                </a>
+                <span className="ref-meta">
+                  {ref.authors}
+                  {ref.year ? `, ${ref.year}` : ""}
+                </span>
+                <span className="ref-location">{ref.location}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
 
+/** The opened hints and the button for the next one. "Hide hints" folds the list away (the hints
+ *  stay counted as seen); "Hints (2)" brings it back, and so does asking for the next hint. */
 function Hints({ hints, shown, onMore }: { hints: string[]; shown: number; onMore: () => void }) {
+  const [hidden, setHidden] = useState(false);
+  const listId = useId();
   return (
     <>
-      {shown > 0 && (
-        <ol className="hints">
+      {shown > 0 && !hidden && (
+        <ol className="hints" id={listId}>
           {hints.slice(0, shown).map((hint, index) => (
             <li key={index}><InlineText text={hint} /></li>
           ))}
         </ol>
       )}
-      {shown < hints.length && (
-        <button className="btn btn-sm" onClick={onMore}>
-          {t("theory.hint", { n: shown + 1, total: hints.length })}
-        </button>
+      {(shown < hints.length || shown > 0) && (
+        <div className="hint-actions">
+          {shown < hints.length && (
+            <button
+              className="btn btn-sm"
+              onClick={() => {
+                setHidden(false);
+                onMore();
+              }}
+            >
+              {t("theory.hint", { n: shown + 1, total: hints.length })}
+            </button>
+          )}
+          {shown > 0 && (
+            <button className="link small hints-toggle" aria-expanded={!hidden} aria-controls={listId} onClick={() => setHidden(!hidden)}>
+              <span className="disclosure-caret" aria-hidden="true" />
+              {hidden ? t("theory.hintsShow", { n: shown }) : t("theory.hintsHide")}
+            </button>
+          )}
+        </div>
       )}
     </>
   );
@@ -188,75 +219,33 @@ function MissionText({ text }: { text: string }) {
   );
 }
 
-/** "What you will learn (4)": open the first time a lesson is visited, then as the learner left it. */
-function Objectives({ lessonId, items }: { lessonId: string; items: string[] }) {
-  const key = `qlp.objectives.${lessonId}`;
-  const [open, setOpen] = useStoredFlag(key, true);
-  useEffect(() => {
-    // From the second visit on, it starts closed (unless the learner opened it).
-    if (readFlag(key) === null) writeFlag(key, false);
-  }, [key]);
+/** "Check yourself": the lesson's objectives, read back once the theory is done. */
+function Recap({ items }: { items: string[] }) {
   return (
-    <div className="objectives">
-      <button className="objectives-toggle" aria-expanded={open} aria-controls="objectives-list" onClick={() => setOpen(!open)}>
-        <span className="disclosure-caret" aria-hidden="true" />
-        {t("theory.learn", { n: items.length })}
-      </button>
-      {open && (
-        <ul id="objectives-list">
-          {items.map((objective) => (
-            <li key={objective}><InlineText text={objective} /></li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <section className="recap" aria-labelledby="recap-title">
+      <h2 id="recap-title" className="recap-title">{t("theory.recap")}</h2>
+      <p className="recap-intro">{t("theory.recapIntro")}</p>
+      <ul>
+        {items.map((objective) => (
+          <li key={objective}>
+            <span className="recap-mark" aria-hidden="true"><CheckIcon size={11} /></span>
+            <span><InlineText text={objective} /></span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
-/** The `##` headings of a theory text, as plain text (formulas and emphasis marks removed). */
-export function theoryHeadings(theory: string): string[] {
-  const headings: string[] = [];
-  let fenced = false;
-  for (const line of theory.split("\n")) {
-    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
-    const match = !fenced && /^##\s+(.+?)\s*#*\s*$/.exec(line);
-    if (match) headings.push(match[1].replace(/\$([^$]*)\$/g, "$1").replace(/[`*_]/g, "").trim());
-  }
-  return headings;
+/** Height of the pinned mission card: what the theory scrolls to sits just below it. */
+function pinnedHeight(scroll: HTMLElement): number {
+  return scroll.querySelector<HTMLElement>(".mission-pin")?.getBoundingClientRect().height ?? 0;
 }
 
-/** "Contents (5)": the theory's sections; choosing one scrolls the theory to it. */
-function Outline({ headings, scrollRef }: { headings: string[]; scrollRef: React.RefObject<HTMLDivElement | null> }) {
-  const [open, setOpen] = useState(false);
-  const go = (index: number) => {
-    const scroll = scrollRef.current;
-    const target = scroll?.querySelectorAll<HTMLElement>(".prose > h2")[index];
-    if (!scroll || !target) return;
-    // The mission card sticks to the top of the panel: leave room for it.
-    const pinned = scroll.querySelector<HTMLElement>(".mission-pin")?.getBoundingClientRect().height ?? 0;
-    const offset = target.getBoundingClientRect().top - scroll.getBoundingClientRect().top;
-    scroll.scrollTo({ top: scroll.scrollTop + offset - pinned - 8, behavior: "auto" });
-    setOpen(false);
-    target.setAttribute("tabindex", "-1");
-    target.focus({ preventScroll: true });
-  };
-  return (
-    <div className="objectives outline">
-      <button className="objectives-toggle" aria-expanded={open} aria-controls="outline-list" onClick={() => setOpen(!open)}>
-        <span className="disclosure-caret" aria-hidden="true" />
-        {t("theory.contents", { n: headings.length })}
-      </button>
-      {open && (
-        <ul id="outline-list" className="outline-list">
-          {headings.map((heading, index) => (
-            <li key={`${index}-${heading}`}>
-              <button className="link outline-item" onClick={() => go(index)}>{heading}</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+/** Scrolls the theory so that `target` sits right under the pinned card. */
+function scrollUnderPin(scroll: HTMLElement, target: HTMLElement): void {
+  const offset = target.getBoundingClientRect().top - scroll.getBoundingClientRect().top;
+  scroll.scrollTo({ top: scroll.scrollTop + offset - pinnedHeight(scroll) - 8, behavior: "auto" });
 }
 
 function readScroll(key: string): number {
@@ -309,24 +298,30 @@ export function TheoryPanel() {
   const challengeHintsShown = useStore((s) => s.challengeHintsShown);
   const solution = useStore((s) => s.solution);
   const { startChallenge, leaveChallenge } = useStore.getState();
+  // Further reading starts folded in each lesson; "Go deeper" on the solved mission opens it.
+  const [reading, setReading] = useState<{ lessonId: string | null; open: boolean }>({ lessonId, open: false });
+  const readingOpen = reading.lessonId === lessonId && reading.open;
+  const setReadingOpen = (open: boolean) => setReading({ lessonId, open });
+  const goDeeper = () => {
+    setReadingOpen(true);
+    requestAnimationFrame(() => {
+      const scroll = scrollRef.current;
+      const target = document.getElementById(READING_ID);
+      if (!scroll || !target) return;
+      scrollUnderPin(scroll, target);
+      target.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
+    });
+  };
   const completed = useStore((s) => Boolean(s.lesson && ((!s.challengeMode && s.validation?.passed) || s.progress[s.lesson.id]?.completed)));
   const challengeDone = useStore((s) => Boolean(s.lesson && ((s.challengeMode && s.validation?.passed) || s.progress[`${s.lesson.id}:challenge`]?.completed)));
   if (!lesson) return null;
-  const headings = theoryHeadings(lesson.theory);
   const inChallenge = challengeMode && Boolean(lesson.challenge);
 
-  // One scroll for the whole panel. The mission card sticks to its top, so the goal stays in
-  // view while the theory scrolls; the title and the objectives scroll away.
+  // One scroll for the whole panel. The mission card sticks to its top, so the goal stays in view
+  // while the theory scrolls. The lesson's name, time and goals are in the top bar.
   return (
     <aside className="panel theory" aria-label={t("theory.aria")}>
       <div className="panel-scroll theory-scroll" tabIndex={0} ref={scrollRef}>
-        <header className="lesson-head">
-          <p className="lesson-eyebrow">
-            {t("theory.lesson", { id: lesson.id })}
-            {lesson.estimated_minutes ? `, ${t("theory.minutes", { minutes: lesson.estimated_minutes })}` : ""}
-          </p>
-          <h1 className="lesson-title">{lesson.title}</h1>
-        </header>
         <div className="mission-pin">
           {inChallenge && lesson.challenge ? (
             <section className={`mission is-challenge${challengeDone ? " is-done" : ""}`} aria-labelledby="mission-title">
@@ -338,7 +333,7 @@ export function TheoryPanel() {
               </h2>
               <MissionText key={`${lesson.id}:c`} text={lesson.challenge.mission} />
               <MissionTools>
-                <Hints hints={lesson.challenge.hints} shown={challengeHintsShown} onMore={showNextHint} />
+                <Hints key={`${lesson.id}:c`} hints={lesson.challenge.hints} shown={challengeHintsShown} onMore={showNextHint} />
                 <SolutionOffer />
               </MissionTools>
             </section>
@@ -350,23 +345,29 @@ export function TheoryPanel() {
               </h2>
               <MissionText key={lesson.id} text={lesson.mission} />
               <MissionTools>
-                <Hints hints={lesson.hints} shown={hintsShown} onMore={showNextHint} />
+                <Hints key={lesson.id} hints={lesson.hints} shown={hintsShown} onMore={showNextHint} />
                 <SolutionOffer />
                 {completed && lesson.challenge && (
                   <button className="btn btn-sm btn-challenge" onClick={startChallenge}>
                     {challengeDone ? t("theory.challengeAgain") : t("theory.tryChallenge")}
                   </button>
                 )}
+                {completed && lesson.references?.length ? (
+                  <button className="link small go-deeper" onClick={goDeeper}>
+                    {t("theory.goDeeper", { n: lesson.references.length })} <ChevronRightIcon />
+                  </button>
+                ) : null}
               </MissionTools>
             </section>
           )}
         </div>
-        {!inChallenge && lesson.objectives.length > 0 && <Objectives key={`objectives:${lesson.id}`} lessonId={lesson.id} items={lesson.objectives} />}
-        {!inChallenge && headings.length >= 3 && <Outline key={`outline:${lesson.id}`} headings={headings} scrollRef={scrollRef} />}
         {solution !== null && <SolutionCard key={`${lesson.id}:${challengeMode}`} code={solution} />}
         <Markdown>{lesson.theory}</Markdown>
         {lesson.prediction && <PredictionCard key={lesson.id} prediction={lesson.prediction} />}
-        {lesson.references?.length ? <References items={lesson.references} /> : null}
+        {!inChallenge && lesson.objectives.length > 0 && <Recap items={lesson.objectives} />}
+        {lesson.references?.length ? (
+          <References items={lesson.references} open={readingOpen} onToggle={() => setReadingOpen(!readingOpen)} />
+        ) : null}
       </div>
     </aside>
   );

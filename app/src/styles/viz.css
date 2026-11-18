@@ -562,20 +562,6 @@ tr.is-zero {
 .readout-section > .section-label {
   margin: 0 0 8px;
 }
-.section-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  border: none;
-  background: none;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-.section-toggle:hover {
-  color: var(--text);
-}
 
 /* Generic curve charts (lessons without a circuit) */
 

@@ -46,7 +46,8 @@ function fixed(value: number): string {
 
 function tabLabel(kind: VisualizerKind, comparison: Comparison | undefined): string {
   if (kind === "compare" && comparison?.source_label && comparison.target_label) {
-    const short = (label: string) => label.split("·")[0].trim();
+    // "Original, qubit 0 before the CNOT" -> "Original": the full labels are under the spheres.
+    const short = (label: string) => label.split(/[·,]/)[0].trim();
     return `${short(comparison.source_label)} × ${short(comparison.target_label)}`;
   }
   return t(`viz.view.${kind}`);
@@ -83,7 +84,12 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
       {views.length > 1 && (
         <div className="segmented" role="group" aria-label={t("viz.views")}>
           {views.map((kind) => (
-            <button key={kind} aria-pressed={view === kind} onClick={() => setView(kind)}>
+            <button
+              key={kind}
+              aria-pressed={view === kind}
+              title={kind === "compare" && lesson?.comparison ? `${lesson.comparison.source_label} × ${lesson.comparison.target_label}` : undefined}
+              onClick={() => setView(kind)}
+            >
               {tabLabel(kind, lesson?.comparison)}
             </button>
           ))}
@@ -98,7 +104,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         {header}
         {view === "curve" ? (
           <div className={`panel-scroll curve-stack${resultIsCurrent ? "" : " is-stale"}`} tabIndex={0}>
-            <CurveView data={result?.analysis?.error ? null : result?.analysis?.curve} />
+            <CurveView data={result?.analysis?.error ? null : result?.analysis?.curve} live={lesson.live !== false} />
             {result?.analysis?.error && <p className="muted">{t("viz.analysisError", { error: result.analysis.error })}</p>}
             {printed && <Stdout text={printed} />}
           </div>

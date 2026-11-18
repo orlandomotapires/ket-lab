@@ -3,6 +3,7 @@
  * Data contract: see cleanCurves in lib/curve.ts and docs/adding-a-lesson.md.
  */
 import { cleanCurves, formatTick, makeAxis, seriesStats, type CurveChart } from "../lib/curve";
+import { modKey } from "../lib/platform";
 import { t } from "../strings";
 
 const W = 470;
@@ -130,8 +131,19 @@ function Chart({ chart, index }: { chart: CurveChart; index: number }) {
   );
 }
 
-export function CurveView({ data }: { data: unknown }) {
+/** `live`: the code runs as it is typed (no Run button), so the chart waits for the values, not for Run. */
+export function CurveView({ data, live = false }: { data: unknown; live?: boolean }) {
   const charts = cleanCurves(data);
-  if (charts.length === 0) return <p className="muted">{t("viz.curve.empty")}</p>;
+  if (charts.length === 0) {
+    return (
+      <div className="curve-empty">
+        <svg width="40" height="32" viewBox="0 0 40 32" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+          <path d="M3 2v27h35" />
+          <path d="M8 22c5-1 7-12 12-12s7 8 15 6" strokeDasharray="3 3" />
+        </svg>
+        <p>{live ? t("viz.curve.emptyLive") : t("viz.curve.empty", { key: modKey })}</p>
+      </div>
+    );
+  }
   return <>{charts.map((chart, i) => <Chart key={i} chart={chart} index={i} />)}</>;
 }

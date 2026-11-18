@@ -11,7 +11,7 @@ for (const scheme of ["light", "dark"] as const) {
     const tabs = page.locator(".visualizer .segmented");
     await expect(tabs.getByRole("button", { name: "Chart" })).toHaveAttribute("aria-pressed", "true");
     // The data dir is shared: the second run already finds the solution in the editor.
-    if (scheme === "light") await expect(page.locator(".visualizer")).toContainText("No data yet");
+    if (scheme === "light") await expect(page.locator(".visualizer")).toContainText("The chart appears once your code computes");
 
     await replaceCode(page, solutionOf("6.2"));
     // Two charts: the gap against s with its minimum marked, and the success probability against T.

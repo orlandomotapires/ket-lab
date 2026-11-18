@@ -2,6 +2,9 @@ import { useEffect, useRef } from "react";
 import { t, type MessageKey } from "../strings";
 import { useStore } from "../state/store";
 
+/** The author's page, linked from the signature at the end. */
+const AUTHOR_URL = "https://orlandomotapires.github.io/";
+
 const PROJECTS: MessageKey[] = ["about.after.1", "about.after.2", "about.after.3", "about.after.4", "about.after.5"];
 
 function duration(minutes: number): string {
@@ -102,6 +105,16 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
 
         <h3>{t("about.data.title")}</h3>
         <p>{t(hosted ? "about.data.hosted" : "about.data.local")}</p>
+
+        <p className="about-signoff">
+          {t("about.signoff")}
+          <span className="about-signature">
+            —{" "}
+            <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer" title={t("about.signatureLink")}>
+              {t("about.signature")}
+            </a>
+          </span>
+        </p>
       </div>
       <div className="dialog-actions">
         <span className="grow" />

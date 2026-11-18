@@ -231,7 +231,7 @@ def test_export_to_openqasm(library):
     with_server(test, library=library)
 
 
-def with_public_server(test, library, max_connections=0, workers=1):
+def with_public_server(test, library, max_connections=0, workers=1, with_pool=False):
     from qlp_engine.pool import WorkerGroup
 
     async def scenario():
@@ -242,7 +242,7 @@ def with_public_server(test, library, max_connections=0, workers=1):
         server = await engine.start(0)
         port = server.sockets[0].getsockname()[1]
         try:
-            await test(f"ws://127.0.0.1:{port}")
+            await (test(f"ws://127.0.0.1:{port}", pool) if with_pool else test(f"ws://127.0.0.1:{port}"))
         finally:
             server.close()
             await server.wait_closed()
@@ -287,26 +287,39 @@ def test_connection_limit(library):
 
 
 def test_worker_group_runs_jobs_in_parallel(library):
+    import threading
     import time
 
-    # Long enough (about half a second) that timing noise on slow CI machines stays small.
+    # Two jobs sent at once must run in two workers at the same time. Checked with when each worker
+    # was busy (its round trip to the process), not with total timings: on a small CI runner the two
+    # processes compete for the cores, so together they take as long as in series, yet they overlap.
     slow = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\n" + "x = sum(range(3_000_000))\n" * 12
 
-    async def test(url):
-        async with connect(url, origin="https://quantum.example") as a, connect(url, origin="https://quantum.example") as b:
-            await Client(a).call(type="run", code=GOOD)  # warm up
-            await asyncio.gather(Client(a).call(type="shots", code=GOOD), Client(b).call(type="shots", code=GOOD))
-            start = time.perf_counter()
-            await Client(a).call(type="shots", code=slow)
-            alone = time.perf_counter() - start
-            start = time.perf_counter()
-            results = await asyncio.gather(Client(a).call(type="shots", code=slow), Client(b).call(type="shots", code=slow))
-            together = time.perf_counter() - start
-            assert all(r["ok"] for r in results), results
-            # In series two jobs take about twice as long as one; in parallel, well under that.
-            assert together < 1.8 * alone, (alone, together)
+    async def test(url, group):
+        spans: list[tuple[int, float, float]] = []
+        lock = threading.Lock()
+        for index, pool in enumerate(group.pools):
+            def timed(*args, _roundtrip=pool._roundtrip, _index=index):
+                begin = time.perf_counter()
+                try:
+                    return _roundtrip(*args)
+                finally:
+                    with lock:
+                        spans.append((_index, begin, time.perf_counter()))
+            pool._roundtrip = timed
 
-    with_public_server(test, library, workers=2)
+        async with connect(url, origin="https://quantum.example") as a, connect(url, origin="https://quantum.example") as b:
+            await asyncio.gather(Client(a).call(type="run", code=GOOD), Client(b).call(type="run", code=GOOD))  # warm up
+            spans.clear()
+            results = await asyncio.gather(Client(a).call(type="shots", code=slow), Client(b).call(type="shots", code=slow))
+            assert all(r["ok"] for r in results), results
+
+        assert sorted(index for index, _, _ in spans) == [0, 1], spans  # one job on each worker
+        (_, begin_a, end_a), (_, begin_b, end_b) = spans
+        assert max(begin_a, begin_b) < min(end_a, end_b), spans  # and they were busy at the same time
+        assert group.pools[0]._process.pid != group.pools[1]._process.pid  # in two processes
+
+    with_public_server(test, library, workers=2, with_pool=True)
 
 
 def test_progress_is_migrated_to_the_new_lesson_ids(tmp_path):

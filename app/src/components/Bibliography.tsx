@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { openExternal } from "../engine/client";
 import { t } from "../strings";
 import { useStore } from "../state/store";
+import { ArrowLeftIcon } from "./icons";
 
 interface Work {
   kind: "book" | "paper" | "course" | "tutorial";
@@ -129,9 +130,8 @@ export function Bibliography() {
   return (
     <div className="hub-scroll">
       <main className="bibliography">
-        <button className="btn btn-ghost btn-sm" onClick={backToHub}>{t("bib.back")}</button>
+        <button className="btn btn-sm btn-back" onClick={backToHub}><ArrowLeftIcon /> {t("bib.back")}</button>
         <h1>{t("bib.title")}</h1>
-        <p className="muted">{t("bib.intro")}</p>
 
         <div className="bib-toolbar">
           <nav className="bib-toc" aria-label={t("bib.contents")}>
@@ -159,7 +159,6 @@ export function Bibliography() {
             {of("book").length > 0 && (
               <section id="bib-books">
                 <h2>{t("bib.books")}</h2>
-                <p className="muted small">{t("bib.booksNote")}</p>
                 {of("book").map((work) => (
                   <article key={work.title} className="bib-book">
                     <h3>

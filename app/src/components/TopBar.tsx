@@ -51,11 +51,11 @@ export function TopBar() {
           </nav>
         </>
       ) : (
-        <div className="brand">
+        <button type="button" className="brand brand-link" onClick={backToHub} title={t("topbar.home")}>
           <LogoMark />
           <span>{t("app.name")}</span>
           <span className="brand-tagline">{t("app.tagline")}</span>
-        </div>
+        </button>
       )}
       </div>
       <SearchBox />

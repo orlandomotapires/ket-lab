@@ -190,6 +190,23 @@ button {
     display: none;
   }
 }
+/* The brand doubles as the link to the home page. */
+.brand-link {
+  margin: 0;
+  padding: 4px 6px;
+  margin-left: -6px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.brand-link:hover {
+  background: var(--surface-2);
+}
 .brand-mark {
   color: var(--accent);
   flex: none;
@@ -298,6 +315,22 @@ button {
   height: 30px;
   padding: 0 11px;
   font-size: 13px;
+}
+/* "Back to …" buttons: outlined with a leading arrow, so they read as navigation at a glance. */
+.btn-back {
+  align-self: flex-start;
+  color: var(--accent-text);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.btn-back:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.btn-back svg {
+  transition: transform 0.12s ease;
+}
+.btn-back:hover svg {
+  transform: translateX(-2px);
 }
 .btn-icon {
   width: 34px;

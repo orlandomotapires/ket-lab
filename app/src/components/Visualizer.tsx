@@ -13,7 +13,6 @@ import {
   vectorLength,
 } from "../lib/quantum";
 import { stepForLine } from "../lib/steps";
-import { useStoredFlag } from "../lib/storedFlag";
 import { selectCurrentStep, useStore, type TrainingState } from "../state/store";
 import { MixedProbabilities, Probabilities, ShotsHistogram } from "./Probabilities";
 import { CurveView } from "./viewsCurve";
@@ -417,19 +416,12 @@ function CompareStage({ result, snapshot, code, comparison }: {
 /** Views that plot a training run: the numeric readouts of the circuit state say nothing about them. */
 const TRAINING_VIEWS: VisualizerKind[] = ["convergence", "landscape", "dissociation", "graph", "boundary", "threshold"];
 
-/** A readout that can be folded. Whether it is open is remembered per section. */
+/** A readout under the state view (always open). */
 function ReadoutSection({ id, title, children }: { id: string; title: string; children: ReactNode }) {
-  const [open, setOpen] = useStoredFlag(`qlp.viz.${id}`, true);
-  const bodyId = `readout-${id}`;
   return (
-    <section className="readout-section">
-      <h3 className="section-label">
-        <button className="section-toggle" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen(!open)}>
-          <span className="disclosure-caret" aria-hidden="true" />
-          {title}
-        </button>
-      </h3>
-      {open && <div id={bodyId}>{children}</div>}
+    <section className="readout-section" aria-labelledby={`readout-${id}`}>
+      <h3 className="section-label" id={`readout-${id}`}>{title}</h3>
+      {children}
     </section>
   );
 }

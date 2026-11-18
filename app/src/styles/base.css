@@ -232,6 +232,74 @@ button {
   color: var(--muted);
   margin-right: 6px;
 }
+/* "i" after a lesson name (top bar and hub rows): its goals in a popover. */
+.lesson-info {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--muted);
+}
+.lesson-info:hover {
+  color: var(--accent-text);
+}
+.lesson-info-button {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: help;
+}
+.lesson-info-button:hover,
+.lesson-info-button:focus-visible {
+  background: var(--surface-2);
+}
+.lesson-info-icon {
+  display: inline-flex;
+  align-self: center;
+  cursor: help;
+}
+.lesson-info-pop {
+  position: fixed;
+  z-index: 50;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 16px));
+  padding: 10px 14px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  text-align: left;
+}
+.lesson-info-time {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.lesson-info-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+.lesson-info-pop ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-2);
+}
+.lesson-info-pop code {
+  font: 0.92em var(--font-mono);
+  padding: 0 3px;
+  border-radius: 4px;
+  background: var(--surface-3);
+}
 .crumb-sep {
   color: var(--line-strong);
 }

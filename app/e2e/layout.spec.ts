@@ -101,31 +101,52 @@ test("Check is the one main action, then Next lesson", async ({ page }) => {
   await expect(page.locator(".oracle-actions .btn-primary")).toHaveText("Next lesson");
 });
 
-test("objectives: open on the first visit, collapsible, and remembered per lesson", async ({ page }) => {
+test("objectives: an \"i\" next to the lesson name shows them on hover; the lesson reads them back at the end", async ({ page }) => {
   await openHub(page);
+  // Hub: the "i" in the next lesson's row, and the row describes the goals to screen readers.
+  const row = page.locator(".section-row.is-next");
+  await expect(row).toHaveAttribute("aria-describedby", /^goals-/);
+  await row.locator(".lesson-info").hover();
+  const pop = page.getByRole("tooltip");
+  await expect(pop).toContainText("What you will learn");
+  await expect(pop.locator("li").first()).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expect(pop).toHaveCount(0);
+
+  // Lesson: no title or goals above the mission; the "i" is in the top bar, by keyboard too.
   await openLessonBySearch(page, "entanglement", "1.5");
-  const toggle = page.getByRole("button", { name: /What you will learn \(\d+\)/ });
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator(".objectives li").first()).toBeVisible();
-  // Visiting the lesson again: closed.
-  await page.reload();
-  await openLessonBySearch(page, "entanglement", "1.5");
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(page.locator(".objectives li")).toHaveCount(0);
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  // Open stays open after another visit.
-  await page.reload();
-  await openLessonBySearch(page, "entanglement", "1.5");
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  // Another lesson has its own state: open on its first visit.
-  await page.getByRole("button", { name: "Tracks" }).click();
+  await expect(page.locator(".theory h1")).toHaveCount(0);
+  const info = page.getByRole("button", { name: "What you will learn" });
+  await info.focus();
+  await expect(pop).toContainText(/About \d+ min/);
+  await page.keyboard.press("Escape");
+  await expect(pop).toHaveCount(0);
+  const recap = page.locator(".recap");
+  await expect(recap.locator("li").first()).toBeAttached();
+  const recapTop = (await recap.boundingBox())!.y;
+  const lastHeading = (await page.locator(".prose > h2").last().boundingBox())!.y;
+  expect(recapTop).toBeGreaterThan(lastHeading);
+});
+
+test("further reading: folded at the end, and the solved mission links to it", async ({ page }) => {
+  await openHub(page);
   await openLessonBySearch(page, "computational basis", "1.1");
-  await expect(page.getByRole("button", { name: /What you will learn/ })).toHaveAttribute("aria-expanded", "true");
+  const toggle = page.getByRole("button", { name: /^Further reading \(\d+\)/ });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator(".references a")).toHaveCount(0);
+
+  // Progress is shared between tests, so 1.1 may already be solved: solving it again is harmless.
+  await replaceCode(page, solutionOf("1.1"));
+  await pressButton(page, "Check");
+  await expect(page.locator(".oracle")).toHaveClass(/is-success/);
+  await page.getByRole("button", { name: /Go deeper/ }).click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(toggle).toBeFocused();
+  await expect(page.locator(".references a").first()).toBeInViewport();
 });
 
 // Lesson 1.3: no other test completes it, so its challenge pill starts hidden.
-test("challenge mode hides the objectives; the hub shows the Challenge pill only after the mission", async ({ page }) => {
+test("challenge mode hides the recap of the objectives; the hub shows the Challenge pill only after the mission", async ({ page }) => {
   await openHub(page);
   const pill = page.locator(".section-row", { has: page.locator(".section-id", { hasText: /^1\.3$/ }) }).locator(".pill", { hasText: "Challenge" });
   await expect(pill).toHaveCount(0);
@@ -135,7 +156,7 @@ test("challenge mode hides the objectives; the hub shows the Challenge pill only
   await expect(page.locator(".oracle")).toHaveClass(/is-success/);
   await page.getByRole("button", { name: "Try the challenge" }).click();
   await expect(page.locator(".mission.is-challenge")).toBeVisible();
-  await expect(page.locator(".objectives")).toHaveCount(0);
+  await expect(page.locator(".recap")).toHaveCount(0);
   await page.getByRole("button", { name: "Tracks" }).click();
   await expect(pill).toHaveCount(1);
 });

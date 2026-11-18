@@ -30,12 +30,20 @@ if (nodeMajor < 22) {
 
 /** First Python 3.11+ found among the usual names. */
 function findPython() {
-  for (const candidate of windows ? ["py", "python"] : ["python3", "python"]) {
+  // Versioned names matter on Linux, where python3 is often an older system Python.
+  const candidates = windows ? ["py", "python"] : ["python3", "python", "python3.16", "python3.15", "python3.14", "python3.13", "python3.12", "python3.11"];
+  for (const candidate of candidates) {
     const probe = spawnSync(candidate, ["-c", "import sys; print(sys.version_info[0], sys.version_info[1])"], { encoding: "utf-8", shell: windows });
     if (probe.status !== 0) continue;
     const [major, minor] = probe.stdout.trim().split(" ").map(Number);
-    if (major === 3 && minor >= 11) return candidate;
-    console.error(`${candidate} is Python ${major}.${minor}; 3.11 or newer is needed.`);
+    if (major !== 3 || minor < 11) {
+      console.error(`${candidate} is Python ${major}.${minor}; 3.11 or newer is needed.`);
+      continue;
+    }
+    // Debian and Ubuntu ship venv separately; without it, creating the environment fails.
+    const venvProbe = spawnSync(candidate, ["-c", "import venv, ensurepip"], { encoding: "utf-8", shell: windows });
+    if (venvProbe.status === 0) return candidate;
+    console.error(`${candidate} is Python ${major}.${minor} but lacks the venv module. On Debian or Ubuntu: sudo apt install python${major}.${minor}-venv`);
   }
   return null;
 }

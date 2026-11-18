@@ -160,3 +160,52 @@ test("challenge mode hides the recap of the objectives; the hub shows the Challe
   await page.getByRole("button", { name: "Tracks" }).click();
   await expect(pill).toHaveCount(1);
 });
+
+test("hub: clicking a track's header opens and closes its lessons", async ({ page }) => {
+  await openHub(page);
+  const track = page.locator("#track-3");
+  const toggle = track.locator(".track-toggle");
+  const startedOpen = (await toggle.getAttribute("aria-expanded")) === "true";
+  await track.locator(".track-head h2").click();
+  await expect(toggle).toHaveAttribute("aria-expanded", String(!startedOpen));
+  await track.locator(".track-stats").click();
+  await expect(toggle).toHaveAttribute("aria-expanded", String(startedOpen));
+  // The button still works on its own (one toggle, not two).
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", String(!startedOpen));
+});
+
+test("opened hints can be hidden and shown again, and stay counted", async ({ page }) => {
+  await openHub(page);
+  await openLessonBySearch(page, "superposition", "1.2");
+  await page.getByRole("button", { name: /Show hint 1/ }).click();
+  await page.getByRole("button", { name: /Show hint 2/ }).click();
+  await expect(page.locator(".hints li")).toHaveCount(2);
+  const toggle = page.getByRole("button", { name: "Hide hints" });
+  await toggle.click();
+  await expect(page.locator(".hints")).toHaveCount(0);
+  const reopen = page.getByRole("button", { name: "Hints (2)" });
+  await expect(reopen).toHaveAttribute("aria-expanded", "false");
+  // The next hint is still the third one.
+  await expect(page.getByRole("button", { name: /Show hint 3 of/ })).toBeVisible();
+  await reopen.click();
+  await expect(page.locator(".hints li")).toHaveCount(2);
+  // Asking for the next hint while hidden opens the list with it.
+  await page.getByRole("button", { name: "Hide hints" }).click();
+  await page.getByRole("button", { name: /Show hint 3 of/ }).click();
+  await expect(page.locator(".hints li")).toHaveCount(3);
+});
+
+test("hub: the journey bar names the current track and jumps to a track", async ({ page }) => {
+  await openHub(page);
+  const segments = page.getByRole("navigation", { name: "Course progress by track" }).getByRole("button");
+  await expect(segments).toHaveCount(7);
+  await expect(page.locator(".journey-caption")).toContainText("You are on");
+  const target = segments.filter({ has: page.locator(".journey-number", { hasText: /^4$/ }) });
+  await expect(target).toHaveAccessibleName(/^Track 4, .+: \d+ of \d+ lessons completed$/);
+  await target.hover();
+  await expect(page.locator(".journey-caption")).not.toContainText("You are on");
+  await target.click();
+  await expect(page.locator("#track-4 .track-toggle")).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#track-4")).toBeInViewport();
+});

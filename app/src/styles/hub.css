@@ -7,20 +7,39 @@
   min-height: 0;
   overflow: auto;
 }
-/* Two columns: fixed side panel and the tracks, which start right at the top. */
+/* Three columns, so the tracks sit in the middle of the page: equal gutters on both sides, and
+   the side panel in the left gutter, against the tracks. The tracks give up width (down to
+   560 px) to stay centred; on screens narrower than that, the left gutter keeps its 340 px for
+   the panel and the tracks sit a little right of centre. */
 .hub {
+  --hub-side: 340px;
+  --hub-gap: 32px;
   width: 100%;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 24px 28px 48px;
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: 32px;
+  grid-template-columns:
+    minmax(var(--hub-side), 1fr)
+    minmax(0, min(860px, max(560px, calc(100% - 2 * (var(--hub-side) + var(--hub-gap))))))
+    minmax(0, 1fr);
+  gap: var(--hub-gap);
   align-items: start;
+}
+.hub > .hub-side {
+  grid-column: 1;
+  justify-self: end;
+  width: var(--hub-side);
+}
+.hub > .hub-tracks {
+  grid-column: 2;
 }
 .hub-side {
   position: sticky;
-  top: 24px; /* same gap as the page top, also while scrolling */
+  /* The 4 px padding keeps room for the focus ring of the first button (the panel scrolls, so
+     it would clip it); the panel starts 4 px higher to make up for it, so its first button
+     lines up with the top of the first track card, also while scrolling. */
+  top: 20px;
+  margin-top: -4px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -37,17 +56,6 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
-}
-.hub-progress {
-  padding: 0 6px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--muted);
-}
-.hub-progress .meter {
-  flex: 1;
 }
 .hub-actions {
   display: flex;
@@ -72,12 +80,6 @@
   font-weight: 600;
   line-height: 1.3;
 }
-.hub-index {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--line);
-  padding-top: 8px;
-}
 .hub-index-item {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) auto;
@@ -89,10 +91,6 @@
   border-radius: var(--radius-sm);
   text-align: left;
   cursor: pointer;
-}
-/* The track index is one line per track: the level is on the track cards already. */
-.hub-index > .hub-index-item {
-  padding: 6px;
 }
 .hub-index-item:hover {
   background: var(--surface);
@@ -120,25 +118,106 @@
   font-size: 12px;
   color: var(--muted);
 }
-/* A thin bar per track, under its title: the index shows how far each track is. */
-.hub-index-bar {
-  display: block;
-  height: 3px;
-  margin-top: 5px;
-  border-radius: 99px;
-  background: var(--line);
-  overflow: hidden;
+/* Journey: the course as one bar, a segment per track (width = lessons). */
+.journey {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 6px 4px;
+  border-top: 1px solid var(--line);
 }
-.hub-index-bar > span {
+.journey-total {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.journey-bar {
+  display: flex;
+  gap: 4px;
+}
+.journey-segment {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0 2px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+.journey-fill {
+  align-self: stretch;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--line-strong); /* visible even at 0% */
+  overflow: hidden;
+  transition: transform 0.12s ease;
+}
+.journey-fill > span {
   display: block;
   height: 100%;
-  border-radius: inherit;
   background: var(--accent);
+  transition: width 0.35s ease;
 }
-.hub-index-count {
-  font-size: 12.5px;
+.journey-segment.is-complete .journey-fill > span {
+  background: var(--success);
+}
+.journey-number {
+  font-size: 12px;
+  font-weight: 500;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+/* The track you are on: its number in the accent colour, with a dot under it. */
+.journey-segment.is-current .journey-number {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.journey-segment.is-current .journey-fill {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--accent);
+}
+.journey-segment:hover .journey-fill,
+.journey-segment:focus-visible .journey-fill {
+  transform: scaleY(1.4);
+}
+.journey-segment:hover .journey-number {
+  color: var(--text);
+}
+.journey-segment:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.journey-caption {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 20px;
+  margin: 0;
+  font-size: 13px;
+}
+.journey-caption-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+}
+.journey-caption-count {
+  flex: none;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-fill,
+  .journey-fill > span {
+    transition: none;
+  }
 }
 .hub-tracks {
   min-width: 0;
@@ -161,6 +240,7 @@
   align-items: center;
   gap: 16px;
   padding: 14px 20px 12px;
+  cursor: pointer;
 }
 .track-eyebrow {
   display: flex;
@@ -169,6 +249,17 @@
   font-size: 12.5px;
   color: var(--muted);
   margin-bottom: 3px;
+}
+/* Clicking anywhere on the header opens or closes the track, so the whole header reacts to the
+   pointer. The Show/Hide button keeps no hover of its own here, or it would stand out as a patch. */
+.track-head {
+  transition: background-color 0.12s ease;
+}
+.track-head:hover {
+  background: var(--surface-2);
+}
+.track-head .track-toggle:hover:not(:disabled) {
+  background: transparent;
 }
 .track-head h2 {
   font-size: 17px;
@@ -281,8 +372,20 @@
 .section-row.is-next:hover:not(:disabled) {
   background: var(--accent-soft);
 }
+/* The "i" of the goals follows the same rule as the action: one per open track would be noise,
+   so it shows on the next lesson and on the row under the pointer or keyboard focus. */
+.section-row .lesson-info {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.section-row.is-next .lesson-info,
+.section-row:hover .lesson-info,
+.section-row:focus-visible .lesson-info {
+  opacity: 1;
+}
 @media (hover: none) and (pointer: coarse) {
-  .section-row .section-action {
+  .section-row .section-action,
+  .section-row .lesson-info {
     opacity: 1;
   }
 }
@@ -291,6 +394,13 @@
   .hub {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
+    max-width: 900px;
+  }
+  .hub > .hub-side,
+  .hub > .hub-tracks {
+    grid-column: 1;
+    width: auto;
+    justify-self: stretch;
   }
   .hub-side {
     position: static;
@@ -300,9 +410,6 @@
   .hub-actions {
     flex-direction: row;
     flex-wrap: wrap;
-  }
-  .hub-index {
-    display: none;
   }
   /* Below the tracks: a little space and a rule to separate them. */
   .hub-tracks > .hub-extras {

@@ -673,9 +673,12 @@ button {
 }
 
 /* Long titles are cut with an ellipsis (the full title is in the tooltip), the lesson's before its track's. */
+/* The lesson title does not shrink (flex-shrink is weighted by width, so a long track name still
+   took a pixel from it, enough to cut "QUBO" to "QU…"); the track name gives way instead. The cap
+   leaves room for the "i" and the separator, so a very long title is still cut with an ellipsis. */
 .crumbs > strong {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 auto;
+  max-width: calc(100% - 4.5em);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

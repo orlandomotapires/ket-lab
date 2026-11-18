@@ -1,3 +1,28 @@
+/* Chart not drawn yet: centred in the panel, with a faint outline of a chart. */
+.curve-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+  min-height: 260px;
+  padding: 24px;
+  color: var(--faint, var(--muted));
+  text-align: center;
+}
+/* The chart area is normally as tall as its charts; empty, it fills the panel so the note sits
+   in the middle. */
+.visualizer > .curve-stack:has(> .curve-empty) {
+  flex: 1 1 auto;
+}
+.curve-empty p {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
 /* State panel: visualizer, readouts, 2D charts and training views.
    Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
 /* visualizer */

@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import * as THREE from "three";
 import type { Complex, Vec3 } from "../engine/types";
 import { t } from "../strings";
+import { ZoomInIcon, ZoomOutIcon } from "./icons";
 import { phaseColor, phaseOf, probability, qspherePositions } from "../lib/quantum";
 import { PALETTES, useTheme, type Palette } from "../theme/theme";
 
@@ -77,52 +78,149 @@ interface View {
   pitch: number;
 }
 
-/** Container with canvas, orthographic camera and drag rotation. */
+/** Zoom of a scene: a factor over the fitted size, and where the camera looks (scene units). */
+interface Zoom {
+  factor: number;
+  x: number;
+  y: number;
+}
+
+const FIT: Zoom = { factor: 1, x: 0, y: 0 };
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 8;
+const ZOOM_STEP = 1.4;
+
+/** Pixels per scene unit when the whole grid fits, leaving room for the captions above and below. */
+function fitScale(width: number, height: number, cols: number, rows: number): number {
+  return Math.min(width / (cols * CELL), (height - 40) / (rows * CELL));
+}
+
+/** Zooms to `factor`, keeping the scene point under (px, py) (pixels from the frame's top left) where it is. */
+function zoomAt(zoom: Zoom, factor: number, px: number, py: number, width: number, height: number, base: number): Zoom {
+  const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, factor));
+  if (next === MIN_ZOOM) return FIT;
+  const dx = px - width / 2;
+  const dy = height / 2 - py;
+  const before = base * zoom.factor;
+  const after = base * next;
+  // The point under the pointer: camera + offset / scale. It stays put when the scale changes.
+  return { factor: next, x: zoom.x + dx / before - dx / after, y: zoom.y + dy / before - dy / after };
+}
+
+/** Container with canvas, orthographic camera, drag rotation and zoom: pinch, Ctrl/⌘ + wheel
+ *  (a trackpad pinch arrives as one) or the buttons. A plain wheel still scrolls the panel. */
 function SceneFrame({ cols, rows, children }: { cols: number; rows: number; children: (view: View) => ReactNode }) {
   const [view, setView] = useState<View>({ yaw: -0.6, pitch: 0.32 });
+  const [zoom, setZoom] = useState<Zoom>(FIT);
+  const frameRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
+  // Touch points on the scene: two of them pinch.
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<number | null>(null);
+
+  const zoomBy = (ratio: number, clientX?: number, clientY?: number) => {
+    const rect = frameRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const px = clientX === undefined ? rect.width / 2 : clientX - rect.left;
+    const py = clientY === undefined ? rect.height / 2 : clientY - rect.top;
+    const base = fitScale(rect.width, rect.height, cols, rows);
+    setZoom((z) => zoomAt(z, z.factor * ratio, px, py, rect.width, rect.height, base));
+  };
+
+  // React wheel listeners are passive, and Ctrl + wheel must not zoom the whole page.
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      // A mouse notch (deltaY about 100) zooms by about 1.35; a trackpad pinch sends many small deltas.
+      const delta = Math.max(-50, Math.min(50, event.deltaY));
+      zoomBy(Math.exp(-delta * 0.006), event.clientX, event.clientY);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  });
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    drag.current = { x: event.clientX, y: event.clientY };
+    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     event.currentTarget.setPointerCapture(event.pointerId);
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      pinch.current = Math.hypot(a.x - b.x, a.y - b.y);
+      drag.current = null;
+    } else {
+      drag.current = { x: event.clientX, y: event.clientY };
+    }
   };
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (pointers.current.has(event.pointerId)) pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pinch.current !== null && pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch.current > 0) zoomBy(distance / pinch.current, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      pinch.current = distance;
+      return;
+    }
     if (!drag.current) return;
     const dx = event.clientX - drag.current.x;
     const dy = event.clientY - drag.current.y;
     drag.current = { x: event.clientX, y: event.clientY };
     setView((v) => ({ yaw: v.yaw + dx * 0.01, pitch: Math.max(-1.4, Math.min(1.4, v.pitch + dy * 0.01)) }));
   };
-  const onPointerUp = () => {
+  const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    pointers.current.delete(event.pointerId);
+    if (pointers.current.size < 2) pinch.current = null;
     drag.current = null;
   };
 
+  const zoomed = zoom.factor > MIN_ZOOM;
   return (
-    <div
-      className="scene"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      title={t("viz.dragToRotate")}
-    >
-      <Canvas orthographic frameloop="demand" dpr={[1, 2]} camera={{ position: [0, 0, 10], near: 0.1, far: 50, zoom: 80 }} gl={{ antialias: true, alpha: true }}>
-        <FitCamera cols={cols} rows={rows} />
-        {children(view)}
-      </Canvas>
-    </div>
+    <>
+      <div
+        ref={frameRef}
+        className="scene"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onDoubleClick={() => setZoom(FIT)}
+        title={t("viz.dragToRotate")}
+      >
+        <Canvas orthographic frameloop="demand" dpr={[1, 2]} camera={{ position: [0, 0, 10], near: 0.1, far: 50, zoom: 80 }} gl={{ antialias: true, alpha: true }}>
+          <FitCamera cols={cols} rows={rows} zoom={zoom} />
+          {children(view)}
+        </Canvas>
+      </div>
+      <div className="scene-zoom" role="group" aria-label={t("viz.zoom")}>
+        <button type="button" onClick={() => zoomBy(1 / ZOOM_STEP)} disabled={!zoomed} aria-label={t("viz.zoomOut")} title={t("viz.zoomOut")}>
+          <ZoomOutIcon />
+        </button>
+        <button type="button" onClick={() => zoomBy(ZOOM_STEP)} disabled={zoom.factor >= MAX_ZOOM} aria-label={t("viz.zoomIn")} title={t("viz.zoomIn")}>
+          <ZoomInIcon />
+        </button>
+        {zoomed && (
+          <button type="button" className="scene-zoom-reset" onClick={() => setZoom(FIT)} title={t("viz.zoomResetHint")}>
+            {t("viz.zoomReset")}
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 
-function FitCamera({ cols, rows }: { cols: number; rows: number }) {
+function FitCamera({ cols, rows, zoom }: { cols: number; rows: number; zoom: Zoom }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
-    // Leaves room for the caption at the top and the bottom of the stage.
-    camera.zoom = Math.min(size.width / (cols * CELL), (size.height - 40) / (rows * CELL));
-    camera.position.y = -6 / camera.zoom;
+    const base = fitScale(size.width, size.height, cols, rows);
+    camera.zoom = base * zoom.factor;
+    // -6 / base leaves room for the caption at the top of the stage. It is the same shift at every
+    // zoom, so zooming about the pointer (zoomAt) is not thrown off by it.
+    camera.position.x = zoom.x;
+    camera.position.y = zoom.y - 6 / base;
     camera.updateProjectionMatrix();
     invalidate();
-  }, [camera, size, cols, rows, invalidate]);
+  }, [camera, size, cols, rows, zoom, invalidate]);
   return null;
 }
 

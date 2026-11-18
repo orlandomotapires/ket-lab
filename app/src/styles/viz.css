@@ -92,6 +92,47 @@
 .scene:active {
   cursor: grabbing;
 }
+/* Zoom buttons: the top right corner of a 3D scene (the step caption is at the top left). */
+.scene-zoom {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.scene-zoom button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.scene-zoom button:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.scene-zoom button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.scene-zoom .scene-zoom-reset {
+  color: var(--accent-text);
+  padding: 0 10px;
+}
 .scene-label {
   font: 12px var(--font-mono);
   color: var(--text-2);

@@ -22,6 +22,19 @@ export const LogoMark = ({ size = 22 }: { size?: number }) => (
   </svg>
 );
 
+export const ZoomInIcon = () => (
+  <Icon>
+    <circle cx="7" cy="7" r="4.75" />
+    <path d="m10.5 10.5 3.25 3.25M7 4.9v4.2M4.9 7h4.2" />
+  </Icon>
+);
+export const ZoomOutIcon = () => (
+  <Icon>
+    <circle cx="7" cy="7" r="4.75" />
+    <path d="m10.5 10.5 3.25 3.25M4.9 7h4.2" />
+  </Icon>
+);
+
 export const InfoIcon = () => (
   <Icon>
     <circle cx="8" cy="8" r="6.25" />

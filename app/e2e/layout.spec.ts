@@ -209,3 +209,30 @@ test("hub: the journey bar names the current track and jumps to a track", async 
   await expect(page.locator("#track-4 .track-toggle")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#track-4")).toBeInViewport();
 });
+
+test("state view: zoom with the buttons or Ctrl+wheel, and back to the original zoom", async ({ page }) => {
+  await openHub(page);
+  await openLessonBySearch(page, "computational basis", "1.1");
+  const zoom = page.getByRole("group", { name: "Zoom" });
+  const zoomIn = zoom.getByRole("button", { name: "Zoom in" });
+  const zoomOut = zoom.getByRole("button", { name: "Zoom out" });
+  const reset = zoom.getByRole("button", { name: "Reset zoom" });
+  await expect(zoomOut).toBeDisabled();
+  await expect(reset).toHaveCount(0);
+  await zoomIn.click();
+  await expect(zoomOut).toBeEnabled();
+  await expect(reset).toBeVisible();
+  await reset.click();
+  await expect(reset).toHaveCount(0);
+  await expect(zoomOut).toBeDisabled();
+  // Ctrl + wheel zooms the scene, not the page; a double-click goes back.
+  const scene = page.locator(".visualizer .scene");
+  const box = (await scene.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.keyboard.down("Control");
+  await page.mouse.wheel(0, -100);
+  await page.keyboard.up("Control");
+  await expect(reset).toBeVisible();
+  await scene.dblclick();
+  await expect(reset).toHaveCount(0);
+});

@@ -5,6 +5,7 @@ import { t } from "../strings";
 import { useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
 import { ArrowLeftIcon, InfoIcon, LogoMark, MoonIcon, NoteIcon, SunIcon } from "./icons";
+import { LessonInfo } from "./LessonInfo";
 import { NOTES_BUTTON_ID } from "./NotesDrawer";
 import { ShortcutsDialog } from "./ShortcutsDialog";
 import { SearchBox } from "./SearchBox";
@@ -44,6 +45,9 @@ export function TopBar() {
                   <span className="crumb-id">{lesson.id}</span>
                   {lesson.title}
                 </strong>
+                {lesson.objectives.length > 0 && (
+                  <LessonInfo key={lesson.id} goals={lesson.objectives} minutes={lesson.estimated_minutes} focusable />
+                )}
               </>
             ) : (
               <strong>{t("topbar.sandbox")}</strong>
@@ -51,11 +55,11 @@ export function TopBar() {
           </nav>
         </>
       ) : (
-        <div className="brand">
+        <button type="button" className="brand brand-link" onClick={backToHub} title={t("topbar.home")}>
           <LogoMark />
           <span>{t("app.name")}</span>
           <span className="brand-tagline">{t("app.tagline")}</span>
-        </div>
+        </button>
       )}
       </div>
       <SearchBox />

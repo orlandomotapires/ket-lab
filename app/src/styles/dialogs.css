@@ -136,6 +136,31 @@
   line-height: 1.6;
   color: var(--text-2);
 }
+/* Closing note from the author, set apart from the sections above. */
+.about-body .about-signoff {
+  margin: 22px 0 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-style: italic;
+}
+.about-signature {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-weight: 600;
+  text-align: right;
+  color: var(--accent-text);
+}
+.about-signature a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.about-signature a:hover {
+  text-decoration-thickness: 2px;
+}
 .about-body .about-lead {
   margin: 14px 0 4px;
   font-size: 15.5px;

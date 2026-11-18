@@ -369,6 +369,7 @@ def test_review_questions_and_catalog_flags(library):
             tracks = {track["id"]: track for track in catalog["tracks"]}
             assert tracks[0]["review"] is False and tracks[1]["review"] is True
             assert tracks[1]["sections"][0]["estimated_minutes"] > 0
+            assert tracks[1]["sections"][0]["objectives"]
             review = await client.call(type="review", track=1)
             assert review["ok"] and 8 <= len(review["questions"]) <= 12
             assert not (await client.call(type="review", track=0))["ok"]

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { t } from "../strings";
 import { reviewKey, reviewScore, useStore } from "../state/store";
+import { ArrowLeftIcon } from "./icons";
 import { InlineText } from "./InlineText";
 
 /** End-of-track review: one question at a time, with the explanation after each answer. */
@@ -52,7 +53,7 @@ export function ReviewView() {
     return (
       <div className="hub-scroll">
         <main className="review">
-          <button className="btn btn-ghost btn-sm" onClick={backToHub}>{t("review.back")}</button>
+          <button className="btn btn-sm btn-back" onClick={backToHub}><ArrowLeftIcon /> {t("review.back")}</button>
           <p className="muted">{t("review.loadFailed")}</p>
         </main>
       </div>
@@ -129,7 +130,7 @@ export function ReviewView() {
           if (!event.ctrlKey && !event.metaKey && !event.altKey && n >= 1 && n <= question.options.length) choose(n - 1);
         }}
       >
-        <button className="btn btn-ghost btn-sm" onClick={backToHub}>{t("review.back")}</button>
+        <button className="btn btn-sm btn-back" onClick={backToHub}><ArrowLeftIcon /> {t("review.back")}</button>
         <p className="review-eyebrow">
           {t("review.title", { id: track })}
           {trackTitle ? `: ${trackTitle}` : ""}

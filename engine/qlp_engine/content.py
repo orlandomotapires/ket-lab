@@ -427,14 +427,18 @@ class ContentLibrary:
         }
 
     def _section_flags(self, lesson_id: str) -> dict:
-        """End-of-track project and whether a challenge exists, for the track map."""
+        """End-of-track project, whether a challenge exists and the objectives, for the track map."""
         if lesson_id not in self._lessons:
             return {}
-        manifest = self._json(self._lessons[lesson_id] / "manifest.json")
+        folder = self._lessons[lesson_id]
+        manifest = self._json(folder / "manifest.json")
+        text = self._json(folder / "text.json")
         return {
             "project": bool(manifest.get("project")),
             "has_challenge": "challenge" in manifest,
             "estimated_minutes": manifest.get("estimated_minutes"),
+            # Shown on the home page, where the learner chooses what to study next.
+            "objectives": text.get("objectives", []),
         }
 
     def _review_path(self, track_id) -> Path | None:

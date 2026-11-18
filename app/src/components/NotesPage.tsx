@@ -3,6 +3,7 @@ import { GENERAL_NOTE, lessonNoteKey, lessonOfKey } from "../lib/notes";
 import { altKey } from "../lib/platform";
 import { t } from "../strings";
 import { useStore } from "../state/store";
+import { ArrowLeftIcon } from "./icons";
 import { NoteField, NoteStatus } from "./NoteField";
 
 /** Every note in one place: the general note on top, then the lesson notes by track. */
@@ -40,7 +41,7 @@ export function NotesPage() {
   return (
     <div className="hub-scroll">
       <main className="notes-page">
-        <button className="btn btn-ghost btn-sm" onClick={backToHub}>{t("notes.back")}</button>
+        <button className="btn btn-sm btn-back" onClick={backToHub}><ArrowLeftIcon /> {t("notes.back")}</button>
         <div className="notes-page-head">
           <h1>{t("notes.title")}</h1>
           <NoteStatus text={{ saving: t("notes.saving"), saved: t("notes.saved"), error: t("notes.failed") }} />

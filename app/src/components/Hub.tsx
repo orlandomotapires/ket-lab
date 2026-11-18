@@ -8,6 +8,7 @@ import { readLastLesson, resumeTarget } from "../lib/resume";
 import { useStoredFlag } from "../lib/storedFlag";
 import { NARROW, useMediaQuery } from "../lib/useMediaQuery";
 import { reviewKey, reviewScore, useStore } from "../state/store";
+import { LessonInfo } from "./LessonInfo";
 import { BookIcon, CheckIcon, ChevronRightIcon, ExportIcon, GlossaryIcon, ImportIcon, NoteIcon } from "./icons";
 
 type Status = "done" | "started" | "available" | "soon";
@@ -36,14 +37,6 @@ function formatMinutes(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return m === 0 ? `${h} h` : `${h} h ${m} min`;
-}
-
-function Meter({ value }: { value: number }) {
-  return (
-    <div className="meter" role="presentation">
-      <span style={{ width: `${Math.round(value * 100)}%` }} />
-    </div>
-  );
 }
 
 export function Hub() {
@@ -104,39 +97,7 @@ export function Hub() {
               {t("hub.sandbox")}
             </button>
           </div>
-          <nav className="hub-index" aria-label={t("topbar.tracks")}>
-            {catalog.tracks.map((track) => {
-              const trackDone = track.sections.filter((section) => progress[section.id]?.completed).length;
-              return (
-                <button
-                  key={track.id}
-                  className="hub-index-item"
-                  onClick={() => {
-                    window.dispatchEvent(new CustomEvent(OPEN_TRACK_EVENT, { detail: track.id }));
-                    // After the track has opened, so the scroll lands on its final position.
-                    requestAnimationFrame(() =>
-                      document.getElementById(`track-${track.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                    );
-                  }}
-                >
-                  <span className="hub-index-number">{track.id}</span>
-                  <span className="hub-index-text">
-                    <span className="hub-index-title">{track.title}</span>
-                    <span className="hub-index-bar" aria-hidden="true">
-                      <span style={{ width: `${track.sections.length ? (100 * trackDone) / track.sections.length : 0}%` }} />
-                    </span>
-                  </span>
-                  <span className="hub-index-count">
-                    {trackDone}/{track.sections.length}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-          <div className="hub-progress">
-            <Meter value={done / sections.length} />
-            <span>{t("hub.progress", { done, total: sections.length })}</span>
-          </div>
+          <Journey tracks={catalog.tracks} progress={progress} done={done} total={sections.length} currentTrack={next?.id.split(".")[0]} />
           {loadError && <p className="error-text">{loadError}</p>}
           {!narrow && <HubExtras />}
         </aside>
@@ -150,6 +111,77 @@ export function Hub() {
         </div>
       </main>
     </div>
+  );
+}
+
+/** Opens a track (if it was folded) and scrolls to it. */
+function jumpToTrack(id: number): void {
+  window.dispatchEvent(new CustomEvent(OPEN_TRACK_EVENT, { detail: id }));
+  // After the track has opened, so the scroll lands on its final position.
+  requestAnimationFrame(() => document.getElementById(`track-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+}
+
+/** The whole course as one bar: a segment per track, as wide as its number of lessons and filled
+ *  as far as the learner got. It replaces a per-track list that repeated the track cards: here the
+ *  news is where you are in the whole course. The caption names the track you are on, or the one
+ *  under the pointer; a segment opens its track. */
+function Journey({ tracks, progress, done, total, currentTrack }: {
+  tracks: TrackData[];
+  progress: Record<string, LessonProgress>;
+  done: number;
+  total: number;
+  currentTrack: string | undefined;
+}) {
+  const [pointed, setPointed] = useState<number | null>(null);
+  const rows = tracks
+    .map((track) => {
+      const available = track.sections.filter((section) => section.available);
+      return {
+        track,
+        lessons: available.length,
+        done: available.filter((section) => progress[section.id]?.completed).length,
+      };
+    })
+    .filter((row) => row.lessons > 0);
+  const current = rows.find((row) => String(row.track.id) === currentTrack);
+  const shown = rows.find((row) => row.track.id === pointed) ?? current;
+
+  return (
+    <section className="journey" aria-labelledby="journey-total">
+      <p className="journey-total" id="journey-total">{t("hub.progress", { done, total })}</p>
+      <nav className="journey-bar" aria-label={t("hub.journey")} onMouseLeave={() => setPointed(null)}>
+        {rows.map((row) => {
+          const isCurrent = row === current;
+          const complete = row.done === row.lessons;
+          return (
+            <button
+              key={row.track.id}
+              className={`journey-segment${isCurrent ? " is-current" : ""}${complete ? " is-complete" : ""}`}
+              style={{ flexGrow: row.lessons }}
+              aria-label={t("hub.journeyTrack", { id: row.track.id, title: row.track.title, done: row.done, total: row.lessons })}
+              aria-current={isCurrent ? "step" : undefined}
+              onMouseEnter={() => setPointed(row.track.id)}
+              onFocus={() => setPointed(row.track.id)}
+              onBlur={() => setPointed(null)}
+              onClick={() => jumpToTrack(row.track.id)}
+            >
+              <span className="journey-fill" aria-hidden="true">
+                <span style={{ width: `${(100 * row.done) / row.lessons}%` }} />
+              </span>
+              <span className="journey-number" aria-hidden="true">{row.track.id}</span>
+            </button>
+          );
+        })}
+      </nav>
+      {shown && (
+        <p className="journey-caption" aria-hidden="true">
+          <span className="journey-caption-title">
+            {shown === current && pointed === null ? t("hub.journeyHere", { title: shown.track.title }) : shown.track.title}
+          </span>
+          <span className="journey-caption-count">{t("hub.journeyCount", { done: shown.done, total: shown.lessons })}</span>
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -189,7 +221,14 @@ function Track({ track, progress, next, offline, action, openLesson }: {
   const listId = `track-list-${track.id}`;
   return (
     <section id={`track-${track.id}`} className={`track${open ? "" : " is-collapsed"}`} aria-labelledby={`track-title-${track.id}`}>
-      <header className="track-head">
+      {/* The whole header opens or closes the track with the mouse; the Show/Hide button inside is
+          the keyboard and screen reader control, so the header itself is not focusable. */}
+      <header
+        className="track-head"
+        onClick={(event) => {
+          if (!(event.target as Element).closest("button")) setOpen(!open);
+        }}
+      >
         <div>
           <div className="track-eyebrow">
             {t("hub.track", { id: track.id })}
@@ -217,10 +256,12 @@ function Track({ track, progress, next, offline, action, openLesson }: {
           // The "Challenge" pill says nothing until the lesson is done.
           const challengeProgress = progress[`${section.id}:challenge`];
           const showChallengePill = section.has_challenge && Boolean(progress[section.id]?.completed || challengeProgress?.completed);
+          const hasGoals = section.available && Boolean(section.objectives?.length);
           return (
             <li key={section.id}>
               <button
                 className={`section-row is-${status}${isNext ? " is-next" : ""}`}
+                aria-describedby={hasGoals ? `goals-${section.id}` : undefined}
                 disabled={status === "soon" || offline}
                 onClick={() => void openLesson(section.id)}
               >
@@ -231,6 +272,7 @@ function Track({ track, progress, next, offline, action, openLesson }: {
                   <span className="section-title">
                     <span className="section-id">{section.id}</span>
                     {section.title}
+                    {hasGoals && <LessonInfo goals={section.objectives!} minutes={section.estimated_minutes} descriptionId={`goals-${section.id}`} />}
                     {notes[lessonNoteKey(section.id)] && <span className="note-dot" role="img" aria-label={t("notes.hasNote")} />}
                   </span>
                   <span className="section-summary">{section.summary}</span>

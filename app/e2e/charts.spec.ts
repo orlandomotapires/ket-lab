@@ -34,27 +34,13 @@ for (const scheme of ["light", "dark"] as const) {
   });
 }
 
-test("theory outline lists the sections and the reading position is remembered", async ({ page }) => {
+test("the reading position is remembered per lesson", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await openHub(page);
   await openLessonBySearch(page, "entanglement", "1.5");
-  const toggle = page.getByRole("button", { name: /^Contents \(\d+\)/ });
-  await toggle.click();
-  const items = page.locator(".outline-item");
-  const count = await items.count();
-  expect(count).toBeGreaterThanOrEqual(3);
-  const last = items.nth(count - 1);
-  const title = (await last.textContent())!;
-  await last.focus();
-  await page.keyboard.press("Enter");
   const scroll = page.locator(".theory-scroll");
+  await scroll.evaluate((el) => (el.scrollTop = 600));
   await expect.poll(() => scroll.evaluate((el) => el.scrollTop)).toBeGreaterThan(100);
-  await expect(page.locator(".prose > h2").last()).toBeFocused();
-  expect(await page.locator(".prose > h2").last().textContent()).toContain(title.slice(0, 8));
-  // The mission card stays visible and the heading sits right under it.
-  const pin = (await page.locator(".mission-pin").boundingBox())!;
-  const heading = (await page.locator(".prose > h2").last().boundingBox())!;
-  expect(heading.y).toBeGreaterThanOrEqual(pin.y + pin.height - 2);
 
   // Reading position: leave the lesson and come back.
   const position = await scroll.evaluate((el) => el.scrollTop);

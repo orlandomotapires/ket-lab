@@ -5,8 +5,8 @@
  *
  * Files come from the site (staged by build-wasm/stage.py into public/browser-engine/):
  * manifest.json, the wheels (Qiskit built by build-wasm/build.sh, PennyLane, ...) and
- * engine.zip (qlp_engine and content/). Pyodide itself and its packages (NumPy, SciPy, ...)
- * come from Pyodide's CDN, at the version the manifest names.
+ * engine.zip (qlp_engine and content/), and Pyodide itself with its packages (NumPy, SciPy, ...)
+ * under pyodide/. Nothing is fetched from another site.
  *
  * Messages with the page (socket.ts):
  *   in:  {kind: "init", base} once, then {kind: "request", raw} one at a time
@@ -18,6 +18,8 @@
 
 interface Manifest {
   pyodide: string;
+  /** Folder of the Pyodide runtime and packages, relative to the manifest. */
+  indexURL: string;
   packages: string[];
   wheels: string[];
   bundle: string;
@@ -64,7 +66,7 @@ async function start(base: string): Promise<void> {
   if (!response.ok) throw new Error(`manifest.json: HTTP ${response.status}`);
   const manifest = (await response.json()) as Manifest;
 
-  const indexURL = `https://cdn.jsdelivr.net/pyodide/v${manifest.pyodide}/full/`;
+  const indexURL = new URL(manifest.indexURL, base).href;
   const { loadPyodide } = (await import(/* @vite-ignore */ `${indexURL}pyodide.mjs`)) as {
     loadPyodide: (options: { indexURL: string }) => Promise<PyodideApi>;
   };

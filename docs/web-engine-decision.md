@@ -38,8 +38,8 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 | Qiskit 2.6.2, built by us from the official source (step 1) | Builds in about 4.5 min, 6.0 MB wheel (not byte-for-byte reproducible: two builds of the same source gave different hashes, so each build is tested rather than checked against a hash). Statevector, transpile, OpenQASM 3, Sampler and Estimator all work |
 | Engine test suite with that wheel | **837 of 837 collected tests pass** (346 s; natively 964 tests in 141 s). The 7 files not collected test the WebSocket server, the worker pool and the SQLite progress store, which the browser version replaces |
 | All lesson reference solutions (`test_content.py`) | 365 of 365 pass |
-| Startup in Chromium (step 4) | Ready in about 6–7 s: Python 1.5–2.5 s, NumPy and SciPy 1.5 s, wheels and lessons under 1 s, importing Qiskit 2 s. PennyLane (5 s to import, Track 3 only) is imported in the background once the page is idle, or just before the first job that needs it, outside that job's time limit |
-| First download | 39 MB: Pyodide runtime and its packages 22.5 MB (from its CDN), Ket Lab's engine files 16.4 MB (wheels and lessons, from the site). Cached by the browser afterwards |
+| Startup in Chromium (steps 4–5) | Ready in 5.9 s in a fresh browser, served locally under the Pages sub-path: Python 1.5–2.5 s, NumPy and SciPy 1.5 s, wheels and lessons under 1 s, importing Qiskit 2 s. PennyLane (5 s to import, Track 3 only) is imported in the background once the page is idle, or just before the first job that needs it, outside that job's time limit |
+| First download (step 5) | About 33 MB on the wire (40 MB on disk), all from the site: Pyodide runtime and its packages, the wheels, the lessons. Wheels ship without their `tests/` folders (5.5 MB). Cached by the browser afterwards |
 
 ## Steps
 
@@ -52,7 +52,7 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 2. **Run the engine suite in Pyodide in CI (done).** The "Engine in Pyodide" CI job rebuilds the wheel and runs `build-wasm/run-engine-tests.mjs` on every push, so a Qiskit, PennyLane or Pyodide upgrade cannot silently break the browser version.
 3. **Browser engine (done).** Build the app with `VITE_ENGINE=browser`.
    - Python: the protocol moved from `server.py` to `qlp_engine/dispatch.py`, shared by the server and by `qlp_engine/browser.py` (`BrowserEngine`, public mode: progress and notes in the browser, no IBM hardware). Jobs run in the worker itself, one at a time.
-   - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide from its CDN, the wheels and `engine.zip` (qlp_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. No request to PyPI at runtime.
+   - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide, its packages, the wheels and `engine.zip` (qlp_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. The learner's browser contacts no other site.
    - Page (`app/src/engine/browser/socket.ts`): looks like a WebSocket to `EngineClient`. One request at a time; an edit replaces a waiting run; a timeout or Stop terminates the worker, answers with the engine's own message and starts a new worker.
    - Checked by `build-wasm/test-browser-engine.mjs` (Node) and `npm run e2e:browser` (Chromium: lesson 1.1 runs and is checked; an infinite loop times out and the next run works). Both run in CI.
 4. **Limits in the browser (done).**
@@ -60,8 +60,12 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
    - Memory: an array over 2 GB (the WebAssembly limit) gets the same "too much memory" message as on the server; after a job that leaves the worker's memory above 1 GB, the page starts a fresh worker, because WebAssembly memory cannot shrink.
    - Startup: PennyLane is no longer imported at start (see "Startup" above).
    - Checked by `npm run e2e:browser` (loading banner, timeout, memory) and `build-wasm/test-browser-engine.mjs` (memory message, Track 3 without PennyLane preloaded).
-5. **Smaller download.** matplotlib is already out (networkx now comes from its PyPI wheel, not Pyodide's package, which pulled it in). Measure the real first-visit download in a browser and drop anything else the lessons do not import.
-6. **Publish.** A GitHub Actions workflow that builds the static site and deploys it to GitHub Pages. GitHub Pages is free for public repositories; a private repository needs a paid plan.
+5. **Smaller download, one origin (done).**
+   - Pyodide and its packages are served by the site (copied from the npm package and checked against `pyodide-lock.json`), not by jsdelivr.
+   - Wheels ship without `tests/` folders (SciPy 2.2 MB, PennyLane 2.4 MB, networkx 0.9 MB); the served lock file carries the new hashes.
+   - matplotlib is out (networkx comes from its PyPI wheel). Every other package is needed: `import pennylane` imports `requests` and `malt` (with `gast` and `termcolor`), checked by removing them.
+   - The Pyodide test run now installs exactly the staged files, and the Node test validates all 85 reference solutions with only what the site ships.
+6. **Publish (workflow ready, needs a one-time setting).** `.github/workflows/pages.yml` builds the wheel, stages the files, validates every reference solution in the browser engine, builds the interface with `VITE_ENGINE=browser` and the Pages base path (`VITE_BASE`), and deploys on every push to `main`. One-time setup: Settings > Pages > Source: "GitHub Actions". GitHub Pages is free for public repositories; a private repository needs a paid plan.
 
 ## Risks and open questions
 

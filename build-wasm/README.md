@@ -19,7 +19,7 @@ cd build-wasm && node test-browser-engine.mjs   # the protocol through BrowserEn
 cd app && VITE_ENGINE=browser npm run dev       # or: npm run e2e:browser
 ```
 
-`wheels.json` pins the PyPI wheels (versions of `engine/constraints.txt`, with their SHA-256). numpy, scipy, requests, packaging, typing-extensions and termcolor come from Pyodide's distribution; Pyodide itself loads from its CDN at the version in `package.json`.
+`wheels.json` pins the PyPI wheels (versions of `engine/constraints.txt`, with their SHA-256). numpy, scipy, requests, packaging, typing-extensions and termcolor come from Pyodide's distribution, and the Pyodide runtime from `node_modules/pyodide` (`npm ci` here first); `stage.py` copies them all into the site, checked against `pyodide-lock.json`, and strips `tests/` folders from every wheel.
 
 CI runs all of this on every push (the "Engine in Pyodide" job) and keeps the wheel as an artifact for 30 days.
 

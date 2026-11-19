@@ -32,7 +32,6 @@ export function EngineLoadingBanner({ loading }: { loading: EngineLoading }) {
         value={loading.step - 1}
         aria-label={t("engineLoading.progress")}
       />
-      {loading.reason === "start" && <p className="engine-loading-note">{t("engineLoading.note")}</p>}
     </div>
   );
 }

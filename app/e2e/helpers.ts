@@ -62,7 +62,12 @@ export async function replaceCode(page: Page, code: string): Promise<void> {
   await page.locator(".editor .view-lines").click();
   const written = await page.evaluate(() => (window as unknown as { __clipboardWrite?: Promise<string> }).__clipboardWrite);
   expect(written, "writing the code to the clipboard").toBe("ok");
-  await page.keyboard.press("ControlOrMeta+A");
+  // Select all is Monaco's own keybinding, picked from the page's user agent: desktop WebKit
+  // claims to be a Mac even on Linux, so Monaco wants Cmd+A there (Ctrl+A only moves to the
+  // line start, and the paste lands before the old code). The paste is the browser's own,
+  // picked from the host system.
+  const mac = await page.evaluate(() => navigator.userAgent.includes("Macintosh"));
+  await page.keyboard.press(mac ? "Meta+A" : "Control+A");
   await page.keyboard.press("ControlOrMeta+V");
   // After the paste Monaco shows the end of the code, and draws only the lines in view. The
   // check: the last line number is the code's line count, and the lines in view (in screen

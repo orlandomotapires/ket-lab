@@ -13,7 +13,7 @@ The platform is a web application for **one person to study quantum computing al
 | [9](#9-risks-and-open-decisions) | Risks and open decisions |
 | [10](#10-next-steps) | Next steps, with the goal, work, done criterion and effort of each item |
 
-Supporting documents: [writing guide](writing-guide.md), [adding a lesson](adding-a-lesson.md), [verified references](verified-references.md), [decision on the engine on the web](web-engine-decision.md) and the [deploy guide](../deploy/README.md).
+Supporting documents: [writing guide](writing-guide.md), [adding a lesson](adding-a-lesson.md), [verified references](verified-references.md), [plan for the browser version (GitHub Pages)](web-engine-decision.md) and the [deploy guide](../deploy/README.md).
 
 ---
 
@@ -24,31 +24,31 @@ Supporting documents: [writing guide](writing-guide.md), [adding a lesson](addin
 | Layer | Technology | Responsibility |
 | :-- | :-- | :-- |
 | Interface (`app/`) | React, TypeScript, Zustand, Monaco, Three.js (React Three Fiber), KaTeX | Track hub, lab (theory, editor, circuit, visualizations), reference pages. Runs in the browser. |
-| Engine (`engine/`) | Python, Qiskit 2.6, PennyLane 0.45, NumPy, `websockets` | Runs the learner's code in an isolated process, simulates (state vector and density matrix), validates, searches, stores progress. |
+| Engine (`engine/`) | Python, Qiskit 2.6, PennyLane 0.45, NumPy, `websockets` | Runs the learner's code in an isolated process (or, in the browser version, in a Web Worker under Pyodide), simulates (state vector and density matrix), validates, searches, stores progress. |
 | Content (`content/`) | JSON, Markdown with LaTeX, Python | Catalog, lessons, glossary, sources. The engine loads it at startup. |
 
 Decisions that shape the architecture:
 
 - **Web only.** There used to be a desktop shell (Tauri, with the engine packaged by PyInstaller); it was removed: for studying, the browser is enough.
-- **The engine does not run in the browser.** Qiskit and rustworkx (a PennyLane dependency) have no WebAssembly build; a compatible substitute would move the learner away from the real Qiskit. Details in [web-engine-decision.md](web-engine-decision.md).
+- **The engine can also run in the browser.** The same Python engine, with the real Qiskit and PennyLane, runs inside the page through Pyodide (Python compiled to WebAssembly), so the site can be published as static files on GitHub Pages with no server. Qiskit has no official WebAssembly build: `build-wasm/` compiles the official source with a small patch. Plan, measurements and remaining risks in [web-engine-decision.md](web-engine-decision.md).
 - **Own simulator.** State vector and density matrix in NumPy, fed by Qiskit instructions and by the operations of a PennyLane QNode. This gives one snapshot per instruction, which is what the interface shows; Qiskit Aer is not needed.
-- **No FastAPI.** The engine only speaks WebSocket; the `websockets` library is enough.
+- **No FastAPI.** The engine speaks one JSON protocol (`qlp_engine/dispatch.py`), over a WebSocket (`websockets` library) or, in the browser, over Web Worker messages.
 - **Pinned versions** in `engine/pyproject.toml`: the lessons depend on the Qiskit and PennyLane APIs.
 - **English only** in the interface, the messages and the content. The texts are centralized (`app/src/strings.ts`, `engine/qlp_engine/messages.py`), so other languages can come back later.
 
 ### 1.2 Engine modes
 
-| | Local (`npm run dev`) | Single user in a container (`deploy/local.yml`) | Hosted (`deploy/docker-compose.yml`) |
-| :-- | :-- | :-- | :-- |
-| Where it runs | On the learner's machine, at 127.0.0.1 | In one container on the learner's machine; the engine also serves the interface (`--single-user`, `--static-dir`) | On a server, behind the site (nginx proxies `/engine`) |
-| Access | Session token + list of origins | No token; list of origins; port published to this machine only | No token; the Origin must be the site's (`--public`) |
-| Progress and notes | SQLite in the user's data directory, with a dated copy per day and export and import | SQLite in a Docker volume | In the browser (localStorage), with export and import |
-| Parallelism | One worker | One worker | `--workers N`, with a connection cap |
-| Real IBM hardware | Available (extra `engine[hardware]`) | Available | Off: a shared server does not receive third-party keys |
+| | Local (`npm run dev`) | Single user in a container (`deploy/local.yml`) | Hosted (`deploy/docker-compose.yml`) | Browser (`VITE_ENGINE=browser`, GitHub Pages) |
+| :-- | :-- | :-- | :-- | :-- |
+| Where it runs | On the learner's machine, at 127.0.0.1 | In one container on the learner's machine; the engine also serves the interface (`--single-user`, `--static-dir`) | On a server, behind the site (nginx proxies `/engine`) | In the learner's browser: Pyodide in a Web Worker; the site is static files |
+| Access | Session token + list of origins | No token; list of origins; port published to this machine only | No token; the Origin must be the site's (`--public`) | Nothing to protect: the learner's code runs in their own tab |
+| Progress and notes | SQLite in the user's data directory, with a dated copy per day and export and import | SQLite in a Docker volume | In the browser (localStorage), with export and import | In the browser (localStorage), with export and import |
+| Parallelism | One worker | One worker | `--workers N`, with a connection cap | One job at a time; a timeout or Stop replaces the worker |
+| Real IBM hardware | Available (extra `engine[hardware]`) | Available | Off: a shared server does not receive third-party keys | Off (not tested under Pyodide) |
 
 The container mode has been written but never run (P2.2).
 
-The hosted mode is not yet ready for the public: it lacks per-session isolation (gVisor or microVM), a security review and a load test. See [deploy/README.md](../deploy/README.md).
+The hosted mode is not yet ready for the public: it lacks per-session isolation (gVisor or microVM), a security review and a load test. See [deploy/README.md](../deploy/README.md). For a public site, the browser mode avoids all of that: there is no server running learner code.
 
 ### 1.3 The real-time cycle
 
@@ -326,6 +326,7 @@ Writing rules in [writing-guide.md](writing-guide.md); references only from [ver
 | Development round, 17 Nov 2026 | **Content:** project 6.5 (constraints as penalties) and 14 new challenges in Tracks 3 to 6, each with a commented solution and a check that tells the usual mistakes apart; charts for lessons without a circuit (a generic `curve` view, used in 3.6, 3.7 and 6.2). **Engine:** stable lesson keys, so renumbering a lesson needs no database migration (the stored progress was migrated once, after the daily backup); run replies bounded for large circuits (51.9 MB to 5.8 MB on a 10-qubit, 1,560-gate circuit); Check can be stopped; lesson files cached (search 80 ms to 2 ms); module-level loops traced about twice as fast; the hidden setup's private data no longer reaches the learner's code, and the static check closes the known bypasses; distribution checks with mid-circuit measurement enumerate the branches exactly; timeouts on the IBM calls; ruff. **Interface:** the theory has a contents list and remembers where you stopped reading; lighter hardware dialog and reference rows; a Stop button during a Check; the notice for steps of large circuits. **Infra:** Dependabot, a constraints file for the Python dependencies in CI, a lint step, `THIRD_PARTY_NOTICES.md`, `CHANGELOG.md`. Not committed. |
 | Hub redesign, 17 Nov 2026 | After a design critique of the hub: only the track holding the next lesson starts open (the index opens the track it jumps to); each track in the index has a small progress bar, with the overall bar under the index; the "Learning tracks" heading and its subtitle are gone from the screen (the subtitle moved to the About dialog); on tablets and phones the tracks come before the References, Glossary, Notes and Backup links, both main buttons span the width and the search box says just "Search"; lesson summaries are capped at a readable line length. |
 | Name, 17 Nov 2026 | The platform is now called **Ket Lab** ("Ket Lab – Learn Quantum Computing" in the top bar). The code keeps its internal names (`qlp_engine`, `QLP_*` variables) and the data folder keeps `quantum-learning-platform`, so existing progress is still found. The repository name and the Docker image name are unchanged. |
+| Browser version, 18 Nov 2026 | The engine runs in the learner's browser (Pyodide), so Ket Lab can be a static site on GitHub Pages: Qiskit 2.6.2 compiled for WebAssembly from the official source (`build-wasm/`), the protocol moved to `dispatch.py` and shared by the server and the browser engine, a Web Worker with a loading screen, timeouts, Stop and memory limits, Pyodide served by the site (about 33 MB on the first visit, ready in about 6 s), and a Pages workflow. The engine suite (837 tests) and all 85 reference solutions pass inside Pyodide, in CI. Plan in [web-engine-decision.md](web-engine-decision.md). |
 
 The reference lectures stay on disk, outside the repository (`Lecture Muller/`, `lecture (1)/`): they are third-party material. The lessons use the ideas and examples, with original text.
 
@@ -337,8 +338,8 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 | :-- | :-- | :-- |
 | 0.1 CI on the current work | Done in the repository, not yet run | CI now runs on pushes to any branch (before, only `main` and pull requests). Windows and macOS are only tested once the branch is pushed (see P1.1). |
 | 0.2 End-to-end tests | Done | Playwright: lesson flows, oracles, training, export, themes, narrow screens, accessibility, guide, links, composer, hardware, progress export and references, plus hosted mode; all 48 lessons opened in the browser. Job in CI. |
-| 1.1 Engine-in-the-browser spike (Pyodide) | Done: not viable | Qiskit and rustworkx (PennyLane) have no WebAssembly build. Numbers in [web-engine-decision.md](web-engine-decision.md). |
-| 1.2a Static web version | Not applicable | Dropped by 1.1. |
+| 1.1 Engine-in-the-browser spike (Pyodide) | Done: viable (revised 18 Nov 2026) | First answer (not viable: no WebAssembly build of Qiskit or rustworkx) reversed once rustworkx shipped one and Qiskit built from source. Plan and numbers in [web-engine-decision.md](web-engine-decision.md). |
+| 1.2a Static web version | Done, not yet published | Browser engine, loading screen, memory limits, Pyodide served by the site, Pages workflow (`.github/workflows/pages.yml`). Publishing needs Pages enabled and a public repository or a paid plan. Branch `browser-engine-qiskit-wasm`. |
 | 1.2b Hosted engine | Done up to deploy | `--public` mode, several workers, progress in the browser, `deploy/` (Dockerfiles, nginx, hardened compose). Missing what needs real infrastructure: gVisor on the server, one sandbox per session, security review and load test (see P5.1). |
 | 1.3 Accounts and sync | Not done | Needs a login provider (OAuth) and a database on the server. Exporting and importing progress covers switching devices (see P5.2). |
 | 2.1 Learning objectives | Done | Required in every lesson. Gaps found (theory topic that the mission does not exercise) in P3.1. |
@@ -372,7 +373,7 @@ Numbers checked against the repository on 16 Nov 2026, after the implementation 
 | Depth per track | Words of theory: Track 0, 2,078. Track 1, 5,943. Track 2, 4,944. Track 3, 5,436. Track 4, 5,499. Track 5, 2,773. Track 6, 3,119. Total 29,792 |
 | Frameworks | Qiskit: 24 lessons (Tracks 1 and 2, 5.1, 5.2). PennyLane: 13 (3.1 to 3.5, 3.8, 3.9, 4.1 to 4.4, 4.8, 5.3). Python without a circuit: 11 (Track 0, 3.6, 3.7, 4.5 to 4.7, 5.4, 5.5) |
 | End-of-track reviews | 71 questions (Tracks 1 to 6), with a review screen opened from the hub and the best score kept |
-| Tests | 963 engine, 39 interface, 52 end-to-end flows plus the hosted mode; all pass on Node 22; `ruff` clean |
+| Tests | 964 engine, 39 interface, 57 end-to-end flows plus the hosted mode and 3 browser-mode flows; in Pyodide, 837 engine tests and all 85 reference solutions; all pass on Node 22; `ruff` clean |
 | Interface bundle | Initial `index.js` of 211 KB (69 KB compressed); the lab (`Lab.js`, with Monaco and KaTeX), 3.8 MB (1.0 MB compressed), is downloaded when a lesson opens; the review and notes pages are small separate chunks |
 | Code | Styles in eleven files in `app/src/styles/`. The store composes slices in `app/src/state/`. The engine caches lesson files, keeps progress and notes under stable lesson keys (`content/lesson_keys.json`) and bounds the size of a run's reply |
 | Text | All lessons, the glossary and the interface strings rewritten by the new guide. No em dashes. The correct prediction option is spread evenly over the three positions (16 each), guarded by a test. A read by a person is still missing (P3.3) |

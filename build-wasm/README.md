@@ -21,7 +21,7 @@ cd app && VITE_ENGINE=browser npm run dev       # or: npm run e2e:browser
 
 `wheels.json` pins the PyPI wheels (versions of `engine/constraints.txt`, with their SHA-256). numpy, scipy, requests, packaging, typing-extensions and termcolor come from Pyodide's distribution, and the Pyodide runtime from `node_modules/pyodide` (`npm ci` here first); `stage.py` copies them all into the site, checked against `pyodide-lock.json`, and strips `tests/` folders from every wheel.
 
-CI runs all of this on every push (the "Engine in Pyodide" job) and keeps the wheel as an artifact for 30 days.
+CI runs all of this on every push ("Engine in Pyodide": a build job, then the Pyodide suite and the browser-mode tests in parallel). The built wheel is cached by the hash of `build.sh`, the patch and `package.json`, so Qiskit is recompiled only when one of them changes; it is also kept as an artifact for 30 days.
 
 ## Upgrading
 

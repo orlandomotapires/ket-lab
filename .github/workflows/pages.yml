@@ -22,19 +22,27 @@ jobs:
   build:
     name: Build the static site
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      # Same cache as CI: the wheel is rebuilt only when build.sh, the patch or the Pyodide pin change.
+      - id: wheel
+        uses: actions/cache@v4
+        with:
+          path: build-wasm/dist
+          key: qiskit-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**', 'build-wasm/package.json') }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - uses: actions/cache@v4
+      - if: steps.wheel.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: cargo-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**') }}
       - name: Build the Qiskit WebAssembly wheel
+        if: steps.wheel.outputs.cache-hit != 'true'
         run: build-wasm/build.sh
         env:
           PYTHON: python

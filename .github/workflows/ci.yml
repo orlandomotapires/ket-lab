@@ -1,9 +1,25 @@
 name: CI
 
+# Branches are tested through their pull request (one run, not two); main on each push.
+# A change that touches only the files below (README, docs, screenshots) runs nothing.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "docs/**"
+      - ".claude/**"
+      - ".github/assets/**"
   pull_request:
+    paths-ignore:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "docs/**"
+      - ".claude/**"
+      - ".github/assets/**"
 
 # A newer push to the same branch cancels the run in progress.
 concurrency:

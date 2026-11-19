@@ -28,7 +28,7 @@ describe("BrowserEngineSocket: a start that gets stuck", () => {
     vi.useFakeTimers();
     vi.stubGlobal("window", globalThis);
     vi.stubGlobal("Worker", FakeWorker);
-    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    vi.spyOn(console, "warn").mockImplementation(() => undefined);
     vi.spyOn(console, "info").mockImplementation(() => undefined);
   });
   afterEach(() => {
@@ -45,6 +45,8 @@ describe("BrowserEngineSocket: a start that gets stuck", () => {
     vi.advanceTimersByTime(1);
     expect(FakeWorker.all[0].terminated).toBe(true);
     expect(FakeWorker.all).toHaveLength(2);
+    // Logged as a warning: the page recovers, and the e2e tests fail on console errors.
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("start stuck at step 2"));
     // The second worker gets 120 s, not 60 s.
     vi.advanceTimersByTime(119_999);
     expect(FakeWorker.all).toHaveLength(2);

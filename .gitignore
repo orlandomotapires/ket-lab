@@ -13,7 +13,8 @@ engine/dist/
 /Lecture Muller/
 /lecture (1)/
 
-# Claude Code worktrees and local state
+# Claude Code worktrees and local state; CLAUDE.md stays on this machine only
+CLAUDE.md
 /.claude/*
 !/.claude/docs/
 

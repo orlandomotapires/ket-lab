@@ -1,6 +1,6 @@
 # build-wasm
 
-Builds what the browser version of the engine needs and checks the engine against it. Plan and measurements: [docs/web-engine-decision.md](../docs/web-engine-decision.md).
+Builds what the browser version of the engine needs and checks the engine against it. Plan and measurements: [.claude/docs/web-engine-decision.md](../.claude/docs/web-engine-decision.md).
 
 Neither Qiskit nor PyPI publishes a WebAssembly build of Qiskit, so `build.sh` compiles the official source (checked against PyPI's SHA-256) with a small patch, `patches/qiskit-<version>-emscripten.patch`. The patch only removes what a browser cannot do: query the terminal size, run the `faer` thread pool, start threads for primitives, or start processes in `parallel_map`.
 

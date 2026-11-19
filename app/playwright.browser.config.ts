@@ -13,6 +13,8 @@ export default defineConfig({
   ...base,
   testMatch: "browser-engine.spec.ts",
   testIgnore: [],
+  // A failure here is a browser that cannot run the engine: a retry repeats a 4-minute wait.
+  retries: 0,
   expect: { timeout: 180_000 },
   use: { ...shared, baseURL: appUrl },
   // Pyodide must work in each engine: Chromium (Chrome, Edge), Firefox and WebKit (Safari).

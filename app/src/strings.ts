@@ -16,7 +16,6 @@ const STRINGS = {
   "engineLoading.libraries": "Qiskit and PennyLane",
   "engineLoading.lessons": "the lessons",
   "engineLoading.starting": "starting Qiskit",
-  "engineLoading.note": "Everything runs on your computer. The first visit downloads about 40 MB; later visits load from the browser cache.",
 
   "topbar.tracks": "Tracks",
   "topbar.home": "Go to the home page",
@@ -395,6 +394,7 @@ const STRINGS = {
   "viz.concurrenceNote": "0 = the qubits have independent states; 1 = maximal entanglement.",
   "viz.withRestNote": "Entanglement of each qubit with the rest of the register: 0 = none, 1 = maximal.",
   "viz.blochVectors": "Bloch vectors",
+  "viz.noWebgl": "The 3D view needs WebGL, which this browser has turned off. The numbers in the other tabs still show the state.",
   "viz.qubit": "Qubit",
   "viz.phase": "phase",
   "viz.mixedNote": "|r| < 1 means the qubit alone is in a mixed state: it is entangled with other qubits, or noise acted on it. The vector is shorter than the sphere's radius.",

@@ -1,7 +1,7 @@
 name: Pages
 
 # Publishes Ket Lab to GitHub Pages as a static site: the engine runs in the learner's
-# browser (Pyodide), so there is no server. Plan: docs/web-engine-decision.md.
+# browser (Pyodide), so there is no server. Plan: .claude/docs/web-engine-decision.md.
 # One-time setup: Settings > Pages > Build and deployment > Source: "GitHub Actions".
 on:
   push:

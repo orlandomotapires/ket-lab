@@ -5,6 +5,42 @@ import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, s
 // The first start downloads and imports Qiskit and PennyLane: allow it time.
 test.setTimeout(240_000);
 
+// On a failure, the CI log shows what the page showed and what the browser said: the
+// browser-only failures (Firefox, WebKit on CI) cannot be reproduced on every machine.
+const consoleLog = new WeakMap<Page, string[]>();
+test.beforeEach(({ page }) => {
+  const lines: string[] = [];
+  consoleLog.set(page, lines);
+  const stamp = () => new Date().toISOString().slice(11, 23);
+  page.on("console", (message) => lines.push(`${stamp()} [${message.type()}] ${message.text()}`));
+  page.on("pageerror", (error) => lines.push(`${stamp()} [pageerror] ${error.message}`));
+  page.on("crash", () => lines.push(`${stamp()} [crash] the page crashed`));
+});
+
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) return;
+  const text = async (selector: string) => {
+    const element = page.locator(selector).first();
+    try {
+      if ((await element.count()) === 0) return "(none)";
+      const [classes, content] = await Promise.all([element.getAttribute("class", { timeout: 2000 }), element.innerText({ timeout: 2000 })]);
+      return `class="${classes}"\n${content}`;
+    } catch (error) {
+      return `(could not read: ${error instanceof Error ? error.message.split("\n")[0] : error})`;
+    }
+  };
+  const report = [
+    `== ${testInfo.project.name} › ${testInfo.title} (retry ${testInfo.retry})`,
+    `-- .oracle: ${await text(".oracle")}`,
+    `-- .engine-loading: ${await text(".engine-loading")}`,
+    `-- .banner: ${await text(".banner")}`,
+    `-- console:`,
+    ...(consoleLog.get(page) ?? []),
+  ].join("\n");
+  console.log(report);
+  await testInfo.attach("diagnostics.txt", { body: report, contentType: "text/plain" });
+});
+
 /** On a phone the lab shows one panel at a time: opens it from the tabs (no-op on wide screens). */
 async function showPanel(page: Page, name: "Theory" | "Code" | "State"): Promise<void> {
   const tabs = page.locator(".lab-tabs");

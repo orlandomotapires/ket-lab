@@ -1,10 +1,11 @@
 # Changelog
 
-Notable changes to the platform. The detailed history, item by item, is in [docs/master-plan.md](docs/master-plan.md), section 6.
+Notable changes to the platform.
 
-## Unreleased
+## 0.2.0
 
 ### Added
+- Ket Lab in the browser, on GitHub Pages: the engine (Python, Qiskit, PennyLane) runs in the page through Pyodide, with no server and no install. Progress stays in the browser.
 - Track 6, Adiabatic Computing and Quantum Annealing: Ising models and QUBO, the adiabatic theorem, the anneal as a circuit, embedding and the limits of annealers.
 - Track 3 lessons on ansatz design, optimizers (SPSA), barren plateaus and a hardware-efficient VQE.
 - Notes: a drawer in the lab and a notes page, saved as you type, searchable and part of the backup.
@@ -19,6 +20,7 @@ Notable changes to the platform. The detailed history, item by item, is in [docs
 - Every lesson, the reviews and the glossary rewritten by a new writing guide; prediction answers spread evenly over the three positions.
 - The lesson screen keeps the mission always visible; objectives, readouts and finished tracks collapse; one main action in the bottom bar.
 - The whole repository is in English.
+- A new logo, a Bloch sphere with cat ears, and a shorter README with a demo and screenshots; the longer descriptions moved to the wiki.
 - Node 22, Vite 7, Vitest 4; the interface's first download dropped from 4.0 MB to about 0.2 MB.
 
 ### Fixed

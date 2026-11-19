@@ -1,31 +1,21 @@
-// Runs the engine's test suite inside Pyodide (the WebAssembly Python the browser version uses).
-// Usage (from build-wasm/): node run-engine-tests.mjs [pytest args...]
-// Needs the Qiskit wheel from build.sh in dist/. Packages other than Qiskit come from
-// Pyodide's distribution and PyPI.
-import { readdirSync, readFileSync } from "node:fs";
+// Runs the engine's test suite inside Pyodide (the WebAssembly Python the browser version uses),
+// with exactly the packages the site ships: the staged manifest of stage.py.
+// Usage (from build-wasm/, after build.sh and stage.py): node run-engine-tests.mjs [pytest args...]
+import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPyodide } from "pyodide";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, "..");
-const wheel = readdirSync(join(here, "dist")).find((f) => /^qiskit-.*wasm32\.whl$/.test(f));
-if (!wheel) throw new Error("No Qiskit wheel in build-wasm/dist: run build.sh first.");
+const staged = join(repo, "app", "public", "browser-engine");
+const manifest = JSON.parse(readFileSync(join(staged, "manifest.json"), "utf8"));
 
 const start = performance.now();
 const py = await loadPyodide();
-await py.loadPackage(["numpy", "scipy", "networkx", "micropip", "pytest", "jsonschema"], { messageCallback: () => {} });
-py.FS.writeFile(`/tmp/${wheel}`, readFileSync(join(here, "dist", wheel)));
-// pennylane-lightning (PennyLane's compiled simulator) has no WebAssembly build: install
-// PennyLane without it, and its other dependencies at the versions of engine/constraints.txt.
-await py.runPythonAsync(`
-import micropip
-await micropip.install(["rustworkx==0.18.1", "emfs:/tmp/${wheel}"])
-await micropip.install("pennylane==0.45.1", deps=False)
-await micropip.install(["autograd==1.8.0", "appdirs==1.4.4", "autoray==0.8.4", "cachetools==8.0.0",
-                        "tomlkit==0.15.2", "diastatic-malt==2.15.3", "gast==0.7.0",
-                        "typing_extensions", "packaging", "requests"])
-`);
+// pytest and jsonschema only for the tests; everything else as in the browser.
+await py.loadPackage([...manifest.packages, "pytest", "jsonschema"], { messageCallback: () => {} });
+await py.loadPackage(manifest.wheels.map((wheel) => join(staged, wheel)), { messageCallback: () => {} });
 py.FS.mkdir("/repo");
 py.FS.mount(py.FS.filesystems.NODEFS, { root: repo }, "/repo");
 console.log(`Pyodide ready in ${((performance.now() - start) / 1000).toFixed(1)} s`);

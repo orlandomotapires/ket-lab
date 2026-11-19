@@ -2,7 +2,7 @@
 // (app/src/engine/browser/worker.ts): the staged manifest, Pyodide packages, wheels and bundle.
 // Usage (from build-wasm/, after build.sh and stage.py): node test-browser-engine.mjs
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPyodide } from "pyodide";
@@ -116,5 +116,24 @@ assert.equal(reply.error.kind, "protocol");
 const texts = JSON.parse(py.runPython("BrowserEngine.texts()", { globals: py.globals }));
 assert.equal(texts.cancelled.error.kind, "cancelled");
 assert.equal(texts.crash.error.kind, "crash");
+
+// Every lesson's reference solution (and challenge solution) passes, through the browser protocol
+// and with only the packages the site ships (unlike the pytest run, which adds pytest's own).
+let solutions = 0;
+for (const track of readdirSync(join(root, "content")).filter((name) => name.startsWith("track_"))) {
+  for (const section of readdirSync(join(root, "content", track))) {
+    const folder = join(root, "content", track, section);
+    if (!existsSync(join(folder, "manifest.json"))) continue;
+    const { id } = JSON.parse(readFileSync(join(folder, "manifest.json"), "utf8"));
+    for (const [file, challenge] of [["solution.py", false], ["challenge_solution.py", true]]) {
+      if (!existsSync(join(folder, file))) continue;
+      const code = readFileSync(join(folder, file), "utf8");
+      const result = JSON.parse(await engine.handle(JSON.stringify({ id: nextId++, type: "validate", lesson_id: id, code, challenge })));
+      assert.equal(result.passed, true, `${id}${challenge ? " challenge" : ""}: ${JSON.stringify(result.error ?? result.message)}`);
+      solutions++;
+    }
+  }
+}
+console.log(`  ${solutions} reference solutions pass`);
 
 console.log("browser engine: all checks passed");

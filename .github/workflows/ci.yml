@@ -61,12 +61,13 @@ jobs:
           cache-dependency-path: build-wasm/package-lock.json
       - run: npm ci
         working-directory: build-wasm
+      # Pyodide, its packages, the wheels and the lessons, as the site serves them; the tests below use them.
+      - name: Stage the browser engine files
+        run: python build-wasm/stage.py
       - name: Engine tests and content suite inside Pyodide
         run: node run-engine-tests.mjs
         working-directory: build-wasm
-      - name: Stage the browser engine files
-        run: python build-wasm/stage.py
-      - name: Browser engine protocol test (Node)
+      - name: Browser engine protocol test and every reference solution (Node)
         run: node test-browser-engine.mjs
         working-directory: build-wasm
       - run: npm ci

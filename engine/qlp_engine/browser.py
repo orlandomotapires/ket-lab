@@ -28,14 +28,19 @@ from .pool import DEFAULT_JOB_TIMEOUT_S
 
 # NumPy's ValueError for an array larger than the address space (2 GB under WebAssembly).
 ARRAY_TOO_BIG = "array is too big"
+# Time limits are tuned for the native engine; under Pyodide the same job takes about 2 to 2.6
+# times as long (measured with build-wasm/time-lessons.mjs), and learners' machines can be
+# slower than the one measured. Every limit is scaled by this factor in the browser.
+BROWSER_TIME_SCALE = 3.0
 
 
 class InlinePool:
     """Runs each job at once, in this process; same `submit` interface as pool.WorkerPool."""
 
-    def __init__(self, host, job_timeout: float = DEFAULT_JOB_TIMEOUT_S):
+    def __init__(self, host, job_timeout: float = DEFAULT_JOB_TIMEOUT_S, time_scale: float = BROWSER_TIME_SCALE):
         self.host = host
         self.job_timeout = job_timeout
+        self.time_scale = time_scale
 
     async def submit(self, job: dict, timeout: float | None = None, is_stale=None, on_event=None, tag=None) -> dict:
         if is_stale is not None and is_stale():
@@ -43,7 +48,7 @@ class InlinePool:
         if "pennylane" not in sys.modules and "pennylane" in json.dumps(job):
             # Importing PennyLane takes seconds in the browser: do it before the clock starts.
             BrowserEngine.warm_up_pennylane()
-        seconds = timeout or self.job_timeout
+        seconds = (timeout or self.job_timeout) * self.time_scale
         self.host.job_started(seconds, json.dumps(timeout_reply(job, seconds, None)))
 
         def emit(event: dict) -> None:

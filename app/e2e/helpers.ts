@@ -45,13 +45,18 @@ export async function openLessonBySearch(page: Page, query: string, lessonId: st
 }
 
 /** Replaces all the editor code. Pastes via the clipboard: typing would make
- *  Monaco reindent each line and break Python's indentation. */
+ *  Monaco reindent each line and break Python's indentation. Firefox and WebKit do not let
+ *  tests grant clipboard access: there the text goes in as one input event (no reindenting either). */
 export async function replaceCode(page: Page, code: string): Promise<void> {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.evaluate((text) => navigator.clipboard.writeText(text), code);
+  const chromium = page.context().browser()?.browserType().name() === "chromium";
+  if (chromium) {
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.evaluate((text) => navigator.clipboard.writeText(text), code);
+  }
   await page.locator(".editor .view-lines").click();
   await page.keyboard.press("ControlOrMeta+A");
-  await page.keyboard.press("ControlOrMeta+V");
+  if (chromium) await page.keyboard.press("ControlOrMeta+V");
+  else await page.keyboard.insertText(code);
   // Monaco renders spaces as non-breaking spaces: checks a span without spaces from the last line.
   const lastLine = code.trim().split("\n").pop() ?? "";
   const marker = lastLine.split(/\s+/).sort((x, y) => y.length - x.length)[0] ?? "";

@@ -6,6 +6,13 @@ name: Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "docs/**"
+      - ".claude/**"
+      - ".github/assets/**"
   workflow_dispatch:
 
 permissions:

@@ -108,7 +108,7 @@ jobs:
     name: Engine in Pyodide (browser mode)
     needs: wasm-build
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -136,13 +136,15 @@ jobs:
       - run: npx playwright install --with-deps chromium firefox webkit
         working-directory: app
       # Chromium, Firefox and WebKit (Safari), plus phone emulation (Pixel 7, iPhone 14).
+      # Its own limit, below the job's: a slow run then fails (not cancelled) and the report uploads.
       - name: End-to-end tests (browser mode)
         run: npx playwright test -c playwright.browser.config.ts
         working-directory: app
+        timeout-minutes: 40
         env:
           CI: "1"
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: ${{ !success() }}
         with:
           name: playwright-report-browser
           path: app/playwright-report

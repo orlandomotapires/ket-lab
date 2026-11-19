@@ -35,13 +35,6 @@ About 25 hours in all. Every lesson cites Nielsen & Chuang or the IBM Quantum Le
 
 ## A closer look
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/lab-dark.png">
-  <img src=".github/assets/lab-light.png" alt="The free lab: three qubits with H, RY(π/3), H and S, each one's Bloch vector on its own sphere, and the Bloch vector table below.">
-</picture>
-
-<p align="center"><sub>The free lab. Put the cursor on any line to see the state at that point.</sub></p>
-
 <table>
   <tr>
     <td width="50%">
@@ -67,12 +60,21 @@ About 25 hours in all. Every lesson cites Nielsen & Chuang or the IBM Quantum Le
 
 The quickest way is [the browser version](https://orlandomotapires.github.io/quantum_learning_plataform/). There's nothing to install: Python runs inside the page.
 
-To run it on your own machine, you need Python 3.11+ and Node 22+:
+To run it from the source code, you need Python 3.11+ and Node 22+:
 
 ```bash
 npm run setup   # once
 npm run dev     # then open http://localhost:5173
 ```
+
+With Docker, you need nothing else. The image is published with every release:
+
+```bash
+docker pull ghcr.io/orlandomotapires/quantum-learning-platform:latest
+docker run -p 127.0.0.1:8080:8080 -v qlp-progress:/data ghcr.io/orlandomotapires/quantum-learning-platform:latest
+```
+
+Then open http://localhost:8080. Your progress is kept in the `qlp-progress` volume.
 
 The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Development).
 

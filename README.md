@@ -19,19 +19,7 @@ Write Qiskit or PennyLane. Each line you type shows up in the circuit, and the s
 
 No accounts, no teachers, no deadlines. It's built for one person studying alone, and your progress stays with you.
 
-## 53 lessons, from qubits to annealing
-
-| | Track | Lessons |
-| :-: | :-- | :-: |
-| 0 | Mathematical toolkit *(optional)* | 4 |
-| 1 | Basics of quantum information | 11 |
-| 2 | Quantum algorithms | 11 |
-| 3 | Variational algorithms | 9 |
-| 4 | Noise and error correction | 8 |
-| 5 | Running on hardware | 5 |
-| 6 | Quantum annealing | 5 |
-
-About 25 hours in all. Every lesson cites Nielsen & Chuang or the IBM Quantum Learning courses, down to the section and page. [See every topic in the wiki.](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Curriculum)
+53 lessons in 7 tracks, from qubits to quantum annealing, about 25 hours in all. [See the curriculum.](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Curriculum)
 
 ## A closer look
 

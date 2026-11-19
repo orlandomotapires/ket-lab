@@ -58,6 +58,9 @@ const OPEN = 1;
 const CLOSED = 3;
 /** A worker whose memory grew past this after a job is replaced (memory cannot shrink). */
 const HEAP_RESTART_MB = 1024;
+/** A new worker that fails while starting is tried again after this delay, doubled each time. */
+const RETRY_FIRST_MS = 1000;
+const RETRY_MAX_MS = 30_000;
 
 export class BrowserEngineSocket implements EngineSocket {
   readyState = CONNECTING;
@@ -74,6 +77,9 @@ export class BrowserEngineSocket implements EngineSocket {
   private timer: number | undefined;
   private timeoutReply: Reply | null = null;
   private texts: { cancelled: Reply; crash: Reply } | null = null;
+  /** New workers in a row that broke before they were ready. */
+  private failedStarts = 0;
+  private retryTimer: number | undefined;
 
   constructor(private base: string) {
     this.startWorker();
@@ -101,6 +107,7 @@ export class BrowserEngineSocket implements EngineSocket {
 
   close(): void {
     if (this.readyState === CLOSED) return;
+    window.clearTimeout(this.retryTimer);
     this.stopWorker();
     this.readyState = CLOSED;
     queueMicrotask(() => this.onclose?.(new CloseEvent("close")));
@@ -129,15 +136,19 @@ export class BrowserEngineSocket implements EngineSocket {
     this.ready = false;
   }
 
-  /** Ends the running job with `reply` and starts a fresh worker for the queue. */
-  private restart(reply: Reply | null, reason: EngineLoading["reason"] = "restart"): void {
+  /** Ends the running job with `reply` and starts a fresh worker for the queue (after
+   *  `delayMs`, when new workers keep failing to start). */
+  private restart(reply: Reply | null, reason: EngineLoading["reason"] = "restart", delayMs = 0): void {
+    console.info(`[browser engine] new worker (${reason}${delayMs ? `, in ${delayMs} ms` : ""})`);
     this.reason = reason;
     const job = this.inFlight;
     this.inFlight = null;
     this.timeoutReply = null;
     this.stopWorker();
     if (job && reply) this.deliver({ ...reply, id: job.id });
-    this.startWorker();
+    window.clearTimeout(this.retryTimer);
+    if (delayMs > 0) this.retryTimer = window.setTimeout(() => this.startWorker(), delayMs);
+    else this.startWorker();
   }
 
   private workerBroke(message: string): void {
@@ -148,7 +159,14 @@ export class BrowserEngineSocket implements EngineSocket {
       this.close();
       return;
     }
-    this.restart(this.texts.crash);
+    // A worker that breaks while starting would break again at once: wait before the next.
+    let delayMs = 0;
+    if (!this.ready) {
+      this.failedStarts += 1;
+      delayMs = Math.min(RETRY_FIRST_MS * 2 ** (this.failedStarts - 1), RETRY_MAX_MS);
+      console.error(`[browser engine] new worker failed to start (${this.failedStarts} in a row); next try in ${delayMs} ms`);
+    }
+    this.restart(this.texts.crash, "restart", delayMs);
   }
 
   private fromWorker(message: WorkerMessage): void {
@@ -159,6 +177,7 @@ export class BrowserEngineSocket implements EngineSocket {
       case "ready":
         this.texts = message.texts ?? null;
         this.ready = true;
+        this.failedStarts = 0;
         this.onloading?.(null);
         if (this.readyState === CONNECTING) {
           this.readyState = OPEN;

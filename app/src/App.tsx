@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Hub } from "./components/Hub";
+import { EngineLoadingBanner } from "./components/EngineLoadingBanner";
 import { TopBar } from "./components/TopBar";
+import { BROWSER_ENGINE } from "./engine/client";
 import { t } from "./strings";
 import { readSharedCode } from "./lib/share";
 import { useStore } from "./state/store";
@@ -15,6 +17,7 @@ const Bibliography = lazy(() => import("./components/Bibliography").then((m) => 
 export function App() {
   const view = useStore((s) => s.view);
   const connection = useStore((s) => s.connection);
+  const engineLoading = useStore((s) => s.engineLoading);
   const init = useStore((s) => s.init);
 
   useEffect(() => init(), [init]);
@@ -40,9 +43,11 @@ export function App() {
   return (
     <div className="app">
       <TopBar />
-      {(connection === "closed" || (connection === "connecting" && slow)) && (
+      {engineLoading && connection !== "closed" ? (
+        <EngineLoadingBanner loading={engineLoading} />
+      ) : (connection === "closed" || (connection === "connecting" && slow)) && (
         <div className="banner" role="status">
-          {connection === "closed" ? t("banner.closed") : t("banner.connecting")}
+          {connection === "closed" ? t(BROWSER_ENGINE ? "banner.closedInBrowser" : "banner.closed") : t("banner.connecting")}
         </div>
       )}
       {view === "hub" ? (

@@ -3,9 +3,12 @@ import { defineConfig } from "vitest/config";
 
 // VITE_ENGINE_PROXY simulates the hosted deploy in development: /engine goes to the engine,
 // as nginx does in deploy/nginx.conf.
-const engineProxy = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env.VITE_ENGINE_PROXY;
+const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
+const engineProxy = env.VITE_ENGINE_PROXY;
 
 export default defineConfig({
+  // VITE_BASE: the path the site is served under, e.g. "/quantum_learning_plataform/" on GitHub Pages.
+  base: env.VITE_BASE ?? "/",
   plugins: [react()],
   server: {
     port: 5173,
@@ -16,5 +19,7 @@ export default defineConfig({
       : undefined,
   },
   build: { target: "es2022", chunkSizeWarningLimit: 4000 },
+  // The browser engine's worker loads Pyodide with a dynamic import: needs an ES module worker.
+  worker: { format: "es" },
   test: { environment: "node", include: ["src/**/*.test.ts"] },
 });

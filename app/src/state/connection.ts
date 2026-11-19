@@ -31,6 +31,7 @@ export function connectionSlice(set: Set, get: Get, execution: Execution): Conne
 
   return {
     connection: "connecting",
+    engineLoading: null,
     view: "hub",
     catalog: null,
     glossary: [],
@@ -53,6 +54,7 @@ export function connectionSlice(set: Set, get: Get, execution: Execution): Conne
           }
         },
         (message) => set({ loadError: message }),
+        (loading) => set({ engineLoading: loading }),
       );
       setEngine(client);
       void client.connect().catch(() => undefined);

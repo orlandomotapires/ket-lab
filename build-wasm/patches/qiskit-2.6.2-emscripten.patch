@@ -1,0 +1,104 @@
+Build qiskit 2.6.2 for WebAssembly (Pyodide 314, wasm32-unknown-emscripten).
+Ported from QisPlay's qiskit-2.5.2 patch (https://github.com/kriss-u/QisPlay, MIT).
+
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -22,7 +22,8 @@
+ num-bigint = "0.4"
+ num-complex = { version = "0.4", features = ["bytemuck"] }
+ nalgebra = "0.35"
+-faer = "0.24"
++# No rayon: its spindle thread pool needs atomic-wait, which lacks an emscripten backend.
++faer = { version = "0.24", default-features = false, features = ["std", "sparse-linalg", "rand"] }
+ numpy = "0.29"
+ ndarray = "0.17"
+ smallvec = "1.15"
+--- a/crates/circuit/Cargo.toml
++++ b/crates/circuit/Cargo.toml
+@@ -32,7 +32,6 @@
+ nom.workspace = true
+ nom-unicode.workspace = true
+ nom-language.workspace = true
+-crossterm = "0.29.0"
+ unicode-width = "0.2"
+ ahash = "0.8.12"
+ unicode-segmentation = "1.13"
+@@ -40,6 +39,10 @@
+ lexical-write-float = "1.0.6"
+ indexmap.workspace = true
+ 
++# crossterm's event loop depends on mio, which does not support WebAssembly.
++[target.'cfg(not(target_os = "emscripten"))'.dependencies]
++crossterm = "0.29.0"
++
+ [dependencies.pyo3]
+ workspace = true
+ features = ["hashbrown", "indexmap", "num-complex", "num-bigint", "smallvec", "py-clone"]
+--- a/crates/circuit/src/circuit_drawer.rs
++++ b/crates/circuit/src/circuit_drawer.rs
+@@ -16,6 +16,7 @@
+ use crate::packed_instruction::PackedInstruction;
+ use crate::{Clbit, Qubit};
+ use approx;
++#[cfg(not(target_os = "emscripten"))]
+ use crossterm::terminal;
+ use hashbrown::HashSet;
+ use itertools::{Itertools, MinMaxResult};
+@@ -66,6 +67,10 @@
+     let fold = match fold {
+         Some(f) => f,
+         None => {
++            // There is no terminal to query under WebAssembly.
++            #[cfg(target_os = "emscripten")]
++            let term_width: u16 = 80;
++            #[cfg(not(target_os = "emscripten"))]
+             let (term_width, _) = terminal::size().unwrap_or((80, 24));
+             term_width as usize
+         }
+--- a/qiskit/primitives/primitive_job.py
++++ b/qiskit/primitives/primitive_job.py
+@@ -14,7 +14,8 @@
+ """
+ 
+ import uuid
+-from concurrent.futures import ThreadPoolExecutor
++import sys
++from concurrent.futures import Future, ThreadPoolExecutor
+ 
+ from qiskit.providers import JobError, JobStatus
+ from qiskit.providers.jobstatus import JOB_FINAL_STATES
+@@ -51,6 +52,14 @@
+         if self._future is not None:
+             raise JobError("Primitive job has been submitted already.")
+ 
++        if sys.platform == "emscripten":
++            # WebAssembly (Pyodide) cannot start threads: run now, on this thread.
++            self._future = Future()
++            try:
++                self._future.set_result(self._function(*self._args, **self._kwargs))
++            except Exception as exc:  # pylint: disable=broad-except
++                self._future.set_exception(exc)
++            return
+         executor = ThreadPoolExecutor(max_workers=1)
+         self._future = executor.submit(self._function, *self._args, **self._kwargs)
+         executor.shutdown(wait=False)
+--- a/qiskit/utils/parallel.py
++++ b/qiskit/utils/parallel.py
+@@ -59,6 +59,7 @@
+ import multiprocessing
+ import os
+ import platform
++import sys
+ import warnings
+ from concurrent.futures import ProcessPoolExecutor
+ 
+@@ -193,6 +194,9 @@
+     """
+     # It's a configuration function with many simple choices - it'd be less clean to return late.
+ 
++    if sys.platform == "emscripten":
++        # WebAssembly (Pyodide) cannot spawn processes.
++        return False
+     num_processes = default_num_processes() if num_processes is None else num_processes
+     if num_processes < 2:
+         # There's no resources to parallelise over.

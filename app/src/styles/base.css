@@ -689,3 +689,48 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ------------------------------------------------------- browser engine loading */
+
+.banner.engine-loading {
+  display: grid;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.engine-loading-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+}
+.engine-loading-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.engine-loading-bar {
+  width: 100%;
+  max-width: 420px;
+  height: 4px;
+  appearance: none;
+  border: none;
+  border-radius: 2px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.engine-loading-bar::-webkit-progress-bar {
+  background: var(--surface-3);
+}
+.engine-loading-bar::-webkit-progress-value {
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.engine-loading-bar::-moz-progress-bar {
+  background: var(--accent);
+}
+.engine-loading-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}

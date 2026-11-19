@@ -5,6 +5,7 @@ Notable changes to the platform. The detailed history, item by item, is in [docs
 ## Unreleased
 
 ### Added
+- Ket Lab in the browser, on GitHub Pages: the engine (Python, Qiskit, PennyLane) runs in the page through Pyodide, with no server and no install. Progress stays in the browser.
 - Track 6, Adiabatic Computing and Quantum Annealing: Ising models and QUBO, the adiabatic theorem, the anneal as a circuit, embedding and the limits of annealers.
 - Track 3 lessons on ansatz design, optimizers (SPSA), barren plateaus and a hardware-efficient VQE.
 - Notes: a drawer in the lab and a notes page, saved as you type, searchable and part of the backup.

@@ -71,8 +71,9 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 
 - **The Qiskit wheel is ours to maintain.** Each Qiskit or Pyodide upgrade needs a rebuild, and the patch may need adjusting (porting it from 2.5.2 to 2.6.2 needed small edits). If Qiskit starts publishing WebAssembly wheels, switch to those.
 - **rustworkx's WebAssembly wheel is experimental.** Upstream calls its support best effort.
-- **Speed.** The suite ran about 3 times slower than native. Fine for the lessons tested; the heaviest ones (Track 3 training loops) still need timing in a real browser.
-- **Hardware track.** Running on real IBM hardware (`qiskit-ibm-runtime`) needs network calls from inside Pyodide; not tested yet.
-- **Real browsers.** Everything above ran in Node. Chrome, Firefox and Safari, and a phone, still need checking.
+- **Speed (measured, 19 Nov 2026).** A job takes 2 to 2.6 times as long in Pyodide as natively, so the browser engine multiplies every time limit by 3 (`BROWSER_TIME_SCALE` in `qlp_engine/browser.py`). With that, the slowest of the 170 jobs (every reference solution, run and Check) uses 17% of its limit (2.9 challenge: 2.5 s of 15 s); a learner's machine about 6 times slower than the development one still fits. The cost: an infinite loop is stopped after 15 s instead of 5. `build-wasm/time-lessons.mjs` checks this in CI and fails above 50%.
+- **Hardware track.** Off in the browser version. Running on real IBM hardware (`qiskit-ibm-runtime`) would need calls to IBM's API from the page, which may be refused by cross-origin rules; not tried.
+- **Browsers.** The browser-mode tests pass in Chromium and Firefox and on an emulated Pixel 7; CI also runs them in WebKit (Safari's engine) and on an emulated iPhone 14. Emulation covers screen size and touch, not a phone's CPU or memory: a real iPhone, where Safari gives WebAssembly less memory, still needs a check after the first deploy.
+- **Live run of three challenge solutions.** 3.1, 4.1 and 5.3: the challenge code defines what the checker calls, so a plain run draws nothing ("variable not defined yet" or "no circuit"). Check passes. Same on the native engine; not specific to the browser.
 
 The hosted engine in `deploy/` remains available as an alternative, but it is no longer the plan for the web version.

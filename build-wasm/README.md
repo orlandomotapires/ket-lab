@@ -16,6 +16,7 @@ node run-engine-tests.mjs           # the engine suite inside Pyodide (~6 min)
 ```bash
 python3 build-wasm/stage.py         # wheels.json + the Qiskit wheel + engine.zip -> app/public/browser-engine/
 cd build-wasm && node test-browser-engine.mjs   # the protocol through BrowserEngine, in Node
+cd build-wasm && node time-lessons.mjs         # every reference solution against its time limit
 cd app && VITE_ENGINE=browser npm run dev       # or: npm run e2e:browser
 ```
 

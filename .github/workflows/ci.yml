@@ -127,10 +127,15 @@ jobs:
       - name: Browser engine protocol test and every reference solution (Node)
         run: node test-browser-engine.mjs
         working-directory: build-wasm
+      # Every reference solution must stay well inside its (browser) time limit: fails above half.
+      - name: Lesson times against their limits
+        run: node time-lessons.mjs
+        working-directory: build-wasm
       - run: npm ci
         working-directory: app
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
         working-directory: app
+      # Chromium, Firefox and WebKit (Safari), plus phone emulation (Pixel 7, iPhone 14).
       - name: End-to-end tests (browser mode)
         run: npx playwright test -c playwright.browser.config.ts
         working-directory: app

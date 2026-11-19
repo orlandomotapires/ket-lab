@@ -1,9 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { collectErrors, openHub, openLessonBySearch, pressButton, replaceCode, solutionOf } from "./helpers";
 
 // Browser mode: no server, the engine runs in the page (Pyodide in a Web Worker).
 // The first start downloads and imports Qiskit and PennyLane: allow it time.
 test.setTimeout(240_000);
+
+/** On a phone the lab shows one panel at a time: opens it from the tabs (no-op on wide screens). */
+async function showPanel(page: Page, name: "Theory" | "Code" | "State"): Promise<void> {
+  const tabs = page.locator(".lab-tabs");
+  if (await tabs.isVisible()) await tabs.getByRole("tab", { name }).click();
+}
 
 test("browser mode: a lesson runs and is checked in the browser, progress stays in the browser", async ({ page }) => {
   const errors = collectErrors(page);
@@ -15,8 +21,11 @@ test("browser mode: a lesson runs and is checked in the browser, progress stays 
   await expect(loading).toHaveCount(0);
   await expect(page.locator(".section-row").first()).toBeVisible();
   await openLessonBySearch(page, "computational basis", "1.1");
+  await showPanel(page, "Code");
   await replaceCode(page, solutionOf("1.1"));
-  await expect(page.locator(".timeline")).toBeVisible();
+  // The engine in the page ran the code: the state after the X gate is shown.
+  await showPanel(page, "State");
+  await expect(page.locator(".visualizer")).toContainText("After step");
   await pressButton(page, "Check");
   await expect(page.locator(".mission")).toHaveClass(/is-done/);
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("qlp.progress.v1") ?? "{}"));

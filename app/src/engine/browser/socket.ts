@@ -61,6 +61,13 @@ const HEAP_RESTART_MB = 1024;
 /** A new worker that fails while starting is tried again after this delay, doubled each time. */
 const RETRY_FIRST_MS = 1000;
 const RETRY_MAX_MS = 30_000;
+/**
+ * A start that stays on one loading step this long is stuck, and its worker is replaced.
+ * Seen on CI in WebKit and once in Firefox: Pyodide's package load (step 2) never settled,
+ * with no error, and the page waited forever. The limit doubles after each stuck start, so a
+ * slow connection still gets there: the files it already downloaded come from the browser cache.
+ */
+const STALL_FIRST_MS = 60_000;
 
 export class BrowserEngineSocket implements EngineSocket {
   readyState = CONNECTING;
@@ -80,6 +87,8 @@ export class BrowserEngineSocket implements EngineSocket {
   /** New workers in a row that broke before they were ready. */
   private failedStarts = 0;
   private retryTimer: number | undefined;
+  private stallTimer: number | undefined;
+  private loadingStep = 0;
 
   constructor(private base: string) {
     this.startWorker();
@@ -127,10 +136,24 @@ export class BrowserEngineSocket implements EngineSocket {
       if (this.worker === worker) this.workerBroke(event.message);
     };
     worker.postMessage({ kind: "init", base: this.base });
+    this.loadingStep = 0;
+    this.watchStart();
+  }
+
+  /** (Re)arms the stuck-start watchdog: called when a worker starts and at each loading step. */
+  private watchStart(): void {
+    window.clearTimeout(this.stallTimer);
+    const limitMs = STALL_FIRST_MS * 2 ** this.failedStarts;
+    this.stallTimer = window.setTimeout(() => {
+      this.failedStarts += 1;
+      console.error(`[browser engine] start stuck at step ${this.loadingStep} for ${limitMs / 1000} s; replacing the worker`);
+      this.restart(null, this.reason);
+    }, limitMs);
   }
 
   private stopWorker(): void {
     window.clearTimeout(this.timer);
+    window.clearTimeout(this.stallTimer);
     this.worker?.terminate();
     this.worker = null;
     this.ready = false;
@@ -172,9 +195,12 @@ export class BrowserEngineSocket implements EngineSocket {
   private fromWorker(message: WorkerMessage): void {
     switch (message.kind) {
       case "loading":
+        this.loadingStep = message.step!;
+        this.watchStart();
         this.onloading?.({ step: message.step!, total: message.total!, stage: message.stage!, reason: this.reason });
         return;
       case "ready":
+        window.clearTimeout(this.stallTimer);
         this.texts = message.texts ?? null;
         this.ready = true;
         this.failedStarts = 0;

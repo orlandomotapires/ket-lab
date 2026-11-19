@@ -107,3 +107,7 @@ cd app && VITE_ENGINE=browser npm run dev
 - WebKit locally needs `sudo apt-get install libavif16` (not installed); runs in CI.
 - `gh` CLI is not installed; the repo is public, so the REST API works unauthenticated.
 - The lab's guard rejects `import time` in learner code.
+- CI WebKit (and once Firefox) sometimes hung at "Step 2 of 5" (Pyodide `loadPackage` never
+  settled, no error) until the 3-minute expect timeout. `socket.ts` now replaces a worker whose
+  start stays on one step for 60 s (doubled per stuck start); the page console then shows
+  "start stuck at step N". Root cause not reproduced (no WebKit locally).

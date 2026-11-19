@@ -14,7 +14,8 @@ engine/dist/
 /lecture (1)/
 
 # Claude Code worktrees and local state
-/.claude/
+/.claude/*
+!/.claude/docs/
 
 # Playwright
 test-results/

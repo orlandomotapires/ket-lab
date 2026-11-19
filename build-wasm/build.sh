@@ -4,7 +4,7 @@
 #
 # Requirements: Python 3.14 (must match Pyodide's; set PYTHON if it is not `python3.14`),
 # rustup, curl. Work files stay in build-wasm/work (ignored by git); re-runnable.
-# Recipe adapted from QisPlay (https://github.com/kriss-u/QisPlay, MIT). See docs/web-engine-decision.md.
+# Recipe adapted from QisPlay (https://github.com/kriss-u/QisPlay, MIT). See .claude/docs/web-engine-decision.md.
 set -euo pipefail
 cd "$(dirname "$0")"
 

@@ -1,6 +1,6 @@
 /**
  * The generic `curve` view: line and point charts drawn from the lesson's analysis.py.
- * Data contract: see cleanCurves in lib/curve.ts and docs/adding-a-lesson.md.
+ * Data contract: see cleanCurves in lib/curve.ts and .claude/docs/adding-a-lesson.md.
  */
 import { cleanCurves, formatTick, makeAxis, seriesStats, type CurveChart } from "../lib/curve";
 import { modKey } from "../lib/platform";

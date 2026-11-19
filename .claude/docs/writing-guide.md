@@ -58,4 +58,4 @@ Qubit ordering: the platform follows Qiskit (qubit 0 is the rightmost label, |q_
 - `starter_code.py`: change comments only. Every line of code stays identical (same names, values, order).
 - `solution.py`: starts with a comment that gives the idea, and each step has a comment explaining why, not what (a test checks this).
 - `theory.md`: Markdown with KaTeX (`$…$`, `$$…$$`). Use `##` headings in sentence case.
-- References only from [verified-references.md](verified-references.md).
+- References only from [verified-references.md](../../docs/verified-references.md).

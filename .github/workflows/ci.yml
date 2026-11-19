@@ -34,7 +34,7 @@ jobs:
         working-directory: engine
 
   wasm-build:
-    # The browser version of the engine (docs/web-engine-decision.md): Qiskit for WebAssembly
+    # The browser version of the engine (.claude/docs/web-engine-decision.md): Qiskit for WebAssembly
     # (rebuilt only when build.sh, the patch or the Pyodide pin change) and the staged site files.
     name: Engine in Pyodide (build)
     runs-on: ubuntu-latest

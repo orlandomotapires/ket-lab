@@ -13,7 +13,7 @@ The platform is a web application for **one person to study quantum computing al
 | [9](#9-risks-and-open-decisions) | Risks and open decisions |
 | [10](#10-next-steps) | Next steps, with the goal, work, done criterion and effort of each item |
 
-Supporting documents: [writing guide](writing-guide.md), [adding a lesson](adding-a-lesson.md), [verified references](verified-references.md), [plan for the browser version (GitHub Pages)](web-engine-decision.md) and the [deploy guide](../deploy/README.md).
+Supporting documents: [writing guide](writing-guide.md), [adding a lesson](adding-a-lesson.md), [verified references](../../docs/verified-references.md), [plan for the browser version (GitHub Pages)](web-engine-decision.md) and the [deploy guide](../../deploy/README.md).
 
 ---
 
@@ -48,7 +48,7 @@ Decisions that shape the architecture:
 
 The container mode has been written but never run (P2.2).
 
-The hosted mode is not yet ready for the public: it lacks per-session isolation (gVisor or microVM), a security review and a load test. See [deploy/README.md](../deploy/README.md). For a public site, the browser mode avoids all of that: there is no server running learner code.
+The hosted mode is not yet ready for the public: it lacks per-session isolation (gVisor or microVM), a security review and a load test. See [deploy/README.md](../../deploy/README.md). For a public site, the browser mode avoids all of that: there is no server running learner code.
 
 ### 1.3 The real-time cycle
 
@@ -300,7 +300,7 @@ Validation compares mathematics, not text: equivalent solutions are accepted.
     challenge_*.py              # optional: challenge solution, validation and setup
 ```
 
-Writing rules in [writing-guide.md](writing-guide.md); references only from [verified-references.md](verified-references.md); the steps to add a lesson in [adding-a-lesson.md](adding-a-lesson.md).
+Writing rules in [writing-guide.md](writing-guide.md); references only from [verified-references.md](../../docs/verified-references.md); the steps to add a lesson in [adding-a-lesson.md](adding-a-lesson.md).
 
 **Content suite** (for every lesson): schemas; texts, theory, starter code and objectives present; title equal to the catalog's; solution passes; starter code runs without passing; challenge solvable and harder than the mission; references with a verified location (no `TODO`) and https links without repetition; the response to the interface does not contain the solution. There are also independent physics tests per track, glossary and bibliography tests, a test that every solution is commented and that every review is well formed, and end-to-end tests in the browser (Playwright), including opening every lesson.
 
@@ -716,7 +716,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 #### P5.1 Public hosting (L)
 
 - **Goal:** open the platform to anyone over the internet.
-- **Work:** the pending items in [deploy/README.md](../deploy/README.md): gVisor on the server, one sandbox per session, a security review, a load test and per-IP limits; plus the deploy details of section 8.7 (security headers on `/assets/`, workers against the memory limit, wording of the deploy guide).
+- **Work:** the pending items in [deploy/README.md](../../deploy/README.md): gVisor on the server, one sandbox per session, a security review, a load test and per-IP limits; plus the deploy details of section 8.7 (security headers on `/assets/`, workers against the memory limit, wording of the deploy guide).
 - **Done when:** the security review passes and the load test sustains the expected number of people.
 - **Note:** for personal use (local or with the Docker of P2.2), none of this is needed.
 

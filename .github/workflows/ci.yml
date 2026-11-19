@@ -33,6 +33,120 @@ jobs:
         run: python -m pytest -q
         working-directory: engine
 
+  wasm-build:
+    # The browser version of the engine (docs/web-engine-decision.md): Qiskit for WebAssembly
+    # (rebuilt only when build.sh, the patch or the Pyodide pin change) and the staged site files.
+    name: Engine in Pyodide (build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - id: wheel
+        uses: actions/cache@v4
+        with:
+          path: build-wasm/dist
+          key: qiskit-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**', 'build-wasm/package.json') }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - if: steps.wheel.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**') }}
+      - name: Build the Qiskit WebAssembly wheel
+        if: steps.wheel.outputs.cache-hit != 'true'
+        run: build-wasm/build.sh
+        env:
+          PYTHON: python
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: build-wasm/package-lock.json
+      - run: npm ci
+        working-directory: build-wasm
+      # Pyodide, its packages, the wheels and the lessons, as the site serves them; the test jobs use them.
+      - name: Stage the browser engine files
+        run: python build-wasm/stage.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: browser-engine
+          path: app/public/browser-engine
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qiskit-wasm-wheel
+          path: build-wasm/dist/*.whl
+          retention-days: 30
+
+  wasm-suite:
+    name: Engine in Pyodide (test suite)
+    needs: wasm-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: browser-engine
+          path: app/public/browser-engine
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: build-wasm/package-lock.json
+      - run: npm ci
+        working-directory: build-wasm
+      - name: Engine tests and content suite inside Pyodide
+        run: node run-engine-tests.mjs
+        working-directory: build-wasm
+
+  wasm-browser:
+    name: Engine in Pyodide (browser mode)
+    needs: wasm-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: browser-engine
+          path: app/public/browser-engine
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            build-wasm/package-lock.json
+            app/package-lock.json
+      - run: npm ci
+        working-directory: build-wasm
+      - name: Browser engine protocol test and every reference solution (Node)
+        run: node test-browser-engine.mjs
+        working-directory: build-wasm
+      # Every reference solution must stay well inside its (browser) time limit: fails above half.
+      - name: Lesson times against their limits
+        run: node time-lessons.mjs
+        working-directory: build-wasm
+      - run: npm ci
+        working-directory: app
+      - run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: app
+      # Chromium, Firefox and WebKit (Safari), plus phone emulation (Pixel 7, iPhone 14).
+      - name: End-to-end tests (browser mode)
+        run: npx playwright test -c playwright.browser.config.ts
+        working-directory: app
+        env:
+          CI: "1"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-browser
+          path: app/playwright-report
+
   app:
     name: Interface
     runs-on: ubuntu-latest

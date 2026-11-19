@@ -1,8 +1,14 @@
+import type { EngineLoading, EngineSocket } from "./browser/socket";
 import type { EngineError } from "./types";
 
 export interface EngineEndpoint {
   url: string;
+  /** The engine runs in this page (Pyodide in a Web Worker); `url` is where its files are. */
+  browser?: boolean;
 }
+
+/** Built with VITE_ENGINE=browser: no server, the engine runs in the learner's browser. */
+export const BROWSER_ENGINE = import.meta.env.VITE_ENGINE === "browser";
 
 /** Opens an external link in a new tab. */
 export function openExternal(url: string): void {
@@ -22,10 +28,14 @@ export function saveTextFile(contents: string, fileName: string): boolean {
 
 /**
  * Where the engine is listening.
+ * - Browser (VITE_ENGINE=browser): in this page; its files are under <base>/browser-engine/.
  * - Hosted: VITE_ENGINE_URL (e.g. "/engine"), on the same site as the interface.
  * - Local (npm run dev): 127.0.0.1, with the port and token from VITE_ENGINE_PORT and VITE_ENGINE_TOKEN.
  */
 export async function resolveEndpoint(): Promise<EngineEndpoint> {
+  if (BROWSER_ENGINE) {
+    return { url: new URL(`${import.meta.env.BASE_URL}browser-engine/`, window.location.href).toString(), browser: true };
+  }
   const hosted = import.meta.env.VITE_ENGINE_URL as string | undefined;
   if (hosted) {
     const url = new URL(hosted, window.location.href);
@@ -40,6 +50,7 @@ export async function resolveEndpoint(): Promise<EngineEndpoint> {
 }
 
 export type ConnectionStatus = "connecting" | "open" | "closed";
+export type { EngineLoading };
 
 export type EngineResponse<T> =
   | ({ ok: true } & T)
@@ -60,9 +71,9 @@ export interface Request<T> {
 const RECONNECT_DELAY_MS = 1500;
 const OPEN_TIMEOUT_MS = 5000;
 
-/** RPC client over WebSocket: each request carries an id and receives a response. */
+/** RPC client over WebSocket (or the browser engine): each request carries an id and receives a response. */
 export class EngineClient {
-  private socket: WebSocket | null = null;
+  private socket: EngineSocket | null = null;
   private nextId = 1;
   private pending = new Map<number, Pending>();
   private opening: Promise<void> | null = null;
@@ -72,6 +83,8 @@ export class EngineClient {
     private resolve: () => Promise<EngineEndpoint>,
     private onStatus: (status: ConnectionStatus) => void,
     private onFailure: (message: string) => void = () => undefined,
+    /** Browser engine only: its loading steps while it (re)starts, then null. */
+    private onLoading: (loading: EngineLoading | null) => void = () => undefined,
   ) {}
 
   connect(): Promise<void> {
@@ -96,11 +109,18 @@ export class EngineClient {
       this.scheduleReconnect();
       throw new Error("The simulation engine did not start.");
     }
+    // The browser engine downloads and starts Python first (seconds to a minute): no handshake timeout.
+    const BrowserSocket = endpoint.browser ? (await import("./browser/socket")).BrowserEngineSocket : null;
     await new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(endpoint.url);
+      let socket: EngineSocket;
+      if (BrowserSocket) {
+        const browserSocket = new BrowserSocket(endpoint.url);
+        browserSocket.onloading = (loading) => this.onLoading(loading);
+        socket = browserSocket;
+      } else socket = new WebSocket(endpoint.url);
       this.socket = socket;
       // A handshake that never finishes would leave the interface stuck on "connecting".
-      const timeout = window.setTimeout(() => {
+      const timeout = BrowserSocket ? undefined : window.setTimeout(() => {
         socket.close();
       }, OPEN_TIMEOUT_MS);
       socket.onopen = () => {

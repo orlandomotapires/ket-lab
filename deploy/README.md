@@ -1,6 +1,6 @@
 # Hosted deployment
 
-The web version runs the real engine on a server (see `docs/web-engine-decision.md` for why it cannot run in the browser). Two containers:
+An optional way to run the real engine on a server (the GitHub Pages build runs it in the browser instead). Two containers:
 
 - **web**: nginx with the built interface; proxies `/engine` (WebSocket) to the engine.
 - **engine**: `python -m qlp_engine --public`, on an internal network with no internet access.

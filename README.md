@@ -51,13 +51,13 @@ So far the platform has only been tested on Linux.
 app/        the interface: React, TypeScript, Monaco, Three.js
 engine/     the Python engine: runs your code, simulates, checks missions, stores progress
 content/    the lessons, the glossary and the catalog
-docs/       the master plan, the writing guide, how to add a lesson
+docs/       the verified reading list behind every lesson reference
 deploy/     Docker files, for local use or a hosted server
 ```
 
 The interface talks to the engine over a WebSocket on 127.0.0.1, with a session token. Your code runs in a separate process with time and memory limits, so an infinite loop only costs you a restart of that process.
 
-The engine cannot run inside the browser, because Qiskit has no WebAssembly build. [docs/web-engine-decision.md](docs/web-engine-decision.md) explains this, and [deploy/README.md](deploy/README.md) covers what a public server would still need.
+A browser-only build is in progress: the same engine runs in the page through Pyodide, so the site can be served as static files on GitHub Pages. [deploy/README.md](deploy/README.md) covers the optional Docker server.
 
 ## Working on it
 
@@ -68,7 +68,7 @@ npm run test:e2e     # end-to-end tests in the browser (needs Google Chrome)
 
 The engine suite runs every lesson's solution against its own check and makes sure the starter code does not pass. Independent physics tests recompute the results of each track.
 
-To write a lesson, start with [docs/adding-a-lesson.md](docs/adding-a-lesson.md) and the [writing guide](docs/writing-guide.md). Plans, history and open problems are all in [docs/master-plan.md](docs/master-plan.md).
+Every lesson reference points to a page someone checked; the list is in [docs/verified-references.md](docs/verified-references.md).
 
 ## License
 

@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to the platform. The detailed history, item by item, is in [docs/master-plan.md](docs/master-plan.md), section 6.
+Notable changes to the platform.
 
 ## Unreleased
 

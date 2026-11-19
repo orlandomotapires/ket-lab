@@ -44,23 +44,50 @@ export async function openLessonBySearch(page: Page, query: string, lessonId: st
   await expect(page.locator(".editor .view-lines")).toBeAttached();
 }
 
-/** Replaces all the editor code. Pastes via the clipboard: typing would make
- *  Monaco reindent each line and break Python's indentation. Firefox and WebKit do not let
- *  tests grant clipboard access: there the text goes in as one input event (no reindenting either). */
+/** Replaces all the editor code with a real paste: typing makes Monaco reindent each line,
+ *  and Playwright's insertText puts multi-line text into Monaco twice in Firefox (and kept the
+ *  old code in desktop WebKit). The clipboard is written during the click on the editor, a
+ *  user gesture: Firefox and WebKit allow it then, without the permission only Chromium grants.
+ *  Ends only when the editor holds exactly `code`. */
 export async function replaceCode(page: Page, code: string): Promise<void> {
-  const chromium = page.context().browser()?.browserType().name() === "chromium";
-  if (chromium) {
+  if (page.context().browser()?.browserType().name() === "chromium") {
     await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.evaluate((text) => navigator.clipboard.writeText(text), code);
   }
+  await page.evaluate((text) => {
+    const target = window as unknown as { __clipboardWrite?: Promise<string> };
+    document.addEventListener("click", () => {
+      target.__clipboardWrite = navigator.clipboard.writeText(text).then(() => "ok", (error) => String(error));
+    }, { once: true, capture: true });
+  }, code);
   await page.locator(".editor .view-lines").click();
-  await page.keyboard.press("ControlOrMeta+A");
-  if (chromium) await page.keyboard.press("ControlOrMeta+V");
-  else await page.keyboard.insertText(code);
-  // Monaco renders spaces as non-breaking spaces: checks a span without spaces from the last line.
-  const lastLine = code.trim().split("\n").pop() ?? "";
-  const marker = lastLine.split(/\s+/).sort((x, y) => y.length - x.length)[0] ?? "";
-  await expect(page.locator(".editor .view-lines")).toContainText(marker);
+  const written = await page.evaluate(() => (window as unknown as { __clipboardWrite?: Promise<string> }).__clipboardWrite);
+  expect(written, "writing the code to the clipboard").toBe("ok");
+  // Select all is Monaco's own keybinding, picked from the page's user agent: desktop WebKit
+  // claims to be a Mac even on Linux, so Monaco wants Cmd+A there (Ctrl+A only moves to the
+  // line start, and the paste lands before the old code). The paste is the browser's own,
+  // picked from the host system.
+  const mac = await page.evaluate(() => navigator.userAgent.includes("Macintosh"));
+  await page.keyboard.press(mac ? "Meta+A" : "Control+A");
+  await page.keyboard.press("ControlOrMeta+V");
+  // After the paste Monaco shows the end of the code, and draws only the lines in view. The
+  // check: the last line number is the code's line count, and the lines in view (in screen
+  // order: Monaco positions them, and the parts of wrapped lines, by `top`) end the code.
+  // Text is compared without whitespace: Monaco shows spaces as non-breaking spaces.
+  const flat = (text: string) => text.replace(/\s+/g, "");
+  const shown = () => page.locator(".editor").evaluate((editor) => {
+    const inView = [...editor.querySelectorAll<HTMLElement>(".view-lines > .view-line")]
+      .map((line) => ({ top: parseFloat(line.style.top), text: line.textContent ?? "" }))
+      .sort((a, b) => a.top - b.top)
+      .map((line) => line.text)
+      .join("");
+    const numbers = [...editor.querySelectorAll(".line-numbers")].map((cell) => Number(cell.textContent) || 0);
+    return { inView, lastLine: Math.max(0, ...numbers) };
+  });
+  const lineCount = code.split("\n").length;
+  await expect.poll(async () => {
+    const { inView, lastLine } = await shown();
+    return lastLine === lineCount && flat(inView) !== "" && flat(code).endsWith(flat(inView));
+  }, { message: "the editor holds the new code" }).toBe(true);
 }
 
 /** "Reset code" lives in the More menu and asks for confirmation. */

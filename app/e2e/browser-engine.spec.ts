@@ -7,7 +7,13 @@ test.setTimeout(240_000);
 
 test("browser mode: a lesson runs and is checked in the browser, progress stays in the browser", async ({ page }) => {
   const errors = collectErrors(page);
-  await openHub(page);
+  await page.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
+  await page.goto("/");
+  // While Python starts, the banner says which step it is on; it goes away when ready.
+  const loading = page.locator(".engine-loading");
+  await expect(loading).toContainText(/Step [1-5] of 5/);
+  await expect(loading).toHaveCount(0);
+  await expect(page.locator(".section-row").first()).toBeVisible();
   await openLessonBySearch(page, "computational basis", "1.1");
   await replaceCode(page, solutionOf("1.1"));
   await expect(page.locator(".timeline")).toBeVisible();
@@ -27,4 +33,18 @@ test("browser mode: an infinite loop times out, and the engine keeps working", a
   await replaceCode(page, "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\n");
   await expect(page.locator(".oracle")).not.toHaveClass(/is-error/, { timeout: 120_000 });
   await expect(page.locator(".oracle")).not.toContainText("took longer than");
+});
+
+test("browser mode: too much memory gets a clear message, and the memory is given back", async ({ page }) => {
+  await openHub(page);
+  await page.getByRole("button", { name: "Free lab" }).click();
+  // Over 2 GB: NumPy refuses under WebAssembly; the message is the engine's memory one.
+  await replaceCode(page, "import numpy as np\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\na = np.zeros((40000, 40000))\n");
+  await expect(page.locator(".oracle")).toContainText("too much memory", { timeout: 60_000 });
+  // 1.6 GB: it works, and the page replaces the worker afterwards to give the memory back.
+  await replaceCode(page, "import numpy as np\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\na = np.ones((14000, 14000))\n");
+  await expect(page.locator(".engine-loading")).toContainText("free memory", { timeout: 60_000 });
+  await expect(page.locator(".engine-loading")).toHaveCount(0);
+  await replaceCode(page, "from qiskit import QuantumCircuit\nqc = QuantumCircuit(2)\nqc.h(0)\nqc.cx(0, 1)\n");
+  await expect(page.locator(".oracle")).not.toHaveClass(/is-error/);
 });

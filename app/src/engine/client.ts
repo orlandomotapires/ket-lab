@@ -1,4 +1,4 @@
-import type { EngineSocket } from "./browser/socket";
+import type { EngineLoading, EngineSocket } from "./browser/socket";
 import type { EngineError } from "./types";
 
 export interface EngineEndpoint {
@@ -50,6 +50,7 @@ export async function resolveEndpoint(): Promise<EngineEndpoint> {
 }
 
 export type ConnectionStatus = "connecting" | "open" | "closed";
+export type { EngineLoading };
 
 export type EngineResponse<T> =
   | ({ ok: true } & T)
@@ -82,6 +83,8 @@ export class EngineClient {
     private resolve: () => Promise<EngineEndpoint>,
     private onStatus: (status: ConnectionStatus) => void,
     private onFailure: (message: string) => void = () => undefined,
+    /** Browser engine only: its loading steps while it (re)starts, then null. */
+    private onLoading: (loading: EngineLoading | null) => void = () => undefined,
   ) {}
 
   connect(): Promise<void> {
@@ -109,7 +112,12 @@ export class EngineClient {
     // The browser engine downloads and starts Python first (seconds to a minute): no handshake timeout.
     const BrowserSocket = endpoint.browser ? (await import("./browser/socket")).BrowserEngineSocket : null;
     await new Promise<void>((resolve, reject) => {
-      const socket: EngineSocket = BrowserSocket ? new BrowserSocket(endpoint.url) : new WebSocket(endpoint.url);
+      let socket: EngineSocket;
+      if (BrowserSocket) {
+        const browserSocket = new BrowserSocket(endpoint.url);
+        browserSocket.onloading = (loading) => this.onLoading(loading);
+        socket = browserSocket;
+      } else socket = new WebSocket(endpoint.url);
       this.socket = socket;
       // A handshake that never finishes would leave the interface stuck on "connecting".
       const timeout = BrowserSocket ? undefined : window.setTimeout(() => {

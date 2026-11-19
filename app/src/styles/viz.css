@@ -92,6 +92,14 @@
 .scene:active {
   cursor: grabbing;
 }
+.scene-unavailable {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  cursor: default;
+  color: var(--muted);
+  text-align: center;
+}
 /* Zoom buttons: the top right corner of a 3D scene (the step caption is at the top left). */
 .scene-zoom {
   position: absolute;

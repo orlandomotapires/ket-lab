@@ -729,8 +729,3 @@ button {
 .engine-loading-bar::-moz-progress-bar {
   background: var(--accent);
 }
-.engine-loading-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: 12.5px;
-}

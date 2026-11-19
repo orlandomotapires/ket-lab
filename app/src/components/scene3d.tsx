@@ -4,7 +4,7 @@
  */
 import { Html } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { Component, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import * as THREE from "three";
 import type { Complex, Vec3 } from "../engine/types";
 import { t } from "../strings";
@@ -109,7 +109,46 @@ function zoomAt(zoom: Zoom, factor: number, px: number, py: number, width: numbe
 
 /** Container with canvas, orthographic camera, drag rotation and zoom: pinch, Ctrl/⌘ + wheel
  *  (a trackpad pinch arrives as one) or the buttons. A plain wheel still scrolls the panel. */
-function SceneFrame({ cols, rows, children }: { cols: number; rows: number; children: (view: View) => ReactNode }) {
+let webgl2: boolean | null = null;
+/** Three.js needs WebGL 2. Some browsers turn it off (no GPU, policy, privacy settings). */
+function hasWebGL2(): boolean {
+  if (webgl2 === null) {
+    try {
+      const gl = document.createElement("canvas").getContext("webgl2");
+      webgl2 = gl !== null;
+      gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch {
+      webgl2 = false;
+    }
+  }
+  return webgl2;
+}
+
+function NoWebGL() {
+  return <div className="scene scene-unavailable" role="note">{t("viz.noWebgl")}</div>;
+}
+
+/** A WebGL failure the check above missed (context lost, driver error) costs the 3D view, not the page. */
+class WebGLBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? <NoWebGL /> : this.props.children;
+  }
+}
+
+function SceneFrame(props: { cols: number; rows: number; children: (view: View) => ReactNode }) {
+  if (!hasWebGL2()) return <NoWebGL />;
+  return (
+    <WebGLBoundary>
+      <InteractiveScene {...props} />
+    </WebGLBoundary>
+  );
+}
+
+function InteractiveScene({ cols, rows, children }: { cols: number; rows: number; children: (view: View) => ReactNode }) {
   const [view, setView] = useState<View>({ yaw: -0.6, pitch: 0.32 });
   const [zoom, setZoom] = useState<Zoom>(FIT);
   const frameRef = useRef<HTMLDivElement>(null);

@@ -146,7 +146,8 @@ export class BrowserEngineSocket implements EngineSocket {
     const limitMs = STALL_FIRST_MS * 2 ** this.failedStarts;
     this.stallTimer = window.setTimeout(() => {
       this.failedStarts += 1;
-      console.error(`[browser engine] start stuck at step ${this.loadingStep} for ${limitMs / 1000} s; replacing the worker`);
+      // A warning, not an error: the page recovers on its own (the e2e tests fail on console errors).
+      console.warn(`[browser engine] start stuck at step ${this.loadingStep} for ${limitMs / 1000} s; replacing the worker`);
       this.restart(null, this.reason);
     }, limitMs);
   }

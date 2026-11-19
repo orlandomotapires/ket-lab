@@ -11,7 +11,17 @@ cd build-wasm && npm ci
 node run-engine-tests.mjs           # the engine suite inside Pyodide (~6 min)
 ```
 
-CI runs both on every push (the "Engine in Pyodide" job) and keeps the wheel as an artifact for 30 days.
+## Browser mode of the app
+
+```bash
+python3 build-wasm/stage.py         # wheels.json + the Qiskit wheel + engine.zip -> app/public/browser-engine/
+cd build-wasm && node test-browser-engine.mjs   # the protocol through BrowserEngine, in Node
+cd app && VITE_ENGINE=browser npm run dev       # or: npm run e2e:browser
+```
+
+`wheels.json` pins the PyPI wheels (versions of `engine/constraints.txt`, with their SHA-256). numpy, scipy, requests, packaging, typing-extensions and termcolor come from Pyodide's distribution; Pyodide itself loads from its CDN at the version in `package.json`.
+
+CI runs all of this on every push (the "Engine in Pyodide" job) and keeps the wheel as an artifact for 30 days.
 
 ## Upgrading
 

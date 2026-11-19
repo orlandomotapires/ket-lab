@@ -5,6 +5,7 @@ const STRINGS = {
   "banner.closed": "Simulation engine disconnected. Trying to reconnect…",
   "app.loading": "Loading…",
   "banner.connecting": "Connecting to the simulation engine…",
+  "banner.startingInBrowser": "Starting the simulation engine in your browser. The first visit downloads about 50 MB; later visits start from the cache.",
 
   "topbar.tracks": "Tracks",
   "topbar.home": "Go to the home page",

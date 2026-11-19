@@ -16,5 +16,7 @@ export default defineConfig({
       : undefined,
   },
   build: { target: "es2022", chunkSizeWarningLimit: 4000 },
+  // The browser engine's worker loads Pyodide with a dynamic import: needs an ES module worker.
+  worker: { format: "es" },
   test: { environment: "node", include: ["src/**/*.test.ts"] },
 });

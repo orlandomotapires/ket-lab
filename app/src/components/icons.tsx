@@ -11,14 +11,17 @@ function Icon({ children, size = 16, ...props }: SVGProps<SVGSVGElement> & { chi
   );
 }
 
-/** Product mark: Bloch sphere with the state vector. */
+/** Product mark: a Bloch sphere with cat ears, one eye open and one closed (alive and dead at
+ *  once). The small-size cut of .github/assets/logo.svg; the favicon in index.html is the same. */
 export const LogoMark = ({ size = 22 }: { size?: number }) => (
-  <svg className="brand-mark" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <circle cx="12" cy="12" r="9.25" strokeWidth="1.6" />
-    <ellipse cx="12" cy="12" rx="9.25" ry="3.3" strokeWidth="1.1" opacity="0.45" />
-    <path d="M12 12 17.4 6.4" strokeWidth="1.8" strokeLinecap="round" />
-    <circle cx="17.6" cy="6.2" r="1.7" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+  <svg className="brand-mark" width={size} height={size} viewBox="0 0 64 64" fill="none" stroke="currentColor" aria-hidden="true">
+    <path
+      d="M15.15 21.86 13 5l13.3 9.75a22 22 0 0 1 11.4 0L51 5l-2.15 16.86a22 22 0 1 1-33.7 0Z"
+      strokeWidth="4.6" strokeLinejoin="round"
+    />
+    <path d="M10 36a22 7 0 0 0 44 0" strokeWidth="3" opacity="0.55" />
+    <circle cx="24" cy="28" r="4.4" fill="currentColor" stroke="none" />
+    <path d="M36.5 29q3.5-3.5 7 0" strokeWidth="3.6" strokeLinecap="round" />
   </svg>
 );
 

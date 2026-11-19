@@ -33,6 +33,43 @@ jobs:
         run: python -m pytest -q
         working-directory: engine
 
+  wasm:
+    # The browser version of the engine (docs/web-engine-decision.md): rebuild Qiskit for
+    # WebAssembly from the official source, then run the engine suite inside Pyodide.
+    name: Engine in Pyodide
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**') }}
+      - name: Build the Qiskit WebAssembly wheel
+        run: build-wasm/build.sh
+        env:
+          PYTHON: python
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: build-wasm/package-lock.json
+      - run: npm ci
+        working-directory: build-wasm
+      - name: Engine tests and content suite inside Pyodide
+        run: node run-engine-tests.mjs
+        working-directory: build-wasm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qiskit-wasm-wheel
+          path: build-wasm/dist/*.whl
+          retention-days: 30
+
   app:
     name: Interface
     runs-on: ubuntu-latest

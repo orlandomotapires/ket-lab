@@ -91,6 +91,21 @@ assert.ok(events.length >= 2, `progress events while training (${events.length})
 assert.equal(events[0].event, "progress");
 assert.equal(events[0].id, nextId - 1);
 
+// Over 2 GB: NumPy refuses under WebAssembly; the learner gets the engine's memory message.
+reply = await ask({ type: "run", code: "import numpy as np\nfrom qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\na = np.zeros((40000, 40000))\n" });
+assert.equal(reply.ok, false);
+assert.equal(reply.error.kind, "memory", JSON.stringify(reply.error));
+assert.equal(reply.error.line, 4);
+
+// Track 3: PennyLane is not imported at startup; the first job imports it before its clock starts.
+assert.equal(py.runPython("import sys; 'pennylane' in sys.modules"), false);
+const lesson31 = "track_3_variational/section_3_1_variational";
+reply = await ask({ type: "validate", lesson_id: "3.1", code: solution(lesson31) });
+assert.equal(reply.passed, true, JSON.stringify(reply));
+const started = calls.find(([kind]) => kind === "started");
+assert.ok(started, "the job announced its time limit");
+assert.ok(py.runPython("import sys; 'pennylane' in sys.modules"));
+
 reply = await ask({ type: "hardware.available" });
 assert.equal(reply.available, false);
 

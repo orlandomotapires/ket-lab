@@ -1,4 +1,4 @@
-import type { ConnectionStatus, EngineResponse } from "../engine/client";
+import type { ConnectionStatus, EngineLoading, EngineResponse } from "../engine/client";
 import type {
   Catalog,
   EngineError,
@@ -36,6 +36,8 @@ export type View = "hub" | "lab" | "references" | "review" | "notes" | "glossary
 /** Engine and connection: catalog, search, references. */
 export interface ConnectionSlice {
   connection: ConnectionStatus;
+  /** Browser engine only: its loading steps while it (re)starts. */
+  engineLoading: EngineLoading | null;
   view: View;
   catalog: Catalog | null;
   glossary: GlossaryEntry[];

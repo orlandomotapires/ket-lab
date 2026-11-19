@@ -38,8 +38,8 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 | Qiskit 2.6.2, built by us from the official source (step 1) | Builds in about 4.5 min, 6.0 MB wheel (not byte-for-byte reproducible: two builds of the same source gave different hashes, so each build is tested rather than checked against a hash). Statevector, transpile, OpenQASM 3, Sampler and Estimator all work |
 | Engine test suite with that wheel | **837 of 837 collected tests pass** (346 s; natively 964 tests in 141 s). The 7 files not collected test the WebSocket server, the worker pool and the SQLite progress store, which the browser version replaces |
 | All lesson reference solutions (`test_content.py`) | 365 of 365 pass |
-| Startup | About 8 s to load everything, after the first download |
-| First download | About 50 MB (Pyodide with SciPy 41 MB, PennyLane 5 MB, Qiskit 6 MB, rustworkx 1.3 MB), cached by the browser afterwards |
+| Startup in Chromium (step 4) | Ready in about 6–7 s: Python 1.5–2.5 s, NumPy and SciPy 1.5 s, wheels and lessons under 1 s, importing Qiskit 2 s. PennyLane (5 s to import, Track 3 only) is imported in the background once the page is idle, or just before the first job that needs it, outside that job's time limit |
+| First download | 39 MB: Pyodide runtime and its packages 22.5 MB (from its CDN), Ket Lab's engine files 16.4 MB (wheels and lessons, from the site). Cached by the browser afterwards |
 
 ## Steps
 
@@ -55,7 +55,11 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
    - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide from its CDN, the wheels and `engine.zip` (qlp_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. No request to PyPI at runtime.
    - Page (`app/src/engine/browser/socket.ts`): looks like a WebSocket to `EngineClient`. One request at a time; an edit replaces a waiting run; a timeout or Stop terminates the worker, answers with the engine's own message and starts a new worker.
    - Checked by `build-wasm/test-browser-engine.mjs` (Node) and `npm run e2e:browser` (Chromium: lesson 1.1 runs and is checked; an infinite loop times out and the next run works). Both run in CI.
-4. **Limits in the browser.** Timeouts and Stop work (step 3). Still to do: a loading screen with progress for the first download (today a banner says the engine is starting), and a clear message when a circuit is too large for the tab's memory.
+4. **Limits in the browser (done).**
+   - Loading: a banner shows the step ("Step 3 of 5: Qiskit and PennyLane") with a progress bar, also when the worker restarts.
+   - Memory: an array over 2 GB (the WebAssembly limit) gets the same "too much memory" message as on the server; after a job that leaves the worker's memory above 1 GB, the page starts a fresh worker, because WebAssembly memory cannot shrink.
+   - Startup: PennyLane is no longer imported at start (see "Startup" above).
+   - Checked by `npm run e2e:browser` (loading banner, timeout, memory) and `build-wasm/test-browser-engine.mjs` (memory message, Track 3 without PennyLane preloaded).
 5. **Smaller download.** matplotlib is already out (networkx now comes from its PyPI wheel, not Pyodide's package, which pulled it in). Measure the real first-visit download in a browser and drop anything else the lessons do not import.
 6. **Publish.** A GitHub Actions workflow that builds the static site and deploys it to GitHub Pages. GitHub Pages is free for public repositories; a private repository needs a paid plan.
 
@@ -63,7 +67,7 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 
 - **The Qiskit wheel is ours to maintain.** Each Qiskit or Pyodide upgrade needs a rebuild, and the patch may need adjusting (porting it from 2.5.2 to 2.6.2 needed small edits). If Qiskit starts publishing WebAssembly wheels, switch to those.
 - **rustworkx's WebAssembly wheel is experimental.** Upstream calls its support best effort.
-- **Speed.** The suite ran about 3 times slower than native. Fine for the lessons tested; the heaviest ones (Track 3 training loops) need checking in a real browser, not only in Node.
+- **Speed.** The suite ran about 3 times slower than native. Fine for the lessons tested; the heaviest ones (Track 3 training loops) still need timing in a real browser.
 - **Hardware track.** Running on real IBM hardware (`qiskit-ibm-runtime`) needs network calls from inside Pyodide; not tested yet.
 - **Real browsers.** Everything above ran in Node. Chrome, Firefox and Safari, and a phone, still need checking.
 

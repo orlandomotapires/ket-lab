@@ -18,12 +18,16 @@ The host object provides:
 from __future__ import annotations
 
 import json
+import sys
 
 from . import worker
 from .content import ContentLibrary
 from .dispatch import Dispatcher, _error, shots_heavy_error
 from .messages import t
 from .pool import DEFAULT_JOB_TIMEOUT_S
+
+# NumPy's ValueError for an array larger than the address space (2 GB under WebAssembly).
+ARRAY_TOO_BIG = "array is too big"
 
 
 class InlinePool:
@@ -36,6 +40,9 @@ class InlinePool:
     async def submit(self, job: dict, timeout: float | None = None, is_stale=None, on_event=None, tag=None) -> dict:
         if is_stale is not None and is_stale():
             return {"ok": False, "stale": True}
+        if "pennylane" not in sys.modules and "pennylane" in json.dumps(job):
+            # Importing PennyLane takes seconds in the browser: do it before the clock starts.
+            BrowserEngine.warm_up_pennylane()
         seconds = timeout or self.job_timeout
         self.host.job_started(seconds, json.dumps(timeout_reply(job, seconds, None)))
 
@@ -75,15 +82,25 @@ class BrowserEngine(Dispatcher):
 
     async def handle(self, raw: str) -> str:
         """The JSON reply to one JSON request."""
-        return json.dumps(await self.respond(raw, self.latest_run), ensure_ascii=False)
+        response = await self.respond(raw, self.latest_run)
+        error = response.get("error")
+        if isinstance(error, dict) and error.get("kind") == "runtime" and ARRAY_TOO_BIG in str(error.get("message")):
+            # WebAssembly addresses at most 2 GB per array: NumPy refuses with a ValueError where the
+            # server would give a MemoryError. Same message as the server for the learner.
+            error.update(message=t("run.memory"), kind="memory")
+        return json.dumps(response, ensure_ascii=False)
 
     @staticmethod
     def warm_up() -> None:
-        """Imports the heavy libraries now, so the learner's first run does not wait for them."""
-        import pennylane  # noqa: F401
+        """Imports Qiskit now, so the learner's first run does not wait for it (about 2 s)."""
         import qiskit  # noqa: F401
         from qiskit import transpile  # noqa: F401
         from qiskit.quantum_info import Statevector  # noqa: F401
+
+    @staticmethod
+    def warm_up_pennylane() -> None:
+        """Imports PennyLane (about 5 s in the browser, Track 3 only): the host calls this when idle."""
+        import pennylane  # noqa: F401
 
     @staticmethod
     def texts() -> str:

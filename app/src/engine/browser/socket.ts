@@ -8,8 +8,19 @@
  * - an edit replaces a queued, not yet started run (the older one gets {stale: true});
  * - a job past its time limit, or stopped with {type: "cancel"}, ends by terminating the
  *   worker; the job gets the engine's own timeout/cancel reply, and a new worker starts
- *   (from the browser cache, a few seconds) to serve the queue.
+ *   (from the browser cache, a few seconds) to serve the queue;
+ * - a job that leaves the worker's memory large gets a new worker too: WebAssembly memory
+ *   only grows, so this is the way to give it back to the system.
  */
+
+/** Where the browser engine is while it starts; null once it is ready. */
+export interface EngineLoading {
+  step: number;
+  total: number;
+  stage: "runtime" | "packages" | "libraries" | "lessons" | "starting";
+  /** first start; new worker after a timeout, Stop or crash; new worker to free memory */
+  reason: "start" | "restart" | "memory";
+}
 
 export interface EngineSocket {
   readonly readyState: number;
@@ -30,7 +41,11 @@ interface Queued {
 type Reply = Record<string, unknown>;
 
 interface WorkerMessage {
-  kind: "ready" | "reply" | "event" | "job" | "phase" | "finished" | "fatal" | "crashed";
+  kind: "loading" | "ready" | "reply" | "event" | "job" | "phase" | "finished" | "fatal" | "crashed";
+  step?: number;
+  total?: number;
+  stage?: EngineLoading["stage"];
+  heapMB?: number;
   raw?: string;
   reply?: string;
   seconds?: number;
@@ -41,13 +56,17 @@ interface WorkerMessage {
 const CONNECTING = 0;
 const OPEN = 1;
 const CLOSED = 3;
+/** A worker whose memory grew past this after a job is replaced (memory cannot shrink). */
+const HEAP_RESTART_MB = 1024;
 
 export class BrowserEngineSocket implements EngineSocket {
   readyState = CONNECTING;
   onopen: ((event: Event) => void) | null = null;
   onmessage: ((event: MessageEvent) => void) | null = null;
   onclose: ((event: CloseEvent) => void) | null = null;
+  onloading: ((loading: EngineLoading | null) => void) | null = null;
 
+  private reason: EngineLoading["reason"] = "start";
   private worker: Worker | null = null;
   private ready = false;
   private queue: Queued[] = [];
@@ -111,7 +130,8 @@ export class BrowserEngineSocket implements EngineSocket {
   }
 
   /** Ends the running job with `reply` and starts a fresh worker for the queue. */
-  private restart(reply: Reply | null): void {
+  private restart(reply: Reply | null, reason: EngineLoading["reason"] = "restart"): void {
+    this.reason = reason;
     const job = this.inFlight;
     this.inFlight = null;
     this.timeoutReply = null;
@@ -133,9 +153,13 @@ export class BrowserEngineSocket implements EngineSocket {
 
   private fromWorker(message: WorkerMessage): void {
     switch (message.kind) {
+      case "loading":
+        this.onloading?.({ step: message.step!, total: message.total!, stage: message.stage!, reason: this.reason });
+        return;
       case "ready":
         this.texts = message.texts ?? null;
         this.ready = true;
+        this.onloading?.(null);
         if (this.readyState === CONNECTING) {
           this.readyState = OPEN;
           this.onopen?.(new Event("open"));
@@ -160,7 +184,8 @@ export class BrowserEngineSocket implements EngineSocket {
         window.clearTimeout(this.timer);
         this.inFlight = null;
         this.deliverRaw(message.raw!);
-        this.pump();
+        if ((message.heapMB ?? 0) > HEAP_RESTART_MB) this.restart(null, "memory");
+        else this.pump();
         return;
       case "fatal":
       case "crashed":

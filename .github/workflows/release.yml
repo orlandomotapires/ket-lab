@@ -1,7 +1,8 @@
 name: Release
 
 # Creates the GitHub Release for a v* tag, with that version's section of CHANGELOG.md as
-# its notes. To release: rename "## Unreleased" to "## X.Y.Z" in CHANGELOG.md, commit on
+# its notes. To release: rename "## Unreleased" to "## X.Y.Z" in CHANGELOG.md, update the
+# version in the Docker commands of README.md (and the wiki's Running locally page), commit on
 # main, then `git tag vX.Y.Z && git push origin vX.Y.Z`. The same tag makes image.yml
 # publish the Docker image.
 on:

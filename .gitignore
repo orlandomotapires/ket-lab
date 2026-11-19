@@ -21,3 +21,6 @@ playwright-report/
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# WebAssembly build work files (build-wasm/build.sh)
+build-wasm/work/

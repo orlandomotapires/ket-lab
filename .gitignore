@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-browser/
 .venv/
 __pycache__/
 *.egg-info/
@@ -24,3 +25,5 @@ playwright-report/
 
 # WebAssembly build work files (build-wasm/build.sh)
 build-wasm/work/
+# Browser engine files staged for the site (build-wasm/stage.py)
+app/public/browser-engine/

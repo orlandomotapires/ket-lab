@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Hub } from "./components/Hub";
 import { TopBar } from "./components/TopBar";
+import { BROWSER_ENGINE } from "./engine/client";
 import { t } from "./strings";
 import { readSharedCode } from "./lib/share";
 import { useStore } from "./state/store";
@@ -42,7 +43,7 @@ export function App() {
       <TopBar />
       {(connection === "closed" || (connection === "connecting" && slow)) && (
         <div className="banner" role="status">
-          {connection === "closed" ? t("banner.closed") : t("banner.connecting")}
+          {connection === "closed" ? t("banner.closed") : BROWSER_ENGINE ? t("banner.startingInBrowser") : t("banner.connecting")}
         </div>
       )}
       {view === "hub" ? (

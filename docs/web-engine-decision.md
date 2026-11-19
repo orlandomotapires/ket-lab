@@ -50,9 +50,13 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 
    The wheel is not committed: `build-wasm/build.sh` rebuilds it from the official source (checked against PyPI's hash), and CI keeps each build as an artifact. The wheel is tied to one Pyodide version: upgrading Pyodide means rebuilding it.
 2. **Run the engine suite in Pyodide in CI (done).** The "Engine in Pyodide" CI job rebuilds the wheel and runs `build-wasm/run-engine-tests.mjs` on every push, so a Qiskit, PennyLane or Pyodide upgrade cannot silently break the browser version.
-3. **Browser engine.** A Web Worker that loads Pyodide, installs the wheels from the site itself (no request to PyPI at runtime) and calls `qlp_engine.worker.handle(job)`. On the app side, a second transport in `app/src/engine/client.ts`, chosen at build time next to the existing local and hosted modes.
-4. **Limits in the browser.** A per-job timeout (terminate and restart the worker), a clear loading screen for the first download, and a message when a circuit is too large for the tab's memory.
-5. **Smaller download.** Drop matplotlib (pulled in by networkx, about 8 MB) and anything else the lessons do not import.
+3. **Browser engine (done).** Build the app with `VITE_ENGINE=browser`.
+   - Python: the protocol moved from `server.py` to `qlp_engine/dispatch.py`, shared by the server and by `qlp_engine/browser.py` (`BrowserEngine`, public mode: progress and notes in the browser, no IBM hardware). Jobs run in the worker itself, one at a time.
+   - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide from its CDN, the wheels and `engine.zip` (qlp_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. No request to PyPI at runtime.
+   - Page (`app/src/engine/browser/socket.ts`): looks like a WebSocket to `EngineClient`. One request at a time; an edit replaces a waiting run; a timeout or Stop terminates the worker, answers with the engine's own message and starts a new worker.
+   - Checked by `build-wasm/test-browser-engine.mjs` (Node) and `npm run e2e:browser` (Chromium: lesson 1.1 runs and is checked; an infinite loop times out and the next run works). Both run in CI.
+4. **Limits in the browser.** Timeouts and Stop work (step 3). Still to do: a loading screen with progress for the first download (today a banner says the engine is starting), and a clear message when a circuit is too large for the tab's memory.
+5. **Smaller download.** matplotlib is already out (networkx now comes from its PyPI wheel, not Pyodide's package, which pulled it in). Measure the real first-visit download in a browser and drop anything else the lessons do not import.
 6. **Publish.** A GitHub Actions workflow that builds the static site and deploys it to GitHub Pages. GitHub Pages is free for public repositories; a private repository needs a paid plan.
 
 ## Risks and open questions

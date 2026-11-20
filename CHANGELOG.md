@@ -2,6 +2,12 @@
 
 Notable changes to the platform.
 
+## Unreleased
+
+### Added
+- Challenges for eleven more lessons, so every lesson of Tracks 3 to 6 now has one (the projects excepted): QAOA on a ring (3.3), a one-qubit classifier (3.4), SPSA against parameter shift on 12 angles (3.6), a local cost and its gradients (3.7), correction without ancillas (4.2), a code against Y errors (4.3), which pairs of errors defeat the Shor code (4.4), the threshold of a 7-qubit model (4.7), any two-qubit Pauli from counts (5.2), the Landau–Zener formula (6.2) and the exact minimum chain strength (6.4).
+- Lesson 4.3 has a button for a Y error on qubit 1, and the chart of lesson 3.7 can show the local and global costs side by side.
+
 ## 0.3.0
 
 ### Changed

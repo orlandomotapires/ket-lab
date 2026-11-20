@@ -73,5 +73,10 @@
       "location": "Sections “Unitary qubit errors” and “Arbitrary qubit errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/discretization-of-errors"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

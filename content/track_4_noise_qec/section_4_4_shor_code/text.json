@@ -43,5 +43,24 @@
     "wrong_qubits": "The Shor code uses 9 qubits, but the circuit has {count}.",
     "encode_wrong": "With no error at all qubit 0 does not come back to |ψ⟩ (fidelity {fidelity}). The decoding is probably not the exact reverse of the encoding: check the order of the gates in each layer.",
     "single_fail": "With the error {error} qubit 0 was not recovered (fidelity {fidelity}). If only some errors fail, look at the vote that should catch them: the inner one in each block for X, the one on the leaders for Z."
+  },
+  "challenge": {
+    "mission": "The Shor code corrects any one error, and the two-error buttons of the lab show that a second error can go either way: X on qubits 0 and 1 defeats the code, and so does Z on qubits 0 and 3, while X on 0 with Z on 3 does not. To see the whole picture, write survives(errors), where errors is a list of (qubit, letter) pairs with the letter \"X\" or \"Z\". It encodes a state, applies the errors, decodes with your decode(), and returns True when qubit 0 holds the input state again, whatever that state is. Then scan the pairs of qubits (0 to 8) and store three lists. In bad_xx, the pairs (i, j) with i < j for which X errors on qubits i and j defeat the code. In bad_zz, the same for two Z errors. In bad_xz, the ordered pairs (i, j) with i ≠ j for which X on qubit i and Z on qubit j defeat it. The validator calls survives on error patterns of its own, with one or two errors, and compares the three lists with its own simulation of the code.",
+    "hints": [
+      "Build one QNode that takes the list of errors: prepare a state on qubit 0, call encode(), apply an X or a Z for each entry, call decode(), and return a number that says whether qubit 0 is back. For an input state, the expectation value of a Pauli operator that has that state as eigenstate is one such number.",
+      "After decoding, a failure is a Pauli operator acting on qubit 0: X or Z. X leaves |+⟩ alone and Z leaves |0⟩ alone, so a test on one of those states can miss a failure. A state that both operators change, such as the +1 eigenstate of Y, catches either.",
+      "qml.Hadamard followed by qml.S on qubit 0 prepares that state from |0⟩, and its Y expectation value is 1 when the state has survived. itertools.combinations(range(9), 2) gives the 36 unordered pairs. For bad_xz, loop over i and j separately and skip i = j."
+    ],
+    "messages": {
+      "ch_ok": "Two X errors defeat the code for {xx} of the 36 pairs of qubits, two Z errors for {zz} of 36, and an X on one qubit with a Z on another never does (all {xz} ordered pairs checked). The X failures all sit inside one block and the Z failures all connect two different blocks.",
+      "ch_no_survives": "Define the function survives(errors).",
+      "ch_survives_error": "Calling survives raised an error ({detail}). It receives a list of (qubit, letter) pairs, for example [(0, \"X\"), (3, \"Z\")], and may also receive an empty list.",
+      "ch_says_survives": "survives({errors}) returned True, but the code does not recover every input state after those errors. Probably the test state hides the failure: a logical X leaves |+⟩ unchanged and a logical Z leaves |0⟩ unchanged. Use a state that both change, or test more than one.",
+      "ch_says_fails": "survives({errors}) returned False, but the code does recover those errors. Probably an error is applied with the wrong letter or on the wrong qubit, or the fidelity is compared with a threshold that is too strict.",
+      "ch_missing": "Store the pairs in the variable {name}.",
+      "ch_bad_format": "{name} must be a list of pairs of different qubit numbers between 0 and 8, such as [(0, 1), (3, 4)].",
+      "ch_listed": "{name} lists the pair {pair}, but the code survives those two errors. Check that the pair is tested with the letters of this list and that survives is not too strict.",
+      "ch_unlisted": "{name} does not list the pair {pair}, and two such errors do break the code. Look at which test state your survives uses and whether every pair of the scan is tried."
+    }
   }
 }

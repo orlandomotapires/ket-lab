@@ -57,5 +57,10 @@
       "location": "Section “Encoding qubits”, subsection “Bit-flip errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

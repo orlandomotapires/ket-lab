@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qlp-engine"
+name = "ket-lab-engine"
 version = "0.2.0"
 description = "Local scientific engine of Ket Lab"
 requires-python = ">=3.11"
@@ -24,10 +24,10 @@ dev = ["pytest>=8", "jsonschema>=4.20", "ruff>=0.6"]
 hardware = ["qiskit-ibm-runtime>=0.52,<0.53"]
 
 [project.scripts]
-qlp-engine = "qlp_engine.__main__:main"
+ket-lab-engine = "ket_lab_engine.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["qlp_engine*"]
+include = ["ket_lab_engine*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

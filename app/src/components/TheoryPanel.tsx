@@ -272,7 +272,7 @@ export function TheoryPanel() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || !lessonId) return;
-    const key = `qlp.theory.scroll.${lessonId}`;
+    const key = `ket-lab.theory.scroll.${lessonId}`;
     const saved = readScroll(key);
     let frame = requestAnimationFrame(() => {
       frame = requestAnimationFrame(() => {

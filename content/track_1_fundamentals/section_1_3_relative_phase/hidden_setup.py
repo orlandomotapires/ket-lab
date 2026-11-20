@@ -1,8 +1,8 @@
 # Hidden setup for lesson 1.3: prepares the input state, which the learner does not know.
-# The validator swaps the input (via _QLP_INPUT): |0⟩, |1⟩, |+⟩, |+i⟩ and a generic state.
+# The validator swaps the input (via _KET_LAB_INPUT): |0⟩, |1⟩, |+⟩, |+i⟩ and a generic state.
 try:
-    _input = _QLP_INPUT
-    del _QLP_INPUT
+    _input = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _input = "generic"
 

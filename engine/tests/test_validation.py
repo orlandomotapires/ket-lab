@@ -1,6 +1,6 @@
 import pytest
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 HEADER = "from qiskit import QuantumCircuit\n"
 
@@ -109,7 +109,7 @@ def test_counts_distribution_checks_classical_width():
 def _teleport_lesson():
     from pathlib import Path
 
-    from qlp_engine.content import ContentLibrary
+    from ket_lab_engine.content import ContentLibrary
 
     library = ContentLibrary(Path(__file__).resolve().parents[2] / "content")
     return library.validation_bundle("1.6")

@@ -1,10 +1,10 @@
 # Hidden setup for the lesson 2.9 challenge: multiplication controlled by a^power modulo 15,
-# with the base `a` SECRET (the learner only receives N). The validator swaps `a` via _QLP_INPUT.
+# with the base `a` SECRET (the learner only receives N). The validator swaps `a` via _KET_LAB_INPUT.
 # Work register on qubits 4 to 7; also exposes the inverse QFT.
 N = 15
 try:
-    _a = _QLP_INPUT
-    del _QLP_INPUT
+    _a = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _a = 7
 

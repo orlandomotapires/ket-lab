@@ -7,7 +7,7 @@ The criterion is the fidelity of qubit 0 with |ψ⟩ after decoding.
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 INPUTS = [(0.0, 0.0), (np.pi / 2, 0.0), (1.1, 0.7), (2.4, -1.3)]
 ERRORS = ["none"] + [f"{kind}{q}" for kind in "xyzu" for q in range(9)]

@@ -3,12 +3,12 @@
 import numpy as np
 import pytest
 
-from qlp_engine import geometry, simulator, tracer
+from ket_lab_engine import geometry, simulator, tracer
 
 
 def run(library, lesson_id, case=None, code=None):
     bundle = library.validation_bundle(lesson_id)
-    inputs = {"_QLP_INPUT": case} if case is not None else None
+    inputs = {"_KET_LAB_INPUT": case} if case is not None else None
     return tracer.execute(code or bundle["solution"], bundle["hidden_setup"], inputs)
 
 

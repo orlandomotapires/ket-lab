@@ -2,7 +2,7 @@
 
 import pytest
 
-from qlp_engine import guard, tracer
+from ket_lab_engine import guard, tracer
 
 
 def rejected(code):
@@ -17,8 +17,8 @@ def rejected(code):
     ("import numpy as np\nx = np.ones(2)\nx._private\n", "underscore"),
     ("from random import _os\n", "underscore"),
     ("import numpy._core\n", "underscore"),
-    ("x = _QLP_INPUT\n", "_QLP_INPUT"),
-    ("x = _QLP_SECRET\n", "not available"),
+    ("x = _KET_LAB_INPUT\n", "_KET_LAB_INPUT"),
+    ("x = _KET_LAB_SECRET\n", "not available"),
     ("print(__builtins__)\n", "internal"),
     ("x = (1).__class__\n", "internal"),
     ("import numpy as np\nnp.savetxt('f', [1])\n", "files"),
@@ -48,13 +48,13 @@ def test_ordinary_code_passes(code):
 
 def test_the_learner_cannot_read_the_hidden_cases():
     setup = "_secret = 'hidden'\ndef reveal():\n    return _secret\n"
-    execution = tracer.execute("x = reveal()\n", hidden_setup=setup, inputs={"_QLP_INPUT": {"s": "101"}}, trace=False, require_circuit=False)
+    execution = tracer.execute("x = reveal()\n", hidden_setup=setup, inputs={"_KET_LAB_INPUT": {"s": "101"}}, trace=False, require_circuit=False)
     assert execution.namespace["x"] == "hidden"  # helpers still work through their own globals
-    assert "_secret" not in execution.namespace and "_QLP_INPUT" not in execution.namespace
+    assert "_secret" not in execution.namespace and "_KET_LAB_INPUT" not in execution.namespace
     # the lesson's own check.py can still see them
-    assert execution.full_namespace()["_QLP_INPUT"] == {"s": "101"}
+    assert execution.full_namespace()["_KET_LAB_INPUT"] == {"s": "101"}
     with pytest.raises(tracer.UserCodeError) as info:
-        tracer.execute("print(_QLP_INPUT)\n", hidden_setup=setup, inputs={"_QLP_INPUT": 1}, trace=False, require_circuit=False)
+        tracer.execute("print(_KET_LAB_INPUT)\n", hidden_setup=setup, inputs={"_KET_LAB_INPUT": 1}, trace=False, require_circuit=False)
     assert info.value.kind == "guard"
 
 
@@ -64,8 +64,8 @@ def test_setup_public_names_reach_the_learner():
 
 
 def test_no_lesson_leaks_its_secret_to_learner_code(library):
-    """Every oracle lesson: the learner's namespace holds no private name and no _QLP_* value."""
-    from qlp_engine.validation import _first_case
+    """Every oracle lesson: the learner's namespace holds no private name and no _KET_LAB_* value."""
+    from ket_lab_engine.validation import _first_case
 
     for lesson_id in library.lesson_ids:
         bundle = library.validation_bundle(lesson_id)

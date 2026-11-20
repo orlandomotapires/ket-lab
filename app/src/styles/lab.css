@@ -369,10 +369,10 @@
   flex: 1;
   min-height: 120px;
 }
-.qlp-step-line {
+.ket-lab-step-line {
   background: var(--accent-soft);
 }
-.qlp-step-marker {
+.ket-lab-step-marker {
   background: var(--accent);
   width: 3px !important;
   margin-left: 3px;

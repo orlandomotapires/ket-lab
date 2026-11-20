@@ -10,7 +10,7 @@ diagonalization); (5) r_eq is within 0.05 Å of the exact minimum.
 import numpy as np
 import pennylane as qml
 
-from qlp_engine import pl
+from ket_lab_engine import pl
 
 CHEMICAL_ACCURACY = 1.6e-3
 MAX_STEPS = 40

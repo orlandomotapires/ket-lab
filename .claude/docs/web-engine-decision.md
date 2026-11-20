@@ -12,11 +12,11 @@ Only the GitHub Pages build uses Pyodide. Local development (`npm run dev`) keep
 GitHub Pages (static files)
 ├── the interface (app/, built by Vite)
 ├── Pyodide runtime + wheels (Qiskit, PennyLane, rustworkx, ...)
-└── qlp_engine and content/
+└── ket_lab_engine and content/
 
 Learner's browser
 ├── page: the interface, same as today
-└── Web Worker: Pyodide + qlp_engine
+└── Web Worker: Pyodide + ket_lab_engine
     └── receives the same jobs the WebSocket carries today (run, shots, validate, export)
 ```
 
@@ -51,8 +51,8 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
    The wheel is not committed: `build-wasm/build.sh` rebuilds it from the official source (checked against PyPI's hash), and CI keeps each build as an artifact. The wheel is tied to one Pyodide version: upgrading Pyodide means rebuilding it.
 2. **Run the engine suite in Pyodide in CI (done).** The "Engine in Pyodide" CI job rebuilds the wheel and runs `build-wasm/run-engine-tests.mjs` on every push, so a Qiskit, PennyLane or Pyodide upgrade cannot silently break the browser version.
 3. **Browser engine (done).** Build the app with `VITE_ENGINE=browser`.
-   - Python: the protocol moved from `server.py` to `qlp_engine/dispatch.py`, shared by the server and by `qlp_engine/browser.py` (`BrowserEngine`, public mode: progress and notes in the browser, no IBM hardware). Jobs run in the worker itself, one at a time.
-   - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide, its packages, the wheels and `engine.zip` (qlp_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. The learner's browser contacts no other site.
+   - Python: the protocol moved from `server.py` to `ket_lab_engine/dispatch.py`, shared by the server and by `ket_lab_engine/browser.py` (`BrowserEngine`, public mode: progress and notes in the browser, no IBM hardware). Jobs run in the worker itself, one at a time.
+   - Web Worker (`app/src/engine/browser/worker.ts`): loads Pyodide, its packages, the wheels and `engine.zip` (ket_lab_engine and content) from the site, staged by `build-wasm/stage.py` into `public/browser-engine/`. The learner's browser contacts no other site.
    - Page (`app/src/engine/browser/socket.ts`): looks like a WebSocket to `EngineClient`. One request at a time; an edit replaces a waiting run; a timeout or Stop terminates the worker, answers with the engine's own message and starts a new worker.
    - Checked by `build-wasm/test-browser-engine.mjs` (Node) and `npm run e2e:browser` (Chromium: lesson 1.1 runs and is checked; an infinite loop times out and the next run works). Both run in CI.
 4. **Limits in the browser (done).**
@@ -71,7 +71,7 @@ Pyodide 314.0.7 (Python 3.14) in Node, on the development machine, 18 Nov 2026.
 
 - **The Qiskit wheel is ours to maintain.** Each Qiskit or Pyodide upgrade needs a rebuild, and the patch may need adjusting (porting it from 2.5.2 to 2.6.2 needed small edits). If Qiskit starts publishing WebAssembly wheels, switch to those.
 - **rustworkx's WebAssembly wheel is experimental.** Upstream calls its support best effort.
-- **Speed (measured, 19 Nov 2026).** A job takes 2 to 2.6 times as long in Pyodide as natively, so the browser engine multiplies every time limit by 3 (`BROWSER_TIME_SCALE` in `qlp_engine/browser.py`). With that, the slowest of the 170 jobs (every reference solution, run and Check) uses 17% of its limit (2.9 challenge: 2.5 s of 15 s); a learner's machine about 6 times slower than the development one still fits. The cost: an infinite loop is stopped after 15 s instead of 5. `build-wasm/time-lessons.mjs` checks this in CI and fails above 50%.
+- **Speed (measured, 19 Nov 2026).** A job takes 2 to 2.6 times as long in Pyodide as natively, so the browser engine multiplies every time limit by 3 (`BROWSER_TIME_SCALE` in `ket_lab_engine/browser.py`). With that, the slowest of the 170 jobs (every reference solution, run and Check) uses 17% of its limit (2.9 challenge: 2.5 s of 15 s); a learner's machine about 6 times slower than the development one still fits. The cost: an infinite loop is stopped after 15 s instead of 5. `build-wasm/time-lessons.mjs` checks this in CI and fails above 50%.
 - **Hardware track.** Off in the browser version. Running on real IBM hardware (`qiskit-ibm-runtime`) would need calls to IBM's API from the page, which may be refused by cross-origin rules; not tried.
 - **Browsers.** The browser-mode tests pass in Chromium and Firefox and on an emulated Pixel 7; CI also runs them in WebKit (Safari's engine) and on an emulated iPhone 14. Emulation covers screen size and touch, not a phone's CPU or memory: a real iPhone, where Safari gives WebAssembly less memory, still needs a check after the first deploy.
 - **Live run of three challenge solutions.** 3.1, 4.1 and 5.3: the challenge code defines what the checker calls, so a plain run draws nothing ("variable not defined yet" or "no circuit"). Check passes. Same on the native engine; not specific to the browser.

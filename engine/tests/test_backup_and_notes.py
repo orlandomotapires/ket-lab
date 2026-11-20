@@ -5,8 +5,8 @@ import json
 
 import pytest
 
-from qlp_engine.progress import ProgressStore
-from qlp_engine.server import EngineServer
+from ket_lab_engine.progress import ProgressStore
+from ket_lab_engine.server import EngineServer
 
 
 class FakeSocket:
@@ -34,7 +34,7 @@ def hosted(library):
 
 
 def backup(progress=None, notes=None, version=2):
-    data = {"format": "qlp-progress", "version": version, "progress": progress or {}}
+    data = {"format": "ket-lab-progress", "version": version, "progress": progress or {}}
     if notes is not None:
         data["notes"] = notes
     return data
@@ -110,11 +110,11 @@ def test_import_accepts_the_file_as_text_too(engine):
     "data",
     [
         {"format": "other", "progress": {}},
-        {"format": "qlp-progress", "progress": []},
-        {"format": "qlp-progress", "progress": {"1.1": "x"}},
-        {"format": "qlp-progress", "progress": {"1.1": {"code": 5}}},
-        {"format": "qlp-progress", "progress": {}, "notes": {"bad key": {"body": "x"}}},
-        {"format": "qlp-progress", "progress": {}, "notes": {"general": {"body": 5}}},
+        {"format": "ket-lab-progress", "progress": []},
+        {"format": "ket-lab-progress", "progress": {"1.1": "x"}},
+        {"format": "ket-lab-progress", "progress": {"1.1": {"code": 5}}},
+        {"format": "ket-lab-progress", "progress": {}, "notes": {"bad key": {"body": "x"}}},
+        {"format": "ket-lab-progress", "progress": {}, "notes": {"general": {"body": 5}}},
         [1],
         "not json at all",
         None,
@@ -256,3 +256,28 @@ def test_search_also_returns_matching_notes(engine):
 def test_search_notes_empty_in_hosted_mode(hosted):
     reply = ask(hosted, type="search", query="hadamard")
     assert reply["ok"] and reply["notes"] == [] and reply["results"]
+
+
+def test_default_data_dir_moves_the_folder_from_before_the_rename(tmp_path, monkeypatch):
+    from ket_lab_engine import progress
+
+    monkeypatch.setattr(progress.sys, "platform", "linux")
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+    legacy = tmp_path / "quantum-learning-platform"
+    legacy.mkdir()
+    (legacy / "progress.sqlite3").write_text("saved")
+    target = progress.default_data_dir()
+    assert target == tmp_path / "ket-lab"
+    assert (target / "progress.sqlite3").read_text() == "saved"
+    assert not legacy.exists()
+    # Once moved, a later start uses the new folder and leaves it alone.
+    assert progress.default_data_dir() == target
+
+
+def test_default_data_dir_without_an_old_folder(tmp_path, monkeypatch):
+    from ket_lab_engine import progress
+
+    monkeypatch.setattr(progress.sys, "platform", "linux")
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+    assert progress.default_data_dir() == tmp_path / "ket-lab"
+    assert not (tmp_path / "ket-lab").exists()  # created by ProgressStore, not here

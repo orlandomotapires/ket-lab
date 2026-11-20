@@ -278,7 +278,7 @@ def run_analysis(code: str, namespace: dict) -> dict:
     block the rest of the visualization.
     """
     try:
-        module: dict = {"__name__": "qlp_analysis"}
+        module: dict = {"__name__": "ket_lab_analysis"}
         exec(compile(code, "<analysis>", "exec"), module)
         return to_json(module["analyze"](namespace))
     except Exception as exc:  # noqa: BLE001

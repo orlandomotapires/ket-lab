@@ -3,7 +3,7 @@
 import itertools
 import math
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 EDGES = [(0, 1), (0, 4), (1, 2), (1, 4), (2, 3), (3, 4)]
 N = 5

@@ -7,7 +7,7 @@ from functools import reduce
 import numpy as np
 import pytest
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 from .conftest import CONTENT_DIR
 

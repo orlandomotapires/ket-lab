@@ -7,7 +7,7 @@ trusting what the QNode returns.
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 CASES = [(0.2, 0.2), (0.1, 0.3), (0.3, 0.05)]
 I2 = np.eye(2)

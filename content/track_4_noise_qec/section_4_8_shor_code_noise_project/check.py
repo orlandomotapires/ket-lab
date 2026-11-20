@@ -13,7 +13,7 @@ import itertools
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 INPUTS = [(1.1, 0.7), (2.4, -1.3)]
 TOLERANCE = 0.999

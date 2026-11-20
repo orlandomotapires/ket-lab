@@ -1,10 +1,10 @@
 # Study without installing Python or Node. From the repository root:
 #   docker compose -f deploy/local.yml up          (uses the published image, or builds it if it does not exist)
 #   docker compose -f deploy/local.yml up --build  (builds from the local code)
-# Then open http://localhost:8080. Progress is kept in the qlp-progress volume.
+# Then open http://localhost:8080. Progress is kept in the ket-lab-progress volume.
 services:
-  qlp:
-    image: ghcr.io/orlandomotapires/quantum-learning-platform:latest
+  ket-lab:
+    image: ghcr.io/orlandomotapires/ket-lab:latest
     build:
       context: ..
       dockerfile: deploy/Dockerfile.local
@@ -12,7 +12,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - qlp-progress:/data
+      - ket-lab-progress:/data
     read_only: true
     tmpfs:
       - /tmp:size=64m
@@ -23,4 +23,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  qlp-progress:
+  ket-lab-progress:

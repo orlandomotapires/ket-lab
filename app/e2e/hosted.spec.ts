@@ -15,12 +15,12 @@ test("hosted mode: progress in the browser, with export and import", async ({ pa
   await page.getByRole("button", { name: "Notes", exact: true }).click();
   await page.getByLabel(/^Note for lesson 1\.1/).fill("hosted note");
   await expect(page.locator(".note-status")).toHaveText("Saved");
-  expect(await page.evaluate(() => localStorage.getItem("qlp.notes.v1"))).toContain("hosted note");
+  expect(await page.evaluate(() => localStorage.getItem("ket-lab.notes.v1"))).toContain("hosted note");
 
   // Progress survives a page reload: it is in localStorage, not in the engine.
   await page.reload();
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("qlp.progress.v1") ?? "{}"));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("ket-lab.progress.v1") ?? "{}"));
   expect(saved["1.1"].completed).toBe(true);
 
   // Exports, deletes and imports back.
@@ -35,6 +35,6 @@ test("hosted mode: progress in the browser, with export and import", async ({ pa
   await page.locator(".backup-dialog input[type=file]").setInputFiles(file!);
   await expect(page.locator(".backup-dialog [role=status]")).toContainText("Imported");
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem("qlp.notes.v1"))).toContain("hosted note");
+  expect(await page.evaluate(() => localStorage.getItem("ket-lab.notes.v1"))).toContain("hosted note");
   expect(errors).toEqual([]);
 });

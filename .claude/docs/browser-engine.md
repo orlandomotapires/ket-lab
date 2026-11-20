@@ -12,7 +12,7 @@ PennyLane 0.45.1) runs in the learner's browser through Pyodide 314.0.7 in a Web
 Local dev (`npm run dev`, native engine over WebSocket) and Docker (`deploy/`) are unchanged.
 The repository is public (owner made it public on 19 Nov), so Pages is free.
 
-Target URL: https://orlandomotapires.github.io/quantum_learning_plataform/
+Target URL: https://orlandomotapires.github.io/ket-lab/
 
 ## Status at save time
 
@@ -48,11 +48,11 @@ Target URL: https://orlandomotapires.github.io/quantum_learning_plataform/
 - `build-wasm/stage.py` -> `app/public/browser-engine/` (gitignored): `manifest.json`,
   `pyodide/` (runtime from `build-wasm/node_modules/pyodide` + Pyodide packages checked
   against `pyodide-lock.json`), `wheels/` (PyPI wheels pinned in `wheels.json` with SHA-256,
-  plus the Qiskit wheel), `engine.zip` (qlp_engine + content). Strips `tests/` folders from
+  plus the Qiskit wheel), `engine.zip` (ket_lab_engine + content). Strips `tests/` folders from
   every wheel and rewrites hashes in the served lock. Learner's browser contacts no other host.
-- Python: protocol moved from `server.py` to `qlp_engine/dispatch.py` (`Dispatcher`);
+- Python: protocol moved from `server.py` to `ket_lab_engine/dispatch.py` (`Dispatcher`);
   `EngineServer(Dispatcher)` keeps `_handle_message`/`_dispatch` (tests use them).
-  `qlp_engine/browser.py`: `BrowserEngine` (public mode, progress in browser, hardware off),
+  `ket_lab_engine/browser.py`: `BrowserEngine` (public mode, progress in browser, hardware off),
   `InlinePool` (runs jobs inline, tells host `job_started(seconds, timeout_reply)` etc.),
   `BROWSER_TIME_SCALE = 3.0` (Pyodide is 2-2.6x slower than native), maps NumPy's
   "array is too big" to the engine's memory message, PennyLane imported lazily

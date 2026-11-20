@@ -8,7 +8,7 @@ Types (the manifest's `validation.type` field):
   state_cases          final state, for several test inputs (Level 2)
 
 The target is never typed by hand: it comes from running the lesson's `solution.py` with the
-same input. Inputs reach the hidden setup through the variable `_QLP_INPUT`.
+same input. Inputs reach the hidden setup through the variable `_KET_LAB_INPUT`.
 Common rules: allowed_gates, required_gates, max_gates, forbidden_pairs, expected_variables.
 """
 
@@ -79,7 +79,7 @@ def validate(code: str, lesson: dict) -> dict:
 
 def _first_case(rules: dict) -> dict | None:
     cases = rules.get("cases")
-    return {"_QLP_INPUT": cases[0]} if cases else None
+    return {"_KET_LAB_INPUT": cases[0]} if cases else None
 
 
 SUBCIRCUIT_PREFIX = "circuit-"
@@ -188,7 +188,7 @@ def _check_counts(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
 
 def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
     """The state of ONE qubit at the end must match the solution's, for several
-    input states (angle pairs in `_QLP_INPUT`) and all measurement branches.
+    input states (angle pairs in `_KET_LAB_INPUT`) and all measurement branches.
     """
     qubit = int(rules["qubit"])
     if circuit.num_qubits <= qubit:
@@ -205,7 +205,7 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
         for _ in range(int(rules.get("trials", REDUCED_STATE_TRIALS)))
     ]
     for angles in fixed + random_trials:
-        inputs = {"_QLP_INPUT": angles}
+        inputs = {"_KET_LAB_INPUT": angles}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
         target = _bloch(simulator.final_state(reference, seed=0, max_qubits=max_qubits), reference.num_qubits, qubit)
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
@@ -234,7 +234,7 @@ def _check_oracle_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> 
     tolerance = float(rules.get("tolerance", DEFAULT_ORACLE_TOLERANCE))
     failures = []
     for case in rules["cases"]:
-        inputs = {"_QLP_INPUT": case}
+        inputs = {"_KET_LAB_INPUT": case}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
         if student.num_qubits <= max(register):
@@ -257,7 +257,7 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
     tolerance = float(rules.get("tolerance", DEFAULT_TOLERANCE))
     worst, ok = 1.0, 0
     for case in rules["cases"]:
-        inputs = {"_QLP_INPUT": case}
+        inputs = {"_KET_LAB_INPUT": case}
         reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
         student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
         if student.num_qubits != reference.num_qubits:
@@ -279,7 +279,7 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
     """The lesson's own validation: `check.py` defines check(ns, run_case).
 
     `ns` is the student's namespace; `run_case(input)` runs the code again with
-    `_QLP_INPUT = input` and returns the namespace. check() returns
+    `_KET_LAB_INPUT = input` and returns the namespace. check() returns
     {"passed", "key", "params"}; the message comes from `messages[key]` in the text.json
     of the lesson.
     """
@@ -287,11 +287,11 @@ def _check_custom(student, lesson: dict, rules: dict) -> dict:
 
     def run_case(case):
         return tracer.execute(
-            lesson["code"], lesson.get("hidden_setup"), {"_QLP_INPUT": case},
+            lesson["code"], lesson.get("hidden_setup"), {"_KET_LAB_INPUT": case},
             trace=qiskit, require_circuit=qiskit,
         ).full_namespace()
 
-    module: dict = {"__name__": "qlp_check"}
+    module: dict = {"__name__": "ket_lab_check"}
     exec(compile(lesson["check"], "<check>", "exec"), module)
     try:
         outcome = module["check"](student.full_namespace(), run_case)

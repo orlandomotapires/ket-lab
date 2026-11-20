@@ -13,8 +13,9 @@ from pathlib import Path
 
 from . import messages
 
-# Kept from the project's first name, so existing progress is still found after the rename to Ket Lab.
-APP_DIR_NAME = "quantum-learning-platform"
+APP_DIR_NAME = "ket-lab"
+# The folder's name before the rename to Ket Lab: moved to APP_DIR_NAME the first time it is used.
+LEGACY_APP_DIR_NAME = "quantum-learning-platform"
 BACKUPS_KEPT = 5
 BUSY_TIMEOUT_MS = 5000
 MAX_NOTE_BYTES = 64 * 1024
@@ -27,7 +28,7 @@ BACKUP_FILE = re.compile(r"^progress-(\d{8})\.sqlite3$")
 
 IMPORT_MARKER = "--- imported ---"
 
-log = logging.getLogger("qlp_engine")
+log = logging.getLogger("ket_lab_engine")
 
 
 class KeyMap:
@@ -81,7 +82,15 @@ def default_data_dir() -> Path:
         base = home / "Library" / "Application Support"
     else:
         base = Path(os.environ.get("XDG_DATA_HOME", home / ".local" / "share"))
-    return base / APP_DIR_NAME
+    target, legacy = base / APP_DIR_NAME, base / LEGACY_APP_DIR_NAME
+    if not target.exists() and legacy.is_dir():
+        try:
+            legacy.rename(target)
+            log.info("progress folder moved from %s to %s", legacy, target)
+        except OSError as error:
+            log.warning("could not move %s to %s (%s); using the old folder", legacy, target, error)
+            return legacy
+    return target
 
 
 class ProgressStore:
@@ -345,7 +354,7 @@ class ProgressStore:
         named = {name for name in progress} | {name[7:] for name in notes if name.startswith("lesson:")}
         named = {name[: -len(CHALLENGE)] if name.endswith(CHALLENGE) else name for name in named}
         return {
-            "format": "qlp-progress",
+            "format": "ket-lab-progress",
             "version": BACKUP_VERSION,
             "progress": progress,
             "notes": notes,
@@ -479,7 +488,7 @@ def _read_backup(data: object) -> tuple[dict[str, dict], dict[str, dict], dict[s
     `keys` is the optional id -> stable key table that newer files carry; old files have none.
     """
     bad = ProgressError(messages.t("import.bad_file"))
-    if not isinstance(data, dict) or data.get("format") != "qlp-progress":
+    if not isinstance(data, dict) or data.get("format") != "ket-lab-progress":
         raise bad
     raw, raw_notes = data.get("progress"), data.get("notes", {})
     if not isinstance(raw, dict) or not isinstance(raw_notes, dict):

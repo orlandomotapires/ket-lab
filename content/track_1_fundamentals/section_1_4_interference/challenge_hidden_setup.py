@@ -1,7 +1,7 @@
 # Hidden setup for the lesson 1.4 challenge: prepares |+i⟩ or |−i⟩, without saying which.
 try:
-    _input = _QLP_INPUT
-    del _QLP_INPUT
+    _input = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _input = "plusi"
 

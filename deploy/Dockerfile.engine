@@ -6,15 +6,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /srv
 
 COPY engine/pyproject.toml engine/pyproject.toml
-COPY engine/qlp_engine engine/qlp_engine
+COPY engine/ket_lab_engine engine/ket_lab_engine
 RUN pip install ./engine
 
 COPY content content
 
 # Unprivileged user; the filesystem is read-only in the compose file.
-RUN useradd --system --uid 10001 --no-create-home qlp
-USER qlp
+RUN useradd --system --uid 10001 --no-create-home ket-lab
+USER ket-lab
 
 EXPOSE 8765
-ENTRYPOINT ["python", "-m", "qlp_engine", "--public", "--host", "0.0.0.0", "--port", "8765", "--content-dir", "/srv/content"]
+ENTRYPOINT ["python", "-m", "ket_lab_engine", "--public", "--host", "0.0.0.0", "--port", "8765", "--content-dir", "/srv/content"]
 CMD ["--workers", "4", "--max-connections", "200"]

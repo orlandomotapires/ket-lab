@@ -15,7 +15,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /srv
 
 COPY engine/pyproject.toml engine/pyproject.toml
-COPY engine/qlp_engine engine/qlp_engine
+COPY engine/ket_lab_engine engine/ket_lab_engine
 # With the hardware extra: the machine belongs to the learner, so their IBM key can be used.
 RUN pip install "./engine[hardware]"
 
@@ -23,8 +23,8 @@ COPY content content
 COPY --from=web /app/dist web
 
 # Unprivileged user; only /data (the progress volume) is writable.
-RUN useradd --system --uid 10001 --no-create-home qlp && mkdir /data && chown qlp /data
-USER qlp
+RUN useradd --system --uid 10001 --no-create-home ket-lab && mkdir /data && chown ket-lab /data
+USER ket-lab
 # The filesystem is read-only: libraries that write a cache or a config file use /tmp (a tmpfs).
 ENV HOME=/tmp MPLCONFIGDIR=/tmp XDG_CACHE_HOME=/tmp
 VOLUME /data
@@ -32,7 +32,7 @@ VOLUME /data
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/', timeout=3)"
-ENTRYPOINT ["python", "-m", "qlp_engine", "--single-user", "--host", "0.0.0.0", "--port", "8080", \
+ENTRYPOINT ["python", "-m", "ket_lab_engine", "--single-user", "--host", "0.0.0.0", "--port", "8080", \
             "--content-dir", "/srv/content", "--static-dir", "/srv/web", "--data-dir", "/data"]
 # Origins accepted by the WebSocket: the address you open in the browser. If you publish
 # on another port (-p 9000:8080), change it here: --allow-origin http://localhost:9000

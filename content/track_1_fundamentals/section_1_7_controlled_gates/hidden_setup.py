@@ -1,9 +1,9 @@
 # Hidden setup for lesson 1.7: prepares two-qubit inputs.
-# The validator swaps the input (via _QLP_INPUT). Basis states alone would not notice a wrong
+# The validator swaps the input (via _KET_LAB_INPUT). Basis states alone would not notice a wrong
 # phase on |11⟩, so there are also superpositions with different phases.
 try:
-    _input = _QLP_INPUT
-    del _QLP_INPUT
+    _input = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _input = "mixed"
 

@@ -24,9 +24,9 @@ TRAIN_TIMEOUT_S = 120.0
 MAX_LESSON_ID_CHARS = 80
 MAX_NOTE_HITS = 8
 
-# QLP_LOG=1 logs the type of each request to stderr (diagnostics).
-LOG_REQUESTS = os.environ.get("QLP_LOG") == "1"
-logger = logging.getLogger("qlp_engine")
+# KET_LAB_LOG=1 logs the type of each request to stderr (diagnostics).
+LOG_REQUESTS = os.environ.get("KET_LAB_LOG") == "1"
+logger = logging.getLogger("ket_lab_engine")
 
 
 class Dispatcher:
@@ -288,7 +288,7 @@ def _log(text: str) -> None:
     if not LOG_REQUESTS:
         return
     try:
-        print(f"[qlp-engine] {text}", file=sys.stderr, flush=True)
+        print(f"[ket-lab-engine] {text}", file=sys.stderr, flush=True)
     except (OSError, ValueError):
         pass  # no terminal to write to (e.g. parent process ended); logging is optional
 

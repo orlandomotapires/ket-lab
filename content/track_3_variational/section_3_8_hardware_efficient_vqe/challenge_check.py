@@ -10,7 +10,7 @@ import numpy as np
 import pennylane as qml
 from pennylane import numpy as pnp
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 EXACT = -1.1372838351669659
 CHEMICAL_ACCURACY = 1.6e-3

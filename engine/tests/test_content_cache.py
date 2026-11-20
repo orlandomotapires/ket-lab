@@ -6,7 +6,7 @@ import shutil
 
 import pytest
 
-from qlp_engine.content import ContentLibrary
+from ket_lab_engine.content import ContentLibrary
 
 
 @pytest.fixture()
@@ -34,7 +34,7 @@ def test_second_read_is_served_from_the_cache(copy, monkeypatch):
     lib, _ = copy
     lib.timeout("1.1"), lib.run_context("1.1"), lib.control_inputs("1.1", None), lib.catalog()
     calls = []
-    from qlp_engine import content
+    from ket_lab_engine import content
 
     real = content._read_json
     monkeypatch.setattr(content, "_read_json", lambda path: calls.append(path) or real(path))

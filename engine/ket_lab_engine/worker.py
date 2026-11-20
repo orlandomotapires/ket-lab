@@ -207,7 +207,8 @@ def export_circuit(job: dict) -> dict:
 
     from . import messages, pl, tracer
 
-    fmt = job.get("format") if job.get("format") in EXPORT_FORMATS else "qasm3"
+    requested = job.get("format")
+    fmt = requested if isinstance(requested, str) and requested in EXPORT_FORMATS else "qasm3"
     label = EXPORT_FORMATS[fmt]
     pennylane = job.get("framework") == "pennylane"
     execution = tracer.execute(
@@ -259,7 +260,7 @@ def _sample_final_state(trajectory, shots: int, seed: int) -> dict:
     from .simulator import MAX_SHOTS, state_probabilities
 
     shots = max(1, min(shots, MAX_SHOTS))
-    probabilities = state_probabilities(trajectory.states[-1])
+    probabilities = state_probabilities(trajectory.final)
     probabilities = probabilities / probabilities.sum()
     samples = np.random.default_rng(seed).choice(len(probabilities), size=shots, p=probabilities)
     width = trajectory.num_qubits

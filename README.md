@@ -55,14 +55,13 @@ npm run setup   # once
 npm run dev     # then open http://localhost:5173
 ```
 
-With Docker, you need nothing else. The image is published with every release:
+With Docker, you need nothing else. This pulls the latest release, starts it in the background and tells you when it's ready:
 
 ```bash
-docker pull ghcr.io/orlandomotapires/ket-lab:v0.4.0
-docker run --rm --name ket-lab-v0.4.0 -p 127.0.0.1:8080:8080 -v ket-lab-progress:/data ghcr.io/orlandomotapires/ket-lab:v0.4.0
+curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scripts/run-docker.sh | sh
 ```
 
-Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume.
+Use `| sudo sh` if your user isn't in the docker group. Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume, and [the script](scripts/run-docker.sh) is short if you want to read it first.
 
 The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development).
 

@@ -7,7 +7,7 @@ import pytest
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector, state_fidelity
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 from .conftest import CONTENT_DIR
 
@@ -78,7 +78,7 @@ def test_superdense_decoding(message):
     ns = run(
         read("section_1_9_superdense_coding", "solution.py"),
         read("section_1_9_superdense_coding", "hidden_setup.py"),
-        {"_QLP_INPUT": message},
+        {"_KET_LAB_INPUT": message},
     )
     state = Statevector(ns["qc"])
     probabilities = state.probabilities_dict()  # label |q1 q0⟩

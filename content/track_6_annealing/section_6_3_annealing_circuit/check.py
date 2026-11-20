@@ -9,7 +9,7 @@ The learner's circuit may use h, rx, rz and rzz only, at most 1000 gates. The pr
 import numpy as np
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 THRESHOLD = 0.7
 MAX_GATES = 1000

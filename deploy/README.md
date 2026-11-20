@@ -3,7 +3,7 @@
 An optional way to run the real engine on a server (the GitHub Pages build runs it in the browser instead). Two containers:
 
 - **web**: nginx with the built interface; proxies `/engine` (WebSocket) to the engine.
-- **engine**: `python -m qlp_engine --public`, on an internal network with no internet access.
+- **engine**: `python -m ket_lab_engine --public`, on an internal network with no internet access.
 
 ```bash
 # from the repository root
@@ -26,7 +26,7 @@ To try public mode without Docker: `npm --prefix app run e2e:hosted` runs the en
 
 ## Security
 
-Learner code is arbitrary Python. In public mode the **container is the security boundary**: the AST check in `engine/qlp_engine/guard.py` gives clear errors but can be bypassed.
+Learner code is arbitrary Python. In public mode the **container is the security boundary**: the AST check in `engine/ket_lab_engine/guard.py` gives clear errors but can be bypassed.
 
 Applied in `docker-compose.yml`:
 

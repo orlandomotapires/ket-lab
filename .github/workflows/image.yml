@@ -24,7 +24,7 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/orlandomotapires/quantum-learning-platform
+          images: ghcr.io/orlandomotapires/ket-lab
           tags: |
             type=raw,value=latest
             type=ref,event=tag

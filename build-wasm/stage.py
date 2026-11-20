@@ -12,7 +12,7 @@ Output:
 
 Every wheel is shipped without its `tests/` folders (5.5 MB the browser would never run: SciPy,
 PennyLane, networkx); the served pyodide-lock.json gets the new SHA-256 of the packages it lists.
-  engine.zip      qlp_engine (Python sources) and content/
+  engine.zip      ket_lab_engine (Python sources) and content/
 
 Needs build.sh to have run and `npm ci` in build-wasm. Downloads are cached in build-wasm/work.
 """
@@ -134,9 +134,9 @@ def _strip_tests(wheel: Path) -> bool:
 
 
 def _bundle(path: Path) -> None:
-    """qlp_engine/*.py and content/, at the paths the worker puts on sys.path."""
+    """ket_lab_engine/*.py and content/, at the paths the worker puts on sys.path."""
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for source in sorted((ROOT / "engine" / "qlp_engine").rglob("*.py")):
+        for source in sorted((ROOT / "engine" / "ket_lab_engine").rglob("*.py")):
             archive.write(source, source.relative_to(ROOT / "engine").as_posix())
         for source in sorted((ROOT / "content").rglob("*")):
             if source.is_file() and "__pycache__" not in source.parts:

@@ -8,7 +8,7 @@ concurrence of (0, 3), checked against the calculation done here.
 
 import numpy as np
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 BRANCHES = 40
 FIDELITY = 0.999

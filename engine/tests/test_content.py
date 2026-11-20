@@ -5,7 +5,7 @@ import json
 import jsonschema
 import pytest
 
-from qlp_engine import messages, validation
+from ket_lab_engine import messages, validation
 
 from .conftest import CONTENT_DIR
 

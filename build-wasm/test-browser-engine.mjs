@@ -1,4 +1,4 @@
-// Drives qlp_engine.browser.BrowserEngine in Pyodide the way the Web Worker does
+// Drives ket_lab_engine.browser.BrowserEngine in Pyodide the way the Web Worker does
 // (app/src/engine/browser/worker.ts): the staged manifest, Pyodide packages, wheels and bundle.
 // Usage (from build-wasm/, after build.sh and stage.py): node test-browser-engine.mjs
 import assert from "node:assert/strict";
@@ -29,7 +29,7 @@ py.globals.set("host", host);
 const engine = await py.runPythonAsync(`
 import sys
 sys.path.insert(0, "/engine")
-from qlp_engine.browser import BrowserEngine
+from ket_lab_engine.browser import BrowserEngine
 BrowserEngine.warm_up()
 BrowserEngine("/engine/content", host)
 `);

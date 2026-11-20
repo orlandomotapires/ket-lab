@@ -1,8 +1,8 @@
 # Hidden setup for lesson 4.2: the state to protect and the injected error.
-# The UI picks the error with its buttons; the validator varies state and error (via _QLP_INPUT).
+# The UI picks the error with its buttons; the validator varies state and error (via _KET_LAB_INPUT).
 try:
-    _config = dict(_QLP_INPUT)
-    del _QLP_INPUT
+    _config = dict(_KET_LAB_INPUT)
+    del _KET_LAB_INPUT
 except NameError:
     _config = {}
 

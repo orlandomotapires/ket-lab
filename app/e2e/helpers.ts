@@ -30,7 +30,7 @@ export function collectErrors(page: Page): string[] {
 
 export async function openHub(page: Page, { tour = false } = {}): Promise<void> {
   // The first-lesson guide would cover buttons in the other tests; it has its own test.
-  if (!tour) await page.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
+  if (!tour) await page.addInitScript(() => localStorage.setItem("ket-lab.tour.v1", "1"));
   await page.goto("/");
   await expect(page.locator(".section-row").first()).toBeVisible();
 }

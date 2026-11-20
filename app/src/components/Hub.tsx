@@ -190,7 +190,7 @@ type TrackData = NonNullable<ReturnType<typeof useStore.getState>["catalog"]>["t
 /** One track: its header and the lesson rows. A finished track folds to its header, and the
  *  track that holds the next lesson stays open; the learner's choice is remembered. */
 /** Sent by the track index: the track it jumps to opens if it was collapsed. */
-const OPEN_TRACK_EVENT = "qlp:open-track";
+const OPEN_TRACK_EVENT = "ket-lab:open-track";
 
 function Track({ track, progress, next, offline, action, openLesson }: {
   track: TrackData;
@@ -210,7 +210,7 @@ function Track({ track, progress, next, offline, action, openLesson }: {
     stats.lessons > 0 && stats.lessonsDone === stats.lessons && stats.challengesDone === stats.challenges;
   const holdsNext = Boolean(next && track.sections.some((section) => section.id === next.id));
   // Only the track you are on starts open; a track you open or close yourself stays that way.
-  const [open, setOpen] = useStoredFlag(`qlp.hub.track.${track.id}`, holdsNext);
+  const [open, setOpen] = useStoredFlag(`ket-lab.hub.track.${track.id}`, holdsNext);
   useEffect(() => {
     const onOpen = (event: Event) => {
       if ((event as CustomEvent<number>).detail === track.id) setOpen(true);
@@ -404,7 +404,7 @@ function BackupDialog({ onClose }: { onClose: () => void }) {
         <button
           className="btn"
           onClick={() => {
-            saveTextFile(backupFile(notes, exportLocalProgress(progress), lessonKeys(catalog)), "quantum-learning-progress.json");
+            saveTextFile(backupFile(notes, exportLocalProgress(progress), lessonKeys(catalog)), "ket-lab-progress.json");
             setStatus({ text: t("hub.backupExported"), error: false });
           }}
         >

@@ -27,7 +27,7 @@ entangling gates: no chemistry excitations, which are the lesson 3.2 ansatz.
 import numpy as np
 import pennylane as qml
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 EXACT = -1.1372838351669659
 HARTREE_FOCK = -1.1167593103409306

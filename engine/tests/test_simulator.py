@@ -4,7 +4,7 @@ from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.random import random_circuit
 from qiskit.quantum_info import Statevector
 
-from qlp_engine import geometry, simulator
+from ket_lab_engine import geometry, simulator
 
 
 @pytest.mark.parametrize("seed", range(8))

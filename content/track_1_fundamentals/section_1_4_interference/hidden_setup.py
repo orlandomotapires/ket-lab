@@ -1,8 +1,8 @@
 # Hidden setup for lesson 1.4: prepares |+⟩ or |−⟩, without saying which.
-# The validator swaps the input (via _QLP_INPUT) to test both cases.
+# The validator swaps the input (via _KET_LAB_INPUT) to test both cases.
 try:
-    _input = _QLP_INPUT
-    del _QLP_INPUT
+    _input = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _input = "plus"
 

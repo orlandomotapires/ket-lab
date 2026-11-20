@@ -6,7 +6,7 @@ import math
 import numpy as np
 import pytest
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 
 def validate(library, lesson_id, code):
@@ -27,7 +27,7 @@ def solution_with(library, lesson_id, **replacements):
 
 
 def solution_namespace(library, lesson_id):
-    from qlp_engine import tracer
+    from ket_lab_engine import tracer
 
     code = library.validation_bundle(lesson_id)["solution"]
     return tracer.execute(code, None, None, trace=False, require_circuit=False).namespace

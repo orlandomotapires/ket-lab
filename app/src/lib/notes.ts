@@ -2,7 +2,7 @@ import type { Note, NoteHit, Notes } from "../engine/types";
 
 /** Key of the free note. Lesson notes use "lesson:<id>". */
 export const GENERAL_NOTE = "general";
-const KEY = "qlp.notes.v1";
+const KEY = "ket-lab.notes.v1";
 /** The engine refuses bigger notes (64 KB); the text box stops a bit earlier. */
 export const NOTE_LIMIT = 60_000;
 

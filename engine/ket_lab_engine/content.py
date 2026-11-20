@@ -409,7 +409,7 @@ class ContentLibrary:
         for control in controls:
             value = chosen.get(control["id"], control["default"])
             values[control["id"]] = value if value in control["options"] else control["default"]
-        return {"_QLP_INPUT": values}
+        return {"_KET_LAB_INPUT": values}
 
     def run_context(self, lesson_id: str | None, challenge: bool = False) -> dict:
         """Optional execution context of a lesson (hidden setup, qubit cap)."""

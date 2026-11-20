@@ -124,7 +124,7 @@ test("backup: the export carries the notes and the import restores them in local
   await page.getByRole("button", { name: "Export progress" }).click();
   const file = (await (await download).path())!;
   const data = JSON.parse(readFileSync(file, "utf-8"));
-  expect(data.format).toBe("qlp-progress");
+  expect(data.format).toBe("ket-lab-progress");
   expect(data.notes.general.body).toBe("backup me");
   await expect(page.locator(".backup-dialog [role=status]")).toHaveText("File downloaded.");
   await page.locator(".backup-dialog").getByRole("button", { name: "Close" }).click();

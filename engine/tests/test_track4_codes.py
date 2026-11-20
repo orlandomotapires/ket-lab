@@ -8,7 +8,7 @@ import json
 import numpy as np
 import pytest
 
-from qlp_engine import pl, simulator, tracer
+from ket_lab_engine import pl, simulator, tracer
 
 from .conftest import CONTENT_DIR
 
@@ -162,7 +162,7 @@ def _lesson_files(folder):
 
 def _final_state(folder, theta, phi, error):
     code, hidden = _lesson_files(folder)
-    ns = tracer.execute(code, hidden, {"_QLP_INPUT": {"input": [theta, phi], "error": error}}, trace=False, require_circuit=False).namespace
+    ns = tracer.execute(code, hidden, {"_KET_LAB_INPUT": {"input": [theta, phi], "error": error}}, trace=False, require_circuit=False).namespace
     ops, lines, n = pl.trace_qnode(ns["circuit"], [])
     state = simulator.run_ops_trajectory(ops, lines, n).states[-1]
     return state if state.ndim == 2 else np.outer(state, state.conj()), n

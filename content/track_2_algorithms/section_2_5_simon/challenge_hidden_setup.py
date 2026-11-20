@@ -2,8 +2,8 @@
 # only 2 outputs (qubits 3 and 4). f(x) = (x_i ⊕ x_j s_i) for the two indices i ≠ j, where j
 # is the smallest index with s_j = 1; f(x) = f(y) if and only if y = x or y = x ⊕ s. s ≠ 000.
 try:
-    _secret = _QLP_INPUT
-    del _QLP_INPUT
+    _secret = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _secret = "110"
 

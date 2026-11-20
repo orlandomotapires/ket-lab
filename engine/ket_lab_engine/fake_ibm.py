@@ -1,4 +1,4 @@
-"""Simulated IBM Quantum service, for tests only (variable QLP_FAKE_IBM=1).
+"""Simulated IBM Quantum service, for tests only (variable KET_LAB_FAKE_IBM=1).
 
 Accepts the key "test-key", uses a generic 5-qubit backend and returns a job
 that is already finished with fixed counts. It makes no network calls.

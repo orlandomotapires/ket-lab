@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { t } from "../strings";
 import { useStore, type HardwareJob } from "../state/store";
 
-const KEY_STORAGE = "qlp.ibm.key";
-const JOB_STORAGE = "qlp.ibm.job";
+const KEY_STORAGE = "ket-lab.ibm.key";
+const JOB_STORAGE = "ket-lab.ibm.job";
 const POLL_MS = 15_000;
 const SHOTS = 1024;
 

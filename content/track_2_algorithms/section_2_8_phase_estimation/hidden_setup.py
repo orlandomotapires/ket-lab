@@ -1,8 +1,8 @@
 # Hidden setup for lesson 2.8: U = phase gate with secret θ, and the inverse QFT.
-# The validator swaps θ (via _QLP_INPUT) to test several operators.
+# The validator swaps θ (via _KET_LAB_INPUT) to test several operators.
 try:
-    _theta = _QLP_INPUT
-    del _QLP_INPUT
+    _theta = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _theta = 0.375
 

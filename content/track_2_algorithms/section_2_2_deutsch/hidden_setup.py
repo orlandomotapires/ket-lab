@@ -1,8 +1,8 @@
 # Hidden setup for lesson 2.2: the oracle of a secret function f:{0,1} -> {0,1}.
-# The case is the table [f(0), f(1)]; the validator swaps it via _QLP_INPUT.
+# The case is the table [f(0), f(1)]; the validator swaps it via _KET_LAB_INPUT.
 try:
-    _table = _QLP_INPUT
-    del _QLP_INPUT
+    _table = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _table = [0, 1]  # f(x) = x: balanced
 

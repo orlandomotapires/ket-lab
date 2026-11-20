@@ -6,7 +6,7 @@ parameters and measures the fidelity with |Φ⁺⟩ = (|00⟩ + |11⟩)/√2.
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 ROTATIONS = {"rx", "ry", "rz"}
 # allowed gates: rotations, CNOT/CZ/CY, controlled rotations and the Ising ZZ

@@ -19,7 +19,7 @@ export default defineConfig({
   use: { ...base.use, baseURL: appUrl },
   webServer: [
     {
-      command: `"${process.env.QLP_PYTHON ?? python}" -m qlp_engine --public --port ${ENGINE_PORT} --workers 2 --allow-origin ${appUrl}`,
+      command: `"${process.env.KET_LAB_PYTHON ?? python}" -m ket_lab_engine --public --port ${ENGINE_PORT} --workers 2 --allow-origin ${appUrl}`,
       cwd: join(root, "engine"),
       port: ENGINE_PORT,
       reuseExistingServer: false,

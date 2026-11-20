@@ -1,9 +1,9 @@
 # Hidden setup for lesson 1.8: prepares the input state on qubit 0.
-# The validator swaps the angles (via _QLP_INPUT) to test several inputs.
+# The validator swaps the angles (via _KET_LAB_INPUT) to test several inputs.
 # The default is |+⟩ (theta = pi/2, phi = 0).
 try:
-    _angles = _QLP_INPUT
-    del _QLP_INPUT
+    _angles = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _angles = (1.5707963267948966, 0.0)
 

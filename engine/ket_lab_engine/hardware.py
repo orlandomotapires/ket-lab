@@ -75,14 +75,14 @@ def _call(function, seconds: float, what: str):
     return outcome["value"]
 
 
-def _service(token: str, instance: str | None):
+def _service(token: str | None, instance: str | None):
     if not token or not isinstance(token, str):
         raise HardwareError(t("hw.no_token"))
     if _fake():
         from .fake_ibm import Service as QiskitRuntimeService
     else:
         try:
-            from qiskit_ibm_runtime import QiskitRuntimeService
+            from qiskit_ibm_runtime import QiskitRuntimeService  # type: ignore[no-redef]  # same role as the fake
         except ImportError:
             raise HardwareError(t("hw.not_installed")) from None
     # The key of the cache is a digest, not the token; the service object (which holds the token, as
@@ -108,7 +108,7 @@ def _service(token: str, instance: str | None):
     return service
 
 
-def submit(qasm3: str, token: str, instance: str | None = None, shots: int = 1024) -> dict:
+def submit(qasm3: str, token: str | None, instance: str | None = None, shots: int = 1024) -> dict:
     """Submits the circuit to the least busy real backend; returns the job id."""
     from qiskit import qasm3 as qasm3_module
     from qiskit.transpiler import generate_preset_pass_manager
@@ -134,7 +134,7 @@ def submit(qasm3: str, token: str, instance: str | None = None, shots: int = 102
     if _fake():
         from .fake_ibm import Sampler as SamplerV2
     else:
-        from qiskit_ibm_runtime import SamplerV2
+        from qiskit_ibm_runtime import SamplerV2  # type: ignore[no-redef]  # same role as the fake
 
     isa = generate_preset_pass_manager(backend=backend, optimization_level=1).run(circuit)
     job = _call(
@@ -144,7 +144,7 @@ def submit(qasm3: str, token: str, instance: str | None = None, shots: int = 102
     return {"job_id": job.job_id(), "backend": backend.name, "shots": shots}
 
 
-def status(job_id: str, token: str, instance: str | None = None) -> dict:
+def status(job_id: str, token: str | None, instance: str | None = None) -> dict:
     """Job status; when finished, the counts (all registers together)."""
     service = _service(token, instance)
     try:
@@ -161,7 +161,7 @@ def status(job_id: str, token: str, instance: str | None = None) -> dict:
         clear_cache()
         raise
     state = str(getattr(raw, "name", raw)).split(".")[-1].upper()
-    result = {"job_id": job_id, "status": state}
+    result: dict[str, object] = {"job_id": job_id, "status": state}
     if state == "DONE":
         data = _call(lambda: job.result()[0].data, RESULT_TIMEOUT_S, "downloading the result")
         counts = data.join_data().get_counts() if hasattr(data, "join_data") else {}

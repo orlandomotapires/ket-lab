@@ -145,6 +145,7 @@ def describe_trajectory(trajectory: Trajectory, collector: SnapshotCollector | N
         collector = SnapshotCollector()
         collector.begin(n, len(trajectory.states))
         for state in trajectory.states:
+            assert state is not None  # without an observer every state is kept
             collector.add(state)
     reply = {
         "num_qubits": n,

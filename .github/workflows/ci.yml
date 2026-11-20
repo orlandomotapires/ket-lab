@@ -123,7 +123,8 @@ jobs:
   wasm-browser:
     name: Engine in Pyodide (browser mode)
     needs: wasm-build
-    runs-on: ubuntu-latest
+    # Pinned: Playwright's --with-deps cannot install its fonts on Ubuntu 26.04 yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -188,7 +189,8 @@ jobs:
 
   e2e:
     name: End to end (Playwright)
-    runs-on: ubuntu-latest
+    # Pinned: Playwright's --with-deps cannot install its fonts on Ubuntu 26.04 yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4

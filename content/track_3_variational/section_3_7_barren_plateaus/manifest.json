@@ -32,5 +32,10 @@
       "location": "Section on barren plateaus: gradients that vanish with the number of qubits and the depth",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/variational-algorithm-design/optimization-loops"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

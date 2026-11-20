@@ -30,7 +30,8 @@
         "z1": "Z on 1",
         "z2": "Z on 2",
         "z0z1": "Z on 0 and 1",
-        "x0": "X on 0"
+        "x0": "X on 0",
+        "y1": "Y on 1"
       }
     }
   },
@@ -40,5 +41,20 @@
     "wrong_qubits": "The code uses 3 data qubits and 2 ancillas, 5 in total, but the circuit has {count}.",
     "encode_wrong": "With no error at all the final state is not α|+++⟩ + β|−−−⟩ (fidelity {fidelity}). Often the last Hadamards of the recovery are missing, so the data qubits stay in the bit-flip basis, or the recovery acts when the syndrome is 00.",
     "single_fail": "With the error {error} the logical state was not recovered (fidelity {fidelity}). Check that the Hadamards come before the parities, and that each syndrome pattern corrects the qubit it points to."
+  },
+  "challenge": {
+    "mission": "A Y error is an X error and a Z error at once (Y = iXZ), and the phase-flip code of the mission, which sees only the Z part, does not correct it. A three-qubit code can be built for any one kind of Pauli error, though: the error only has to act as a bit flip in a suitable basis. Change encode() and recover() so that the logical state survives a Y error on any one of the three data qubits (the lab has a button for Y on qubit 1). Keep the structure of the mission: three data qubits, two ancillas, no measurement. The validator applies your encode(), a Y error on one data qubit or none, and your recover(), for four random input states, and requires that the data qubits end in the state encode() alone produced, so recover() must leave them in the code space. X and Z errors are not tested.",
+    "hints": [
+      "The phase-flip code is the bit-flip code seen through the Hadamard gate, which swaps X and Z under conjugation. Which gate would swap X and Y instead? Compute S X S† for S = diag(1, i).",
+      "Encode as in the bit-flip code, then apply that gate to each data qubit. recover() starts by undoing it: S† Y S = X, so the Y error has become an X error and the recovery of lesson 4.2 applies unchanged.",
+      "End recover() by applying the gate to each data qubit again, so that the data returns to the code space. qml.S(wires=w) applies S, and qml.adjoint(qml.S(wires=w)) applies S†."
+    ],
+    "messages": {
+      "ch_ok": "The data qubits return to the encoded state after a Y error on any of the three qubits, and after no error, for four random inputs. The lowest fidelity was {worst}.",
+      "ch_missing": "Define the function {name}() as in the mission: the challenge starts from the same code.",
+      "ch_error": "Running encode() and recover() raised an error ({detail}). The code uses wires 0 to 4 only.",
+      "ch_idle": "With no error the data qubits do not return to the state encode() produced (fidelity {fidelity}). Probably the recovery changes basis and does not change back at the end, or it corrects when the syndrome is 00.",
+      "ch_fail": "With {error} the data qubits are not restored (fidelity {fidelity}). A Y error has an X part and a Z part, and a recovery that still works in the Hadamard basis sees only the Z part. Check that the basis change turns Y into X."
+    }
   }
 }

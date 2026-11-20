@@ -38,5 +38,10 @@
       "location": "Sections “Model” and “Code demonstration” (spectrum of an interpolating Hamiltonian and fidelity against the sweep time)",
       "url": "https://qutip.org/qutip-julia-tutorials/QuantumToolbox.jl/time_evolution/adiabatic.html"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

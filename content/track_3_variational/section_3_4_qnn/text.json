@@ -28,5 +28,23 @@
     "overfit": "Accuracy {train}% on the training set but only {test}% on the test set: the model has memorized the training points. Use fewer layers or fewer epochs.",
     "no_reupload": "Accuracy {test}% on the test set (threshold {threshold}%). The data enter the circuit only {uploads} times, too few to curve the boundary: load x again in several layers.",
     "low_accuracy": "Accuracy {test}% on the test set (threshold {threshold}%). The circuit loads the data enough times, so the training is the problem: more epochs or a different learning rate."
+  },
+  "challenge": {
+    "mission": "The mission used two qubits, and it is fair to ask whether the second one did any of the work. The frequencies in the output come from the number of uploads, so one qubit should be enough. Build a classifier on a single qubit for the same circles: define circuit(weights, x), which takes x of shape (N, 2) as in the mission and returns qml.expval(qml.PauliZ(0)), train it on X_train and keep the result in weights. The validator traces the circuit and requires every gate to act on one and the same qubit, then measures the accuracy of the sign of ⟨Z⟩ on 300 new points of the same two circles, which no training touched, and requires at least 90%.",
+    "hints": [
+      "With one qubit there is no CNOT and no partner to correlate with. What does the prediction of this lesson say about the number of times x enters?",
+      "Replace the two wires by one: in each layer apply qml.Rot(*weights[layer], wires=0), then qml.RX(x[:, 0], wires=0) and qml.RY(x[:, 1], wires=0). End with one more Rot before the measurement. weights then has shape (LAYERS + 1, 3).",
+      "Start with LAYERS = 4 and train with qml.AdamOptimizer(0.1) for about 60 epochs. If the test accuracy stays low while the training accuracy is high, you have memorized the 80 points: use fewer layers. If both are low, load x more times or train longer."
+    ],
+    "messages": {
+      "ok": "One qubit reaches {test}% on the new points (threshold {threshold}%), and {train}% on the training set.",
+      "ch_no_circuit": "The QNode circuit(weights, x) is missing: define it so that it returns qml.expval(qml.PauliZ(0)).",
+      "ch_no_weights": "The trained weights are missing: store them in the variable weights.",
+      "ch_error": "The circuit does not run with your weights on an array x of shape (N, 2). Check that the shape of weights matches what the circuit indexes, and that x[:, 0] and x[:, 1] are used for all N points.",
+      "ch_more_qubits": "The circuit acts on {count} qubits and the challenge allows one. Every gate, including any CNOT, must use the same wire.",
+      "ch_overfit": "Accuracy {train}% on the training set but only {test}% on the new points: the model has memorized the 80 training points and their noise. Use fewer layers or fewer epochs.",
+      "ch_no_reupload": "Accuracy {test}% on the new points (threshold {threshold}%). The data enter the circuit only {uploads} times, and one qubit with so few uploads gives a boundary that is too stiff. Load x again in each layer.",
+      "ch_low_accuracy": "Accuracy {test}% on the new points (threshold {threshold}%). The data enter often enough, so the weights have not found a good fit: train for more epochs, change the learning rate or the starting weights."
+    }
   }
 }

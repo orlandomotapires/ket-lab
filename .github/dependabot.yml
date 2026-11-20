@@ -1,32 +1,9 @@
-# Weekly dependency updates, grouped so one pull request covers each area.
+# Only GitHub Actions are updated automatically, once a month, in one pull request.
+# npm and pip updates were turned off on 20 Nov 2026: the engine pins Qiskit and PennyLane
+# (and what they pin) on purpose, and the interface's majors need a planned migration, so
+# those upgrades are done by hand. Security alerts are a repository setting, unaffected by this file.
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /app
-    schedule:
-      interval: weekly
-    groups:
-      # Minor and patch updates together; each major version arrives as its own pull request,
-      # because a major (React, TypeScript, Vite...) usually needs code changes.
-      interface:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
-  - package-ecosystem: pip
-    directory: /engine
-    schedule:
-      interval: weekly
-    # Qiskit and PennyLane are pinned on purpose: the lessons depend on their APIs.
-    ignore:
-      - dependency-name: qiskit
-      - dependency-name: pennylane
-      # Pinned exactly by PennyLane (autograd, autoray) and by qiskit-ibm-runtime
-      # (qiskit-mitigation): they can only move together with those packages.
-      - dependency-name: autograd
-      - dependency-name: autoray
-      - dependency-name: qiskit-mitigation
-    groups:
-      engine:
-        patterns: ["*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

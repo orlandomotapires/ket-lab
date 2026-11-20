@@ -4,7 +4,7 @@ exact uniform distribution over those y, and the variable s_found equals s."""
 
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 SECRETS = ["110", "101", "011", "111", "001", "100", "010"]
 TOLERANCE = 0.02

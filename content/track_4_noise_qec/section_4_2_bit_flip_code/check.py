@@ -7,7 +7,7 @@ The fidelity is computed from the gates and channels of the learner's circuit.
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 INPUTS = [(0.0, 0.0), (np.pi / 2, 0.0), (1.1, 0.7)]
 SINGLE_ERRORS = ["none", "x0", "x1", "x2"]

@@ -1,11 +1,11 @@
 /// <reference lib="webworker" />
 /**
  * The engine inside the browser: Pyodide (Python compiled to WebAssembly) running
- * qlp_engine.browser.BrowserEngine, in a Web Worker so long jobs never freeze the page.
+ * ket_lab_engine.browser.BrowserEngine, in a Web Worker so long jobs never freeze the page.
  *
  * Files come from the site (staged by build-wasm/stage.py into public/browser-engine/):
  * manifest.json, the wheels (Qiskit built by build-wasm/build.sh, PennyLane, ...) and
- * engine.zip (qlp_engine and content/), and Pyodide itself with its packages (NumPy, SciPy, ...)
+ * engine.zip (ket_lab_engine and content/), and Pyodide itself with its packages (NumPy, SciPy, ...)
  * under pyodide/. Nothing is fetched from another site.
  *
  * Messages with the page (socket.ts):
@@ -91,7 +91,7 @@ async function start(base: string): Promise<void> {
   engine = (await py.runPythonAsync(`
 import sys
 sys.path.insert(0, "/engine")
-from qlp_engine.browser import BrowserEngine
+from ket_lab_engine.browser import BrowserEngine
 BrowserEngine.warm_up()
 BrowserEngine("/engine/content", host)
 `)) as Engine;

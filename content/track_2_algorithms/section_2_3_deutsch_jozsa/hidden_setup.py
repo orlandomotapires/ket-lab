@@ -1,8 +1,8 @@
 # Hidden setup for lesson 2.3: the oracle of the secret function.
-# The validator swaps the function (via _QLP_INPUT) to test several oracles.
+# The validator swaps the function (via _KET_LAB_INPUT) to test several oracles.
 try:
-    _spec = _QLP_INPUT
-    del _QLP_INPUT
+    _spec = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _spec = {"kind": "balanced", "mask": [1, 0, 1], "flip": 0}
 

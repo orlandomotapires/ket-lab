@@ -1,9 +1,9 @@
 # Hidden setup for lesson 2.4: oracle f(x) = s·x ⊕ b (mod 2) with secret s.
-# The validator swaps the case (via _QLP_INPUT): a string s, or {"s": s, "b": b}.
+# The validator swaps the case (via _KET_LAB_INPUT): a string s, or {"s": s, "b": b}.
 # The bias b only adds a global phase and does not change the answer.
 try:
-    _case = _QLP_INPUT
-    del _QLP_INPUT
+    _case = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _case = "1011"
 if isinstance(_case, str):

@@ -1,6 +1,6 @@
 import pytest
 
-from qlp_engine import tracer
+from ket_lab_engine import tracer
 
 
 def run(code: str) -> tracer.Execution:

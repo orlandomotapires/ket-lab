@@ -7,7 +7,7 @@ The state of the learner's QNode is rebuilt from its gates, not read from what i
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 GAMMAS = [0.0, 0.1, 0.36, 0.7, 1.0]
 GAMMA = 0.36

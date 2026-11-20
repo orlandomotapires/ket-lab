@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from qlp_engine.content import ContentLibrary
+from ket_lab_engine.content import ContentLibrary
 
 CONTENT_DIR = Path(__file__).resolve().parents[2] / "content"
 

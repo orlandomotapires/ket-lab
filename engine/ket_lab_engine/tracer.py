@@ -243,7 +243,7 @@ def execute(
     namespace["report"] = reporter
     setup_private: dict = {}
     if hidden_setup:
-        # The setup (lesson content, trusted) runs in a namespace of its own, with the case in `_QLP_INPUT`.
+        # The setup (lesson content, trusted) runs in a namespace of its own, with the case in `_KET_LAB_INPUT`.
         # The learner's code receives only its public names; the private ones (the secret, helpers) stay
         # behind, reachable only through the globals of the functions the setup defined.
         setup = dict(namespace)

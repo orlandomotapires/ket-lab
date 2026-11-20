@@ -8,7 +8,7 @@ winning probability, computed here from the state vector, reaches at least
 
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 QUESTIONS = [(0, 0), (0, 1), (1, 0), (1, 1)]
 THRESHOLD = 0.85

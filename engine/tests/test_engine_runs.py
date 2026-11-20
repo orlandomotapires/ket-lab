@@ -6,10 +6,10 @@ import time
 
 import numpy as np
 
-from qlp_engine import geometry, server, simulator, worker
-from qlp_engine.pool import WorkerGroup, WorkerPool
-from qlp_engine.server import EngineServer
-from qlp_engine.progress import ProgressStore
+from ket_lab_engine import geometry, server, simulator, worker
+from ket_lab_engine.pool import WorkerGroup, WorkerPool
+from ket_lab_engine.server import EngineServer
+from ket_lab_engine.progress import ProgressStore
 
 # -- python lessons run analysis.py ---------------------------------------------------------------
 

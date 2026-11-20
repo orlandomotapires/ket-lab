@@ -1,4 +1,4 @@
-"""Engine entry point: `python -m qlp_engine` (`npm run dev` starts it).
+"""Engine entry point: `python -m ket_lab_engine` (`npm run dev` starts it).
 
 When ready, prints ONE JSON line to stdout with the port and the token:
     {"event": "ready", "port": 51234, "token": "..."}
@@ -51,7 +51,7 @@ class _TolerantStream:
 
 
 def parse_args(argv=None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(prog="qlp-engine", description="Ket Lab engine")
+    parser = argparse.ArgumentParser(prog="ket-lab-engine", description="Ket Lab engine")
     parser.add_argument("--port", type=int, default=0, help="local port (0 = random)")
     parser.add_argument("--token", default=None, help="session token (default: random)")
     parser.add_argument(

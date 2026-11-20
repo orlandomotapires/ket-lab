@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from qlp_engine import geometry, pl, simulator, tracer
+from ket_lab_engine import geometry, pl, simulator, tracer
 
 HEADER = "import pennylane as qml\nfrom pennylane import numpy as np\n"
 
@@ -129,7 +129,7 @@ SANDBOX_QNODE = HEADER + (
 
 
 def test_sandbox_runs_a_qnode_when_there_is_no_qiskit_circuit():
-    from qlp_engine import worker
+    from ket_lab_engine import worker
 
     result = worker.handle({"type": "run", "code": SANDBOX_QNODE})
     assert result["ok"], result
@@ -141,7 +141,7 @@ def test_sandbox_runs_a_qnode_when_there_is_no_qiskit_circuit():
 
 
 def test_pennylane_lesson_runs_analysis_with_student_variables():
-    from qlp_engine import worker
+    from ket_lab_engine import worker
 
     code = SANDBOX_QNODE + "history = [1.0, 0.5, np.array(0.25)]\n"
     analysis = "def analyze(ns):\n    return {'values': ns['history'], 'n': len(ns['history'])}\n"
@@ -153,7 +153,7 @@ def test_pennylane_lesson_runs_analysis_with_student_variables():
 
 
 def test_noisy_snapshots_have_no_amplitudes():
-    from qlp_engine import worker
+    from ket_lab_engine import worker
 
     code = HEADER + (
         "dev = qml.device('default.mixed', wires=1)\n"

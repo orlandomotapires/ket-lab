@@ -7,7 +7,7 @@ from qiskit.primitives import StatevectorEstimator, StatevectorSampler
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from qiskit.transpiler import CouplingMap
 
-from qlp_engine import tracer, worker
+from ket_lab_engine import tracer, worker
 
 
 

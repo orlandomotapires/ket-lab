@@ -6,7 +6,7 @@ import pytest
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Operator, Statevector, partial_trace
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 from .conftest import CONTENT_DIR
 
@@ -169,7 +169,7 @@ def test_validator_energy_matches_the_pennylane_circuit():
 
 
 def test_dissociation_solution_energies_against_exact_diagonalization(library):
-    from qlp_engine import tracer
+    from ket_lab_engine import tracer
 
     b = bundle(library, "3.9")
     ns = tracer.execute(b["solution"], b.get("hidden_setup"), trace=False, require_circuit=False).namespace

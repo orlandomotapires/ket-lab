@@ -6,9 +6,9 @@ import sqlite3
 
 import pytest
 
-from qlp_engine import worker
-from qlp_engine.progress import ProgressStore
-from qlp_engine.server import EngineServer
+from ket_lab_engine import worker
+from ket_lab_engine.progress import ProgressStore
+from ket_lab_engine.server import EngineServer
 
 
 class FakeSocket:

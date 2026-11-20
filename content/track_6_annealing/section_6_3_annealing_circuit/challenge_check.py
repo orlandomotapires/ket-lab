@@ -8,7 +8,7 @@ is computed from the state the circuit prepares; no learner variable is read.
 import numpy as np
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 THRESHOLD = 0.9
 MAX_GATES = 300

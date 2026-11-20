@@ -5,14 +5,14 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
-from qlp_engine import simulator, tracer, validation
+from ket_lab_engine import simulator, tracer, validation
 
 SECRETS = ["110", "101", "011", "111", "001", "100", "010"]
 
 
 def run(library, lesson_id, case=None, code=None):
     bundle = library.validation_bundle(lesson_id)
-    inputs = {"_QLP_INPUT": case} if case is not None else None
+    inputs = {"_KET_LAB_INPUT": case} if case is not None else None
     return tracer.execute(code or bundle["solution"], bundle["hidden_setup"], inputs)
 
 
@@ -50,7 +50,7 @@ def test_simon_oracle_is_two_to_one_with_period_s(library, secret):
                 qc.x(bit)
         bundle = library.validation_bundle("2.5")
         namespace = tracer.execute(
-            "from qiskit import QuantumCircuit\nqc = QuantumCircuit(6)\noracle(qc)\n", bundle["hidden_setup"], {"_QLP_INPUT": secret}
+            "from qiskit import QuantumCircuit\nqc = QuantumCircuit(6)\noracle(qc)\n", bundle["hidden_setup"], {"_KET_LAB_INPUT": secret}
         ).namespace
         qc.compose(namespace["qc"], inplace=True)
         state = simulator.run_trajectory(qc, seed=0).states[-1]

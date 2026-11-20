@@ -1,8 +1,8 @@
 # Hidden setup for lesson 2.7: prepares the QFT input.
-# The validator swaps the input (via _QLP_INPUT): integers, |+++⟩ and a superposition with phases.
+# The validator swaps the input (via _KET_LAB_INPUT): integers, |+++⟩ and a superposition with phases.
 try:
-    _input_spec = _QLP_INPUT
-    del _QLP_INPUT
+    _input_spec = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _input_spec = 5
 

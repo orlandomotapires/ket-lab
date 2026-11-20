@@ -22,7 +22,7 @@ A lesson is a folder under `content/track_N_.../section_X_Y_name/`. The engine l
 | `theory.md` | yes | Theory in Markdown with KaTeX |
 | `starter_code.py` | yes | What the editor shows at first. It must run without passing |
 | `solution.py` | yes | The reference solution. The validation target is computed by running it. It is also what "Show solution" displays, so it starts with a comment giving the idea and explains each step |
-| `hidden_setup.py` | no | Code run before the learner's: oracles, inputs, helpers. Each secret case arrives in `_QLP_INPUT` |
+| `hidden_setup.py` | no | Code run before the learner's: oracles, inputs, helpers. Each secret case arrives in `_KET_LAB_INPUT` |
 | `check.py` | for `custom` validation | `check(ns, run_case)` returns `{"passed", "key", "params"}`; `key` selects a message in `text.json` and `params` fills its placeholders |
 | `analysis.py` | no | `analyze(ns)` returns the data of the training visualizations (convergence, landscape and others) |
 | `challenge_solution.py`, `challenge_check.py`, `challenge_hidden_setup.py` | for a challenge | The same roles, for the optional challenge |

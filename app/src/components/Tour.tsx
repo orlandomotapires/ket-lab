@@ -9,8 +9,8 @@ const STEPS: { target: string; title: MessageKey; body: MessageKey }[] = [
   { target: ".mission", title: "tour.mission.title", body: "tour.mission.body" },
   { target: ".oracle-actions", title: "tour.check.title", body: "tour.check.body" },
 ];
-const SEEN_KEY = "qlp.tour.v1";
-const OPEN_EVENT = "qlp:tour";
+const SEEN_KEY = "ket-lab.tour.v1";
+const OPEN_EVENT = "ket-lab:tour";
 
 export function openTour(): void {
   window.dispatchEvent(new Event(OPEN_EVENT));

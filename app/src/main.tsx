@@ -1,3 +1,5 @@
+// First: moves data saved under the old "qlp." keys before any module reads the storage.
+import "./lib/migrateStorage";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "@fontsource/ibm-plex-sans/400.css";

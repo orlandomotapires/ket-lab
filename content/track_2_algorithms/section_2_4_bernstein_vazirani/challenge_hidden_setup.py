@@ -1,8 +1,8 @@
 # Hidden setup for the lesson 2.4 challenge: PHASE oracle (no auxiliary qubit) for
 # f(x) = s·x ⊕ b: |x⟩ -> (-1)^f(x) |x⟩, on qubits 0 to 3.
 try:
-    _case = _QLP_INPUT
-    del _QLP_INPUT
+    _case = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _case = "1011"
 if isinstance(_case, str):

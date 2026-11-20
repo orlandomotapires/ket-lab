@@ -4,7 +4,7 @@
 import pytest
 from websockets.asyncio.client import connect
 
-from qlp_engine import hardware
+from ket_lab_engine import hardware
 
 from .test_server import TOKEN, Client, with_server
 

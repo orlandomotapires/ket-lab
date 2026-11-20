@@ -1,8 +1,8 @@
 # Hidden setup for lesson 1.6: defines the preparation of the state Alice will send.
-# The validator swaps the angles (via _QLP_INPUT) to test several states.
+# The validator swaps the angles (via _KET_LAB_INPUT) to test several states.
 try:
-    _angles = _QLP_INPUT
-    del _QLP_INPUT
+    _angles = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _angles = (1.15, 2.2)
 

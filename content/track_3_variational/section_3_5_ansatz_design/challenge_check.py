@@ -6,7 +6,7 @@ Same cost and same fidelity measurement as the mission, but at most ONE rotation
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 ROTATIONS = {"rx", "ry", "rz"}
 ALLOWED = ROTATIONS | {"cx", "cz", "cy"}

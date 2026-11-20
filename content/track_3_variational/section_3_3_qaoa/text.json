@@ -30,5 +30,23 @@
     "no_mixer": "There is no mixer (RX) in the circuit, so the cost layers only change phases and the probabilities stay uniform: the ratio stays at {ratio}.",
     "p_too_small": "Ratio {ratio}, below {threshold}. A single layer cannot get above that on this graph, whatever the angles: use two cost-and-mixer layers.",
     "low_ratio": "Ratio {ratio}, below {threshold}. The circuit has enough layers, so the optimizer is stuck or stopped early: train for more steps or start from different angles."
+  },
+  "challenge": {
+    "mission": "The mission needed two layers on a 5-vertex graph, but it does not show how much each layer is worth. A ring is the clean case for that, because its optimum is known: on a ring with more than 2p + 1 vertices the best ratio is 0.75 for p = 1 and 5/6 ≈ 0.833 for p = 2, the first two terms of the pattern (2p + 1)/(2p + 2). Use the 8-vertex ring (ring_edges, vertex 7 joined back to vertex 0, and its cost ring_cost_h) and find angles for both depths, with the mission's conventions: |+⟩ on every qubit, then IsingZZ(γ) on every edge and RX(2β) on every qubit, one row (γ, β) per layer. Store them in angles_p1 (shape (1, 2)) and angles_p2 (shape (2, 2)), and the ratios they reach in ratio_p1 and ratio_p2. The validator simulates the ring itself from your angles and requires a ratio of at least 0.745 for p = 1 and 0.83 for p = 2, and your stored ratios must agree with its own to within 0.005.",
+    "hints": [
+      "How many edges can an 8-ring cut at most? Colors that alternate around the ring answer it, and that number is the denominator of the ratio.",
+      "Reuse the mission's circuit on 8 qubits with ring_edges and ring_cost_h. Each cut edge gives −1 to ⟨Z_i Z_j⟩ and each uncut edge +1, so the expected cut is (8 − ⟨H⟩)/2 and the ratio is that divided by the maximum cut.",
+      "Train p = 1 and p = 2 separately, with qml.AdamOptimizer(0.1) and about 60 steps each. The p = 2 landscape has poor local optima: when a start ends below the p = 1 ratio, change the seed and keep the best of several runs."
+    ],
+    "messages": {
+      "ok": "The ring gives a ratio of {r1} with one layer and {r2} with two, so the second layer adds {gain}.",
+      "ch_no_angles": "The variable {name} is missing: store the trained angles there, one row (γ, β) per layer.",
+      "ch_bad_angles": "{name} must hold {size} finite numbers, a (γ, β) pair for each of the {p} layer(s). Check its shape: p = 1 is (1, 2) and p = 2 is (2, 2).",
+      "ch_no_ratio": "{name} is missing or is not a single number: store the ratio your angles reach there.",
+      "ch_ratio_mismatch": "You stored {name} = {reported}, but the ring with those angles gives {actual}. Check that the expected cut is (8 − ⟨H⟩)/2 over a maximum of 8, and that the angles you stored are the ones you evaluated.",
+      "ch_low_p1": "With one layer the angles give {r1}, below {t1}. The best single layer reaches 0.75 on a ring, so either the training stopped early or the angles are not the final ones.",
+      "ch_p2_below_p1": "The two-layer angles give {r2}, lower than the {r1} of one layer. A second layer with γ = β = 0 would reproduce the first, so this is a poor local optimum: start again from other angles and keep the best run.",
+      "ch_low_p2": "With two layers the angles give {r2}, below {t2}. This is better than one layer but short of the optimum of 5/6: train longer or try more starting angles."
+    }
   }
 }

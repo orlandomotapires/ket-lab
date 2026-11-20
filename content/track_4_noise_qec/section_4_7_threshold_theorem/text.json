@@ -33,5 +33,25 @@
     "threshold_wrong": "p_th is {got}. The pseudo-threshold is the value of p between 0 and 1 where f(p) = p: below it a level of the code lowers the error, above it a level raises it.",
     "k_wrong": "k_needed is {got}, but concatenated(0.01, k) first falls to 1e-15 or below at k = {want}.",
     "qubits_wrong": "qubits is {got}. With k_needed = {k} levels, each qubit is replaced by 3 per level, so 3^k = {want}."
+  },
+  "challenge": {
+    "mission": "A larger code corrects more errors, and it also offers more pairs of locations where two errors can meet. Take a distance-3 code on 7 qubits in a counting model that is a simplification: a block fails whenever 2 or more of its 7 qubits have an error, so every pair of errors is fatal, and the kind of error and the correction circuit are ignored. One level then maps p to f7(p) = 1 − (1−p)⁷ − 7p(1−p)⁶, about 21p² for small p. Write f7(p); fixed_point(step, lo, hi), which finds by bisection the p in [lo, hi] with step(p) = p, given that step(lo) < lo and step(hi) > hi; and levels_for(step, p, target), the number of levels that bring p to target or below, or None when a level does not lower the error rate. Store in p7_th the nonzero fixed point of f7 (it lies between 0.01 and 0.5), in k7 the levels f7 needs to take p = 10⁻³ to 10⁻¹⁵ or below, in qubits7 the physical qubits that takes (each level replaces every qubit by seven, so 7^k7), and in k3 the levels the mission's f needs for the same task. The validator calls your three functions on maps and inputs of its own, including a map you have not seen.",
+    "hints": [
+      "The mission's levels_needed fixes both f and the threshold. Which two things must become arguments so that one function can serve f, f7 and a map the validator invents?",
+      "Bisection on step(p) − p: it is negative at lo and positive at hi, so keep the half of the interval where the sign changes. In levels_for, apply step until p is at most target, and return None as soon as step(p) is not smaller than p, since the rate has stopped falling.",
+      "p7_th = fixed_point(f7, 0.01, 0.5), k7 = levels_for(f7, 1e-3, 1e-15) and k3 = levels_for(f, 1e-3, 1e-15). Print p7_th and compare it with 1/21: 1/21 is lower than the true value, because 21p² overestimates f7 once p is not small."
+    ],
+    "messages": {
+      "ok": "The 7-qubit model has its threshold at {p_th}, far below 1/2. From p = 10⁻³ it takes {k7} levels and {qubits7} physical qubits to reach 10⁻¹⁵, and the three-qubit code takes {k3} levels and {qubits3} qubits.",
+      "ch_missing_function": "Define the function {name}.",
+      "ch_missing": "Store the result in the variable {name}.",
+      "ch_f7_wrong": "f7({p}) should be {want}, but it returned {got}. The block fails with 2, 3, ..., 7 errors, so the probability to subtract is that of 0 or 1 errors, (1−p)⁷ + 7p(1−p)⁶.",
+      "ch_fixed_point_wrong": "On the bracket [{lo}, {hi}] fixed_point returned {got}, and the map has its fixed point at {want}. The probable cause is a bisection that keeps the wrong half, or one that looks at step(p) when it should look at step(p) − p.",
+      "ch_levels_wrong": "For p = {p} and target = {target}, levels_for should return {want}, but it returned {got}. Check whether you count the starting point as a level, and whether p equal to the target needs none.",
+      "ch_levels_none": "For p = {p} and target = {target}, a level does not lower the error rate, so levels_for should return None, but it returned {got}. Stop as soon as the next value is not below the current one.",
+      "ch_threshold_wrong": "p7_th is {got}. It is the fixed point of f7 itself, which differs from the estimate 1/21 and from the 1/2 of the three-qubit code.",
+      "ch_stored_levels_wrong": "k7 is {k7} and k3 is {k3}, while the levels needed from p = 10⁻³ to 10⁻¹⁵ are {want7} for f7 and {want3} for f. Check which map each call uses.",
+      "ch_qubits_wrong": "qubits7 is {got}. Each level replaces every qubit by seven, so k7 = {k} levels need 7^k = {want} physical qubits."
+    }
   }
 }

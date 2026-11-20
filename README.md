@@ -61,7 +61,13 @@ With Docker, you need nothing else. This pulls the latest release, starts it in 
 curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scripts/run-docker.sh | sh
 ```
 
-Use `| sudo sh` if your user isn't in the docker group. Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume, and [the script](scripts/run-docker.sh) is short if you want to read it first.
+If your user isn't in the docker group, `sudo` goes before `sh`, since that is the part that talks to Docker:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scripts/run-docker.sh | sudo sh
+```
+
+Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume, and [the script](scripts/run-docker.sh) is short if you want to read it first.
 
 The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development).
 

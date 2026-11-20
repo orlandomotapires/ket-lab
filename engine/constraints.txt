@@ -47,7 +47,7 @@ pyinstaller-hooks-contrib==2026.10
 PyJWT==2.15.1
 pyspnego==0.12.4
 pytest==9.2.0
-python-dateutil==3.0.0
+python-dateutil==4.0.0
 qiskit==2.6.2
 qiskit-ibm-runtime==0.52.1
 qiskit-mitigation==0.1.1

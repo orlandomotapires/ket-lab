@@ -31,18 +31,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Same cache as CI: the wheel is rebuilt only when build.sh, the patch or the Pyodide pin change.
       - id: wheel
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build-wasm/dist
           key: qiskit-wasm-${{ hashFiles('build-wasm/build.sh', 'build-wasm/patches/**', 'build-wasm/package.json') }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
       - if: steps.wheel.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -53,7 +53,7 @@ jobs:
         run: build-wasm/build.sh
         env:
           PYTHON: python
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -71,14 +71,14 @@ jobs:
       - run: npm ci
         working-directory: app
       - id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Build the interface (browser engine)
         run: npm run build
         working-directory: app
         env:
           VITE_ENGINE: browser
           VITE_BASE: ${{ steps.pages.outputs.base_path }}/
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: app/dist
 
@@ -91,4 +91,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

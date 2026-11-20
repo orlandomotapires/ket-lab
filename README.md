@@ -15,13 +15,13 @@
   <img src=".github/assets/demo-light.gif" alt="Lesson 1.5: typing qc.h(0) and qc.cx(0, 1) draws the circuit and moves the state to the Bell state; Check confirms it with a fidelity of 100%.">
 </picture>
 
-Write Qiskit or PennyLane. Each line you type shows up in the circuit, and the state after it shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
+You write Qiskit or PennyLane. Each line you type appears in the circuit, and the state after it shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
 
-No accounts, no teachers, no deadlines. It's built for one person studying alone, and your progress stays with you.
+It's built for one person studying alone, so there are no accounts, teachers or deadlines, and your progress stays with you.
 
 53 lessons in 7 tracks, from qubits to quantum annealing, about 25 hours in all. [See the curriculum.](https://github.com/orlandomotapires/ket-lab/wiki/Curriculum)
 
-## A closer look
+## Screenshots
 
 <table>
   <tr>

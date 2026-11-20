@@ -4,6 +4,8 @@ import { useStore } from "../state/store";
 
 /** The author's page, linked from the signature at the end. */
 const AUTHOR_URL = "https://orlandomotapires.github.io/";
+/** Release notes of the version this build was made from (set by vite.config.ts). */
+const RELEASE_URL = `https://github.com/orlandomotapires/ket-lab/releases/tag/v${__APP_VERSION__}`;
 
 const PROJECTS: MessageKey[] = ["about.after.1", "about.after.2", "about.after.3", "about.after.4", "about.after.5"];
 
@@ -117,6 +119,9 @@ export function AboutDialog({ onClose }: { onClose: () => void }) {
         </p>
       </div>
       <div className="dialog-actions">
+        <a className="about-version" href={RELEASE_URL} target="_blank" rel="noopener noreferrer" title={t("about.versionLink")}>
+          {t("about.version", { version: __APP_VERSION__ })}
+        </a>
         <span className="grow" />
         <button className="btn" autoFocus onClick={close}>{t("export.close")}</button>
       </div>

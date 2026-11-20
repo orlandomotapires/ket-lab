@@ -84,6 +84,8 @@ const STRINGS = {
   "about.signoff": "This is a self-made, non-profit platform for everyone. Use it however and wherever you want, and don't be shy :)",
   "about.signature": "Orlando Mota Pires",
   "about.signatureLink": "Orlando's page (opens in a new tab)",
+  "about.version": "Ket Lab {version}",
+  "about.versionLink": "What changed in this version (opens in a new tab)",
   "about.limits.title": "What it is not",
   "about.limits.body": "It is a simulator, so circuits stay small, around ten qubits. That is enough for every idea in the course. It gives no certificate, and it works best next to a good textbook, as the place where you try what you have just read.",
   "about.data.title": "Your data",

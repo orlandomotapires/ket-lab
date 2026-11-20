@@ -43,5 +43,22 @@
     "encode_wrong": "With no error at all the final state is not α|000⟩ + β|111⟩ (fidelity {fidelity}). Either the encoding is off, or the recovery acts when the syndrome is 00 and spoils a good state.",
     "single_fail": "With the error {error} the logical state was not recovered (fidelity {fidelity}). Probably one syndrome pattern corrects the wrong qubit: check which qubit each pair of parities points to.",
     "noisy_mismatch": "Every single flip is corrected, but with bit-flip noise p = 0.1 the fidelity is {fidelity} instead of {expected}. Check that the noise reaches all three data qubits before the recovery and that the recovery itself is noiseless."
+  },
+  "challenge": {
+    "mission": "The recovery of the mission spends two ancilla qubits and four CNOT gates on a syndrome. The data qubits can carry the syndrome themselves: if you undo the encoding, a flip of qubit 0 leaves 1 on both qubits 1 and 2, and no other single flip does, so one Toffoli gate decides whether qubit 0 needs correcting. Write recover_compact(), a recovery that does this using wires 0, 1 and 2 only. Afterwards qubit 0 holds the input state and the other two hold the syndrome, so this recovery decodes: unlike recover(), it does not leave the data in the code space, and the validator does not ask for that. The validator takes your encode(), applies an X error to each of the three qubits in turn (and none), then your recover_compact(), for five random input states, and requires that qubit 0 ends in the input state and that no gate acts on wires 3 or 4.",
+    "hints": [
+      "Run the encoding backwards on α|000⟩ + β|111⟩, and again on the same state after an X on qubit 1. Where do the 0 and the 1 of the input end up in each case?",
+      "Once the two CNOT gates are undone, qubit 0 is already right unless it was the one flipped. Work out qubits 1 and 2 for no error and for X on qubit 0, 1 and 2: only one of the four cases gives 11.",
+      "The gate that fires only on 11 is qml.Toffoli(wires=[1, 2, 0]), and it goes after the two CNOT gates. Each CNOT gate is its own inverse."
+    ],
+    "messages": {
+      "ch_ok": "Qubit 0 is back in the input state after an X error on any of the three qubits, and after no error, for five random inputs, with no gate on an ancilla wire. The lowest fidelity was {worst}.",
+      "ch_no_encode": "Define encode() as in the mission: the challenge starts from the same code.",
+      "ch_no_recover": "Define the function recover_compact().",
+      "ch_error": "Running encode() and recover_compact() raised an error ({detail}). Check that every gate acts on wires 0, 1 and 2 and has the right number of wires.",
+      "ch_ancilla": "recover_compact acts on wire {wires}. In this version the data qubits do the whole job and the syndrome has no qubits of its own, so only wires 0, 1 and 2 are allowed.",
+      "ch_idle": "With no error, qubit 0 does not end in the input state (fidelity {fidelity}). Probably the Toffoli gate fires when it should not, or the encoding is not undone before it: the two CNOT gates from qubit 0 come first.",
+      "ch_fail": "With {error}, qubit 0 does not end in the input state (fidelity {fidelity}). Probably the Toffoli gate acts before the encoding is undone, or its controls are not qubits 1 and 2: after the decoding, only a flip of qubit 0 puts a 1 on both."
+    }
   }
 }

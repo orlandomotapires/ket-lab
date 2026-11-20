@@ -45,5 +45,10 @@
       "url": "https://docs.dwavequantum.com/en/latest/quantum_research/embedding_intro.html",
       "location": "Sections “Chains” and “Chain Strength”"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

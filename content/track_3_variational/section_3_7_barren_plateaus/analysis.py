@@ -1,4 +1,8 @@
-"""Chart for lesson 3.7: gradient variance against the number of qubits, from `qubits` and `variances`."""
+"""Chart for lesson 3.7: gradient variance against the number of qubits, from `qubits` and `variances`.
+
+When the challenge lists `n_values`, `local_vars` and `global_vars` exist, the two costs at two
+layers are drawn on the same axes.
+"""
 
 
 def _numbers(value):
@@ -10,17 +14,25 @@ def _numbers(value):
 
 
 def analyze(ns):
+    series = []
     qubits = _numbers(ns.get("qubits"))
     variances = _numbers(ns.get("variances"))
-    if qubits is None or variances is None or len(qubits) != len(variances):
-        return {}
     # Only the learner's own estimates: the exact decay rate of this ansatz is not part of the lesson.
+    if qubits is not None and variances is not None and len(qubits) == len(variances):
+        series.append({"label": "Estimated variance", "x": qubits, "y": variances})
+    widths = _numbers(ns.get("n_values"))
+    for name, label in (("global_vars", "Global cost, 2 layers"), ("local_vars", "Local cost, 2 layers")):
+        values = _numbers(ns.get(name))
+        if widths is not None and values is not None and len(widths) == len(values):
+            series.append({"label": label, "x": widths, "y": values, "dashed": name == "global_vars"})
+    if not series:
+        return {}
     return {
         "curve": {
             "title": "Variance of the first gradient component",
             "x_label": "qubits",
             "y_label": "variance",
             "log_y": True,
-            "series": [{"label": "Estimated variance", "x": qubits, "y": variances}],
+            "series": series,
         }
     }

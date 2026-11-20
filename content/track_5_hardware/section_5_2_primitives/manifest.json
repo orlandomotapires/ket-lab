@@ -37,5 +37,10 @@
       "location": "Sections “What is a primitive?” and “Primitive definition and implementations”",
       "url": "https://quantum.cloud.ibm.com/docs/en/qiskit/primitives"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

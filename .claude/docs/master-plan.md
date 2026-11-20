@@ -211,11 +211,11 @@ WCAG 2.1 AA contrast on all text (checked with axe in both themes), scrollable a
 | :-- | :-- | :-- | :-- | :-- |
 | **3.1 Variational Circuits and the Parameter-Shift Rule** | Ansatz, parameter-shift gradients and gradient descent. | PennyLane | Custom (check.py) |  |
 | **3.2 The Variational Quantum Eigensolver** | Ground-state energy of H₂ with a variational circuit. | PennyLane | Custom (check.py) |  |
-| **3.3 QAOA for Max-Cut** | Max-Cut on a 5-vertex graph with a two-layer QAOA. | PennyLane | Custom (check.py) |  |
-| **3.4 Variational Quantum Classifiers** | Classify points in the plane with two qubits and data re-uploading. | PennyLane | Custom (check.py) |  |
+| **3.3 QAOA for Max-Cut** | Max-Cut on a 5-vertex graph with a two-layer QAOA. | PennyLane | Custom (check.py) | Challenge |
+| **3.4 Variational Quantum Classifiers** | Classify points in the plane with two qubits and data re-uploading. | PennyLane | Custom (check.py) | Challenge |
 | **3.5 Ansatz Design: Expressivity and Entanglement** | Compare variational forms by number of parameters, entangling layers and the states they can reach. | PennyLane | Custom (check.py) |  |
-| **3.6 Optimizers and the Cost of a Gradient** | Gradient descent, SPSA and COBYLA compared by the number of circuit evaluations they need. | Python | Custom (check.py), with an evaluation counter |  |
-| **3.7 Barren Plateaus** | Gradients of random deep circuits vanish exponentially with the number of qubits. | Python | Custom (check.py), against a reference simulation |  |
+| **3.6 Optimizers and the Cost of a Gradient** | Gradient descent, SPSA and COBYLA compared by the number of circuit evaluations they need. | Python | Custom (check.py), with an evaluation counter | Challenge |
+| **3.7 Barren Plateaus** | Gradients of random deep circuits vanish exponentially with the number of qubits. | Python | Custom (check.py), against a reference simulation | Challenge |
 | **3.8 VQE with a Hardware-Efficient Ansatz** | Find the H₂ ground state with a general multi-parameter ansatz instead of a chemistry-inspired one. | PennyLane | Custom (check.py) |  |
 | **3.9 Project: A Variational Dissociation Curve** | Compute the H₂ ground-state energy with VQE at several bond lengths and locate the equilibrium distance. | PennyLane | Custom (check.py) | Project |
 
@@ -224,12 +224,12 @@ WCAG 2.1 AA contrast on all text (checked with axe in both themes), scrollable a
 | Lesson | Content | Framework | Validation | Extra |
 | :-- | :-- | :-- | :-- | :-- |
 | **4.1 Density Operators and Quantum Noise** | Density operators, Kraus operators, and the difference between error probability and wrong-answer probability. | PennyLane | Custom (check.py) |  |
-| **4.2 The Three-Qubit Bit-Flip Code** | The three-qubit bit-flip code, syndrome measurement and the threshold. | PennyLane | Custom (check.py) |  |
-| **4.3 The Three-Qubit Phase-Flip Code** | A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers. | PennyLane | Custom (check.py) |  |
-| **4.4 The Shor Code** | Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit. | PennyLane | Custom (check.py) |  |
+| **4.2 The Three-Qubit Bit-Flip Code** | The three-qubit bit-flip code, syndrome measurement and the threshold. | PennyLane | Custom (check.py) | Challenge |
+| **4.3 The Three-Qubit Phase-Flip Code** | A phase flip is a bit flip in the Hadamard basis: the three-qubit phase-flip code and its X⊗X stabilizers. | PennyLane | Custom (check.py) | Challenge |
+| **4.4 The Shor Code** | Shor's nine-qubit code concatenates the phase-flip and bit-flip codes and corrects an arbitrary error on one qubit. | PennyLane | Custom (check.py) | Challenge |
 | **4.5 The Stabilizer Formalism** | Describe a code by commuting Pauli operators and read the syndrome from commutation with them. | Python (no circuit) | Custom (check.py) |  |
 | **4.6 The Toric Code** | A stabilizer code on a torus: errors are strings, syndromes are their endpoints, logical operators are loops. | Python (no circuit) | Custom (check.py) |  |
-| **4.7 The Threshold Theorem** | Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold. | Python (no circuit) | Custom (check.py) |  |
+| **4.7 The Threshold Theorem** | Concatenated codes push the logical error rate down doubly exponentially when the physical rate is below a threshold. | Python (no circuit) | Custom (check.py) | Challenge |
 | **4.8 Project: The Shor Code Under Noise** | Build the nine-qubit Shor code, compute its logical failure probability under depolarizing noise exactly, and find the physical error rate below which encoding helps. | PennyLane | Custom (check.py) | Project |
 
 ### Track 5: Running on Quantum Hardware (advanced)
@@ -237,7 +237,7 @@ WCAG 2.1 AA contrast on all text (checked with axe in both themes), scrollable a
 | Lesson | Content | Framework | Validation | Extra |
 | :-- | :-- | :-- | :-- | :-- |
 | **5.1 Transpilation and Qubit Connectivity** | Basis gates, coupling maps, SWAP insertion, and why the number of two-qubit gates is the cost of a circuit on hardware. | Qiskit | Custom (check.py) |  |
-| **5.2 The Qiskit Primitives** | Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots. | Qiskit | Custom (check.py) |  |
+| **5.2 The Qiskit Primitives** | Sampler returns counts from shots, Estimator returns expectation values of observables, and the statistical error falls as 1/√shots. | Qiskit | Custom (check.py) | Challenge |
 | **5.3 Noise on Real Devices** | T1 relaxation, T2 dephasing, readout and gate errors, and how an idle qubit loses population and coherence. | PennyLane | Custom (check.py) |  |
 | **5.4 Error Mitigation** | Readout mitigation by inverting the assignment matrix and zero-noise extrapolation by folding gates, and why neither is error correction. | Python (no circuit) | Custom (check.py) |  |
 | **5.5 Project: A Mitigated Estimate on a Noisy Device** | Estimate a GHZ correlator on a noisy three-qubit device with readout mitigation and zero-noise extrapolation, and report the value with its uncertainty. | Python (no circuit) | Custom (check.py) | Project |
@@ -247,9 +247,9 @@ WCAG 2.1 AA contrast on all text (checked with axe in both themes), scrollable a
 | Lesson | Content | Framework | Validation | Extra |
 | :-- | :-- | :-- | :-- | :-- |
 | **6.1 Optimization as Energy: Ising Models and QUBO** | Write number partitioning and Max-Cut as the energy of spins, convert between the Ising and QUBO forms, and find the ground state by brute force. | Python (no circuit) | Custom (check.py) |  |
-| **6.2 The Adiabatic Theorem and the Energy Gap** | Interpolate slowly from an easy Hamiltonian to the problem Hamiltonian; the minimum gap sets how slow is slow enough. | Python (no circuit) | Custom (check.py), against a finer reference evolution |  |
+| **6.2 The Adiabatic Theorem and the Energy Gap** | Interpolate slowly from an easy Hamiltonian to the problem Hamiltonian; the minimum gap sets how slow is slow enough. | Python (no circuit) | Custom (check.py), against a finer reference evolution | Challenge |
 | **6.3 Quantum Annealing as a Circuit** | Cut the anneal into Trotter steps on three qubits and compare it with QAOA and with thermal simulated annealing. | Qiskit | Custom (check.py), from the learner's circuit |  |
-| **6.4 Annealing Hardware: Embedding and Limits** | Map a problem onto sparse hardware with chains of qubits, choose the chain strength, and see what is and is not known about speedups. | Python (no circuit) | Custom (check.py) |  |
+| **6.4 Annealing Hardware: Embedding and Limits** | Map a problem onto sparse hardware with chains of qubits, choose the chain strength, and see what is and is not known about speedups. | Python (no circuit) | Custom (check.py) | Challenge |
 | **6.5 Project: A Constrained Choice by Annealing** | Choose two of four jobs with the best total value: write the constraint as a penalty, check the QUBO by brute force, and anneal it. | Python (no circuit) | Custom (check.py), a rubric of 6 criteria | Project |
 
 The four lessons share one example: number partitioning, which becomes a three-qubit Ising problem with a unique ground state |110⟩. The track has a review, a project (6.5) and challenges in 6.1 and 6.3. It builds on 2.10 (the transverse-field Ising model and Trotter steps) and 3.3 (QAOA). Nothing runs on a real annealer.
@@ -327,6 +327,7 @@ Writing rules in [writing-guide.md](writing-guide.md); references only from [ver
 | Hub redesign, 17 Nov 2026 | After a design critique of the hub: only the track holding the next lesson starts open (the index opens the track it jumps to); each track in the index has a small progress bar, with the overall bar under the index; the "Learning tracks" heading and its subtitle are gone from the screen (the subtitle moved to the About dialog); on tablets and phones the tracks come before the References, Glossary, Notes and Backup links, both main buttons span the width and the search box says just "Search"; lesson summaries are capped at a readable line length. |
 | Name, 17 Nov 2026 | The platform is now called **Ket Lab** ("Ket Lab – Learn Quantum Computing" in the top bar). The code keeps its internal names (`ket_lab_engine`, `KET_LAB_*` variables) and the data folder keeps `ket-lab`, so existing progress is still found. The repository name and the Docker image name are unchanged. |
 | Rename, 19 Nov 2026 | The owner asked for one name everywhere: repository `orlandomotapires/ket-lab` (was `quantum_learning_plataform`; Pages moves to `/ket-lab/`), package `ket_lab_engine`, env vars `KET_LAB_*`, storage keys `ket-lab.*`, Docker image `ghcr.io/orlandomotapires/ket-lab` and volume `ket-lab-progress`. Migrations: `progress.default_data_dir` moves `quantum-learning-platform` to `ket-lab`; `app/src/lib/migrateStorage.ts` (imported first in `main.tsx`) moves `qlp.*` keys; `index.html` falls back to `qlp.theme` before paint. The CHANGELOG's 0.2.0 and 0.1.0 entries keep the old names. Released as 0.3.0 (20 Nov 2026), which publishes the image under the new name; the wiki's Docker commands point at `v0.3.0`. The same round pinned the two Playwright jobs in CI to `ubuntu-24.04`: on Ubuntu 26.04 runners `playwright install --with-deps` cannot find its font packages. |
+| Release 0.3.0 and challenges, 20 Nov 2026 | Release 0.3.0 (the rename) tagged and published; the two Playwright jobs pinned to `ubuntu-24.04` because `playwright install --with-deps` fails on Ubuntu 26.04 runners; the wiki got screenshots and GIFs in both themes and an architecture diagram. Eleven new challenges close P3.6 (list there). |
 | Browser version, 18 Nov 2026 | The engine runs in the learner's browser (Pyodide), so Ket Lab can be a static site on GitHub Pages: Qiskit 2.6.2 compiled for WebAssembly from the official source (`build-wasm/`), the protocol moved to `dispatch.py` and shared by the server and the browser engine, a Web Worker with a loading screen, timeouts, Stop and memory limits, Pyodide served by the site (about 33 MB on the first visit, ready in about 6 s), and a Pages workflow. The engine suite (837 tests) and all 85 reference solutions pass inside Pyodide, in CI. Plan in [web-engine-decision.md](web-engine-decision.md). |
 
 The reference lectures stay on disk, outside the repository (`Lecture Muller/`, `lecture (1)/`): they are third-party material. The lessons use the ideas and examples, with original text.
@@ -337,10 +338,10 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 
 | Item | Status | Notes |
 | :-- | :-- | :-- |
-| 0.1 CI on the current work | Done in the repository, not yet run | CI now runs on pushes to any branch (before, only `main` and pull requests). Windows and macOS are only tested once the branch is pushed (see P1.1). |
+| 0.1 CI on the current work | Done | CI runs on every pull request on Linux, Windows and macOS, plus the Pyodide build, the browser-mode tests in Chromium, Firefox, WebKit and two phone profiles, and the Docker image build. Docs-only changes skip it. |
 | 0.2 End-to-end tests | Done | Playwright: lesson flows, oracles, training, export, themes, narrow screens, accessibility, guide, links, composer, hardware, progress export and references, plus hosted mode; all 48 lessons opened in the browser. Job in CI. |
 | 1.1 Engine-in-the-browser spike (Pyodide) | Done: viable (revised 18 Nov 2026) | First answer (not viable: no WebAssembly build of Qiskit or rustworkx) reversed once rustworkx shipped one and Qiskit built from source. Plan and numbers in [web-engine-decision.md](web-engine-decision.md). |
-| 1.2a Static web version | Done, not yet published | Browser engine, loading screen, memory limits, Pyodide served by the site, Pages workflow (`.github/workflows/pages.yml`). Publishing needs Pages enabled and a public repository or a paid plan. Branch `browser-engine-qiskit-wasm`. |
+| 1.2a Static web version | Done, published | Live at https://orlandomotapires.github.io/ket-lab/ (Pages workflow `.github/workflows/pages.yml`, deployed from `main`). Still to check on the live site: `.wasm` served as `application/wasm`, a second visit served from the cache, and a real iPhone. |
 | 1.2b Hosted engine | Done up to deploy | `--public` mode, several workers, progress in the browser, `deploy/` (Dockerfiles, nginx, hardened compose). Missing what needs real infrastructure: gVisor on the server, one sandbox per session, security review and load test (see P5.1). |
 | 1.3 Accounts and sync | Not done | Needs a login provider (OAuth) and a database on the server. Exporting and importing progress covers switching devices (see P5.2). |
 | 2.1 Learning objectives | Done | Required in every lesson. Gaps found (theory topic that the mission does not exercise) in P3.1. |
@@ -354,7 +355,7 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 | 3.3 First-lesson guide | Done | |
 | 4.1 Hardware track | Done | Track 5 (5.1 to 5.4, plus the project 5.5), with Qiskit's own transpiler and primitives; device noise simulated by density matrix, without Qiskit Aer. |
 | 4.2 Execution on an IBM computer | Done, no real execution | Tested with a simulated IBM service; a real execution needs the learner's key. Local engine only. |
-| 5.1 Challenges | Done in Tracks 1 and 2 | 20 challenges. |
+| 5.1 Challenges | Done | 45 challenges: every lesson of Tracks 1 to 6 except the projects. |
 | 5.2 End-of-track projects | Done | 1.11 entanglement swapping, 2.11 Grover oracle, 3.9 dissociation curve (3.5 at the time), 4.8 Shor code under noise, 5.5 mitigated estimate; each with a rubric of 5 or 6 criteria and its own messages. Track 0 has none (it is optional). |
 | 5.3 Glossary | Done | 102 terms. |
 | 6.1 Circuit composer | Done | Click-based (works by keyboard), with the Track 1 gates; 1.1, 1.2 and 1.5 solved with it alone. |
@@ -365,12 +366,12 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 
 ## 7. Current situation
 
-Numbers checked against the repository on 16 Nov 2026, after the implementation round described in section 6.
+Numbers checked against the repository on 16 Nov 2026, after the implementation round described in section 6. The Git, Release and Content rows were updated on 20 Nov 2026.
 
 | Aspect | Situation |
 |---|---|
 | Language | The whole repository is in English: docs, code comments, tests, schema descriptions, interface and lessons |
-| Content | 53 lessons in 7 tracks (4, 11, 11, 9, 8, 5, 5), about 25 h of study; 34 challenges (Tracks 1 and 2 in every lesson; 3.1, 3.2, 3.5, 3.8, 4.1, 4.5, 4.6, 5.1, 5.3, 5.4, 6.1, 6.3); 6 projects (1.11, 2.11, 3.9, 4.8, 5.5, 6.5); glossary of 142 terms; references with section and pages |
+| Content | 53 lessons in 7 tracks (4, 11, 11, 9, 8, 5, 5), about 25 h of study; 45 challenges (every lesson of Tracks 1 to 6 except Track 0 and the projects); 6 projects (1.11, 2.11, 3.9, 4.8, 5.5, 6.5); glossary of 142 terms; references with section and pages |
 | Depth per track | Words of theory: Track 0, 2,078. Track 1, 5,943. Track 2, 4,944. Track 3, 5,436. Track 4, 5,499. Track 5, 2,773. Track 6, 3,119. Total 29,792 |
 | Frameworks | Qiskit: 24 lessons (Tracks 1 and 2, 5.1, 5.2). PennyLane: 13 (3.1 to 3.5, 3.8, 3.9, 4.1 to 4.4, 4.8, 5.3). Python without a circuit: 11 (Track 0, 3.6, 3.7, 4.5 to 4.7, 5.4, 5.5) |
 | End-of-track reviews | 71 questions (Tracks 1 to 6), with a review screen opened from the hub and the best score kept |
@@ -380,8 +381,8 @@ Numbers checked against the repository on 16 Nov 2026, after the implementation 
 | Text | All lessons, the glossary and the interface strings rewritten by the new guide. No em dashes. The correct prediction option is spread evenly over the three positions (16 each), guarded by a test. A read by a person is still missing (P3.3) |
 | Dependencies | Interface: React 18.3, Vite 7.3, Vitest 4.1, Playwright 1.65, TypeScript 5.6; `npm audit` clean; needs Node 22. Engine: Qiskit 2.6.2, PennyLane 0.45.1, NumPy 2.2+, websockets 17.4, Python 3.11+ |
 | Development machine | Node 22 installed. `npm run setup` checks Node and Python first and works on any system |
-| Git | **Nothing from the last weeks is backed up.** `roadmap` was never pushed (38 commits exist only on this disk) and the working tree has about 400 changed files: everything described in the last three rows of the history table. The remote has only `main` (first commit) and an old `trilha-3` |
-| Release | MIT license. No tags and no CHANGELOG yet; version 0.1.0 everywhere |
+| Git | Everything is on GitHub (`orlandomotapires/ket-lab`, public). Work goes through pull requests into `main` |
+| Release | MIT license and `CHANGELOG.md`. Tagged releases `v0.2.0` (19 Nov 2026) and `v0.3.0` (20 Nov 2026); each tag creates the GitHub Release and publishes `ghcr.io/orlandomotapires/ket-lab` |
 
 ---
 
@@ -540,7 +541,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P1.1 Commit, push and run CI (S, urgent)
 
-- **Status: not done.** Nothing was committed or pushed in the implementation round: both need the owner's ok.
+- **Status: done.** All work is on GitHub and goes through pull requests; CI is green on Linux, Windows and macOS; `v0.2.0` and `v0.3.0` are tagged.
 - **Goal:** stop depending on one disk, validate the work on the three systems and consolidate `main`.
 - **Work:** commit the working tree in logical groups (Track 3 lessons and renumbering; reviews; store split; show-solution; Docker files; Node 22 and lockfile; translation and renamed docs; this plan); push `roadmap` (an external action: needs the owner's ok); follow the `engine` (Linux, Windows, macOS), `app` and `e2e` jobs and fix what fails outside Linux; open the `roadmap → main` pull request and merge it; tag `v0.1.0`. Copy the two lecture folders to an external drive.
 - **Done when:** CI is green on the three systems, `main` has the current platform and nothing important lives only on this disk.
@@ -567,7 +568,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P2.2 Start without installing Python and Node (M)
 
-- **Status: still never run.** Changes made without being able to run them (Docker was not running): a writable home and a health check in `Dockerfile.local`, Node 22 in `Dockerfile.web`, and a CI job that builds the three images and checks that the local one serves the interface. Missing: build and run it once, the arm64 build, publishing the image, the README with two paths.
+- **Status: done except arm64.** The image is built and smoke-tested in CI and published to `ghcr.io/orlandomotapires/ket-lab` with every release (`v0.2.0`, `v0.3.0`); the README and the wiki's Running locally page give the Docker command, and progress lives in the `ket-lab-progress` volume. Open: an arm64 build (Apple Silicon and ARM Linux).
 - **Goal:** remove the biggest entry barrier.
 - **Work:** build and run the image once; give the container a writable home (`HOME=/tmp`), a health check and an arm64 build; move `Dockerfile.web` to Node 22; publish the image (tag, public package); a CI job that builds the three Dockerfiles and smoke-tests the local image (open `/`, open the WebSocket); README with two paths, "just use it" (Docker) and "develop".
 - **Done when:** on a machine with only Docker, one command opens the platform and progress survives restarting the container.
@@ -587,7 +588,6 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 #### P2.6 Cleaner screens (M to L, in steps) **(owner)**
 
 - **Status: steps 1 to 6 and 8 done; 7 (focus mode) open.** The mission is a card pinned at the top of the theory panel; objectives, readouts and finished tracks collapse; one main action in the bottom bar; the theory has a contents list and remembers the reading position; the hardware dialog and the reference rows are lighter. A test opens every lesson at 1366×768 and checks that the mission and the hint button are visible. Open: focus mode.
-- **Status: steps 1 to 5 done; 6, 7 and 8 open.** Done: the mission is a card pinned at the top of the theory panel, always fully visible, with hints opening inside it; the objectives are a collapsible line, open on the first visit; the panel has one scroll; the challenge hides the mission's objectives. The bottom bar has one main action, with Reset code behind "More" and a confirmation, and is one line at 390 px. The numeric readouts of the state panel collapse and are hidden under training views. The empty circuit panel is a short strip and the editor wraps long lines. In the hub, the Challenge pill appears only after the mission, and completed tracks collapse. A test opens all 48 lessons at 1366×768 and checks that the mission and the hint button are visible. Open: remembering the reading position and an outline of the theory (step 6), focus mode (7), shorter dialogs and reference rows (8).
 - **Goal:** show at each moment what the learner needs for the current step, and keep the rest one click away. Nothing is removed. Every choice of open or closed is remembered.
 - **Work, in order of value:**
   1. **Mission always visible (M).** Take the mission out of the clipped header: a short mission strip pinned at the top of the theory panel (one or two lines, with "more"), and one scroll for the whole panel. The objectives become a collapsed line ("What you will learn (4)"), open the first time a lesson is visited. Hints open inside the strip, one at a time. In challenge mode the mission's objectives are hidden.
@@ -649,14 +649,14 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P3.6 Challenges for Tracks 3 to 5 (M to L)
 
-- **Status: done for 12 lessons.** Challenges in 3.1 (a sinusoid from three runs), 3.2 (single excitations cannot lower the energy), 3.5 (one angle is enough), 3.8 (the stuck all-zero start), 4.1 (amplitude damping), 4.5 (the Steane code), 4.6 (a minimum-weight decoder), 5.1 (GHZ on a T-shaped device), 5.3 (T1 and T2 from data), 5.4 (line or parabola for extrapolation), 6.1 (weighted Max-Cut), 6.3 (a schedule that slows down at the gap: 273 gates for 0.92 against 903 for 0.77). The other lessons of Tracks 3 to 6 have none.
+- **Status: done.** Every lesson of Tracks 3 to 6 has a challenge except the four projects (3.9, 4.8, 5.5, 6.5): 23 challenges. Added on 20 Nov 2026: 3.3 (QAOA on the 8-vertex ring, where one layer reaches 3/4 and two reach 5/6), 3.4 (one qubit with data re-uploading), 3.6 (SPSA against parameter shift with the same budget on 12 angles), 3.7 (a local cost keeps its gradient variance), 4.2 (correction without ancillas, with a Toffoli), 4.3 (a code against Y errors), 4.4 (which pairs of errors defeat the Shor code), 4.7 (the threshold of a 7-qubit counting model), 5.2 (any two-qubit Pauli from counts), 6.2 (the Landau–Zener formula against a simulation), 6.4 (the exact minimum chain strength). Earlier: 3.1, 3.2, 3.5, 3.8, 4.1, 4.5, 4.6, 5.1, 5.3, 5.4, 6.1, 6.3.
 - **Goal:** extension problems where the tracks are most open-ended.
 - **Work:** one challenge per lesson where it adds something. Candidates: fit a cos θ + b sin θ + c from three evaluations (3.1); a deliberately poor ansatz and its plateau energy (3.2); SPSA against parameter-shift with the same budget on 12 angles (3.6); the barren-plateau experiment with a local cost (3.7); explain the stuck run at zero angles (3.8); amplitude damping as a Kraus channel (4.1); the Steane code's stabilizers (4.5); a minimum-weight decoder on a small torus (4.6); the smallest CNOT count for a GHZ state on a T-shaped device (5.1); T1 and T2 from idle data (5.3).
 - **Done when:** Tracks 3 to 5 have at least 10 challenges, each with a solution and tests, as in Tracks 1 and 2.
 
 #### P3.7 Curriculum gaps (L, backlog)
 
-- **Done from this list and beyond it:** quantum annealing, which the audit had missed, is now Track 6. Still open there: a project for Track 6, challenges, and a lesson that uses a real annealer's SDK (it would need an account with the manufacturer).
+- **Done from this list and beyond it:** quantum annealing, which the audit had missed, is now Track 6. Track 6 has its project (6.5). Still open there: a lesson that uses a real annealer's SDK (it would need an account with the manufacturer).
 
 - **Work:** new lessons from the list of section 8.5, chosen by what blocks understanding first: Track 0 lessons on projectors, exponentials and commutators and on modular arithmetic (they remove the steep step into 2.9 and 2.10); a Track 1 lesson on measurement with projectors and partial measurement; split 2.9 in two; a Track 3 lesson with shot noise; a Track 4 lesson on noise channels and one on the Steane code.
 - **Done when:** decided item by item; this is a list to draw from, not a commitment.
@@ -701,8 +701,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P4.8 CI, license and releases (M)
 
-- **Status: mostly done.** MIT license; CI with timeouts, cancellation of superseded runs, a lint step (`ruff`), pinned indirect dependencies (`engine/constraints.txt`), a job that builds and smoke-tests the Docker images; Dependabot; `THIRD_PARTY_NOTICES.md` and `CHANGELOG.md`. Open: type checking of the engine, path filters for docs-only changes, the first tag.
-- **Status: partly done.** Done: MIT license (`LICENSE`, package metadata); CI with timeouts, cancellation of superseded runs and a job that builds and smoke-tests the Docker images. Open: lint and type check for the engine, a lock file for the Python dependencies, Dependabot or Renovate, path filters, third-party notices, tags and a CHANGELOG.
+- **Status: mostly done.** MIT license; CI with timeouts, cancellation of superseded runs, a lint step (`ruff`), pinned indirect dependencies (`engine/constraints.txt`), a job that builds and smoke-tests the Docker images; path filters (docs-only changes skip CI); Dependabot; `THIRD_PARTY_NOTICES.md` and `CHANGELOG.md`; tagged releases (`v0.2.0`, `v0.3.0`). Open: type checking of the engine, and the version shown in the interface.
 - **Work:** job timeouts, cancellation of superseded runs, a cached browser, path filters for docs-only changes; lint (ruff, eslint) and a type check for the engine; a lock or constraints file for the Python dependencies; Dependabot or Renovate; the Docker build job of P2.2; a LICENSE for the code and one for the lessons (the owner's decision), with third-party notices; tags and a short CHANGELOG, with the version shown in the interface.
 - **Done when:** CI covers lint, tests on three systems and the image build; the repository has a license and a first tagged release.
 
@@ -732,12 +731,11 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 | Order | Item | Effort | Why |
 | :-- | :-- | :-- | :-- |
-| 1 | P1.1 Commit, push and run CI | S | Two days of work exist only on this disk; CI will also be the first run on Windows, macOS and Docker |
-| 2 | P3.3 Read Track 1 and Track 6 (owner) and a second pass on the text | M | The text was written by agents; only a person can say whether it reads right |
-| 3 | P2.2 Run the Docker path once and publish the image | S to M | Removes the installation barrier |
-| 4 | P3.6 Challenges for the remaining lessons of Tracks 3 to 6 | M | 3.3, 3.4, 3.6, 3.7, 4.2 to 4.4, 4.7, 5.2, 6.2, 6.4 |
-| 5 | P3.7 Curriculum gaps | L | Backlog, item by item |
-| 6 | P4.5 Screen reader pass, P2.6 step 7 (focus mode), P4.8 remaining | S to M | |
-| 7 | P5.1 Public hosting, P5.2 Accounts | L | Only if the platform is published |
+| 1 | P3.3 Read Track 1 and Track 6 (owner) and a second pass on the text | M | The text was written by agents; only a person can say whether it reads right |
+| 2 | Browser version on the live site: `.wasm` MIME type, second visit from cache, a real iPhone | S | The emulated phones in CI do not have a phone's memory limits |
+| 3 | P4.8 remaining: type check of the engine, version in the interface; P2.2 arm64 image | S | |
+| 4 | P3.7 Curriculum gaps | L | Backlog, item by item |
+| 5 | P4.5 Screen reader pass, P2.6 step 7 (focus mode) | S to M | |
+| 6 | P5.1 Public hosting, P5.2 Accounts | L | Only if the platform is published beyond the static site |
 
-Done: P1.2, P1.3, P1.4, P2.1, P2.3, P2.4, P2.5, P2.7, P2.8, P3.1, P3.2, P3.4, P3.5, P3.8, P4.1, P4.2, P4.3, P4.4, P4.6, P4.7, P4.9; most of P2.6, P3.6 and P4.8. Written and waiting for a human read: P3.3.
+Done: P1.1, P1.2, P1.3, P1.4, P2.1, P2.3, P2.4, P2.5, P2.7, P2.8, P3.1, P3.2, P3.4, P3.5, P3.6, P3.8, P4.1, P4.2, P4.3, P4.4, P4.6, P4.7, P4.9; most of P2.2, P2.6 and P4.8. Written and waiting for a human read: P3.3.

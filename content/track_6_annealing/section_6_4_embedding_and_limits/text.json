@@ -37,5 +37,20 @@
     "intact_wrong": "For F = {F}, chain_intact says {got}, but brute force over the 16 states puts the lowest energy on a state where the chain is {want}. Compare s2 and s3 in the lowest state.",
     "decoded_wrong": "For F = {F}, decoded is {got}, but it should be {want}. Read (s0, s1, s2) from the ground state as spins ±1 when the chain is intact, and use None when it is broken.",
     "fmin_wrong": "F_min is {got}, but the smallest F in F_values with an intact chain that decodes to (+1, −1, −1) is {want}."
+  },
+  "challenge": {
+    "mission": "The mission scanned four values of F, so F_min was only as fine as that list. The threshold itself is a single number, and software that embeds many problems has to find it for each one. Write min_chain_strength(h, J), which takes the fields h = [h0, h1, h2] and the couplings J = {(0, 1): ..., (0, 2): ..., (1, 2): ...} of any logical problem, embeds it as in the mission (chain on qubits 2 and 3 with −F Z₂Z₃, all of h₂ on qubit 2, J₀₂ on edge 3–0) and returns the threshold in F: the value above which every lowest-energy state of the 16 has an intact chain, and 0 if that is true for every F > 0. A state with an intact chain then decodes to a ground state of the logical problem. At the threshold itself a broken state ties with the intact one, and a tie counts as broken. The validator calls your function on four problems of its own, with thresholds below 2, and accepts an answer within 0.01 of the exact value, so a scan with step 0.01 and a bisection both pass. The problem of the lesson, with h and J as in the mission, is a case to test on.",
+    "hints": [
+      "For F small the chain breaks and for F large it holds. If the answer to that question changes only once as F grows, you can find the change by halving an interval, with the 16-state brute force as the test at each step.",
+      "Write a function holds(F) that builds the energies of the 16 states for this h and J and returns True when every state within 1e-9 of the lowest has s2 = s3. Then keep an interval [lo, hi] with holds(lo) False and holds(hi) True, and replace one end by the midpoint.",
+      "Start with lo = 0 and hi = 4, and halve about 40 times. If holds(F) is already True for the smallest F you try, the answer is 0 and the interval shrinks onto it by itself. The energy function has to use h and J as arguments: the checker does not use your global variables."
+    ],
+    "messages": {
+      "ok": "min_chain_strength found the threshold of all {count} problems to within 0.01.",
+      "ch_no_function": "There is no function min_chain_strength(h, J) yet.",
+      "ch_error": "min_chain_strength raised an exception: {error}. The function receives h as a list of three fields and J as a dict with the keys (0, 1), (0, 2) and (1, 2).",
+      "ch_bad_return": "min_chain_strength did not return a finite number. When the chain holds for every F the answer is 0.",
+      "ch_wrong": "For h = {h} and J = {J} you returned {got}, but the chain starts to hold at {want}. If your answer is right for the problem of the lesson and wrong here, the usual cause is a value taken from the global h and J instead of the arguments, or a search interval that stops before the threshold."
+    }
   }
 }

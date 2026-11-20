@@ -31,5 +31,23 @@
     "wrong_sigma": "sigma is {actual}, but 1/√shots is {want}. Remember the square root, and use the same shots as the Sampler.",
     "wrong_samp": "{name} from counts is {actual}, farther from 1 than shot noise allows. If it is ⟨X⊗X⟩ and you read the Z-basis counts, that is the probable slip: apply a Hadamard gate to both qubits before measuring. Otherwise check the sign rule (equal bits give +1).",
     "wrong_z0": "z0_samp is {actual}, but the exact value is 0 and shot noise should keep it within {limit}. You probably used both bits, which gives ⟨Z⊗Z⟩. Use only the bit of qubit 0, the rightmost character of each outcome."
+  },
+  "challenge": {
+    "mission": "The mission read ⟨X⊗X⟩ by putting a Hadamard gate on both qubits before measuring. Y needs a different change, and a function that does it for any label saves rewriting the circuit each time. Write pauli_from_counts(qc, pauli, sampler): qc is a two-qubit circuit without measurements, pauli is a label of two letters from I, X, Y and Z, and sampler is a Sampler that runs your circuit with its own shots. Return the estimate of the expectation value of that Pauli operator in the state qc prepares, computed from counts. The label follows Qiskit's convention for SparsePauliOp: the rightmost letter acts on qubit 0 and the leftmost on qubit 1, and an I leaves that qubit out of the parity. The validator calls your function on three states and nine labels of its own, with a seeded sampler of 20000 shots, and accepts each estimate within 0.032 of the exact value (4.5 standard errors). It also checks that your function leaves the circuit it was given unchanged. The Bell state qc of the mission is a case to test on.",
+    "hints": [
+      "Which single-qubit gate sends the eigenstates of X to those of Z? For Y the same gate is not enough: the eigenstates of Y are (|0⟩ ± i|1⟩)/√2, and the phase i has to be removed first.",
+      "Apply S† and then H to read Y, H alone to read X, nothing for Z. Loop over the letters of the label: the letter at position p of a string of length n acts on qubit n − 1 − p.",
+      "Collect the qubits whose letter is not I. For each outcome in the counts, the sign is (−1) to the number of 1s among the bits of those qubits, and bits[-1 - q] is the bit of qubit q. Work on qc.copy() and measure that copy."
+    ],
+    "messages": {
+      "ok": "pauli_from_counts reproduced all nine expectation values; the largest deviation from the exact value was {worst}, inside the limit of {limit}.",
+      "ch_no_function": "There is no function pauli_from_counts(qc, pauli, sampler) yet.",
+      "ch_error": "pauli_from_counts raised an exception for the label {label}: {error}. A common cause is measuring a circuit that already has measurements, or indexing a letter of the label with the wrong qubit.",
+      "ch_bad_return": "For the label {label} the function did not return a finite number. It should return the average of the ±1 values.",
+      "ch_modified": "After the call with the label {label} the circuit you were given has more instructions than before. Add the basis changes and the measurements to a copy of it.",
+      "ch_sign": "For {label} you returned {actual} and the exact value is {exact}: same size, opposite sign. This is what happens when Y is read with a Hadamard gate alone, or with S where S† is needed. S† and then H takes the +1 eigenstate of Y to |0⟩.",
+      "ch_identity": "For {label} you returned {actual} and the exact value is {exact}. A letter I means that qubit carries no sign, so only the bits of the other qubit enter the parity. Check which bits you count, and which qubit each letter belongs to.",
+      "ch_wrong": "For {label} you returned {actual} and the exact value is {exact}, farther apart than shot noise allows (about {limit}). Check the basis change on each qubit and that the leftmost letter of the label belongs to qubit 1."
+    }
   }
 }

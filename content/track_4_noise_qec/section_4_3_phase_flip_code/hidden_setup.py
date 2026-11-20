@@ -27,6 +27,8 @@ def _build_functions(config):
             _qml.PauliZ(wires=1)
         elif error == "x0":
             _qml.PauliX(wires=0)
+        elif error in ("y0", "y1", "y2"):
+            _qml.PauliY(wires=int(error[1]))
 
     return prepare_input, inject_error
 

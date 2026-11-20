@@ -2,6 +2,14 @@
 
 Notable changes to the platform.
 
+## Unreleased
+
+### Added
+- `scripts/run-docker.sh` starts Ket Lab with Docker in one command: it shows the download, runs the container in the background and says where to open it once it is ready. The README uses it.
+
+### Changed
+- The engine's start line has no token in single-user and public modes, where none is used.
+
 ## 0.4.0
 
 ### Added

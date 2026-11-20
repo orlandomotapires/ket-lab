@@ -2,7 +2,7 @@
 
 Notable changes to the platform.
 
-## Unreleased
+## 0.3.0
 
 ### Changed
 - The project is called ket-lab everywhere: the repository (`orlandomotapires/ket-lab`), the site (https://orlandomotapires.github.io/ket-lab/), the Docker image (`ghcr.io/orlandomotapires/ket-lab`), the Python package (`ket_lab_engine`) and the environment variables (`KET_LAB_*`). The old repository links redirect; the old site address does not.

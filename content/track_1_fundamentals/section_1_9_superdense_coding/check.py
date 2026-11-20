@@ -9,7 +9,7 @@ message.
 
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 MESSAGES = ["00", "01", "10", "11"]
 TOLERANCE = 0.999

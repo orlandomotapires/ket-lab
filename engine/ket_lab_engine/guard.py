@@ -56,7 +56,7 @@ FORBIDDEN_NAMES = frozenset(
 # These are the public ones that happen to start with one (namedtuple's API).
 ALLOWED_PRIVATE_ATTRIBUTES = frozenset({"_asdict", "_replace", "_fields", "_make"})
 # Names the platform's own setup uses to hand cases to the lesson (the learner has no reason to look).
-RESERVED_PREFIX = "_QLP"
+RESERVED_PREFIX = "_KET_LAB"
 # Reading and writing files through NumPy: not an accident the `open` ban would catch.
 FILE_ATTRIBUTES = frozenset(
     {"fromfile", "tofile", "savetxt", "loadtxt", "genfromtxt", "memmap", "open_memmap", "savez", "savez_compressed"}

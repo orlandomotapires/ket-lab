@@ -49,7 +49,7 @@ async function showPanel(page: Page, name: "Theory" | "Code" | "State"): Promise
 
 test("browser mode: a lesson runs and is checked in the browser, progress stays in the browser", async ({ page }) => {
   const errors = collectErrors(page);
-  await page.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
+  await page.addInitScript(() => localStorage.setItem("ket-lab.tour.v1", "1"));
   await page.goto("/");
   // While Python starts, the banner says which step it is on; it goes away when ready.
   const loading = page.locator(".engine-loading");
@@ -64,7 +64,7 @@ test("browser mode: a lesson runs and is checked in the browser, progress stays 
   await expect(page.locator(".visualizer")).toContainText("After step");
   await pressButton(page, "Check");
   await expect(page.locator(".mission")).toHaveClass(/is-done/);
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("qlp.progress.v1") ?? "{}"));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("ket-lab.progress.v1") ?? "{}"));
   expect(saved["1.1"].completed).toBe(true);
   expect(errors).toEqual([]);
 });

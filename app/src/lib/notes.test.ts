@@ -60,8 +60,8 @@ describe("resumeTarget", () => {
   it("a backup carries the stable lesson keys when the catalog has them", () => {
     const catalog = { tracks: [{ sections: [{ id: "1.5", key: "bell_states" }, { id: "1.6" }] }] };
     expect(lessonKeys(catalog)).toEqual({ "1.5": "bell_states" });
-    const file = JSON.parse(backupFile({}, JSON.stringify({ format: "qlp-progress", version: 2, progress: {} }), lessonKeys(catalog)));
+    const file = JSON.parse(backupFile({}, JSON.stringify({ format: "ket-lab-progress", version: 2, progress: {} }), lessonKeys(catalog)));
     expect(file.keys).toEqual({ "1.5": "bell_states" });
-    expect("keys" in JSON.parse(backupFile({}, JSON.stringify({ format: "qlp-progress" })))).toBe(false);
+    expect("keys" in JSON.parse(backupFile({}, JSON.stringify({ format: "ket-lab-progress" })))).toBe(false);
   });
 });

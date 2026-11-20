@@ -24,12 +24,12 @@ if (!existsSync(python)) {
 
 const PORT = process.env.VITE_ENGINE_PORT ?? "8765";
 const TOKEN = process.env.VITE_ENGINE_TOKEN ?? "dev";
-// QLP_DATA_DIR isolates progress (useful in tests); without it, the user's data directory is used.
-const dataDir = process.env.QLP_DATA_DIR ? ["--data-dir", process.env.QLP_DATA_DIR] : [];
+// KET_LAB_DATA_DIR isolates progress (useful in tests); without it, the user's data directory is used.
+const dataDir = process.env.KET_LAB_DATA_DIR ? ["--data-dir", process.env.KET_LAB_DATA_DIR] : [];
 const origins = ["http://localhost:5173", "http://127.0.0.1:5173"].flatMap((o) => ["--allow-origin", o]);
 
 const children = [
-  spawn(python, ["-m", "qlp_engine", "--port", PORT, "--token", TOKEN, ...origins, ...dataDir], {
+  spawn(python, ["-m", "ket_lab_engine", "--port", PORT, "--token", TOKEN, ...origins, ...dataDir], {
     cwd: join(root, "engine"),
     stdio: "inherit",
   }),

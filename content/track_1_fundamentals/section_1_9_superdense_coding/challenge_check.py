@@ -15,7 +15,7 @@ from qiskit import QuantumCircuit
 import numpy as np
 from qiskit.quantum_info import Statevector
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 MESSAGES = ["00", "01", "10", "11"]
 TOLERANCE = 0.999

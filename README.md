@@ -6,7 +6,7 @@
 
 **Learn quantum computing by writing circuits and watching the state change.**
 
-[Open Ket Lab in your browser](https://orlandomotapires.github.io/quantum_learning_plataform/) &nbsp;|&nbsp; [Wiki](https://github.com/orlandomotapires/quantum_learning_plataform/wiki) &nbsp;|&nbsp; [Changelog](CHANGELOG.md)
+[Open Ket Lab in your browser](https://orlandomotapires.github.io/ket-lab/) &nbsp;|&nbsp; [Wiki](https://github.com/orlandomotapires/ket-lab/wiki) &nbsp;|&nbsp; [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -19,7 +19,7 @@ Write Qiskit or PennyLane. Each line you type shows up in the circuit, and the s
 
 No accounts, no teachers, no deadlines. It's built for one person studying alone, and your progress stays with you.
 
-53 lessons in 7 tracks, from qubits to quantum annealing, about 25 hours in all. [See the curriculum.](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Curriculum)
+53 lessons in 7 tracks, from qubits to quantum annealing, about 25 hours in all. [See the curriculum.](https://github.com/orlandomotapires/ket-lab/wiki/Curriculum)
 
 ## A closer look
 
@@ -46,7 +46,7 @@ No accounts, no teachers, no deadlines. It's built for one person studying alone
 
 ## Run it
 
-The quickest way is [the browser version](https://orlandomotapires.github.io/quantum_learning_plataform/). There's nothing to install: Python runs inside the page.
+The quickest way is [the browser version](https://orlandomotapires.github.io/ket-lab/). There's nothing to install: Python runs inside the page.
 
 To run it from the source code, you need Python 3.11+ and Node 22+:
 
@@ -58,13 +58,13 @@ npm run dev     # then open http://localhost:5173
 With Docker, you need nothing else. The image is published with every release:
 
 ```bash
-docker pull ghcr.io/orlandomotapires/quantum-learning-platform:v0.2.0
-docker run --rm --name ket-lab-v0.2.0 -p 127.0.0.1:8080:8080 -v qlp-progress:/data ghcr.io/orlandomotapires/quantum-learning-platform:v0.2.0
+docker pull ghcr.io/orlandomotapires/ket-lab:v0.2.0
+docker run --rm --name ket-lab-v0.2.0 -p 127.0.0.1:8080:8080 -v ket-lab-progress:/data ghcr.io/orlandomotapires/ket-lab:v0.2.0
 ```
 
-Then open http://localhost:8080. Your progress is kept in the `qlp-progress` volume.
+Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume.
 
-The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/quantum_learning_plataform/wiki/Development).
+The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development).
 
 ## License
 

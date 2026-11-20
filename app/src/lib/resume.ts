@@ -27,7 +27,7 @@ export function resumeTarget(
 }
 
 /** Last lesson opened (not the free lab), to pick up where the learner left off. */
-const LAST_KEY = "qlp.lastLesson";
+const LAST_KEY = "ket-lab.lastLesson";
 
 export function readLastLesson(): string | null {
   try {

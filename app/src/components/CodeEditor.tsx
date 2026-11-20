@@ -88,7 +88,7 @@ export function CodeEditor() {
     const show = error && !resultIsCurrent && line != null && line >= 1 && line <= model.getLineCount();
     monaco.editor.setModelMarkers(
       model,
-      "qlp",
+      "ket-lab",
       show
         ? [{
             severity: monaco.MarkerSeverity.Error,
@@ -109,7 +109,7 @@ export function CodeEditor() {
       line
         ? [{
             range: new monaco.Range(line, 1, line, 1),
-            options: { isWholeLine: true, className: "qlp-step-line", linesDecorationsClassName: "qlp-step-marker" },
+            options: { isWholeLine: true, className: "ket-lab-step-line", linesDecorationsClassName: "ket-lab-step-marker" },
           }]
         : [],
     );

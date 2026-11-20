@@ -2,7 +2,7 @@
 
 import pytest
 
-from qlp_engine import validation
+from ket_lab_engine import validation
 
 HEADER = "from qiskit import QuantumCircuit\n"
 

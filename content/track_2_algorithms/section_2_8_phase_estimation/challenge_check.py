@@ -5,7 +5,7 @@ relative to the exact value."""
 
 from qiskit import QuantumCircuit
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 PHASES = [0.3, 0.2, 0.7, 0.45]
 TOLERANCE = 0.03

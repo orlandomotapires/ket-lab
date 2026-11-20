@@ -10,7 +10,8 @@
       // Applies the theme before first paint to avoid flashing.
       (function () {
         var saved = null;
-        try { saved = localStorage.getItem("qlp.theme"); } catch (e) {}
+        // "qlp.theme": the key before the rename to Ket Lab (src/lib/migrateStorage.ts moves it).
+        try { saved = localStorage.getItem("ket-lab.theme") || localStorage.getItem("qlp.theme"); } catch (e) {}
         var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.dataset.theme = dark ? "dark" : "light";
       })();

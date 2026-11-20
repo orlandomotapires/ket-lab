@@ -2,7 +2,7 @@
 
 import pytest
 
-from qlp_engine import simulator, validation
+from ket_lab_engine import simulator, validation
 
 # Teleport-like circuit: mid-circuit measurements and a classical correction.
 SOLUTION = """
@@ -42,7 +42,7 @@ def lesson(**rules):
 
 
 def test_branching_distribution_matches_sampling():
-    from qlp_engine import tracer
+    from ket_lab_engine import tracer
 
     circuit = tracer.execute(SOLUTION).circuit
     exact = simulator.branching_distribution(circuit)

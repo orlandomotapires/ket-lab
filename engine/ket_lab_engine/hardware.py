@@ -36,7 +36,7 @@ class HardwareError(Exception):
 def _fake() -> bool:
     import os
 
-    return os.environ.get("QLP_FAKE_IBM") == "1"
+    return os.environ.get("KET_LAB_FAKE_IBM") == "1"
 
 
 def available() -> bool:

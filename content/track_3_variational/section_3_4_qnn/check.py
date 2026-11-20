@@ -3,7 +3,7 @@ computed with the learner's circuit and final weights (not with reported values)
 
 import numpy as np
 
-from qlp_engine import pl
+from ket_lab_engine import pl
 
 THRESHOLD = 0.92
 LAYERS_MIN_UPLOADS = 8  # data re-uploads (RX/RY with x): at least 2 layers on 2 qubits

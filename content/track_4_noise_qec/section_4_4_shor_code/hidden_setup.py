@@ -1,9 +1,9 @@
 # Hidden setup for lesson 4.4: the state to protect and the injected error.
-# The UI picks the error with its buttons; the validator varies state and error (via _QLP_INPUT).
+# The UI picks the error with its buttons; the validator varies state and error (via _KET_LAB_INPUT).
 # The error is described by letter+qubit pairs: "y4", "x0x1", "z0z3"; "u4" is an arbitrary rotation.
 try:
-    _config = dict(_QLP_INPUT)
-    del _QLP_INPUT
+    _config = dict(_KET_LAB_INPUT)
+    del _KET_LAB_INPUT
 except NameError:
     _config = {}
 

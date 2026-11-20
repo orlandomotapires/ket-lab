@@ -212,13 +212,13 @@ jobs:
         working-directory: app
         env:
           CI: "1"
-          QLP_PYTHON: python
+          KET_LAB_PYTHON: python
       - name: End-to-end tests (hosted mode)
         run: npx playwright test -c playwright.hosted.config.ts
         working-directory: app
         env:
           CI: "1"
-          QLP_PYTHON: python
+          KET_LAB_PYTHON: python
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -232,17 +232,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Local single-user image
-        run: docker build -f deploy/Dockerfile.local -t qlp-local .
+        run: docker build -f deploy/Dockerfile.local -t ket-lab-local .
       - name: Hosted images
         run: |
-          docker build -f deploy/Dockerfile.engine -t qlp-engine .
-          docker build -f deploy/Dockerfile.web -t qlp-web .
+          docker build -f deploy/Dockerfile.engine -t ket-lab-engine .
+          docker build -f deploy/Dockerfile.web -t ket-lab-web .
       - name: The local image starts and serves the interface
         run: |
-          docker run -d --name qlp -p 8080:8080 qlp-local
+          docker run -d --name ket-lab -p 8080:8080 ket-lab-local
           for attempt in $(seq 1 30); do
             if curl -fsS http://localhost:8080/ > /dev/null; then exit 0; fi
             sleep 2
           done
-          docker logs qlp
+          docker logs ket-lab
           exit 1

@@ -6,7 +6,7 @@ import time
 import numpy as np
 import pytest
 
-from qlp_engine import pl, simulator, validation
+from ket_lab_engine import pl, simulator, validation
 
 from .conftest import CONTENT_DIR
 
@@ -28,7 +28,7 @@ def circuit_logical_pauli(library, pattern):
     bloch_out = []
     for theta, phi in [(1.1, 0.7)]:
         ns = validation.tracer.execute(
-            bundle["solution"], bundle.get("hidden_setup"), {"_QLP_INPUT": {"input": [theta, phi], "error": errors}},
+            bundle["solution"], bundle.get("hidden_setup"), {"_KET_LAB_INPUT": {"input": [theta, phi], "error": errors}},
             trace=False, require_circuit=False,
         ).full_namespace()
         ops, lines, n = pl.trace_qnode(ns["circuit"], [])
@@ -112,7 +112,7 @@ def test_crossover_from_enumeration(shor_bundle):
         low, high = (mid, high) if enumerate_failure(mid) < mid else (low, mid)
     p_star = (low + high) / 2
     assert 0.05 < p_star < 0.09
-    from qlp_engine import tracer
+    from ket_lab_engine import tracer
 
     ns = tracer.execute(shor_bundle["solution"], shor_bundle.get("hidden_setup"), None, trace=False, require_circuit=False).full_namespace()
     assert ns["p_star"] == pytest.approx(p_star, abs=1e-6)
@@ -154,7 +154,7 @@ def mit_bundle(library):
 
 
 def device_namespace(bundle):
-    from qlp_engine import tracer
+    from ket_lab_engine import tracer
 
     return tracer.execute("", bundle["hidden_setup"], None, trace=False, require_circuit=False).full_namespace()
 

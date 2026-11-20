@@ -1,9 +1,9 @@
 # Hidden setup for lesson 2.6: phase oracle that marks a list of secret items
 # and the variable num_marked (M), the number of marked items.
-# The validator swaps the list (via _QLP_INPUT) to test several cases.
+# The validator swaps the list (via _KET_LAB_INPUT) to test several cases.
 try:
-    _marked_items = _QLP_INPUT
-    del _QLP_INPUT
+    _marked_items = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _marked_items = ["1011"]
 if isinstance(_marked_items, str):

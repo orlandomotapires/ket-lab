@@ -1,9 +1,9 @@
 import type { LessonProgress } from "../engine/types";
 
 /** Progress in the browser, used when the engine is hosted (one engine for many learners). */
-const KEY = "qlp.progress.v1";
+const KEY = "ket-lab.progress.v1";
 /** Lesson renumberings already applied to this browser (the local engine does the same in SQLite). */
-const SCHEMA_KEY = "qlp.progress.schema";
+const SCHEMA_KEY = "ket-lab.progress.schema";
 const SCHEMA = 2;
 /** P3.2: the Track 3 project moved from 3.5 to 3.9. */
 const RENAMED_IN_2: [from: string, to: string][] = [["3.5", "3.9"]];
@@ -83,13 +83,13 @@ export function exportLocalProgress(progress: Record<string, LessonProgress> = l
       },
     ]),
   );
-  return JSON.stringify({ format: "qlp-progress", version: SCHEMA, progress: slim }, null, 2);
+  return JSON.stringify({ format: "ket-lab-progress", version: SCHEMA, progress: slim }, null, 2);
 }
 
 /** Imports an exported file; returns the number of lessons read or throws. */
 export function importLocalProgress(text: string): number {
   const data = JSON.parse(text);
-  if (data?.format !== "qlp-progress" || typeof data.progress !== "object") throw new Error("invalid file");
+  if (data?.format !== "ket-lab-progress" || typeof data.progress !== "object") throw new Error("invalid file");
   const incoming = { ...(data.progress as Record<string, LessonProgress>) };
   if (Number(data.version ?? 1) < 2) rename(incoming, RENAMED_IN_2);
   const current = loadLocalProgress();

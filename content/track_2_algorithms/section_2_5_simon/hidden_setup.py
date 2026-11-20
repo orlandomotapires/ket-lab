@@ -1,10 +1,10 @@
 # Hidden setup for lesson 2.5: Simon oracle with secret s (3-bit string).
-# The validator swaps the case via _QLP_INPUT. Input: qubits 0 to 2; output: qubits 3 to 5.
+# The validator swaps the case via _KET_LAB_INPUT. Input: qubits 0 to 2; output: qubits 3 to 5.
 # f(x) = x ⊕ x_j s, where j is the smallest index with s_j = 1 (f(x) = f(x ⊕ s)); with s = 000, f(x) = x.
 # A fixed permutation of the output (X on qubit 3, SWAP of qubits 4 and 5) hides this structure.
 try:
-    _secret = _QLP_INPUT
-    del _QLP_INPUT
+    _secret = _KET_LAB_INPUT
+    del _KET_LAB_INPUT
 except NameError:
     _secret = "110"
 

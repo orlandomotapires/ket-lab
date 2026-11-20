@@ -5,9 +5,9 @@ import pytest
 from websockets.asyncio.client import connect
 from websockets.exceptions import InvalidStatus
 
-from qlp_engine.pool import WorkerPool
-from qlp_engine.progress import ProgressStore
-from qlp_engine.server import EngineServer
+from ket_lab_engine.pool import WorkerPool
+from ket_lab_engine.progress import ProgressStore
+from ket_lab_engine.server import EngineServer
 
 TOKEN = "test-secret"
 GOOD = "from qiskit import QuantumCircuit\nqc = QuantumCircuit(1)\nqc.x(0)\n"
@@ -232,7 +232,7 @@ def test_export_to_openqasm(library):
 
 
 def with_public_server(test, library, max_connections=0, workers=1, with_pool=False):
-    from qlp_engine.pool import WorkerGroup
+    from ket_lab_engine.pool import WorkerGroup
 
     async def scenario():
         pool = WorkerGroup(workers) if workers > 1 else WorkerPool()
@@ -411,7 +411,7 @@ def test_single_user_mode_serves_the_interface_and_keeps_progress(library, tmp_p
 
     site = tmp_path / "web"
     (site / "assets").mkdir(parents=True)
-    (site / "index.html").write_text("<!doctype html><title>qlp</title>", encoding="utf-8")
+    (site / "index.html").write_text("<!doctype html><title>ket-lab</title>", encoding="utf-8")
     (site / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
     (tmp_path / "secret.txt").write_text("outside the folder", encoding="utf-8")
 
@@ -433,11 +433,11 @@ def test_single_user_mode_serves_the_interface_and_keeps_progress(library, tmp_p
 
         try:
             status, headers, body = await asyncio.to_thread(get, "/")
-            assert status == 200 and b"<title>qlp</title>" in body and headers["Content-Type"].startswith("text/html")
+            assert status == 200 and b"<title>ket-lab</title>" in body and headers["Content-Type"].startswith("text/html")
             status, headers, body = await asyncio.to_thread(get, "/assets/app.js")
             assert status == 200 and body == b"console.log(1)" and "immutable" in headers["Cache-Control"]
             assert (await asyncio.to_thread(get, "/assets/missing.js"))[0] == 404
-            assert b"<title>qlp</title>" in (await asyncio.to_thread(get, "/some/route"))[2]  # SPA
+            assert b"<title>ket-lab</title>" in (await asyncio.to_thread(get, "/some/route"))[2]  # SPA
             for escape in ("/../secret.txt", "/%2e%2e/secret.txt", "/assets/../../secret.txt"):
                 assert b"outside the folder" not in (await asyncio.to_thread(get, escape))[2]
 
@@ -462,7 +462,7 @@ def test_single_user_mode_serves_the_interface_and_keeps_progress(library, tmp_p
 
 def test_solution_order_does_not_depend_on_the_clock_resolution(tmp_path, monkeypatch):
     """On Windows the clock ticks every ~15 ms: completing and then opening the solution can get the same time."""
-    from qlp_engine import progress as progress_module
+    from ket_lab_engine import progress as progress_module
 
     monkeypatch.setattr(progress_module.time, "time", lambda: 1_000_000.0)
     store = ProgressStore(tmp_path)

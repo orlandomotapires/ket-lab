@@ -4,7 +4,7 @@ rebuilt from the learner's gates and channels."""
 
 import numpy as np
 
-from qlp_engine import pl, simulator
+from ket_lab_engine import pl, simulator
 
 CASES = [(100.0, 80.0, 50.0), (100.0, 200.0, 30.0), (50.0, 30.0, 100.0)]  # (T1, T2, t) in µs
 

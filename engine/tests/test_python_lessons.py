@@ -1,6 +1,6 @@
 """Lessons without a circuit ("python" framework): execution and variables table."""
 
-from qlp_engine import worker
+from ket_lab_engine import worker
 
 
 def test_python_run_returns_the_learner_variables():

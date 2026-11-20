@@ -12,7 +12,7 @@ const python = process.platform === "win32"
   ? join(root, "engine", ".venv", "Scripts", "python.exe")
   : join(root, "engine", ".venv", "bin", "python");
 // Progress reset on every run.
-const dataDir = mkdtempSync(join(tmpdir(), "qlp-e2e-"));
+const dataDir = mkdtempSync(join(tmpdir(), "ket-lab-e2e-"));
 const appUrl = `http://127.0.0.1:${APP_PORT}`;
 
 export default defineConfig({
@@ -34,10 +34,10 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: `"${process.env.QLP_PYTHON ?? python}" -m qlp_engine --port ${ENGINE_PORT} --token e2e --allow-origin ${appUrl} --data-dir "${dataDir}"`,
+      command: `"${process.env.KET_LAB_PYTHON ?? python}" -m ket_lab_engine --port ${ENGINE_PORT} --token e2e --allow-origin ${appUrl} --data-dir "${dataDir}"`,
       cwd: join(root, "engine"),
       // IBM Quantum simulated: the hardware dialog test makes no network calls.
-      env: { QLP_FAKE_IBM: "1" },
+      env: { KET_LAB_FAKE_IBM: "1" },
       port: ENGINE_PORT,
       reuseExistingServer: false,
       timeout: 120_000,

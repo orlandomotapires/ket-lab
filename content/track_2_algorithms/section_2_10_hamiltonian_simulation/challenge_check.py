@@ -6,7 +6,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from scipy.linalg import expm
 
-from qlp_engine import simulator
+from ket_lab_engine import simulator
 
 J, H_FIELD, TIME = 1.0, 0.8, 2.0
 TARGET_FIDELITY = 0.995

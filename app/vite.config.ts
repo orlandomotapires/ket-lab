@@ -7,7 +7,7 @@ const env = (globalThis as { process?: { env: Record<string, string | undefined>
 const engineProxy = env.VITE_ENGINE_PROXY;
 
 export default defineConfig({
-  // VITE_BASE: the path the site is served under, e.g. "/quantum_learning_plataform/" on GitHub Pages.
+  // VITE_BASE: the path the site is served under, e.g. "/ket-lab/" on GitHub Pages.
   base: env.VITE_BASE ?? "/",
   plugins: [react()],
   server: {

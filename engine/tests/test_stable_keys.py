@@ -7,9 +7,9 @@ import sqlite3
 
 import pytest
 
-from qlp_engine.content import ContentLibrary
-from qlp_engine.progress import KEYS_VERSION, KeyMap, ProgressError, ProgressStore
-from qlp_engine.server import EngineServer
+from ket_lab_engine.content import ContentLibrary
+from ket_lab_engine.progress import KEYS_VERSION, KeyMap, ProgressError, ProgressStore
+from ket_lab_engine.server import EngineServer
 
 MAPPING = {"1.1": "qubit", "1.2": "superposition", "3.5": "ansatz_design", "3.6": "optimizers"}
 SWAPPED = {**MAPPING, "3.5": "optimizers", "3.6": "ansatz_design"}  # the two lessons trade numbers
@@ -187,7 +187,7 @@ def test_export_wipe_import_round_trips():
     source.note_save("lesson:3.5", "note")
     source.note_save("general", "free")
     backup = source.export_backup()
-    assert backup["format"] == "qlp-progress" and backup["version"] == 2
+    assert backup["format"] == "ket-lab-progress" and backup["version"] == 2
     assert set(backup["progress"]) == {"3.5", "3.5:challenge", "sandbox"}  # lesson ids, as before
     assert backup["keys"] == {"3.5": "ansatz_design"}
     target = ProgressStore(None, lesson_keys=MAPPING)
@@ -213,19 +213,19 @@ def test_import_after_a_renumbering_lands_on_the_right_lesson():
 def test_old_backups_without_keys_and_unknown_ids_are_kept_under_their_id():
     target = ProgressStore(None, lesson_keys=MAPPING)
     entry = {"code": "c", "completed": True, "hints_used": 0, "attempts": 0, "solution_seen": False, "with_solution": False}
-    target.import_backup({"format": "qlp-progress", "version": 2, "progress": {"1.1": entry, "9.9": entry, "9.9:challenge": entry},
+    target.import_backup({"format": "ket-lab-progress", "version": 2, "progress": {"1.1": entry, "9.9": entry, "9.9:challenge": entry},
                           "notes": {"lesson:9.9": {"body": "gone lesson"}}})
     assert set(target.all()) == {"1.1", "9.9", "9.9:challenge"}
     assert target.notes_all()["lesson:9.9"]["body"] == "gone lesson"
     # a key the library does not know any more: the entry stays under the id the file gave it
-    target.import_backup({"format": "qlp-progress", "version": 2, "progress": {"2.2": entry}, "keys": {"2.2": "retired_lesson"}})
+    target.import_backup({"format": "ket-lab-progress", "version": 2, "progress": {"2.2": entry}, "keys": {"2.2": "retired_lesson"}})
     assert "2.2" in target.all()
 
 
 def test_a_malformed_keys_table_is_refused():
     target = ProgressStore(None, lesson_keys=MAPPING)
     with pytest.raises(ProgressError):
-        target.import_backup({"format": "qlp-progress", "progress": {}, "keys": ["x"]})
+        target.import_backup({"format": "ket-lab-progress", "progress": {}, "keys": ["x"]})
 
 
 def test_the_export_request_and_hosted_mode(library):

@@ -147,7 +147,7 @@ test("real hardware (simulated IBM): submits, tracks and compares with the simul
   await expect(dialog.locator(".hw-compare tbody tr")).toHaveCount(4);
   await expect(dialog.locator(".hw-compare")).toContainText("48.6%");
   // The key is not stored without asking.
-  expect(await page.evaluate(() => localStorage.getItem("qlp.ibm.key"))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem("ket-lab.ibm.key"))).toBeNull();
   expect(errors).toEqual([]);
 });
 
@@ -164,7 +164,7 @@ test("share link: opens in review and only runs after being accepted", async ({ 
   expect(link).toContain("#lab=");
 
   const other = await context.newPage();
-  await other.addInitScript(() => localStorage.setItem("qlp.tour.v1", "1"));
+  await other.addInitScript(() => localStorage.setItem("ket-lab.tour.v1", "1"));
   await other.goto(link);
   await expect(other.locator(".shared-notice")).toBeVisible();
   await expect(other.locator(".editor .view-lines")).toContainText("qc.cx(0,");
@@ -217,7 +217,7 @@ test("export progress as a backup", async ({ page }) => {
   await page.getByRole("button", { name: /^Backup/ }).click();
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export progress" }).click();
-  expect((await download).suggestedFilename()).toBe("quantum-learning-progress.json");
+  expect((await download).suggestedFilename()).toBe("ket-lab-progress.json");
   expect(errors).toEqual([]);
 });
 

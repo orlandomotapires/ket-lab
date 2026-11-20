@@ -12,7 +12,7 @@ window.addEventListener("unhandledrejection", (event) => {
   if (event.reason?.name === "Canceled") event.preventDefault();
 });
 
-export const MONACO_THEME: Record<ThemeName, string> = { light: "qlp-light", dark: "qlp-dark" };
+export const MONACO_THEME: Record<ThemeName, string> = { light: "ket-lab-light", dark: "ket-lab-dark" };
 
 function defineTheme(name: ThemeName, base: "vs" | "vs-dark", syntax: Record<string, string>) {
   const palette = PALETTES[name];

@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 
 export type ThemeName = "light" | "dark";
 
-const STORAGE_KEY = "qlp.theme";
+const STORAGE_KEY = "ket-lab.theme";
 const listeners = new Set<() => void>();
 
 function current(): ThemeName {

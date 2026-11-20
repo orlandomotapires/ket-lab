@@ -6,8 +6,11 @@ updates:
     schedule:
       interval: weekly
     groups:
+      # Minor and patch updates together; each major version arrives as its own pull request,
+      # because a major (React, TypeScript, Vite...) usually needs code changes.
       interface:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: pip
     directory: /engine
     schedule:
@@ -16,6 +19,11 @@ updates:
     ignore:
       - dependency-name: qiskit
       - dependency-name: pennylane
+      # Pinned exactly by PennyLane (autograd, autoray) and by qiskit-ibm-runtime
+      # (qiskit-mitigation): they can only move together with those packages.
+      - dependency-name: autograd
+      - dependency-name: autoray
+      - dependency-name: qiskit-mitigation
     groups:
       engine:
         patterns: ["*"]

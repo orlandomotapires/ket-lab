@@ -70,17 +70,19 @@ until docker logs "$NAME" 2>&1 | grep -q '"ready"'; do
   sleep 1
 done
 
-# The logo: a Bloch sphere with cat ears, the state pointing up to |0>.
+# The logo: a winking cat whose head is a Bloch sphere (dashed axis, equator in front).
 cat <<'LOGO'
 
-     /\             /\
-    /  `.-._____.-.'  \
-   /         ^         \      Ket Lab
-  |          |          |     is up and running
-  |  - - - - o - - - -  |
-   \         |         /
-    `-._           _.-'
-        `---------'
+     /\               /\
+    /  `.  _.---._  .'  \
+   /     `'   :   `'     \
+  |           :           |
+  |     o     :     ^     |      Ket Lab
+  | - - - - - : - - - - - |      is up and running
+  (___________:___________)
+   \          :          /
+    `-._      :      _.-'
+        `-----------'
 
 LOGO
 echo "Open $URL in your browser."

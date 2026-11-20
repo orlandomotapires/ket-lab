@@ -1,10 +1,14 @@
 name: Release
 
 # Creates the GitHub Release for a v* tag, with that version's section of CHANGELOG.md as
-# its notes. To release: rename "## Unreleased" to "## X.Y.Z" in CHANGELOG.md, update the
-# version in the Docker commands of README.md (and the wiki's Running locally page), commit on
-# main, then `git tag vX.Y.Z && git push origin vX.Y.Z`. The same tag makes image.yml
-# publish the Docker image.
+# its notes. The same tag makes image.yml publish the Docker image. To release X.Y.Z:
+#   1. In CHANGELOG.md, rename "## Unreleased" to "## X.Y.Z".
+#   2. Set the version in package.json, app/package.json, engine/pyproject.toml and
+#      engine/ket_lab_engine/__init__.py, then run `npm install --package-lock-only` at the
+#      root and in app/ to update both lockfiles.
+#   3. Change the version in the README's Docker commands.
+#   4. Merge that through a pull request, then on main: git tag vX.Y.Z && git push origin vX.Y.Z
+#   5. Once the image is published, update the Docker commands on the wiki's Running locally page.
 on:
   push:
     tags: ["v*"]

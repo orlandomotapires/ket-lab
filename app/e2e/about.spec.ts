@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { collectErrors, openHub, openLessonBySearch } from "./helpers";
@@ -15,6 +16,10 @@ test("about dialog: opens from the top bar, describes the tracks and links to th
   await expect(dialog.locator(".about-tracks li").nth(1)).toContainText("11 lessons");
   await expect(dialog).toContainText("53 lessons");
   await expect(dialog).toContainText("Everything runs on your own computer");
+  // The version comes from package.json and links to that release's notes.
+  const version = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8")).version;
+  const versionLink = dialog.getByRole("link", { name: `Ket Lab ${version}` });
+  await expect(versionLink).toHaveAttribute("href", `https://github.com/orlandomotapires/ket-lab/releases/tag/v${version}`);
 
   const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(result.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);

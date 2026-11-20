@@ -70,7 +70,19 @@ until docker logs "$NAME" 2>&1 | grep -q '"ready"'; do
   sleep 1
 done
 
-echo
-echo "Ket Lab is up and running: open $URL in your browser."
+# The logo: a Bloch sphere with cat ears, the state pointing up to |0>.
+cat <<'LOGO'
+
+     /\             /\
+    /  `.-._____.-.'  \
+   /         ^         \      Ket Lab
+  |          |          |     is up and running
+  |  - - - - o - - - -  |
+   \         |         /
+    `-._           _.-'
+        `---------'
+
+LOGO
+echo "Open $URL in your browser."
 echo "The container is \"$NAME\": ${SUDO}docker ps lists it, ${SUDO}docker stop $NAME stops it."
 echo "Your progress stays in the ket-lab-progress volume when the container stops."

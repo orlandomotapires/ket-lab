@@ -74,7 +74,7 @@ class ContentLibrary:
     # checked on every read, so an edited text shows up at once; tests that rename a lesson set this to 0.
     rescan_interval = 0.5
 
-    def __init__(self, root: Path):
+    def __init__(self, root: Path | str):
         self.root = Path(root)
         if not self.root.is_dir():
             raise ContentError(f"Content folder not found: {self.root}")
@@ -139,7 +139,7 @@ class ContentLibrary:
         changes the content root's; an edited manifest changes its own stamp. About 60 stat calls.
         """
         stat = os.stat
-        stamps = []
+        stamps: list[tuple[int, int] | None] = []
         for path in self._watched:
             try:
                 info = stat(path)
@@ -363,7 +363,7 @@ class ContentLibrary:
     def starter_code(self, lesson_id: str) -> str:
         return self._text(self._folder(lesson_id) / "starter_code.py")
 
-    def validation_bundle(self, lesson_id: str, challenge: bool = False) -> dict:
+    def validation_bundle(self, lesson_id: str | None, challenge: bool = False) -> dict:
         """Data the worker needs to validate (includes the reference solution).
 
         With `challenge`, validates the lesson's challenge: rules in manifest["challenge"],
@@ -452,12 +452,12 @@ class ContentLibrary:
         path = folder / "hidden_setup.py"
         return self._text(path) if path.exists() else None
 
-    def _folder(self, lesson_id: str) -> Path:
+    def _folder(self, lesson_id: str | None) -> Path:
         self._scan()
-        try:
-            return self._lessons[lesson_id]
-        except KeyError:
-            raise ContentError(t("content.unknown_lesson", lesson_id=lesson_id)) from None
+        folder = self._lessons.get(lesson_id) if isinstance(lesson_id, str) else None
+        if folder is None:
+            raise ContentError(t("content.unknown_lesson", lesson_id=lesson_id))
+        return folder
 
 
 _DASHES = str.maketrans({"\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-", "\u2212": "-"})

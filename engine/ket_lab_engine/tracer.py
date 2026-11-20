@@ -143,7 +143,8 @@ class _CircuitWatcher:
                 if isinstance(value, QuantumCircuit) and id(value) not in self.seen:
                     self._register(value)
         else:
-            for name in self._bound.get(self.current_line, self._default):
+            names = self._default if self.current_line is None else self._bound.get(self.current_line, self._default)
+            for name in names:
                 value = namespace.get(name)
                 if isinstance(value, QuantumCircuit) and id(value) not in self.seen:
                     self._register(value)
@@ -200,12 +201,13 @@ def _bound_names(tree: ast.AST) -> tuple[dict[int, set[str]], set[str]]:
             always.update(node.names)
         if not isinstance(node, ast.stmt):
             continue
-        if isinstance(getattr(node, "body", None), list):  # compound: only its header line(s)
+        body = getattr(node, "body", None)
+        if isinstance(body, list):  # compound: only its header line(s)
             parts = [
                 child for child in ast.iter_child_nodes(node)
                 if not isinstance(child, (ast.stmt, ast.excepthandler, ast.match_case))
             ]
-            last = node.body[0].lineno - 1 if node.body else node.lineno
+            last = body[0].lineno - 1 if body else node.lineno
         else:
             parts = [node]
             last = node.end_lineno or node.lineno

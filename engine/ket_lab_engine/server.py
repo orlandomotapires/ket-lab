@@ -32,10 +32,11 @@ from websockets.asyncio.server import serve
 from websockets.datastructures import Headers
 from websockets.exceptions import ConnectionClosed
 from websockets.http11 import Response
+from websockets.typing import Origin
 
 from .content import ContentLibrary
 from .dispatch import MAX_CODE_CHARS, TRAIN_TIMEOUT_S, Dispatcher, _log  # noqa: F401 - re-exported
-from .pool import WorkerPool
+from .pool import WorkerGroup, WorkerPool
 from .progress import ProgressStore
 
 HOST = "127.0.0.1"
@@ -48,8 +49,8 @@ class EngineServer(Dispatcher):
     def __init__(
         self,
         content: ContentLibrary,
-        progress: ProgressStore,
-        pool: WorkerPool,
+        progress: ProgressStore | None,
+        pool: WorkerPool | WorkerGroup,
         token: str,
         allowed_origins: tuple[str, ...] = (),
         *,
@@ -72,7 +73,8 @@ class EngineServer(Dispatcher):
         # Public: with no token, the site's Origin is the only credential, so it is required.
         if public and not allowed_origins:
             raise ValueError("public mode requires at least one --allow-origin")
-        self.origins = [*allowed_origins] if public else [*allowed_origins, None]
+        origins = [Origin(origin) for origin in allowed_origins]
+        self.origins: list[Origin | None] = [*origins] if public else [*origins, None]
 
     async def start(self, port: int = 0):
         return await serve(
@@ -101,6 +103,7 @@ class EngineServer(Dispatcher):
 
     def _static(self, path: str) -> Response:
         """Serves a file of the built interface; unknown routes fall back to index.html."""
+        assert self.static_dir is not None  # only called when a static folder was given
         target = (self.static_dir / unquote(path).lstrip("/")).resolve()
         inside = target == self.static_dir or self.static_dir in target.parents
         if not inside or not target.is_file():

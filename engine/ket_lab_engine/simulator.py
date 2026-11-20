@@ -32,6 +32,7 @@ class SimulationError(Exception):
         super().__init__(message)
         self.message = message
         self.line = line
+        self.stdout = ""  # filled in by the worker when the learner's code printed something
 
 
 @dataclass
@@ -65,9 +66,17 @@ class Trajectory:
     num_clbits: int
     steps: list[StepRecord]
     # states[0] = initial; states[k] = after step k. State vectors, or
-    # density matrices when the circuit has noise channels.
-    states: list[np.ndarray]
+    # density matrices when the circuit has noise channels. None for a step whose state an observer
+    # took instead (the last state is always kept).
+    states: list[np.ndarray | None]
     clbits: list[int]
+
+    @property
+    def final(self) -> np.ndarray:
+        """The state after the last step, which is always kept."""
+        state = self.states[-1]
+        assert state is not None
+        return state
 
 
 # --------------------------------------------------------------------------- #
@@ -210,7 +219,7 @@ def _measure(state: np.ndarray, qubit: int, n: int, rng: np.random.Generator) ->
     p1 = float(np.sum(np.abs(np.take(tensor, 1, axis=axis)) ** 2))
     outcome = 1 if rng.random() < p1 else 0
     collapsed = np.zeros_like(tensor)
-    index = [slice(None)] * n
+    index: list[slice | int] = [slice(None)] * n
     index[axis] = outcome
     collapsed[tuple(index)] = tensor[tuple(index)]
     norm = math.sqrt(p1 if outcome else 1.0 - p1)
@@ -227,7 +236,7 @@ def _run_ops(
     n: int,
     rng: np.random.Generator,
     record: list[StepRecord] | None = None,
-    states: list[np.ndarray] | None = None,
+    states: list[np.ndarray | None] | None = None,
     lines: list[int] | None = None,
     observer=None,
 ) -> np.ndarray:
@@ -235,6 +244,7 @@ def _run_ops(
         outcome = None
         applied = None
         if op.kind == "gate":
+            assert op.matrix is not None  # every gate op carries its matrix
             state = apply_matrix(state, op.matrix, op.qubits, n)
         elif op.kind == "measure":
             outcome, state = _measure(state, op.qubits[0], n, rng)
@@ -254,6 +264,7 @@ def _run_ops(
             branch = op.body if applied else op.else_body
             state = _run_ops(branch, state, clbits, n, rng)
         if record is not None:
+            assert states is not None  # the caller passes both or neither
             record.append(StepRecord(op, lines[position] if lines else 0, outcome, applied))
             if observer is None:
                 states.append(state)
@@ -291,18 +302,19 @@ class FinalOnly:
         pass
 
 
-def _run_density(ops: list[Op], n: int, lines: list[int], observer=None) -> tuple[list[StepRecord], list[np.ndarray]]:
+def _run_density(ops: list[Op], n: int, lines: list[int], observer=None) -> tuple[list[StepRecord], list[np.ndarray | None]]:
     if n > MAX_DENSITY_QUBITS:
         raise SimulationError(t("sim.too_many_qubits", count=n, limit=MAX_DENSITY_QUBITS))
     rho = np.zeros((2**n, 2**n), dtype=complex)
     rho[0, 0] = 1.0
     steps: list[StepRecord] = []
-    states = [rho if observer is None else None]
+    states: list[np.ndarray | None] = [rho if observer is None else None]
     if observer is not None:
         observer.begin(n, len(ops) + 1)
         observer.add(rho)
     for position, op in enumerate(ops):
         if op.kind == "gate":
+            assert op.matrix is not None
             rho = apply_to_density(rho, [op.matrix], op.qubits, n)
         elif op.kind == "channel":
             rho = apply_to_density(rho, op.kraus, op.qubits, n)
@@ -341,7 +353,7 @@ def run_ops_trajectory(
         steps, states = _run_density(ops, num_qubits, lines, observer)
         return Trajectory(num_qubits, 0, steps, states, [])
     state = initial_state(num_qubits)
-    steps: list[StepRecord] = []
+    steps = []
     states = _first_states(state, num_qubits, len(ops), observer)
     final = _run_ops(ops, state, [], num_qubits, np.random.default_rng(seed), steps, states, lines, observer)
     if observer is not None:
@@ -359,7 +371,7 @@ def _first_states(state: np.ndarray, n: int, count: int, observer) -> list:
 
 def final_state(circuit: QuantumCircuit, seed: int = 0, max_qubits: int = DEFAULT_MAX_QUBITS) -> np.ndarray:
     """The state after the last instruction, without keeping the states in between."""
-    return run_trajectory(circuit, seed=seed, max_qubits=max_qubits, observer=FinalOnly()).states[-1]
+    return run_trajectory(circuit, seed=seed, max_qubits=max_qubits, observer=FinalOnly()).final
 
 
 def state_probabilities(state: np.ndarray) -> np.ndarray:
@@ -457,6 +469,7 @@ def _advance(ops: list[Op], branches: list, n: int, limit: int) -> list:
         following = []
         for weight, state, clbits in branches:
             if op.kind == "gate":
+                assert op.matrix is not None
                 following.append((weight, apply_matrix(state, op.matrix, op.qubits, n), clbits))
             elif op.kind in ("measure", "reset"):
                 qubit = op.qubits[0]
@@ -488,7 +501,7 @@ def _collapses(state: np.ndarray, qubit: int, n: int):
     tensor = state.reshape((2,) * n)
     axis = n - 1 - qubit
     for outcome in (0, 1):
-        index = [slice(None)] * n
+        index: list[slice | int] = [slice(None)] * n
         index[axis] = outcome
         part = tensor[tuple(index)]
         probability = float(np.sum(np.abs(part) ** 2))
@@ -530,7 +543,7 @@ def register_distribution(
     ops = compile_circuit(circuit, max_qubits)
     n = circuit.num_qubits
     if _needs_trajectories(ops):
-        states = [run_trajectory(circuit, seed=seed, max_qubits=max_qubits).states[-1] for seed in range(32)]
+        states = [run_trajectory(circuit, seed=seed, max_qubits=max_qubits).final for seed in range(32)]
     else:
         states = [_run_ops([op for op in ops if op.kind == "gate"], initial_state(n), [], n, np.random.default_rng(0))]
     width = len(register)

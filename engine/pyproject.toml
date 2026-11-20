@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "jsonschema>=4.20", "ruff>=0.6"]
+dev = ["pytest>=8", "jsonschema>=4.20", "ruff>=0.6", "mypy>=2.4"]
 # Execution on real IBM quantum computers (roadmap item 4.2).
 hardware = ["qiskit-ibm-runtime>=0.52,<0.53"]
 
@@ -31,6 +31,17 @@ include = ["ket_lab_engine*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["ket_lab_engine"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+# These libraries ship without type information (no py.typed marker).
+module = ["qiskit.*", "qiskit_ibm_runtime.*", "pennylane.*"]
+ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py311"

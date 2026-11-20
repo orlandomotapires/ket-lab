@@ -1,7 +1,8 @@
 """Engine entry point: `python -m ket_lab_engine` (`npm run dev` starts it).
 
-When ready, prints ONE JSON line to stdout with the port and the token:
+When ready, prints ONE JSON line to stdout with the port and, in local mode, the token:
     {"event": "ready", "port": 51234, "token": "..."}
+Public and single-user modes check the Origin instead of a token, so the line has no token.
 """
 
 from __future__ import annotations
@@ -94,7 +95,10 @@ async def serve_forever(args: argparse.Namespace) -> None:
     )
     server = await engine.start(args.port)
     port = server.sockets[0].getsockname()[1]
-    print(json.dumps({"event": "ready", "port": port, "token": token}), flush=True)
+    ready = {"event": "ready", "port": port}
+    if not (args.public or args.single_user):
+        ready["token"] = token  # only local mode checks it
+    print(json.dumps(ready), flush=True)
     stop = asyncio.Event()
     try:
         await stop.wait()

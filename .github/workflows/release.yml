@@ -6,9 +6,9 @@ name: Release
 #   2. Set the version in package.json, app/package.json, engine/pyproject.toml and
 #      engine/ket_lab_engine/__init__.py, then run `npm install --package-lock-only` at the
 #      root and in app/ to update both lockfiles.
-#   3. Change the version in the README's Docker commands.
-#   4. Merge that through a pull request, then on main: git tag vX.Y.Z && git push origin vX.Y.Z
-#   5. Once the image is published, update the Docker commands on the wiki's Running locally page.
+#   3. Merge that through a pull request, then on main: git tag vX.Y.Z && git push origin vX.Y.Z
+#   4. Once the image is published, update the Docker commands on the wiki's Running locally page.
+#      (The README's scripts/run-docker.sh takes the latest release by itself.)
 on:
   push:
     tags: ["v*"]

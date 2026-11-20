@@ -15,6 +15,22 @@ PORT="${KET_LAB_PORT:-8080}"
 SUDO=""
 if [ -n "${SUDO_USER:-}" ]; then SUDO="sudo "; fi
 
+# Fail early, with the fix, when Docker cannot be reached.
+if ! problem=$(docker info 2>&1 > /dev/null); then
+  case "$problem" in
+    *"permission denied"*)
+      echo "Your user is not allowed to use Docker. Run the command again with sudo before sh (not before curl):" >&2
+      echo "  curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scripts/run-docker.sh | sudo sh" >&2
+      echo "Or join the docker group once (sudo usermod -aG docker \$USER, then log out and in) to drop the sudo." >&2
+      ;;
+    *)
+      echo "Docker is not reachable. Is it installed and running? It said:" >&2
+      echo "  $problem" >&2
+      ;;
+  esac
+  exit 1
+fi
+
 docker pull "$IMAGE"
 
 # The container is named after the release (ket-lab-v0.4.0), also when "latest" was pulled.
@@ -54,7 +70,19 @@ until docker logs "$NAME" 2>&1 | grep -q '"ready"'; do
   sleep 1
 done
 
-echo
-echo "Ket Lab is up and running: open $URL in your browser."
+# The logo: a Bloch sphere with cat ears, the state pointing up to |0>.
+cat <<'LOGO'
+
+     /\             /\
+    /  `.-._____.-.'  \
+   /         ^         \      Ket Lab
+  |          |          |     is up and running
+  |  - - - - o - - - -  |
+   \         |         /
+    `-._           _.-'
+        `---------'
+
+LOGO
+echo "Open $URL in your browser."
 echo "The container is \"$NAME\": ${SUDO}docker ps lists it, ${SUDO}docker stop $NAME stops it."
 echo "Your progress stays in the ket-lab-progress volume when the container stops."

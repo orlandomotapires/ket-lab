@@ -10,6 +10,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable, overload
 
 from . import messages
 
@@ -100,7 +101,7 @@ class ProgressStore:
         `lesson_keys` (a dict id -> key, or a function returning one, such as
         `ContentLibrary.lesson_keys`) makes the store keep lessons under their stable keys.
         """
-        self._provider = None
+        self._provider: Callable[[], dict[str, str] | None] | None = None
         self._keymap = KeyMap()
         if data_dir is None:
             target = ":memory:"
@@ -462,6 +463,10 @@ def check_note_key(key: object) -> str:
     return key
 
 
+@overload
+def _number(value: object) -> float | None: ...
+@overload
+def _number(value: object, default: float) -> float: ...
 def _number(value: object, default: float | None = None) -> float | None:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return default

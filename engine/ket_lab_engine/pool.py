@@ -6,9 +6,14 @@ import asyncio
 import multiprocessing
 import threading
 import time
+from typing import TYPE_CHECKING
 
 from .messages import t
 from .worker import worker_main
+
+if TYPE_CHECKING:
+    from multiprocessing.connection import Connection
+    from multiprocessing.process import BaseProcess
 
 STARTUP_TIMEOUT_S = 120.0
 DEFAULT_JOB_TIMEOUT_S = 5.0
@@ -21,8 +26,8 @@ class WorkerPool:
     def __init__(self, job_timeout: float = DEFAULT_JOB_TIMEOUT_S):
         self.job_timeout = job_timeout
         self._context = multiprocessing.get_context("spawn")
-        self._process = None
-        self._connection = None
+        self._process: BaseProcess | None = None
+        self._connection: Connection | None = None
         self._ready = False
         self._thread_lock = threading.Lock()
         self._async_lock = asyncio.Lock()
@@ -55,6 +60,7 @@ class WorkerPool:
         if self._process is None or not self._process.is_alive():
             self._kill()
             self._spawn()
+        assert self._connection is not None  # _spawn sets both
         if not self._ready:
             if not self._connection.poll(STARTUP_TIMEOUT_S):
                 self._kill()
@@ -88,7 +94,9 @@ class WorkerPool:
                 return _failure(t("run.engine_closed"), "internal")
             try:
                 self._ensure_ready()
-                self._connection.send(job)
+                connection = self._connection
+                assert connection is not None  # _ensure_ready leaves a live connection
+                connection.send(job)
                 deadline = time.monotonic() + timeout
                 phase = None  # last phase the worker announced ("sampling"), to explain a timeout
                 while True:
@@ -102,9 +110,9 @@ class WorkerPool:
                         if phase:
                             failure["error"]["phase"] = phase
                         return failure
-                    if not self._connection.poll(min(POLL_INTERVAL_S, remaining)):
+                    if not connection.poll(min(POLL_INTERVAL_S, remaining)):
                         continue
-                    message = self._connection.recv()
+                    message = connection.recv()
                     if isinstance(message, dict) and "event" in message:  # not the final reply
                         if message["event"] == "phase":
                             phase = message.get("name")

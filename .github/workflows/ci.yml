@@ -45,6 +45,10 @@ jobs:
       - name: Lint (syntax errors, undefined names, unused imports)
         if: matrix.os == 'ubuntu-latest'
         run: ruff check engine
+      - name: Type check (mypy, settings in engine/pyproject.toml)
+        if: matrix.os == 'ubuntu-latest'
+        run: mypy
+        working-directory: engine
       - name: Engine tests and content suite
         run: python -m pytest -q
         working-directory: engine
@@ -228,14 +232,25 @@ jobs:
           path: app/playwright-report
 
   images:
-    name: Docker images build
-    runs-on: ubuntu-latest
+    name: Docker images build (${{ matrix.arch }})
+    # The local image is published for both architectures (image.yml); arm64 runs on GitHub's
+    # native ARM runner here, so the build and the smoke test are real, not emulated.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Local single-user image
         run: docker build -f deploy/Dockerfile.local -t ket-lab-local .
       - name: Hosted images
+        if: matrix.arch == 'amd64'
         run: |
           docker build -f deploy/Dockerfile.engine -t ket-lab-engine .
           docker build -f deploy/Dockerfile.web -t ket-lab-web .

@@ -14,10 +14,15 @@ Common rules: allowed_gates, required_gates, max_gates, forbidden_pairs, expecte
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Callable
+
 import numpy as np
 
 from . import simulator, tracer
 from .messages import percent, t
+
+if TYPE_CHECKING:
+    from qiskit import QuantumCircuit
 
 DEFAULT_TOLERANCE = 0.999
 DEFAULT_DISTRIBUTION_TOLERANCE = 0.05
@@ -40,18 +45,26 @@ FRIENDLY_NAMES = {
 }
 
 
+def _circuit(code: str, hidden_setup: str | None, inputs: dict | None = None) -> QuantumCircuit:
+    """The circuit of Qiskit code: tracer.execute raises when there is none, so it is never None here."""
+    circuit = tracer.execute(code, hidden_setup, inputs).circuit
+    assert circuit is not None
+    return circuit
+
+
 def validate(code: str, lesson: dict) -> dict:
     """Validates the student's code against the lesson's rules. Never raises an exception."""
     rules = lesson.get("validation") or {}
     kind = rules.get("type")
-    checker = {
+    checkers: dict[str, Callable[..., dict]] = {
         "state_fidelity": _check_state,
         "counts_distribution": _check_counts,
         "reduced_state": _check_reduced_state,
         "oracle_cases": _check_oracle_cases,
         "state_cases": _check_state_cases,
         "custom": _check_custom,
-    }.get(kind)
+    }
+    checker = checkers.get(kind) if isinstance(kind, str) else None
     if checker is None:
         return _result(False, "unsupported", t("val.unsupported", kind=kind))
 
@@ -166,7 +179,7 @@ def _check_counts(circuit, lesson: dict, rules: dict, max_qubits: int) -> dict:
     if not any(instruction.operation.name == "measure" for instruction in circuit.data):
         return _result(False, "no_measurement", t("val.no_measurement"))
     shots = int(rules.get("shots", DEFAULT_SHOTS))
-    reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup")).circuit
+    reference = _circuit(lesson["solution"], lesson.get("hidden_setup"))
     if circuit.num_clbits != reference.num_clbits:
         return _result(
             False, "qubit_mismatch", t("val.clbit_count", expected=reference.num_clbits, actual=circuit.num_clbits)
@@ -206,9 +219,9 @@ def _check_reduced_state(circuit, lesson: dict, rules: dict, max_qubits: int) ->
     ]
     for angles in fixed + random_trials:
         inputs = {"_KET_LAB_INPUT": angles}
-        reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
+        reference = _circuit(lesson["solution"], lesson.get("hidden_setup"), inputs)
         target = _bloch(simulator.final_state(reference, seed=0, max_qubits=max_qubits), reference.num_qubits, qubit)
-        student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
+        student = _circuit(lesson["code"], lesson.get("hidden_setup"), inputs)
         for seed in range(BRANCH_SEEDS):
             state = simulator.final_state(student, seed=seed, max_qubits=max_qubits)
             fidelity = (1.0 + float(np.dot(target, _bloch(state, student.num_qubits, qubit)))) / 2.0
@@ -235,8 +248,8 @@ def _check_oracle_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> 
     failures = []
     for case in rules["cases"]:
         inputs = {"_KET_LAB_INPUT": case}
-        reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
-        student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
+        reference = _circuit(lesson["solution"], lesson.get("hidden_setup"), inputs)
+        student = _circuit(lesson["code"], lesson.get("hidden_setup"), inputs)
         if student.num_qubits <= max(register):
             return _result(False, "qubit_mismatch", t("val.qubit_count", expected=reference.num_qubits, actual=student.num_qubits))
         expected = simulator.register_distribution(reference, register, max_qubits=max_qubits)
@@ -258,8 +271,8 @@ def _check_state_cases(circuit, lesson: dict, rules: dict, max_qubits: int) -> d
     worst, ok = 1.0, 0
     for case in rules["cases"]:
         inputs = {"_KET_LAB_INPUT": case}
-        reference = tracer.execute(lesson["solution"], lesson.get("hidden_setup"), inputs).circuit
-        student = tracer.execute(lesson["code"], lesson.get("hidden_setup"), inputs).circuit
+        reference = _circuit(lesson["solution"], lesson.get("hidden_setup"), inputs)
+        student = _circuit(lesson["code"], lesson.get("hidden_setup"), inputs)
         if student.num_qubits != reference.num_qubits:
             return _result(False, "qubit_mismatch", t("val.qubit_count", expected=reference.num_qubits, actual=student.num_qubits))
         target = simulator.final_state(reference, seed=VALIDATION_SEED, max_qubits=max_qubits)

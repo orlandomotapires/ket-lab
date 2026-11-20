@@ -58,8 +58,8 @@ npm run dev     # then open http://localhost:5173
 With Docker, you need nothing else. The image is published with every release:
 
 ```bash
-docker pull ghcr.io/orlandomotapires/ket-lab:v0.2.0
-docker run --rm --name ket-lab-v0.2.0 -p 127.0.0.1:8080:8080 -v ket-lab-progress:/data ghcr.io/orlandomotapires/ket-lab:v0.2.0
+docker pull ghcr.io/orlandomotapires/ket-lab:v0.3.0
+docker run --rm --name ket-lab-v0.3.0 -p 127.0.0.1:8080:8080 -v ket-lab-progress:/data ghcr.io/orlandomotapires/ket-lab:v0.3.0
 ```
 
 Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume.

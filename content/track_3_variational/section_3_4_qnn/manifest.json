@@ -47,5 +47,10 @@
       "location": "Single page, read in full",
       "url": "https://pennylane.ai/demos/tutorial_data_reuploading_classifier/"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

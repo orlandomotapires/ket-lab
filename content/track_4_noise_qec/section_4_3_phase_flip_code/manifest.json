@@ -25,7 +25,8 @@
         "z1",
         "z2",
         "z0z1",
-        "x0"
+        "x0",
+        "y1"
       ],
       "default": "z1"
     }
@@ -55,5 +56,10 @@
       "location": "Section “Encoding qubits”, subsections “Phase-flip errors” and “Modified repetition code for phase-flip errors”",
       "url": "https://quantum.cloud.ibm.com/learning/en/courses/foundations-of-quantum-error-correction/correcting-quantum-errors/repetition-codes"
     }
-  ]
+  ],
+  "challenge": {
+    "validation": {
+      "type": "custom"
+    }
+  }
 }

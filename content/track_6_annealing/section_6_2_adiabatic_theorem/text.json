@@ -35,5 +35,25 @@
     "wrong_target": "These probabilities are for the basis state |{label}⟩, but the target is |110⟩. In Qiskit's order the index of |110⟩ is 6, because qubit 0 is the rightmost digit.",
     "too_few_steps": "The values agree with an evolution of only about {n} steps. That is too coarse for the longer sweeps: the number of steps has to grow with T so that H changes little within one step. Use n_steps = 400 or more.",
     "success_wrong": "For T = {T} the success probability should be about {want}, but you stored {got}. Check the initial state |+++⟩, that Δt = T / n_steps, and that s runs from 0 to 1 over the whole sweep."
+  },
+  "challenge": {
+    "mission": "The lesson's theory quotes the Landau–Zener formula without testing it. Test it here: a single qubit with H(t) = (v·t/2) Z + (Δ/2) X, swept from t = −T to t = T (ħ = 1), has a gap of exactly Δ at t = 0 and the two uncoupled energies ±v·t/2 move apart at rate v. The formula says that a qubit that starts in the ground state ends in the excited state with probability exp(−πΔ²/(2v)). Write landau_zener(v, delta), which returns that value, and sweep_probability(v, delta, T, n_steps), which starts in the ground state of H(−T), applies n_steps midpoint steps e^{−iH(t)Δt} and returns the probability of the excited eigenstate of H(T). Then store in rates the values 0.5, 1, 2 and 4, and in simulated and predicted the results of the two functions for those rates with delta = 1, T = 20 and n_steps = 2000. The validator calls both functions on values of v and Δ of its own, and requires the simulation to agree with a reference simulation to 0.002 and the formula to be exact.",
+    "hints": [
+      "The Hamiltonian is built from the Pauli matrices X and Z of the mission. At t = −T the term in Z is large, so which state is the ground state there, and how do you get it from the matrix?",
+      "Start from the lowest eigenvector of H(−T) given by np.linalg.eigh, not from |0⟩. Each step is expm(−1j * H(t) * dt) with t in the middle of the step and dt = 2T / n_steps.",
+      "The probability to report is the overlap with the upper eigenvector of H(T), the second column returned by eigh. Reading out the state |0⟩ instead is off by a small amount at finite T, up to 0.02 for the rates here, and the validator tells the two apart."
+    ],
+    "messages": {
+      "ok": "The simulated probabilities agree with exp(−πΔ²/(2v)) to {worst}, from {slow} at v = 0.5 to {fast} at v = 4.",
+      "ch_missing_function": "Define the function {name}.",
+      "ch_formula_wrong": "landau_zener({v}, {delta}) should be {want}, but it returned {got}. The exponent is −π Δ² / (2 v): the gap enters squared and the sweep rate divides.",
+      "ch_sweep_fails": "sweep_probability raised an error or returned something that is not a number for v = {v} and Δ = {delta}. It has to work for any v and Δ, since the validator uses values you have not seen.",
+      "ch_readout": "For v = {v} and Δ = {delta} your probability matches the weight on |0⟩, not on the excited eigenstate of H(T). At finite T the two differ slightly. Project on the upper eigenvector of H(T).",
+      "ch_complement": "For v = {v} and Δ = {delta} your probability is the complement of the one asked for: it is the chance of staying in the ground state. The formula gives the chance of ending in the excited level.",
+      "ch_sweep_wrong": "For v = {v} and Δ = {delta} sweep_probability returned {got}, and a reference simulation gives {want}. Check that the sweep runs from −T to T and not from 0, that the time step is 2T / n_steps, and that the start is the ground state of H(−T).",
+      "ch_lists": "rates must be [0.5, 1, 2, 4], and simulated and predicted need four numbers each, one per rate and in that order.",
+      "ch_predicted_wrong": "predicted for v = {v} should be {want}, but it holds {got}. Check that the list uses delta = 1.",
+      "ch_simulated_wrong": "simulated for v = {v} should be about {want}, but it holds {got}. Check that the list uses delta = 1, T = 20 and n_steps = 2000."
+    }
   }
 }

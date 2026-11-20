@@ -28,5 +28,22 @@
     "not_converged": "The cost is {cost}, above −0.97, after {calls} of {limit} evaluations. Either the update has the wrong sign (it should go against the slope), or a and c are not shrinking with the step.",
     "over_budget": "The cost is {cost}, but the run spent {calls} evaluations and the limit is {limit}. Count what each step costs: some calls to cost may be unnecessary.",
     "energies_inconsistent": "The cost is right, but the last entry of energies is not the cost of the final params. Append cost(params) after every update."
+  },
+  "challenge": {
+    "mission": "With 4 angles the two optimizers cost 8 and 2 evaluations per step, a ratio of 4. With 12 angles the ratio is 12, and the same budget of 200 evaluations buys 8 parameter-shift steps or 95 SPSA steps. Try both on a 12-angle cost: the energy of four spins in a ring, H = Σ Z_i Z_{i+1} + Σ X_i, in three layers of RY and CNOTs on four qubits, whose lowest value is −5.226. Both runs start from theta0, a start chosen because the difference shows clearly there: from many other starts a well-tuned parameter-shift run comes much closer to SPSA. Run parameter-shift gradient descent with cost_ps and SPSA with cost_spsa, two separate counted copies of that cost, and keep the final angles in params_ps and params_spsa (12 numbers each). The validator evaluates the cost at your angles with its own simulator, requires each counter to stay at 200 evaluations or fewer, SPSA to reach −4.5 or lower, and SPSA to end at least 0.05 below parameter shift.",
+    "hints": [
+      "How many evaluations does one parameter-shift step cost on 12 angles, and how many steps does 200 evaluations allow? Do the same count for SPSA before you write any loop.",
+      "For parameter shift, the derivative with respect to angle k is (cost(θ + (π/2)e_k) − cost(θ − (π/2)e_k))/2, so one step is 24 evaluations. Choose a fixed step size by hand: values near 0.3 work, and much larger ones make the cost jump around.",
+      "For SPSA, reuse the mission's update with 12 random signs, a = 0.4/step**0.602 and c = 0.2/step**0.101, for 95 steps. If a run ends above −4.5, the random directions may have been unlucky: change the seed of the generator and run the code again, since the counters start from zero at every run."
+    ],
+    "messages": {
+      "ok": "SPSA ends at {spsa} after {spsa_calls} evaluations and parameter shift at {ps} after {ps_calls}, both within the budget of {limit}.",
+      "ch_no_cost": "The name {name} was overwritten or removed, and its evaluations can no longer be counted. Use the counted cost from the setup for that run.",
+      "ch_no_params": "{name} is missing or is not a list of 12 numbers: keep the final angles of that run there.",
+      "ch_unused": "{name} was evaluated {calls} times, fewer than the {minimum} that one step of that optimizer needs. The run has to evaluate its own cost: the angles come from the optimizer, not from somewhere else.",
+      "ch_over_budget": "{name} was evaluated {calls} times and the limit is {limit}. Count what each step costs: 24 evaluations for parameter shift on 12 angles, 2 for SPSA, and every extra call to record the cost counts too.",
+      "ch_spsa_not_low": "SPSA ends at {spsa}, above the target of {target}, after {spsa_calls} evaluations. Either the update has the wrong sign, or the gains a and c do not shrink with the step, or the run stopped early: with 95 steps available, 20 or 30 are not enough.",
+      "ch_ps_not_worse": "SPSA ends at {spsa} and parameter shift at {ps}, so parameter shift is not clearly behind. With only 8 steps it should be: check that the run uses its own counter and does not take more steps than the budget allows, and that both runs start from theta0."
+    }
   }
 }

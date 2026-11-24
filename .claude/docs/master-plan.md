@@ -341,7 +341,7 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 
 | Item | Status | Notes |
 | :-- | :-- | :-- |
-| 0.1 CI on the current work | Done | CI runs on Linux, Windows and macOS, plus the Docker image build, the Pyodide build and the browser-mode tests (Chromium, Firefox, WebKit and two phone profiles). Since 23 Nov 2026 it runs only on a push or merge into `main` (and by hand with "Run workflow"); branches and pull requests get no automatic run, so tests are run locally before merging. Docs-only changes skip it. |
+| 0.1 CI on the current work | Done | CI runs on Linux, Windows and macOS, plus the Docker image build, the Pyodide build and the browser-mode tests (Chromium, Firefox, WebKit and two phone profiles). Since 23 Nov 2026 it runs only on a push or merge into `developer` or `main` (and by hand with "Run workflow"); other branches and pull requests get no automatic run, so tests are run locally before merging. Docs-only changes skip it. |
 | 0.2 End-to-end tests | Done | Playwright: lesson flows, oracles, training, export, themes, narrow screens, accessibility, guide, links, composer, hardware, progress export and references, plus hosted mode; all 48 lessons opened in the browser. Job in CI. |
 | 1.1 Engine-in-the-browser spike (Pyodide) | Done: viable (revised 18 Nov 2026) | First answer (not viable: no WebAssembly build of Qiskit or rustworkx) reversed once rustworkx shipped one and Qiskit built from source. Plan and numbers in [web-engine-decision.md](web-engine-decision.md). |
 | 1.2a Static web version | Done, published | Live at https://orlandomotapires.github.io/ket-lab/ (Pages workflow `.github/workflows/pages.yml`, deployed from `main`). Still to check on the live site: `.wasm` served as `application/wasm`, a second visit served from the cache, and a real iPhone. |
@@ -384,7 +384,7 @@ Numbers checked against the repository on 16 Nov 2026, after the implementation 
 | Text | All lessons, the glossary and the interface strings rewritten by the new guide. No em dashes. The correct prediction option is spread evenly over the three positions (16 each), guarded by a test. A read by a person is still missing (P3.3) |
 | Dependencies | Interface: React 18.3, Vite 7.3, Vitest 4.1, Playwright 1.65, TypeScript 5.6; `npm audit` clean; needs Node 22. Engine: Qiskit 2.6.2, PennyLane 0.45.1, NumPy 2.2+, websockets 17.4, Python 3.11+ |
 | Development machine | Node 22 installed. `npm run setup` checks Node and Python first and works on any system |
-| Git | Everything is on GitHub (`orlandomotapires/ket-lab`, public). Work goes through pull requests into `main`; CI runs after the merge, so tests run locally first |
+| Git | Everything is on GitHub (`orlandomotapires/ket-lab`, public). Work branches merge into `developer` through pull requests, and `developer` into `main` when it is ready to publish (the site follows `main`). CI runs after each merge into `developer` or `main`, so tests run locally first |
 | Release | MIT license and `CHANGELOG.md`. Tagged releases `v0.2.0` (19 Nov 2026) and `v0.3.0` (20 Nov 2026); each tag creates the GitHub Release and publishes `ghcr.io/orlandomotapires/ket-lab` |
 
 ---

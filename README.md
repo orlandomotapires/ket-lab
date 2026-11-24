@@ -69,7 +69,7 @@ curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scrip
 
 Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume, and [the script](scripts/run-docker.sh) is short if you want to read it first.
 
-The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development). If you do work on it: CI only runs once a change reaches `main`, not on branches or pull requests, so run `npm test` and `npm run test:e2e` before you merge.
+The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development). If you do work on it: branches merge into `developer`, and `developer` into `main`. CI runs when a change lands on either of those two, not on other branches or on pull requests, so run `npm test` and `npm run test:e2e` before you merge.
 
 ## License
 

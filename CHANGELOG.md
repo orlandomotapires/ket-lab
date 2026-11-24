@@ -6,9 +6,21 @@ Notable changes to the platform.
 
 ### Added
 - `scripts/run-docker.sh` starts Ket Lab with Docker in one command: it shows the download, runs the container in the background and says where to open it once it is ready. The README uses it.
+- **Before you start**, next to the mission: a course page and a paper (or a book) from the lesson's references, to read or watch before writing code.
+- Each Bloch arrow shows its state at the tip, as α|0⟩ + β|1⟩, or "mixed" when the qubit is entangled or noisy.
+- Previous and next lesson buttons beside the lesson name.
+- Drag handles between the code and the state, and between the code and the circuit. Double-click one to go back to the starting size.
 
 ### Changed
+- A new lab layout, on trial. The mission runs across the top, and below it the code and the state sit side by side at the same height. The theory text, hints and the solution offer are hidden in this layout for now.
+- Code and circuit share one panel: show either one, or both. The circuit starts hidden.
+- A correct answer to "Predict before you run" turns the button green, and the answer is remembered.
+- Under the Q-sphere you see entanglement and amplitudes; under the Bloch spheres, the Bloch vectors.
+- A reload keeps the lesson you were in: the address now carries it (`#lesson=1.2`).
+- Alt+1 and Alt+2 go to the code and the state (there is no theory panel to jump to).
+- Smaller corner radii everywhere.
 - The engine's start line has no token in single-user and public modes, where none is used.
+- CI: the Pyodide jobs (browser engine build, its test suite and the browser-mode tests) run only on a push to `main`, not on pull requests.
 
 ## 0.4.0
 

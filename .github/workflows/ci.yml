@@ -1,6 +1,7 @@
 name: CI
 
 # Branches are tested through their pull request (one run, not two); main on each push.
+# The Pyodide jobs (browser engine) run only on the push to main.
 # A change that touches only the files below (README, docs, screenshots) runs nothing.
 on:
   push:
@@ -56,6 +57,8 @@ jobs:
   wasm-build:
     # The browser version of the engine (.claude/docs/web-engine-decision.md): Qiskit for WebAssembly
     # (rebuilt only when build.sh, the patch or the Pyodide pin change) and the staged site files.
+    # Only on a push to main, not on pull requests; the two jobs that need it are skipped with it.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: Engine in Pyodide (build)
     runs-on: ubuntu-latest
     timeout-minutes: 60

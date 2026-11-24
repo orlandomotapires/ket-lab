@@ -15,7 +15,7 @@
   <img src=".github/assets/demo-light.gif" alt="Lesson 1.5: typing qc.h(0) and qc.cx(0, 1) draws the circuit and moves the state to the Bell state; Check confirms it with a fidelity of 100%.">
 </picture>
 
-You write Qiskit or PennyLane. Each line you type appears in the circuit, and the state after it shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
+You write Qiskit or PennyLane. The mission sits at the top, your code goes on the left, and the state after the line your cursor is on shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. Each Bloch arrow has its α|0⟩ + β|1⟩ written at the tip. Turn the circuit on and every gate you type is drawn as you go. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
 
 It's built for one person studying alone, so there are no accounts, teachers or deadlines, and your progress stays with you.
 

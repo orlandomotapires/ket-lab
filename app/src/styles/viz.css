@@ -153,16 +153,22 @@
 }
 /* The state written at the tip of the Bloch arrow: beside the tip, over a light backdrop. */
 .scene-label.state-equation {
-  transform: translate(6px, -50%);
   color: var(--text);
   font-size: 12.5px;
 }
-.state-equation-text,
-.state-equation .is-mixed {
+/* Right of the tip when the arrow is near vertical; above it, toward the middle, when it points sideways. */
+.state-equation-text {
   display: inline-block;
   padding: 1px 6px;
   border-radius: 2px;
   background: color-mix(in srgb, var(--surface) 82%, transparent);
+  transform: translate(6px, -50%);
+}
+.state-equation-text[data-side="up-left"] {
+  transform: translate(calc(-100% + 4px), calc(-100% - 8px));
+}
+.state-equation-text[data-side="up-right"] {
+  transform: translate(-4px, calc(-100% - 8px));
 }
 .state-equation sup {
   font-size: 0.75em;

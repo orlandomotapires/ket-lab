@@ -119,14 +119,16 @@ Map of the 7 tracks with the progress of each, the suggested next lesson (outsid
 
 ### 2.2 The lesson screen
 
-1. **Theory (left).** At the top, fixed: title, learning objectives, mission and hints (one at a time), and the offer of the solution once the hints are used; after the mission, the optional challenge. Since the round of 16 Nov 2026 the mission is a card pinned at the top of the panel, always fully visible; the objectives are a collapsible line and the whole panel has one scroll. Below, the theory in Markdown with LaTeX, the prediction question and the references with section and pages. Glossary terms appear underlined, with the definition in a tooltip; clicking one opens its entry on the Glossary page, and Back returns to the lesson as it was.
-2. **Editor (center).** Monaco with autocompletion of the gates and a description of each. Ctrl+Enter runs.
-3. **Circuit (center, below).** Diagram generated from the code; clicking a gate (or using the arrow keys) goes to the step. The composer writes gates into the code with clicks. Export to OpenQASM and, in local mode, run on IBM hardware.
-4. **State (right).** The lesson's visualizations (section 2.4), with the tables of Bloch vectors and amplitudes.
-5. **Bottom bar.** Errors, validation result and one main action (Check, then Next lesson); running shots is a quiet button and Reset code sits behind "More", with a confirmation.
-6. **Notes.** A drawer on the right (a sheet on narrow screens) with a plain text area for the open lesson, saved as you type.
+Since 23 Nov 2026 the lab is laid out as a trial of a simpler screen (history row "Mission-on-top layout"):
 
-On narrow screens (below 1080 px), Theory, Code and State become tabs. The first lesson opened shows a 4-step guide; the "?" button reopens it and lists the keyboard shortcuts.
+1. **Mission bar (top, across the page).** The mission, three lines at most with "More". On its right, **Before you start** (opens a course page and a paper or book from the lesson's verified references, under the mission) and **Predict before you run** (the prediction question, which turns green when answered right and is remembered per lesson). After the mission, the optional challenge. The theory text, hints, the solution offer, the recap and further reading are not shown in this layout; `TheoryPanel.tsx` keeps them for when they come back.
+2. **Code and circuit (left).** One panel with **Code** and **Circuit** buttons: either view, or both with a drag handle between them. Monaco with autocompletion of the gates and a description of each; Ctrl+Enter runs. The circuit is generated from the code; clicking a gate (or using the arrow keys) goes to the step. The composer writes gates into the code with clicks. Export to OpenQASM and, in local mode, run on IBM hardware. The choice of views and the split are remembered.
+3. **State (right).** The lesson's visualizations (section 2.4). Under the Q-sphere, entanglement and amplitudes; under the Bloch spheres, the Bloch vectors; other views keep all readouts. A drag handle between the left and right columns sets their widths.
+4. **Bottom bar.** Errors, validation result and one main action (Check, then Next lesson); running shots is a quiet button and Reset code sits behind "More", with a confirmation.
+5. **Notes.** A drawer on the right (a sheet on narrow screens) with a plain text area for the open lesson, saved as you type.
+6. **Top bar.** Previous and next lesson beside the lesson name. The open lesson is in the address (`#lesson=<id>`, `#free-lab`), so a reload keeps it.
+
+On narrow screens (below 1080 px) the mission stays on top and Code and State become tabs (Alt+1, Alt+2). The first lesson opened shows a short guide; the "?" button reopens it and lists the keyboard shortcuts.
 
 ### 2.3 Free lab
 
@@ -136,7 +138,7 @@ Qiskit or PennyLane code without a mission, with ready examples (Bell state, var
 
 | Visualization | Use |
 | :-- | :-- |
-| Bloch spheres | One vector per qubit; it shrinks when the qubit state is mixed (entanglement or noise) |
+| Bloch spheres | One vector per qubit; it shrinks when the qubit state is mixed (entanglement or noise). The tip shows the state as α\|0⟩ + β\|1⟩, or "mixed" |
 | Q-Sphere | The global state of up to 5 qubits, with phase by color and a pointer |
 | Comparator | Source qubit × target qubit (teleportation, no-cloning) |
 | Amplitudes | Signed bars, phase color and mean (Deutsch–Jozsa, Bernstein–Vazirani, Grover) |
@@ -327,9 +329,9 @@ Writing rules in [writing-guide.md](writing-guide.md); references only from [ver
 | Hub redesign, 17 Nov 2026 | After a design critique of the hub: only the track holding the next lesson starts open (the index opens the track it jumps to); each track in the index has a small progress bar, with the overall bar under the index; the "Learning tracks" heading and its subtitle are gone from the screen (the subtitle moved to the About dialog); on tablets and phones the tracks come before the References, Glossary, Notes and Backup links, both main buttons span the width and the search box says just "Search"; lesson summaries are capped at a readable line length. |
 | Name, 17 Nov 2026 | The platform is now called **Ket Lab** ("Ket Lab – Learn Quantum Computing" in the top bar). The code keeps its internal names (`ket_lab_engine`, `KET_LAB_*` variables) and the data folder keeps `ket-lab`, so existing progress is still found. The repository name and the Docker image name are unchanged. |
 | Rename, 19 Nov 2026 | The owner asked for one name everywhere: repository `orlandomotapires/ket-lab` (was `quantum_learning_plataform`; Pages moves to `/ket-lab/`), package `ket_lab_engine`, env vars `KET_LAB_*`, storage keys `ket-lab.*`, Docker image `ghcr.io/orlandomotapires/ket-lab` and volume `ket-lab-progress`. Migrations: `progress.default_data_dir` moves `quantum-learning-platform` to `ket-lab`; `app/src/lib/migrateStorage.ts` (imported first in `main.tsx`) moves `qlp.*` keys; `index.html` falls back to `qlp.theme` before paint. The CHANGELOG's 0.2.0 and 0.1.0 entries keep the old names. Released as 0.3.0 (20 Nov 2026), which publishes the image under the new name; the wiki's Docker commands point at `v0.3.0`. The same round pinned the two Playwright jobs in CI to `ubuntu-24.04`: on Ubuntu 26.04 runners `playwright install --with-deps` cannot find its font packages. |
-| Mission-on-top layout (trial), 23 Nov 2026 | The lab is two columns under a mission bar that spans the page: code and circuit share one panel (either view or both, split by a handle) on the left, the state on the right, with a drag handle between the columns. The theory panel is hidden for now (`TheoryPanel.tsx` is kept, not rendered), and with it hints, the solution offer, the recap and further reading; their e2e tests are skipped with that reason. The mission bar has "Before you start" (a course page and a paper or book from the lesson's verified references) and "Predict before you run", which turns green when answered right. Q-sphere shows entanglement and amplitudes, Bloch spheres show the vectors; each Bloch arrow carries α\|0⟩ + β\|1⟩ at its tip. The open lesson lives in the address (`#lesson=<id>`), so a reload keeps it; the top bar has previous/next lesson. Border radii reduced across the interface. Open: no lesson has a video reference yet (would need entries in `verified-references.md`). |
 | Release 0.3.0 and challenges, 20 Nov 2026 | Release 0.3.0 (the rename) tagged and published; the two Playwright jobs pinned to `ubuntu-24.04` because `playwright install --with-deps` fails on Ubuntu 26.04 runners; the wiki got screenshots and GIFs in both themes and an architecture diagram. Eleven new challenges close P3.6 (list there). The engine has a type check (`mypy`, 49 findings fixed without behaviour changes) and the Docker image an arm64 build, tested in CI on a native ARM runner. |
 | Browser version, 18 Nov 2026 | The engine runs in the learner's browser (Pyodide), so Ket Lab can be a static site on GitHub Pages: Qiskit 2.6.2 compiled for WebAssembly from the official source (`build-wasm/`), the protocol moved to `dispatch.py` and shared by the server and the browser engine, a Web Worker with a loading screen, timeouts, Stop and memory limits, Pyodide served by the site (about 33 MB on the first visit, ready in about 6 s), and a Pages workflow. The engine suite (837 tests) and all 85 reference solutions pass inside Pyodide, in CI. Plan in [web-engine-decision.md](web-engine-decision.md). |
+| Mission-on-top layout (trial), 23 Nov 2026 | The lab is two columns under a mission bar that spans the page: code and circuit share one panel (either view or both, split by a handle) on the left, the state on the right, with a drag handle between the columns. The theory panel is hidden for now (`TheoryPanel.tsx` is kept, not rendered), and with it hints, the solution offer, the recap and further reading; their e2e tests are skipped with that reason. The mission bar has "Before you start" (a course page and a paper or book from the lesson's verified references) and "Predict before you run", which turns green when answered right. Q-sphere shows entanglement and amplitudes, Bloch spheres show the vectors; each Bloch arrow carries α\|0⟩ + β\|1⟩ at its tip. The open lesson lives in the address (`#lesson=<id>`), so a reload keeps it; the top bar has previous/next lesson. Border radii reduced across the interface. Open: no lesson has a video reference yet (would need entries in `verified-references.md`). |
 
 The reference lectures stay on disk, outside the repository (`Lecture Muller/`, `lecture (1)/`): they are third-party material. The lessons use the ideas and examples, with original text.
 
@@ -339,7 +341,7 @@ Done on the `roadmap` branch, in phases: safety net, delivery form, curriculum, 
 
 | Item | Status | Notes |
 | :-- | :-- | :-- |
-| 0.1 CI on the current work | Done | CI runs on every pull request on Linux, Windows and macOS, plus the Pyodide build, the browser-mode tests in Chromium, Firefox, WebKit and two phone profiles, and the Docker image build. Docs-only changes skip it. |
+| 0.1 CI on the current work | Done | CI runs on every pull request on Linux, Windows and macOS, plus the Docker image build. The Pyodide build and the browser-mode tests (Chromium, Firefox, WebKit and two phone profiles) run only on a push to `main` (since 23 Nov 2026). Docs-only changes skip it. |
 | 0.2 End-to-end tests | Done | Playwright: lesson flows, oracles, training, export, themes, narrow screens, accessibility, guide, links, composer, hardware, progress export and references, plus hosted mode; all 48 lessons opened in the browser. Job in CI. |
 | 1.1 Engine-in-the-browser spike (Pyodide) | Done: viable (revised 18 Nov 2026) | First answer (not viable: no WebAssembly build of Qiskit or rustworkx) reversed once rustworkx shipped one and Qiskit built from source. Plan and numbers in [web-engine-decision.md](web-engine-decision.md). |
 | 1.2a Static web version | Done, published | Live at https://orlandomotapires.github.io/ket-lab/ (Pages workflow `.github/workflows/pages.yml`, deployed from `main`). Still to check on the live site: `.wasm` served as `application/wasm`, a second visit served from the cache, and a real iPhone. |
@@ -588,7 +590,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P2.6 Cleaner screens (M to L, in steps) **(owner)**
 
-- **Status: steps 1 to 6 and 8 done; 7 (focus mode) open.** The mission is a card pinned at the top of the theory panel; objectives, readouts and finished tracks collapse; one main action in the bottom bar; the theory has a contents list and remembers the reading position; the hardware dialog and the reference rows are lighter. A test opens every lesson at 1366×768 and checks that the mission and the hint button are visible. Open: focus mode.
+- **Status: steps 1 to 6 and 8 done; 7 (focus mode) open. Superseded on 23 Nov 2026 by the mission-on-top layout (section 2.2), where the mission bar spans the page.** The mission was a card pinned at the top of the theory panel; objectives, readouts and finished tracks collapse; one main action in the bottom bar; the theory has a contents list and remembers the reading position; the hardware dialog and the reference rows are lighter. A test opens every lesson at 1366×768 and checks that the mission and the hint button are visible. Open: focus mode.
 - **Goal:** show at each moment what the learner needs for the current step, and keep the rest one click away. Nothing is removed. Every choice of open or closed is remembered.
 - **Work, in order of value:**
   1. **Mission always visible (M).** Take the mission out of the clipped header: a short mission strip pinned at the top of the theory panel (one or two lines, with "more"), and one scroll for the whole panel. The objectives become a collapsed line ("What you will learn (4)"), open the first time a lesson is visited. Hints open inside the strip, one at a time. In challenge mode the mission's objectives are hidden.
@@ -603,7 +605,7 @@ Each item gives the goal, the work, the done criterion and the effort (S ≤ 2 d
 
 #### P2.7 Pick up where you left off, and shortcuts (S)
 
-- **Status: done.** The hub button is "Continue: …" for the last lesson opened, and "Start" before any lesson was opened. Ctrl+Shift+Enter checks, Alt+1, 2, 3 go to Theory, Code and State, Alt+N opens the notes; the "?" button lists them. ⌘ replaces Ctrl on macOS. To verify by hand: Alt+digit may collide with the browser's own shortcuts on some systems.
+- **Status: done.** The hub button is "Continue: …" for the last lesson opened, and "Start" before any lesson was opened. Ctrl+Shift+Enter checks, Alt+1, 2, 3 went to Theory, Code and State (since 23 Nov 2026, Alt+1 and Alt+2 go to Code and State), Alt+N opens the notes; the "?" button lists them. ⌘ replaces Ctrl on macOS. To verify by hand: Alt+digit may collide with the browser's own shortcuts on some systems.
 
 #### P2.8 Backups that can be restored (S)
 

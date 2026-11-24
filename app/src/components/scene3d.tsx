@@ -4,7 +4,7 @@
  */
 import { Html } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Component, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { Component, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import * as THREE from "three";
 import type { Complex, Vec3 } from "../engine/types";
 import { t } from "../strings";
@@ -315,14 +315,14 @@ function grid(count: number): { cols: number; rows: number } {
 // --------------------------------------------------------------------------- //
 
 /** The state at the arrow's tip, as the combination α|0⟩ + β|1⟩ (or "mixed" when there is none). */
-function StateEquation({ target, named }: { target: Vec3; named: boolean }) {
+function StateEquation({ target, named, labelRef }: { target: Vec3; named: boolean; labelRef: RefObject<HTMLSpanElement> }) {
   const terms = blochTerms(target);
-  if (!terms) return <span className="is-mixed">{t("viz.tipMixed")}</span>;
+  if (!terms) return <span className="state-equation-text is-mixed" ref={labelRef}>{t("viz.tipMixed")}</span>;
   const { zero, sign, factor, phase, one } = terms;
   // With several spheres, a basis state would only repeat the pole's own label.
   if (!named && (zero === null || one === null)) return null;
   return (
-    <span className="state-equation-text">
+    <span className="state-equation-text" ref={labelRef}>
       {named && "|ψ⟩ = "}
       {zero !== null && <>{zero}|0⟩</>}
       {one !== null && (
@@ -330,7 +330,7 @@ function StateEquation({ target, named }: { target: Vec3; named: boolean }) {
           {zero !== null ? ` ${sign} ` : sign === "−" ? "−" : ""}
           {one}
           {factor}
-          {phase && <>e<sup>i{phase}</sup></>}
+          {phase && <>e<sup>{phase.startsWith("−") ? `−i${phase.slice(1)}` : `i${phase}`}</sup></>}
           |1⟩
         </>
       )}
@@ -343,6 +343,9 @@ function StateArrow({ target, axis, palette, dark, animate, named }: {
 }) {
   const arrow = useRef<THREE.Group>(null!);
   const tip = useRef<THREE.Group>(null!);
+  const label = useRef<HTMLSpanElement>(null);
+  const shift = useRef(0);
+  const canvas = useThree((s) => s.gl.domElement);
   const shaft = useRef<THREE.Mesh>(null!);
   const dot = useRef<THREE.Mesh>(null!);
   const material = useMemo(() => new THREE.MeshBasicMaterial(), []);
@@ -375,6 +378,24 @@ function StateArrow({ target, axis, palette, dark, animate, named }: {
     const length = m.current.length();
     const visible = length > 0.04;
     tip.current.position.copy(m.current).multiplyScalar(length > 0.04 ? (length + 0.1) / length : 1);
+    // An arrow pointing sideways gets its equation above the tip, toward the sphere's middle, so the
+    // text neither runs out of the panel nor covers the shaft.
+    if (label.current && tip.current.parent) {
+      const dx = tip.current.getWorldPosition(scratchA).x - tip.current.parent.getWorldPosition(scratchB).x;
+      const side = dx > 0.25 ? "up-left" : dx < -0.25 ? "up-right" : "right";
+      if (label.current.dataset.side !== side) label.current.dataset.side = side;
+      // Kept inside the canvas: a long equation near the edge slides back in (one more frame to settle).
+      const box = label.current.getBoundingClientRect();
+      const bounds = canvas.getBoundingClientRect();
+      const left = box.left - shift.current;
+      const right = box.right - shift.current;
+      const wanted = Math.max(0, bounds.left + 4 - left) - Math.max(0, right - (bounds.right - 4));
+      if (Math.abs(wanted - shift.current) > 0.5) {
+        shift.current = wanted;
+        label.current.style.translate = `${Math.round(wanted)}px 0`;
+        invalidate();
+      }
+    }
     arrow.current.visible = visible;
     dot.current.visible = !visible;
     if (visible) {
@@ -403,7 +424,7 @@ function StateArrow({ target, axis, palette, dark, animate, named }: {
       </mesh>
       <group ref={tip}>
         <Html className="scene-label state-equation" zIndexRange={[2, 1]}>
-          <StateEquation target={target} named={named} />
+          <StateEquation target={target} named={named} labelRef={label} />
         </Html>
       </group>
     </>

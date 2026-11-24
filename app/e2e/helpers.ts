@@ -31,6 +31,10 @@ export function collectErrors(page: Page): string[] {
 export async function openHub(page: Page, { tour = false } = {}): Promise<void> {
   // The first-lesson guide would cover buttons in the other tests; it has its own test.
   if (!tour) await page.addInitScript(() => localStorage.setItem("ket-lab.tour.v1", "1"));
+  // Most tests read the circuit, which starts closed: open it next to the code unless a test chose.
+  await page.addInitScript(() => {
+    if (localStorage.getItem("ket-lab.lab.showCircuit") === null) localStorage.setItem("ket-lab.lab.showCircuit", "1");
+  });
   await page.goto("/");
   await expect(page.locator(".section-row").first()).toBeVisible();
 }

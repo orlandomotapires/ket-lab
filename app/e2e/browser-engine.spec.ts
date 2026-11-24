@@ -42,7 +42,7 @@ test.afterEach(async ({ page }, testInfo) => {
 });
 
 /** On a phone the lab shows one panel at a time: opens it from the tabs (no-op on wide screens). */
-async function showPanel(page: Page, name: "Theory" | "Code" | "State"): Promise<void> {
+async function showPanel(page: Page, name: "Code" | "State"): Promise<void> {
   const tabs = page.locator(".lab-tabs");
   if (await tabs.isVisible()) await tabs.getByRole("tab", { name }).click();
 }

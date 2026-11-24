@@ -17,8 +17,11 @@ test("hosted mode: progress in the browser, with export and import", async ({ pa
   await expect(page.locator(".note-status")).toHaveText("Saved");
   expect(await page.evaluate(() => localStorage.getItem("ket-lab.notes.v1"))).toContain("hosted note");
 
-  // Progress survives a page reload: it is in localStorage, not in the engine.
+  // Progress survives a page reload: it is in localStorage, not in the engine. The reload keeps the lesson.
   await page.reload();
+  await expect(page.locator(".crumb-id")).toHaveText("1.1");
+  await expect(page.locator(".mission")).toHaveClass(/is-done/);
+  await page.getByRole("button", { name: "Tracks" }).click();
   await expect(page.locator(".section-row.is-done").first()).toBeVisible();
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("ket-lab.progress.v1") ?? "{}"));
   expect(saved["1.1"].completed).toBe(true);

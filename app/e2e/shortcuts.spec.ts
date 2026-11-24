@@ -17,7 +17,7 @@ test("the hub offers to continue the lesson opened last", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("Ctrl+Shift+Enter checks, Alt+1/2/3 move between the panels", async ({ page }) => {
+test("Ctrl+Shift+Enter checks, Alt+1/2 move between the panels", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await openLessonBySearch(page, "Bernstein", "2.4");
@@ -25,43 +25,39 @@ test("Ctrl+Shift+Enter checks, Alt+1/2/3 move between the panels", async ({ page
   await page.keyboard.press("ControlOrMeta+Shift+Enter");
   await expect(page.locator(".oracle")).toHaveClass(/is-(warn|error|success)/);
 
-  await page.keyboard.press("Alt+1");
-  await expect(page.locator(".theory-scroll")).toBeFocused();
   await page.keyboard.press("Alt+2");
-  await expect(page.locator(".editor textarea")).toBeFocused();
-  await page.keyboard.press("Alt+3");
   await expect(page.locator(".visualizer").locator(":focus")).toHaveCount(1);
+  await page.keyboard.press("Alt+1");
+  await expect(page.locator(".editor textarea")).toBeFocused();
   expect(errors).toEqual([]);
 });
 
-test("narrow screen: Alt+1/2/3 switch the tab, and the tabs answer to the arrow keys", async ({ page }) => {
+test("narrow screen: the mission stays on top, Alt+1/2 switch the tab, and the tabs answer to the arrow keys", async ({ page }) => {
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await openHub(page);
   await openLessonBySearch(page, "Bernstein", "2.4");
   await expect(page.locator(".mission")).toBeVisible();
-  await page.keyboard.press("Alt+2");
-  await expect(page.locator(".mission")).toBeHidden();
   await expect(page.locator(".editor-panel")).toBeVisible();
-  await page.keyboard.press("Alt+3");
+  await page.keyboard.press("Alt+2");
   await expect(page.locator(".visualizer")).toBeVisible();
-  await page.keyboard.press("Alt+1");
+  await expect(page.locator(".editor-panel")).toBeHidden();
   await expect(page.locator(".mission")).toBeVisible();
+  await page.keyboard.press("Alt+1");
+  await expect(page.locator(".editor-panel")).toBeVisible();
 
   const tabs = page.locator(".lab-tabs");
-  const theory = tabs.getByRole("tab", { name: "Theory" });
-  await expect(theory).toHaveAttribute("aria-selected", "true");
-  await expect(theory).toHaveAttribute("aria-controls", "pane-theory");
-  await expect(tabs.getByRole("tab", { name: "Code" })).toHaveAttribute("tabindex", "-1");
-  await theory.focus();
+  const code = tabs.getByRole("tab", { name: "Code" });
+  await expect(code).toHaveAttribute("aria-selected", "true");
+  await expect(code).toHaveAttribute("aria-controls", "pane-code");
+  await expect(tabs.getByRole("tab", { name: "State" })).toHaveAttribute("tabindex", "-1");
+  await code.focus();
   await page.keyboard.press("ArrowRight");
-  await expect(tabs.getByRole("tab", { name: "Code" })).toBeFocused();
-  await expect(tabs.getByRole("tab", { name: "Code" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: "Code" })).toBeVisible();
-  await page.keyboard.press("End");
   await expect(tabs.getByRole("tab", { name: "State" })).toBeFocused();
+  await expect(tabs.getByRole("tab", { name: "State" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: "State" })).toBeVisible();
   await page.keyboard.press("ArrowRight");
-  await expect(tabs.getByRole("tab", { name: "Theory" })).toBeFocused();
+  await expect(code).toBeFocused();
   expect(errors).toEqual([]);
 });
 

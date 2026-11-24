@@ -31,9 +31,9 @@
 
   --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --radius-lg: 12px;
-  --radius: 8px;
-  --radius-sm: 6px;
+  --radius-lg: 4px;
+  --radius: 3px;
+  --radius-sm: 2px;
 }
 
 :root[data-theme="dark"] {
@@ -297,7 +297,7 @@ button {
 .lesson-info-pop code {
   font: 0.92em var(--font-mono);
   padding: 0 3px;
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--surface-3);
 }
 .crumb-sep {
@@ -425,7 +425,7 @@ button {
   gap: 5px;
   height: 22px;
   padding: 0 9px;
-  border-radius: 99px;
+  border-radius: 2px;
   background: var(--surface-3);
   color: var(--muted);
   font-size: 12px;
@@ -506,7 +506,7 @@ button {
   right: 8px;
   padding: 1px 6px;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
+  border-radius: 2px;
   font: 11px var(--font-mono);
   color: var(--muted);
   pointer-events: none;
@@ -633,7 +633,7 @@ button {
   gap: 2px;
   padding: 2px;
   background: var(--surface-3);
-  border-radius: 7px;
+  border-radius: 3px;
   min-width: 0;
   overflow-x: auto;
 }
@@ -641,7 +641,7 @@ button {
   height: 26px;
   padding: 0 11px;
   border: none;
-  border-radius: 5px;
+  border-radius: 2px;
   background: transparent;
   color: var(--muted);
   font-size: 12.5px;
@@ -728,4 +728,12 @@ button {
 }
 .engine-loading-bar::-moz-progress-bar {
   background: var(--accent);
+}
+
+/* Previous / next lesson, beside the lesson name in the top bar */
+.lesson-stepper {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  margin-left: 2px;
 }

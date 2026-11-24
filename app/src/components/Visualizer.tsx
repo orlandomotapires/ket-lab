@@ -139,6 +139,9 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const step = current > 0 ? result.steps[current - 1] : undefined;
   const measured = result.steps.slice(0, current).filter((s) => s.kind === "measure");
   const showReadouts = !TRAINING_VIEWS.includes(view);
+  // The Q-sphere is read with the entanglement and the amplitudes, the Bloch spheres with their vectors.
+  const showWhole = showReadouts && view !== "bloch";
+  const showVectors = showReadouts && view !== "qsphere";
 
   return (
     <aside className={`panel visualizer${resultIsCurrent ? "" : " is-stale"}`} aria-label={t("viz.aria")}>
@@ -184,13 +187,13 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
       {(showReadouts || measured.length > 0 || shots || printed) && (
       <div className="panel-scroll" tabIndex={0}>
         {showReadouts && snapshot.reduced && <p className="footnote">{result.notice ?? t("viz.reducedStep")}</p>}
-        {showReadouts && !snapshot.reduced && (snapshot.amplitudes === null ? (
+        {showWhole && !snapshot.reduced && (snapshot.amplitudes === null ? (
           <StatePurity value={snapshot.state_purity} />
         ) : (
           result.num_qubits >= 2 && <Entanglement snapshot={snapshot} numQubits={result.num_qubits} />
         ))}
 
-        {showReadouts && (
+        {showVectors && (
         <ReadoutSection id="bloch" title={t("viz.blochVectors")}>
         <table className="readout">
           <thead>
@@ -231,7 +234,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
           </p>
         )}
 
-        {showReadouts && !snapshot.reduced && (
+        {showWhole && !snapshot.reduced && (
         <ReadoutSection id="amplitudes" title={t("viz.amplitudes")}>
           {snapshot.amplitudes ? (
             <Probabilities amplitudes={snapshot.amplitudes} numQubits={result.num_qubits} />

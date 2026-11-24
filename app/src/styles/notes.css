@@ -56,11 +56,14 @@
 
 /* drawer: one more column of the lab grid; a sheet above the bottom bar on narrow screens */
 .lab.has-notes {
-  grid-template-columns: minmax(260px, 21%) minmax(0, 1fr) minmax(320px, 27%) minmax(240px, 22%);
+  grid-template-columns: minmax(280px, var(--split, 45%)) minmax(300px, 1fr) minmax(240px, 22%);
+  grid-template-areas:
+    "mission mission mission"
+    "work state notes"
+    "oracle oracle oracle";
 }
 .notes-drawer {
-  grid-column: 4;
-  grid-row: 1;
+  grid-area: notes;
 }
 .notes-drawer .panel-head {
   gap: 8px;
@@ -78,11 +81,10 @@
 @media (max-width: 1080px) {
   .lab.has-notes {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "tabs" "mission" "main" "notes" "oracle";
   }
   .notes-drawer {
-    grid-column: 1;
-    grid-row: auto;
     height: min(34vh, 240px);
   }
 }
@@ -198,7 +200,7 @@
   padding: 2px 7px;
   border: 1px solid var(--line-strong);
   border-bottom-width: 2px;
-  border-radius: 5px;
+  border-radius: 2px;
   background: var(--surface-2);
   font: 12px var(--font-mono);
   text-align: center;

@@ -8,12 +8,18 @@ import { CheckIcon, ChevronRightIcon, TargetIcon } from "./icons";
 import { InlineText } from "./InlineText";
 import { Markdown } from "./Markdown";
 
-function PredictionCard({ prediction }: { prediction: Prediction }) {
-  const [choice, setChoice] = useState<number | null>(null);
+/** "Predict before you run". `inline`: inside the mission bar, which already shows the title.
+ *  With `onChoose`, the answer is kept by the caller (`chosen`). */
+export function PredictionCard({ prediction, inline = false, id, chosen, onChoose }: {
+  prediction: Prediction; inline?: boolean; id?: string; chosen?: number | null; onChoose?: (index: number) => void;
+}) {
+  const [own, setOwn] = useState<number | null>(null);
+  const choice = onChoose ? (chosen ?? null) : own;
+  const setChoice = onChoose ?? setOwn;
   const answered = choice !== null;
   return (
-    <section className="card">
-      <h3 className="card-title">{t("theory.predict")}</h3>
+    <section className={inline ? "prediction-inline" : "card"} id={id} aria-label={inline ? t("theory.predict") : undefined}>
+      {!inline && <h3 className="card-title">{t("theory.predict")}</h3>}
       <p><InlineText text={prediction.question} /></p>
       <div className="options" role="radiogroup" aria-label={t("theory.options")}>
         {prediction.options.map((option, index) => {
@@ -185,7 +191,7 @@ function SolutionCard({ code }: { code: string }) {
 }
 
 /** The mission text: three lines at most, with "More" when it is longer. */
-function MissionText({ text }: { text: string }) {
+export function MissionText({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
   const [clamped, setClamped] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);

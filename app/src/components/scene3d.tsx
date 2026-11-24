@@ -9,7 +9,7 @@ import * as THREE from "three";
 import type { Complex, Vec3 } from "../engine/types";
 import { t } from "../strings";
 import { ZoomInIcon, ZoomOutIcon } from "./icons";
-import { phaseColor, phaseOf, probability, qspherePositions } from "../lib/quantum";
+import { blochTerms, phaseColor, phaseOf, probability, qspherePositions } from "../lib/quantum";
 import { PALETTES, useTheme, type Palette } from "../theme/theme";
 
 const CELL = 2.9; // width of each sphere in the grid, in scene units
@@ -314,10 +314,35 @@ function grid(count: number): { cols: number; rows: number } {
 // Bloch spheres
 // --------------------------------------------------------------------------- //
 
-function StateArrow({ target, axis, palette, dark, animate }: {
-  target: Vec3; axis: Vec3 | null; palette: Palette; dark: boolean; animate: boolean;
+/** The state at the arrow's tip, as the combination α|0⟩ + β|1⟩ (or "mixed" when there is none). */
+function StateEquation({ target, named }: { target: Vec3; named: boolean }) {
+  const terms = blochTerms(target);
+  if (!terms) return <span className="is-mixed">{t("viz.tipMixed")}</span>;
+  const { zero, sign, factor, phase, one } = terms;
+  // With several spheres, a basis state would only repeat the pole's own label.
+  if (!named && (zero === null || one === null)) return null;
+  return (
+    <span className="state-equation-text">
+      {named && "|ψ⟩ = "}
+      {zero !== null && <>{zero}|0⟩</>}
+      {one !== null && (
+        <>
+          {zero !== null ? ` ${sign} ` : sign === "−" ? "−" : ""}
+          {one}
+          {factor}
+          {phase && <>e<sup>i{phase}</sup></>}
+          |1⟩
+        </>
+      )}
+    </span>
+  );
+}
+
+function StateArrow({ target, axis, palette, dark, animate, named }: {
+  target: Vec3; axis: Vec3 | null; palette: Palette; dark: boolean; animate: boolean; named: boolean;
 }) {
   const arrow = useRef<THREE.Group>(null!);
+  const tip = useRef<THREE.Group>(null!);
   const shaft = useRef<THREE.Mesh>(null!);
   const dot = useRef<THREE.Mesh>(null!);
   const material = useMemo(() => new THREE.MeshBasicMaterial(), []);
@@ -349,6 +374,7 @@ function StateArrow({ target, axis, palette, dark, animate }: {
     }
     const length = m.current.length();
     const visible = length > 0.04;
+    tip.current.position.copy(m.current).multiplyScalar(length > 0.04 ? (length + 0.1) / length : 1);
     arrow.current.visible = visible;
     dot.current.visible = !visible;
     if (visible) {
@@ -375,6 +401,11 @@ function StateArrow({ target, axis, palette, dark, animate }: {
       <mesh ref={dot} material={material} visible={false}>
         <sphereGeometry args={[0.06, 16, 12]} />
       </mesh>
+      <group ref={tip}>
+        <Html className="scene-label state-equation" zIndexRange={[2, 1]}>
+          <StateEquation target={target} named={named} />
+        </Html>
+      </group>
     </>
   );
 }
@@ -402,7 +433,7 @@ export function BlochScene({ vectors, axes, labels }: { vectors: Vec3[]; axes: (
                 <Label position={[0, -1.17, 0]}>|1⟩</Label>
                 <Label position={[0, 0, 1.15]} className="is-axis">x</Label>
                 <Label position={[1.15, 0, 0]} className="is-axis">y</Label>
-                <StateArrow target={vector} axis={axes[index] ?? null} palette={palette} dark={theme === "dark"} animate={!reducedMotion} />
+                <StateArrow target={vector} axis={axes[index] ?? null} palette={palette} dark={theme === "dark"} animate={!reducedMotion} named={vectors.length === 1} />
               </group>
             </group>
           );

@@ -17,7 +17,7 @@ test("all lessons open, run the starting code and produce no errors", async ({ p
     await openLessonFromHub(page, id);
     await expect(page.locator(".crumb-id")).toHaveText(id);
     await expect(page.locator(".crumbs strong")).not.toBeEmpty();
-    await expect(page.locator(".recap li").first()).toBeAttached();
+    await expect(page.locator(".mission-bar .mission-text")).not.toBeEmpty();
     // The starting code runs without error (training lessons only run from the button, so there is no error to show).
     await expect(page.locator(".oracle"), `lesson ${id}: the starting code showed an error`).not.toHaveClass(/is-error/, { timeout: 20_000 });
     await expect(page.locator(".visualizer")).toBeVisible();

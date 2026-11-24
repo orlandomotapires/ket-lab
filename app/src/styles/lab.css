@@ -6,13 +6,100 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(300px, 25%) minmax(0, 1fr) minmax(360px, 31%);
-  grid-template-rows: minmax(0, 1fr) auto;
+  /* The mission across the top; below it the code (and circuit) and the state, side by side.
+     --split is the code column's width, set by the handle between the two. */
+  grid-template-columns: minmax(300px, var(--split, 45%)) minmax(340px, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "mission mission"
+    "work state"
+    "oracle oracle";
   gap: 8px;
   padding: 8px;
 }
 .lab.is-sandbox {
-  grid-template-columns: minmax(0, 1fr) minmax(380px, 38%);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "work state"
+    "oracle oracle";
+}
+.lab .mission-bar {
+  grid-area: mission;
+}
+.lab .work-panel {
+  grid-area: work;
+}
+.lab .visualizer {
+  grid-area: state;
+}
+.lab .lab-tabs {
+  grid-area: tabs;
+}
+
+/* Drag handles between panels: a thin line that turns blue on hover, focus and drag. */
+.splitter {
+  position: relative;
+  z-index: 3;
+  flex: none;
+  touch-action: none;
+}
+.splitter::after {
+  content: "";
+  position: absolute;
+  border-radius: 2px;
+  transition: background-color 0.12s ease;
+}
+.splitter.is-vertical {
+  width: 8px;
+  cursor: col-resize;
+}
+.splitter.is-vertical::after {
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+}
+.splitter.is-horizontal {
+  height: 9px;
+  margin: -4px 0;
+  cursor: row-resize;
+}
+.splitter.is-horizontal::after {
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 1px;
+  background: var(--line);
+}
+.splitter:hover::after,
+.splitter:focus-visible::after,
+.is-resizing-x .splitter.is-vertical::after,
+.is-resizing-y .splitter.is-horizontal::after {
+  background: var(--accent);
+}
+.splitter.is-horizontal:hover::after,
+.splitter.is-horizontal:focus-visible::after {
+  top: 3px;
+  height: 3px;
+}
+.splitter:focus-visible {
+  outline: none;
+}
+/* The column handle sits in the gap left of the state panel. */
+.column-splitter {
+  grid-area: state;
+  justify-self: start;
+  margin-left: -8px;
+}
+.is-resizing-x,
+.is-resizing-x * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+.is-resizing-y,
+.is-resizing-y * {
+  cursor: row-resize !important;
+  user-select: none;
 }
 
 .panel {
@@ -25,13 +112,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-  min-height: 0;
 }
 .panel-head {
   display: flex;
@@ -118,7 +198,7 @@
   font-size: 0.86em;
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 1px 5px;
 }
 .prose pre {
@@ -359,11 +439,123 @@
   margin-top: 10px;
 }
 
-/* editor and circuit */
+/* Mission bar: above the code, the text on the left and "Predict before you run" on the right. */
+.mission-bar {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  max-height: 40vh;
+  overflow: auto;
+  padding: 12px 14px 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.mission-main {
+  flex: 1;
+  min-width: 0;
+}
+.mission-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 40%;
+}
+.mission-side .btn {
+  margin: 0;
+}
+.mission-side .btn-challenge {
+  margin-left: 0;
+}
+/* "Before you start" and "Predict before you run": same width, stacked in the order they are used. */
+.mission-side .mission-toggle {
+  align-self: stretch;
+  justify-content: flex-start;
+  gap: 7px;
+  white-space: nowrap;
+}
+.mission-toggle.is-open {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+/* A prediction answered right stays green (remembered per lesson). */
+.mission-toggle.is-correct {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+.primer {
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.primer li {
+  display: grid;
+  grid-template-columns: 8.5em minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 1px;
+  max-width: 78ch;
+}
+.primer-kind {
+  grid-row: span 2;
+  padding-top: 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.primer a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent-text);
+}
+.primer-where {
+  font-size: 13px;
+  color: var(--text-2);
+}
+.prediction-inline {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.mission .prediction-inline p {
+  font-size: 14px;
+}
+.prediction-inline .card-note {
+  margin-top: 10px;
+}
 
-.editor-panel {
+/* editor and circuit: one panel, either view or both splitting it */
+
+.work-panel {
   flex: 1 1 0;
   min-height: 200px;
+}
+.editor-panel {
+  flex: 1 1 0;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+.circuit-panel {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.work-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.circuit-panel .circuit-scroll {
+  flex: 1 1 auto;
+  max-height: none;
 }
 .editor {
   flex: 1;
@@ -378,10 +570,6 @@
   margin-left: 3px;
 }
 
-.circuit-panel {
-  flex: 0 1 auto;
-  min-height: 0;
-}
 .circuit-scroll,
 .circuit-empty {
   min-height: 160px;
@@ -539,7 +727,7 @@
 /* oracle bar */
 
 .oracle {
-  grid-column: 1 / -1;
+  grid-area: oracle;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -658,10 +846,23 @@
 }
 
 @media (max-width: 1080px) {
-  .lab,
-  .lab.is-sandbox {
+  .lab {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "tabs" "mission" "main" "oracle";
+  }
+  .lab.is-sandbox {
     grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "tabs" "main" "oracle";
+  }
+  .lab .pane {
+    grid-area: main;
+  }
+  .column-splitter {
+    display: none;
+  }
+  .mission-bar {
+    max-height: 30vh;
   }
   .lab-tabs {
     display: flex;
@@ -678,8 +879,7 @@
     flex-direction: column;
     min-height: 0;
   }
-  .pane.is-active > .panel,
-  .pane.is-active > .column {
+  .pane.is-active > .panel {
     flex: 1;
     min-height: 0;
   }
@@ -717,6 +917,22 @@
   .lab {
     padding: 6px;
     gap: 6px;
+  }
+  .mission-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .primer li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .primer-kind {
+    grid-row: auto;
+  }
+  .mission-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: none;
   }
   .lab-tabs {
     justify-self: stretch;
@@ -765,7 +981,7 @@
 .card code {
   font: 0.92em var(--font-mono);
   padding: 0 3px;
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--surface-3);
 }
 
@@ -846,7 +1062,7 @@
   height: 30px;
   padding: 0 8px;
   border: 1px solid var(--line-strong);
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--surface);
   color: var(--text);
   font: 500 12.5px var(--font-mono);
@@ -974,7 +1190,7 @@
 .recap code {
   font: 0.92em var(--font-mono);
   padding: 0 3px;
-  border-radius: 4px;
+  border-radius: 2px;
   background: var(--surface-3);
 }
 

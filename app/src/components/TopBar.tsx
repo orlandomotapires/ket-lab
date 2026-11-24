@@ -1,10 +1,10 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { lessonNoteKey } from "../lib/notes";
 import { altKey } from "../lib/platform";
 import { t } from "../strings";
-import { useStore } from "../state/store";
+import { selectAdjacentLesson, useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
-import { ArrowLeftIcon, InfoIcon, LogoMark, MoonIcon, NoteIcon, SunIcon } from "./icons";
+import { ArrowLeftIcon, InfoIcon, LogoMark, MoonIcon, NextIcon, NoteIcon, PrevIcon, SunIcon } from "./icons";
 import { LessonInfo } from "./LessonInfo";
 import { NOTES_BUTTON_ID } from "./NotesDrawer";
 import { ShortcutsDialog } from "./ShortcutsDialog";
@@ -53,6 +53,7 @@ export function TopBar() {
               <strong>{t("topbar.sandbox")}</strong>
             )}
           </nav>
+          {lesson && <LessonStepper />}
         </>
       ) : (
         <button type="button" className="brand brand-link" onClick={backToHub} title={t("topbar.home")}>
@@ -171,6 +172,33 @@ function HelpMenu({ guide }: { guide: boolean }) {
         </div>
       )}
       {shortcuts && <ShortcutsDialog onClose={() => setShortcuts(false)} />}
+    </div>
+  );
+}
+
+/** Previous and next lesson, beside the lesson name. */
+function LessonStepper() {
+  const previous = useStore((s) => selectAdjacentLesson(s, -1));
+  const next = useStore((s) => selectAdjacentLesson(s, 1));
+  const openLesson = useStore((s) => s.openLesson);
+  const button = (target: { id: string; title: string } | null, key: "topbar.previousLesson" | "topbar.nextLesson", icon: ReactNode) => {
+    const label = target ? t(key, { id: target.id, title: target.title }) : t(`${key}None`);
+    return (
+      <button
+        className="btn btn-ghost btn-icon btn-sm"
+        disabled={!target}
+        aria-label={label}
+        title={label}
+        onClick={() => target && void openLesson(target.id)}
+      >
+        {icon}
+      </button>
+    );
+  };
+  return (
+    <div className="lesson-stepper" role="group" aria-label={t("topbar.lessonStepper")}>
+      {button(previous, "topbar.previousLesson", <PrevIcon />)}
+      {button(next, "topbar.nextLesson", <NextIcon />)}
     </div>
   );
 }

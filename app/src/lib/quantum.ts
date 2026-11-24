@@ -58,6 +58,34 @@ export function vectorLength([x, y, z]: Vec3): number {
   return Math.hypot(x, y, z);
 }
 
+/** The pure state of one qubit with Bloch vector `v`, written as α|0⟩ + β|1⟩:
+ *  α = cos(θ/2), β = e^{iφ} sin(θ/2). `phase` is φ when the factor is not 1, −1, i or −i.
+ *  Null for a mixed state (|r| < 1), which has no such combination. */
+export interface BlochTerms {
+  zero: string | null;
+  sign: "+" | "−";
+  factor: "" | "i";
+  phase: string | null;
+  one: string | null;
+}
+
+export function blochTerms(v: Vec3): BlochTerms | null {
+  const r = vectorLength(v);
+  if (r < 0.995) return null;
+  const theta = Math.acos(Math.max(-1, Math.min(1, v[2] / r)));
+  const a = Math.cos(theta / 2);
+  const b = Math.sin(theta / 2);
+  const amount = (x: number) => (x > 0.995 ? "" : x.toFixed(2));
+  if (b < 5e-3) return { zero: amount(a), sign: "+", factor: "", phase: null, one: null };
+  const phi = Math.atan2(v[1], v[0]);
+  const ratio = phi / Math.PI;
+  const near = (target: number) => Math.abs(ratio - target) < 5e-3;
+  const sign = near(1) || near(-1) || near(-0.5) ? "−" : "+";
+  const factor = near(0.5) || near(-0.5) ? "i" : "";
+  const phase = near(0) || near(1) || near(-1) || factor ? null : formatPhase(phi);
+  return { zero: a < 5e-3 ? null : amount(a), sign, factor, phase, one: amount(b) };
+}
+
 /** Short description of a step for captions: "CX q0 → q1", "H q0", "Measure q0 → c0". */
 export function describeStep(step: Step): string {
   const qubits = step.qubits.map((q) => `q${q}`);

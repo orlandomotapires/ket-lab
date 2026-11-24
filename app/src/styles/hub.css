@@ -98,7 +98,7 @@
 .hub-index-number {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: 2px;
   display: grid;
   place-items: center;
   background: var(--surface-3);
@@ -146,14 +146,14 @@
   gap: 6px;
   padding: 4px 0 2px;
   border: none;
-  border-radius: 6px;
+  border-radius: 2px;
   background: none;
   cursor: pointer;
 }
 .journey-fill {
   align-self: stretch;
   height: 10px;
-  border-radius: 3px;
+  border-radius: 2px;
   background: var(--line-strong); /* visible even at 0% */
   overflow: hidden;
   transition: transform 0.12s ease;

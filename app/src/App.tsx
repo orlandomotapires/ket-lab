@@ -1,9 +1,10 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Hub } from "./components/Hub";
 import { EngineLoadingBanner } from "./components/EngineLoadingBanner";
 import { TopBar } from "./components/TopBar";
 import { BROWSER_ENGINE } from "./engine/client";
 import { t } from "./strings";
+import { readRoute, writeRoute, type Route } from "./lib/route";
 import { readSharedCode } from "./lib/share";
 import { useStore } from "./state/store";
 
@@ -20,7 +21,31 @@ export function App() {
   const engineLoading = useStore((s) => s.engineLoading);
   const init = useStore((s) => s.init);
 
+  // The lesson in the address when the page loaded, opened once the engine is ready.
+  const [startRoute] = useState<Route>(() => readRoute());
   useEffect(() => init(), [init]);
+
+  const restored = useRef(false);
+  useEffect(() => {
+    // Only the first time the engine opens, and only if nothing else was opened meanwhile.
+    if (connection !== "open" || restored.current) return;
+    restored.current = true;
+    const state = useStore.getState();
+    if (!startRoute || state.view !== "hub") return;
+    if (startRoute.kind === "lesson") void state.openLesson(startRoute.id);
+    else state.openSandbox();
+  }, [connection, startRoute]);
+
+  // Keeps the address in step with the open lesson (until the first change, it is left as loaded).
+  useEffect(
+    () =>
+      useStore.subscribe((state, previous) => {
+        if (state.view === previous.view && state.lesson?.id === previous.lesson?.id) return;
+        if (state.view === "lab" && !state.codeTrusted) return;
+        writeRoute(state.view === "lab" ? (state.lesson ? { kind: "lesson", id: state.lesson.id } : { kind: "sandbox" }) : null);
+      }),
+    [],
+  );
 
   // Share link (#lab=…): opens the lab in review mode.
   useEffect(() => {

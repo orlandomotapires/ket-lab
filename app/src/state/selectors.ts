@@ -44,6 +44,18 @@ export function selectNextLessonId(state: Pick<State, "catalog" | "lesson">): st
   return next?.id ?? null;
 }
 
+/** The available lesson before or after the open one, in catalog order (across tracks). */
+export function selectAdjacentLesson(
+  state: Pick<State, "catalog" | "lesson">,
+  direction: -1 | 1,
+): { id: string; title: string } | null {
+  if (!state.catalog || !state.lesson) return null;
+  const sections = state.catalog.tracks.flatMap((track) => track.sections).filter((section) => section.available);
+  const index = sections.findIndex((section) => section.id === state.lesson!.id);
+  const target = index < 0 ? undefined : sections[index + direction];
+  return target ? { id: target.id, title: target.title } : null;
+}
+
 /** Progress key of the mission or challenge of the open lesson. */
 export function progressKey(lessonId: string, challenge: boolean): string {
   return challenge ? `${lessonId}:challenge` : lessonId;

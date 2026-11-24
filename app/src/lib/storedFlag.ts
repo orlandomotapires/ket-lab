@@ -32,3 +32,27 @@ export function useStoredFlag(key: string, fallback: boolean): [boolean, (value:
   );
   return [value, set];
 }
+
+/** A number remembered under `key` (a panel size, say). */
+export function useStoredNumber(key: string, fallback: number): [number, (value: number) => void] {
+  const [value, setValue] = useState<number>(() => {
+    try {
+      const stored = Number(localStorage.getItem(key));
+      return localStorage.getItem(key) !== null && Number.isFinite(stored) ? stored : fallback;
+    } catch {
+      return fallback;
+    }
+  });
+  const set = useCallback(
+    (next: number) => {
+      try {
+        localStorage.setItem(key, String(Math.round(next * 10) / 10));
+      } catch {
+        // Not remembered.
+      }
+      setValue(next);
+    },
+    [key],
+  );
+  return [value, set];
+}

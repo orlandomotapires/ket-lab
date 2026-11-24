@@ -16,6 +16,7 @@ import {
   rotationAxis,
 } from "./quantum";
 import { cleanCurves, formatTick, logTicks, makeAxis, niceTicks } from "./curve";
+import { readRoute, routeHash } from "./route";
 import { clampStep, lineForStep, stepForLine } from "./steps";
 
 const step = (index: number, line: number, name = "h"): Step => ({
@@ -195,5 +196,16 @@ describe("curve helpers", () => {
     expect(charts[0].series[0].y).toEqual([1]);
     expect(cleanCurves(null)).toEqual([]);
     expect(cleanCurves([{ series: "nope" }])).toEqual([]);
+  });
+});
+
+describe("route", () => {
+  it("reads and writes the lesson in the address", () => {
+    expect(readRoute("#lesson=4.2")).toEqual({ kind: "lesson", id: "4.2" });
+    expect(readRoute("#free-lab")).toEqual({ kind: "sandbox" });
+    expect(readRoute("#lab=abc")).toBeNull();
+    expect(readRoute("")).toBeNull();
+    expect(routeHash({ kind: "lesson", id: "0.3" })).toBe("#lesson=0.3");
+    expect(routeHash(null)).toBe("");
   });
 });

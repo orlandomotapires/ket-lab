@@ -35,6 +35,7 @@ export {
   sandboxCode,
   selectCurrentStep,
   selectManual,
+  selectAdjacentLesson,
   selectNextLessonId,
   selectSolutionOffer,
   usesReport,

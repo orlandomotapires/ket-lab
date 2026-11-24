@@ -15,7 +15,7 @@
   <img src=".github/assets/demo-light.gif" alt="Lesson 1.5: typing qc.h(0) and qc.cx(0, 1) draws the circuit and moves the state to the Bell state; Check confirms it with a fidelity of 100%.">
 </picture>
 
-You write Qiskit or PennyLane. Each line you type appears in the circuit, and the state after it shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
+You write Qiskit or PennyLane. The mission sits at the top, your code goes on the left, and the state after the line your cursor is on shows up on the right: Bloch spheres, the Q-sphere, amplitudes, entanglement. Each Bloch arrow has its α|0⟩ + β|1⟩ written at the tip. Turn the circuit on and every gate you type is drawn as you go. When the mission is done, **Check** compares the physics, not the text, so any circuit that gets the right state passes.
 
 It's built for one person studying alone, so there are no accounts, teachers or deadlines, and your progress stays with you.
 
@@ -69,7 +69,7 @@ curl -fsSL https://raw.githubusercontent.com/orlandomotapires/ket-lab/main/scrip
 
 Then open http://localhost:8080. Your progress is kept in the `ket-lab-progress` volume, and [the script](scripts/run-docker.sh) is short if you want to read it first.
 
-The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development).
+The wiki explains [running it locally and with Docker](https://github.com/orlandomotapires/ket-lab/wiki/Running-locally), [how it's built](https://github.com/orlandomotapires/ket-lab/wiki/Architecture) and [how to work on it](https://github.com/orlandomotapires/ket-lab/wiki/Development). If you do work on it: branches merge into `developer`, and `developer` into `main`. CI runs when a change lands on either of those two, not on other branches or on pull requests, so run `npm test` and `npm run test:e2e` before you merge.
 
 ## License
 

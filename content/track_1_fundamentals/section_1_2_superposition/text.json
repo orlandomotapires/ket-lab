@@ -6,6 +6,11 @@
     "Judge from a list of counts whether a generator is fair or biased",
     "Say why |+⟩ and |−⟩ look the same in a measurement and how a second Hadamard gate separates them"
   ],
+  "key_terms": [
+    "superposition",
+    "Hadamard gate",
+    "collapse"
+  ],
   "mission": "Build a 3-bit quantum random number generator. Put all three qubits in an equal superposition and measure each qubit into the classical bit with the same index. The 8 outcomes (000 to 111) must be equally likely.",
   "hints": [
     "What does a qubit need to give 0 and 1 equally often? Equal-sized amplitudes, which is a point on the equator of the Bloch sphere. Which gate takes you there from |0⟩?",

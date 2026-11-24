@@ -294,6 +294,33 @@ button {
   padding-left: 18px;
   color: var(--text-2);
 }
+/* Key terms: links to the glossary, laid out as a short wrapping list. */
+.lesson-info-pop .lesson-info-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lesson-info-term {
+  padding: 2px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent-text);
+  font: 500 12.5px var(--font-ui);
+  cursor: pointer;
+}
+.lesson-info-term:hover,
+.lesson-info-term:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.lesson-info-term:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
 .lesson-info-pop code {
   font: 0.92em var(--font-mono);
   padding: 0 3px;
@@ -570,6 +597,27 @@ button {
 .search-result.is-active mark {
   background: transparent;
   text-decoration: underline;
+}
+/* In a lesson: a magnifier beside Notes; the field opens in its place and grows to the left. */
+.topbar.has-lesson {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.search.is-compact .search-toggle .search-icon {
+  position: static;
+  color: inherit;
+}
+.search.is-expanded {
+  width: min(320px, 40vw);
+}
+.search.is-expanded input {
+  padding-right: 10px;
+}
+.search.is-expanded .search-panel {
+  left: auto;
+  right: 0;
+  width: 460px;
+  max-width: calc(100vw - 16px);
+  min-width: 0;
 }
 .search-empty {
   padding: 10px;

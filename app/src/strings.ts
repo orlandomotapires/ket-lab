@@ -277,6 +277,7 @@ const STRINGS = {
 
   "theory.aria": "Theory and mission",
   "glossary.introduced": "Introduced in lesson {id}, {title}.",
+  "glossary.openTerm": "{term}: open in the glossary",
   "glossary.title": "Glossary",
   "glossary.filter": "Filter terms",
   "glossary.filterPlaceholder": "Filter (e.g. phase, entangled)",
@@ -421,7 +422,7 @@ const STRINGS = {
   "viz.compareMarker": "The comparison needs a call to {call} in your code, to prepare the source state.",
   "viz.fidelity": "Fidelity between the two:",
   "viz.identical": "identical",
-  "viz.dragToRotate": "Drag to rotate. Pinch or Ctrl+scroll to zoom; double-click to reset.",
+  "viz.dragToRotate": "Drag to rotate. Scroll or pinch to zoom; double-click to reset.",
   "viz.zoom": "Zoom",
   "viz.zoomIn": "Zoom in",
   "viz.zoomOut": "Zoom out",

@@ -7,6 +7,12 @@
     "Find the distance of a small torus by searching for its shortest undetected logical chain",
     "Explain why defects always come in pairs at the ends of a chain"
   ],
+  "key_terms": [
+    "toric code",
+    "stabilizer",
+    "code distance",
+    "logical operator"
+  ],
   "mission": "On a lattice, errors are strings and the syndrome is where the strings end. Edges of an L×L torus are tuples (\"h\", r, c) and (\"v\", r, c), and a chain is a set of edges carrying X errors. plaquette_edges(L, r, c) is given. Write defects(L, chain), which returns the list of plaquettes (r, c) whose Z-stabilizer anticommutes with the chain. Write logical_class(L, chain), which for a chain with no defects returns (a, b): the parities of the number of its edges in the row (\"h\", 0, c) and in the column (\"v\", r, 0). Then search all chains on the 3×3 torus by increasing size and store in distance the size of the smallest chain that has no defects and logical_class other than (0, 0).",
   "prediction": {
     "question": "X errors act on the two vertical edges v(0,1) and v(0,2) of the torus, which share a plaquette. How many plaquettes anticommute with the chain?",

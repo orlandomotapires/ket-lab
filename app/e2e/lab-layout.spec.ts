@@ -71,11 +71,52 @@ test("code and circuit share one panel; the readouts follow the sphere chosen", 
   expect(errors).toEqual([]);
 });
 
-test("before you start: the lesson's sources open under the mission", async ({ page }) => {
+test("before you start and predict: popovers over the panels, without moving them", async ({ page }) => {
   await openHub(page);
   await openLessonBySearch(page, "Hadamard", "1.2");
+  const work = page.locator(".work-panel");
+  const top = async () => (await work.boundingBox())?.y;
+  const before = await top();
+
   await page.getByRole("button", { name: "Before you start" }).click();
-  const items = page.locator(".primer li");
+  const items = page.locator(".mission-popover .primer li");
   await expect(items).not.toHaveCount(0);
   await expect(items.first().locator("a")).toHaveAttribute("href", /^https:\/\//);
+  expect(await top()).toBe(before);
+
+  // The other button swaps the popover; Escape closes it.
+  await page.getByRole("button", { name: "Predict before you run" }).click();
+  await expect(page.locator(".mission-popover")).toHaveCount(1);
+  await expect(page.locator(".mission-popover .prediction-inline")).toBeVisible();
+  expect(await top()).toBe(before);
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".mission-popover")).toHaveCount(0);
+
+  // A click outside closes it too.
+  await page.getByRole("button", { name: "Before you start" }).click();
+  await work.click({ position: { x: 20, y: 20 } });
+  await expect(page.locator(".mission-popover")).toHaveCount(0);
+});
+
+test("in a lesson the search is a magnifier beside Notes that opens the field", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await openLessonBySearch(page, "Hadamard", "1.2");
+  const toggle = page.locator(".search-toggle");
+  await expect(toggle).toBeVisible();
+  await expect(page.locator(".search input")).toHaveCount(0);
+  // Right before the Notes button.
+  await expect(page.locator(".topbar-right .search + .notes-button")).toHaveCount(1);
+
+  await toggle.click();
+  await expect(page.locator(".search input")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".search input")).toHaveCount(0);
+
+  // Ctrl+K opens it too, and a result opens another lesson.
+  await page.keyboard.press("Control+k");
+  await expect(page.locator(".search input")).toBeFocused();
+  await openLessonBySearch(page, "interference", "1.4");
+  await expect(page.locator(".search-toggle")).toBeVisible();
+  expect(errors).toEqual([]);
 });

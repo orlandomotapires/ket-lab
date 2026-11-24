@@ -6,6 +6,13 @@
     "Write the Pauli matrices and find the eigenvalues and eigenvectors of X",
     "Compute the average result of a measurement on a given state, and recognize a Hermitian matrix"
   ],
+  "key_terms": [
+    "unitary",
+    "Hermitian",
+    "eigenvalue",
+    "observable",
+    "expectation value"
+  ],
   "mission": "A gate has to keep a state normalized, so first sort the matrices in the editor. Define Y (the Pauli Y matrix), a_unitary and b_unitary (True or False: is A, and is B, unitary), eigvals and eigvecs (the eigenvalues of X and its eigenvectors as columns), k_hermitian (True or False: is K Hermitian), and expect_z and expect_y (the average results of measuring Z and Y on psi).",
   "prediction": {
     "question": "The state (|0⟩ + i|1⟩)/√2 is measured many times with the Y observable, whose possible results are +1 and −1. What is the average result?",

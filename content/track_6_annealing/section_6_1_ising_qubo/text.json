@@ -6,6 +6,11 @@
     "Convert an Ising energy into a QUBO matrix and offset, and check that both give the same value on every state",
     "Find the ground states of a small problem by enumeration, and explain why a model without fields has two of them"
   ],
+  "key_terms": [
+    "QUBO",
+    "Ising energy",
+    "frustration"
+  ],
   "mission": "Brute force is the reference every later lesson of the track is judged against, so build it once. The array a = [4, 5, 6, 7, 8] is given, with one spin per number and cost E(s) = (Σ a_i s_i)². Define J, a 5×5 array that is zero on and below the diagonal and holds the coupling J_ij of every pair i < j. Define energies, the 32 values of E(s) (the full cost, constant included) in the order of itertools.product([1, -1], repeat=5). Define ground_energy, and ground_states, an array with one row of ±1 per spin configuration of lowest energy. Define Q (5×5, zero below the diagonal) and offset such that xᵀQx + offset equals E(s) for every state, with s = 1 − 2x.",
   "prediction": {
     "question": "For the set [4, 5, 6, 7, 8] with all five spins free, how many spin configurations have the lowest energy of (Σ a_i s_i)²?",

@@ -6,6 +6,11 @@
     "Choose corrections on qubit 3 that give the same final state for every measurement result",
     "Compare the entanglement of qubits 0 and 3 before and after the protocol"
   ],
+  "key_terms": [
+    "entanglement swapping",
+    "concurrence",
+    "entanglement"
+  ],
   "mission": "Qubits 0 and 3 start in separate Bell pairs, (0, 1) and (2, 3), and no gate may act on both. Entangle them anyway: measure qubits 1 and 2 in the Bell basis and apply classically controlled corrections to qubit 3, so that qubits 0 and 3 end in |Φ⁺⟩ for every measurement result. Record c_before and c_after, the concurrence of qubits 0 and 3 right after creating the pairs and at the end of the circuit.",
   "hints": [
     "Start from lesson 1.6: what does Alice's Bell measurement look like, and which two qubits are measured here? Build the two pairs first.",

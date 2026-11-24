@@ -7,6 +7,13 @@
     "Correct a single flip with gates controlled by the syndrome",
     "Work out the logical error rate 3p² − 2p³ and the range of p where the code helps"
   ],
+  "key_terms": [
+    "quantum error correction",
+    "logical qubit",
+    "syndrome",
+    "pseudo-threshold",
+    "fault tolerance"
+  ],
   "mission": "A bit flip is the simplest error to fight, and three qubits are enough to do it. Encode qubit 0 into three qubits (encode), store the syndrome in two ancillas without measuring the data qubits, and correct the flipped qubit (recover). The logical state must survive an X error on any one of the three qubits, for any input state. The code must also reproduce the theory for noise: when every qubit suffers a bit flip with probability p = 0.1, the logical state survives with probability 1 − 3p² + 2p³ = 0.972, against 0.9 for an unprotected qubit.",
   "prediction": {
     "question": "The input is |0⟩, encoded as |000⟩, and X errors hit qubits 0 and 1. What do the three data qubits hold after the recovery?",

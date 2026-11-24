@@ -1,10 +1,10 @@
-# Study without installing Python or Node. From the repository root:
-#   docker compose -f deploy/local.yml up          (uses the published image, or builds it if it does not exist)
-#   docker compose -f deploy/local.yml up --build  (builds from the local code)
+# Run the lab from this checkout, without installing Python or Node. From the repository root:
+#   docker compose -f deploy/local.yml up --build
 # Then open http://localhost:8080. Progress is kept in the ket-lab-progress volume.
+# To run the published image instead, use scripts/run-docker.sh.
 services:
   ket-lab:
-    image: ghcr.io/orlandomotapires/ket-lab:latest
+    image: ket-lab:local
     build:
       context: ..
       dockerfile: deploy/Dockerfile.local

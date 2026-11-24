@@ -1,6 +1,6 @@
 # Single image for studying without installing Python or Node: the engine serves the
 # built interface on the same port (WebSocket at /engine) and keeps progress in /data.
-# Usage: docker compose -f deploy/local.yml up   (from the repository root)
+# Usage: docker compose -f deploy/local.yml up --build   (from the repository root)
 # The interface is static files, the same on every architecture: build it on the build machine's
 # own platform, so a multi-architecture build only emulates the Python stage.
 FROM --platform=$BUILDPLATFORM node:22-slim AS web

@@ -93,15 +93,15 @@ test("Check is the one main action, then Next lesson", async ({ page }) => {
   await expect(page.locator(".oracle-actions .btn-primary")).toHaveText("Next lesson");
 });
 
-test("objectives: an \"i\" next to the lesson name shows them on hover, in the hub and in the lesson", async ({ page }) => {
+test("what you will learn: an \"i\" next to the lesson name lists key terms that open the glossary", async ({ page }) => {
   await openHub(page);
-  // Hub: the "i" in the next lesson's row, and the row describes the goals to screen readers.
+  // Hub: the "i" in the next lesson's row, and the row describes the terms to screen readers.
   const row = page.locator(".section-row.is-next");
   await expect(row).toHaveAttribute("aria-describedby", /^goals-/);
   await row.locator(".lesson-info").hover();
-  const pop = page.getByRole("tooltip");
+  const pop = page.locator(".lesson-info-pop");
   await expect(pop).toContainText("What you will learn");
-  await expect(pop.locator("li").first()).toBeVisible();
+  await expect(pop.locator(".lesson-info-term").first()).toBeVisible();
   await page.mouse.move(0, 0);
   await expect(pop).toHaveCount(0);
 
@@ -112,6 +112,15 @@ test("objectives: an \"i\" next to the lesson name shows them on hover, in the h
   await info.focus();
   await expect(pop).toContainText(/About \d+ min/);
   await page.keyboard.press("Escape");
+  await expect(pop).toHaveCount(0);
+
+  // Enter on the "i" moves to the first term; Enter on a term opens it in the glossary.
+  await info.focus();
+  await page.keyboard.press("Enter");
+  const term = pop.getByRole("button", { name: "Bell states: open in the glossary" });
+  await expect(term).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".glossary-entry.is-focus")).toContainText("Bell states");
   await expect(pop).toHaveCount(0);
 });
 
@@ -201,7 +210,7 @@ test("hub: the journey bar names the current track and jumps to a track", async 
   await expect(page.locator("#track-4")).toBeInViewport();
 });
 
-test("state view: zoom with the buttons or Ctrl+wheel, and back to the original zoom", async ({ page }) => {
+test("state view: zoom with the buttons, the wheel or Ctrl+wheel, and back to the original zoom", async ({ page }) => {
   await openHub(page);
   await openLessonBySearch(page, "computational basis", "1.1");
   const zoom = page.getByRole("group", { name: "Zoom" });
@@ -225,5 +234,11 @@ test("state view: zoom with the buttons or Ctrl+wheel, and back to the original 
   await page.keyboard.up("Control");
   await expect(reset).toBeVisible();
   await scene.dblclick();
+  await expect(reset).toHaveCount(0);
+
+  // The plain mouse wheel zooms too: in, then out back to the fitted size.
+  await page.mouse.wheel(0, -100);
+  await expect(reset).toBeVisible();
+  for (let i = 0; i < 4 && (await reset.count()) > 0; i++) await page.mouse.wheel(0, 100);
   await expect(reset).toHaveCount(0);
 });

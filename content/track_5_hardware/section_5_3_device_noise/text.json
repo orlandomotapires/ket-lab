@@ -6,6 +6,13 @@
     "Predict how much population and coherence a waiting qubit has left",
     "Say why T2 can never be more than twice T1"
   ],
+  "key_terms": [
+    "noise model",
+    "T1",
+    "T2",
+    "dephasing",
+    "readout error"
+  ],
   "mission": "An idle qubit is the simplest noise experiment on a device. Start a qubit in |+⟩ and let it wait t_wait with relaxation time T1 and coherence time T2. In the QNode idle(T1, T2, t_wait), apply amplitude damping followed by phase damping so that the population of |1⟩ decays as exp(−t/T1) and the coherence as exp(−t/T2). Then store in p1 the probability of measuring 1 and in coherence the size |ρ01| of the off-diagonal element.",
   "prediction": {
     "question": "A qubit has T1 = 50 µs and a measured T2 = 80 µs. What is its pure dephasing time Tφ?",

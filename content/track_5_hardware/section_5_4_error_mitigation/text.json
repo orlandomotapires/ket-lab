@@ -6,6 +6,12 @@
     "Push an expectation value toward zero noise by running the circuit at higher noise and extrapolating",
     "Say what mitigation costs in shots, and why it is not error correction"
   ],
+  "key_terms": [
+    "error mitigation",
+    "zero-noise extrapolation",
+    "readout error",
+    "assignment matrix"
+  ],
   "mission": "Two kinds of noise, two corrections. A qubit is measured with the assignment matrix A: recover the true distribution from p_meas and store in z_readout the mitigated ⟨Z⟩ = P(0) − P(1). Then evaluate noisy_expectation(s) at the noise scales s = 1, 3, 5 (stored in scales and values) and extrapolate to zero noise: store the result in zne, within 0.006 of the exact value cos(0.9).",
   "prediction": {
     "question": "One measurement with N shots has statistical error σ. You extrapolate a straight line through scales 1, 3, 5 and want the result to have the same error σ. How many shots do you need at each scale?",

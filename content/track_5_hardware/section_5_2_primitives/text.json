@@ -6,6 +6,12 @@
     "Measure an X-type observable using only computational-basis measurements",
     "Say how many shots a given precision costs"
   ],
+  "key_terms": [
+    "primitives",
+    "observable",
+    "expectation value",
+    "shots"
+  ],
   "mission": "Counts are only useful once they become a number. For the Bell state (|00⟩ + |11⟩)/√2 in qc, store in zz_est and xx_est the values of ⟨Z⊗Z⟩ and ⟨X⊗X⟩ from the Estimator. Then compute the same two values from Sampler counts, in zz_samp and xx_samp, and ⟨Z⟩ of qubit 0 from counts in z0_samp. Store in sigma the statistical error 1/√shots of a Z expectation value.",
   "prediction": {
     "question": "With 4096 shots the statistical error of ⟨Z⟩ for a qubit in |+⟩ is about 0.016. Roughly how many shots do you need to bring it down to 0.004?",

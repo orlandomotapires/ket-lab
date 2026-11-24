@@ -6,6 +6,11 @@
     "Compare it with the chemistry ansatz by number of angles and by what it knows about the molecule",
     "Say why starting every angle at zero stalls the training"
   ],
+  "key_terms": [
+    "hardware-efficient ansatz",
+    "ansatz",
+    "CNOT gate"
+  ],
   "mission": "Show that a circuit with no chemistry in it can still reach the H₂ ground state. Reach an energy within chemical accuracy (1.6 mHa) of the exact value using at most 16 rotation angles and no excitation gates. The intended layout is the Hartree–Fock state, 3 layers of R_Y on every qubit each followed by CNOT gates on neighbours (0-1, 1-2, 2-3), and a final R_Y layer; train theta with qml.AdamOptimizer and record the energy after each step.",
   "prediction": {
     "question": "In the ansatz with 3 layers, every angle is set to 0, so only the CNOT ladders act on the Hartree–Fock state |1100⟩. Which basis state does the circuit prepare?",

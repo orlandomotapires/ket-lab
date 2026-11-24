@@ -118,6 +118,15 @@ export const BookIcon = () => (
     <path d="M3 3.5A1.5 1.5 0 0 1 4.5 2H13v10H4.5A1.5 1.5 0 0 0 3 13.5zM3 13.5A1.5 1.5 0 0 0 4.5 15H13v-3" />
   </Icon>
 );
+/** Crystal ball on its stand, with a glint and a spark: "Predict before you run". */
+export const CrystalBallIcon = () => (
+  <Icon>
+    <circle cx="8" cy="7" r="4.8" />
+    <path d="M5.2 4.9a3 3 0 0 1 2-1.4" />
+    <path d="M9.6 6.2v1.6M8.8 7h1.6" strokeWidth="1.2" />
+    <path d="M4.6 10.9 3.6 14h8.8l-1-3.1" />
+  </Icon>
+);
 export const ImportIcon = () => (
   <Icon>
     <path d="M8 10V2M5 5l3-3 3 3M3 11.5v1A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5v-1" />

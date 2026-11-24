@@ -6,6 +6,11 @@
     "Collect outcomes and solve y·s = 0 (mod 2) to find the hidden string",
     "Explain why n − 1 independent outcomes fix s, and how s = 000 shows up"
   ],
+  "key_terms": [
+    "Simon's problem",
+    "oracle",
+    "query"
+  ],
   "mission": "Find the hidden mask s of a function f from 3 bits to 3 bits with f(x) = f(y) if and only if y = x or y = x ⊕ s (s may be 000, when f is one-to-one). Call oracle(qc) once (input register: qubits 0 to 2, output register: qubits 3 to 5), measure the input register into bits 0 to 2, and collect outcomes with run_shots. Then compute from the outcomes alone the bit string s_found equal to s. Qubit 0 is the last character of every string, so s = s2 s1 s0 and an outcome is y2 y1 y0.",
   "prediction": {
     "question": "For n = 3 you have measured y = 011 and y = 101. A third run gives 110. How much does it add?",

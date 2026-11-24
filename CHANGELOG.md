@@ -20,7 +20,7 @@ Notable changes to the platform.
 - Alt+1 and Alt+2 go to the code and the state (there is no theory panel to jump to).
 - Smaller corner radii everywhere.
 - The engine's start line has no token in single-user and public modes, where none is used.
-- CI: the Pyodide jobs (browser engine build, its test suite and the browser-mode tests) run only on a push to `main`, not on pull requests.
+- CI runs only when a change is pushed or merged into `main`. Branches and pull requests get no automatic run (it took too long on every commit); "Run workflow" in the Actions tab still runs it by hand.
 
 ## 0.4.0
 

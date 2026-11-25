@@ -27,11 +27,26 @@
    Import order (main.tsx): base, hub, lab, viz, dialogs, references, tour. */
 /* visualizer */
 
+/* Stage and readouts, split by a drag handle. */
+.viz-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.viz-body > .panel-scroll {
+  min-height: 48px;
+}
+/* The handle draws the line between them. */
+.viz-body > .stage:has(+ .splitter) {
+  border-bottom: 0;
+}
+
 .stage {
   position: relative;
   /* Takes the free space of the panel; with many qubits, the tables below get the scrolling. */
   flex: 1 1 330px;
-  min-height: 260px;
+  min-height: 160px;
   background: var(--stage);
   border-bottom: 1px solid var(--line);
 }

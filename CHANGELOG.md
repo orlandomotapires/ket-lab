@@ -10,6 +10,7 @@ Notable changes to the platform.
 - Each Bloch arrow shows its state at the tip, as α|0⟩ + β|1⟩, or "mixed" when the qubit is entangled or noisy.
 - Previous and next lesson buttons right after "Tracks", in the same place for every lesson.
 - Drag handles between the code and the state, and between the code and the circuit. Double-click one to go back to the starting size.
+- A drag handle between the spheres and the readouts below them (Bloch vectors, amplitudes).
 
 ### Changed
 - A new lab layout, on trial. The mission runs across the top, and below it the code and the state sit side by side at the same height. The theory text, hints and the solution offer are hidden in this layout for now.

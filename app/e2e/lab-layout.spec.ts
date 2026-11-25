@@ -68,6 +68,17 @@ test("code and circuit share one panel; the readouts follow the sphere chosen", 
   await handle.focus();
   await page.keyboard.press("ArrowRight");
   await expect(handle).toHaveAttribute("aria-valuenow", String(before + 2));
+
+  // The handle between the spheres and the readouts gives the readouts more room when dragged up.
+  const rows = page.getByRole("separator", { name: "Resize the visualization and the readouts" });
+  const readouts = viz.locator(".viz-body > .panel-scroll");
+  const tallBefore = (await readouts.boundingBox())!.height;
+  const box = (await rows.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y - 120, { steps: 5 });
+  await page.mouse.up();
+  expect((await readouts.boundingBox())!.height).toBeGreaterThan(tallBefore + 80);
   expect(errors).toEqual([]);
 });
 

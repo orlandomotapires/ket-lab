@@ -407,6 +407,7 @@ const STRINGS = {
   "viz.concurrenceNote": "0 = the qubits have independent states; 1 = maximal entanglement.",
   "viz.withRestNote": "Entanglement of each qubit with the rest of the register: 0 = none, 1 = maximal.",
   "viz.blochVectors": "Bloch vectors",
+  "viz.resizeReadouts": "Resize the visualization and the readouts",
   "viz.noWebgl": "The 3D view needs WebGL, which this browser has turned off. The numbers in the other tabs still show the state.",
   "viz.qubit": "Qubit",
   "viz.phase": "phase",

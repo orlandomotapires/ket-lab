@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useStoredNumber } from "../lib/storedFlag";
 import type { Comparison, Lesson, RunResult, Snapshot, VisualizerKind } from "../engine/types";
 import { t } from "../strings";
 import {
@@ -15,6 +16,7 @@ import {
 import { stepForLine } from "../lib/steps";
 import { selectCurrentStep, useStore, type TrainingState } from "../state/store";
 import { MixedProbabilities, Probabilities, ShotsHistogram } from "./Probabilities";
+import { Splitter } from "./Splitter";
 import { CurveView } from "./viewsCurve";
 import { AmplitudesView, amplitudeScale, DialsView, HistogramView, ModularView } from "./views2d";
 import {
@@ -37,6 +39,8 @@ const QSphereScene = lazy(() => import("./scene3d").then((module) => ({ default:
 const MAX_BLOCH_QUBITS = 9;
 const MAX_QSPHERE_QUBITS = 5;
 const MAX_REGISTER_QUBITS = 6;
+/** Starting share of the state panel's height for the 3D stage (percent). */
+const STAGE_SHARE = 68;
 const SANDBOX_VIEWS: VisualizerKind[] = ["bloch", "qsphere", "amplitudes", "dials"];
 
 function fixed(value: number): string {
@@ -64,6 +68,9 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   const errorStdout = useStore((s) => s.errorStdout);
   // After a failed run, what the code printed before failing; otherwise the output of the last run.
   const printed = hasError ? errorStdout : (result?.stdout ?? "");
+  // The stage's share of the height under the header, in percent; the readouts take the rest.
+  const [stageShare, setStageShare] = useStoredNumber("ket-lab.viz.stageShare", STAGE_SHARE);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   // In the free lab, code with report(...) gets the training curve tab.
   const sandboxTraining = !lesson && training !== null;
@@ -142,6 +149,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
   // The Q-sphere is read with the entanglement and the amplitudes, the Bloch spheres with their vectors.
   const showWhole = showReadouts && view !== "bloch";
   const showVectors = showReadouts && view !== "qsphere";
+  const hasReadouts = showReadouts || measured.length > 0 || shots || printed;
 
   return (
     <aside className={`panel visualizer${resultIsCurrent ? "" : " is-stale"}`} aria-label={t("viz.aria")}>
@@ -155,7 +163,8 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
             .join(" "),
         })}
       </p>
-      <div className="stage" aria-describedby="state-description">
+      <div className="viz-body" ref={bodyRef}>
+      <div className="stage" aria-describedby="state-description" style={hasReadouts ? { flex: `${stageShare} 1 0` } : undefined}>
         {!(sandboxTraining && view === "convergence") && <div className="stage-caption">
           <span>
             {current === 0 ? (
@@ -184,8 +193,20 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         </Suspense>
       </div>
 
-      {(showReadouts || measured.length > 0 || shots || printed) && (
-      <div className="panel-scroll" tabIndex={0}>
+      {hasReadouts && (
+        <Splitter
+          orientation="horizontal"
+          value={stageShare}
+          min={20}
+          max={90}
+          initial={STAGE_SHARE}
+          onChange={setStageShare}
+          label={t("viz.resizeReadouts")}
+          container={() => bodyRef.current}
+        />
+      )}
+      {hasReadouts && (
+      <div className="panel-scroll" tabIndex={0} style={{ flex: `${100 - stageShare} 1 0` }}>
         {showReadouts && snapshot.reduced && <p className="footnote">{result.notice ?? t("viz.reducedStep")}</p>}
         {showWhole && !snapshot.reduced && (snapshot.amplitudes === null ? (
           <StatePurity value={snapshot.state_purity} />
@@ -247,6 +268,7 @@ export function Visualizer({ lesson }: { lesson: Lesson | null }) {
         {printed && <Stdout text={printed} />}
       </div>
       )}
+      </div>
     </aside>
   );
 }

@@ -151,6 +151,21 @@ class Dispatcher:
             self.progress.note_delete(message["key"])
             return {"ok": True}
 
+        if kind in ("notes.images", "notes.image.get", "notes.image.save", "notes.image.delete"):
+            if self.progress is None:  # public mode: the browser keeps the images
+                return _error(messages.t("server.unavailable", what="Each note image"), "unavailable")
+            if kind == "notes.images":
+                return {"ok": True, "images": self.progress.images_all()}
+            if kind == "notes.image.get":
+                return {"ok": True, "image": self.progress.image_get(message["image_id"])}
+            if kind == "notes.image.save":
+                image = self.progress.image_save(
+                    message["key"], message["mime"], message["data"], message.get("image_id"), message.get("created_at")
+                )
+                return {"ok": True, "image": image}
+            self.progress.image_delete(message["image_id"])
+            return {"ok": True}
+
         if kind == "hardware.available":
             return {"ok": True, "available": self._hardware_allowed() and hardware.available()}
 

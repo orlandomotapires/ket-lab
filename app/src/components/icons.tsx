@@ -146,3 +146,11 @@ export const NoteIcon = () => (
     <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" />
   </Icon>
 );
+
+export const ImageIcon = () => (
+  <Icon>
+    <rect x="2" y="3" width="12" height="10" rx="1.5" />
+    <circle cx="5.75" cy="6.25" r="1.1" />
+    <path d="m2.5 12 3.75-3.75 2.5 2.5L10.5 9l3 3" />
+  </Icon>
+);

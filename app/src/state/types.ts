@@ -1,4 +1,5 @@
 import type { ConnectionStatus, EngineLoading, EngineResponse } from "../engine/client";
+import type { NoteImage, NoteImageData } from "../lib/noteImages";
 import type {
   Catalog,
   EngineError,
@@ -151,6 +152,16 @@ export interface NotesSlice {
   setNote(key: string, body: string): void;
   flushNotes(): void;
   setNotesOpen(open: boolean): void;
+  /** Images attached to the notes, by note key (descriptions only; the data is fetched when shown). */
+  noteImages: Record<string, NoteImage[]>;
+  loadNoteImages(): Promise<void>;
+  /** Shrinks and stores a picture under a note. */
+  addNoteImage(key: string, file: Blob): Promise<"ok" | "invalid" | "full" | "error">;
+  removeNoteImage(id: string): Promise<void>;
+  /** Object URL of an image, for an <img>. */
+  noteImageUrl(id: string): Promise<string | null>;
+  /** Every image with its data, for the backup file. */
+  exportNoteImages(): Promise<NoteImageData[]>;
   /** Restores an exported backup (progress and notes); throws when the file is not one. */
   importBackup(text: string): Promise<{ lessons: number; notes: number }>;
 }

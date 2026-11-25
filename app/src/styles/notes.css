@@ -208,3 +208,125 @@
 .shortcuts-dialog .dialog-actions {
   padding: 14px 18px 16px;
 }
+
+/* images under a note: thumbnails, "Add image", and the full-size viewer */
+.note-with-images {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  border-radius: var(--radius);
+}
+.note-with-images.is-dragging {
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
+}
+.note-with-images.is-drawer {
+  flex: 1;
+  min-height: 0;
+}
+.note-with-images.is-drawer .note-field {
+  flex: 1;
+  height: auto;
+}
+.note-images-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.note-with-images.is-drawer .note-images-list {
+  max-height: 160px;
+  overflow-y: auto;
+  /* room for the remove button, which sits over the thumbnail's corner */
+  padding: 7px 7px 0 0;
+  margin-top: -7px;
+}
+.note-image {
+  position: relative;
+}
+.note-image-open {
+  display: block;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--stage, var(--surface));
+  cursor: zoom-in;
+}
+.note-image-open:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.note-image-open img,
+.note-image-loading {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.note-image-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font: 14px/1 var(--font-ui);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.note-image:hover .note-image-remove,
+.note-image:focus-within .note-image-remove,
+.note-image-remove:focus-visible {
+  opacity: 1;
+}
+.note-image-remove:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+@media (hover: none) {
+  .note-image-remove {
+    opacity: 1;
+  }
+}
+.note-images-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.note-images-actions .btn {
+  gap: 6px;
+}
+.note-images-message {
+  font-size: 12.5px;
+  color: var(--error);
+}
+.note-image-dialog {
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 48px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  cursor: zoom-out;
+}
+.note-image-dialog::backdrop {
+  background: rgba(10, 14, 22, 0.72);
+}
+.note-image-dialog img {
+  display: block;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 48px);
+  object-fit: contain;
+}

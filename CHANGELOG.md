@@ -59,6 +59,7 @@ Notable changes to the platform.
 - "Show solution" for missions and challenges, with commented solutions for every lesson.
 - Backup dialog: export and import of progress and notes, also with the local engine; the engine keeps a dated copy of its database each day.
 - MIT license.
+- Images in notes: paste a picture (Ctrl+V) or drop it on a note, or press "Add image". Thumbnails sit under the text and open at full size. Large pictures are scaled down. The images are kept with the notes (in the engine, or in the browser on the hosted site) and go into the backup file.
 
 ### Changed
 - Every lesson, the reviews and the glossary rewritten by a new writing guide; prediction answers spread evenly over the three positions.

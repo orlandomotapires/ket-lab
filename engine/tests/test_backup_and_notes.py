@@ -1,6 +1,7 @@
 """P2.8 progress.import and P2.5 notes (engine side)."""
 
 import asyncio
+import base64
 import json
 
 import pytest
@@ -235,6 +236,67 @@ def test_note_key_of_a_renumbered_lesson_is_renamed(tmp_path):
     store.save("7.1:challenge", code="c")
     store._rename_lesson("7.1", "7.2")
     assert list(store.notes_all()) == ["lesson:7.2"] and set(store.all()) == {"7.2:challenge"}
+
+
+# -- note images -------------------------------------------------------------------------------------
+
+PNG = base64.b64encode(b"\x89PNG\r\n\x1a\n" + b"x" * 100).decode("ascii")
+
+
+def test_note_images_save_list_get_delete(engine):
+    assert ask(engine, type="notes.images") == {"ok": True, "images": [], "id": 1}
+    saved = ask(engine, type="notes.image.save", key="lesson:1.1", mime="image/png", data=PNG)
+    assert saved["ok"]
+    image = saved["image"]
+    assert image["key"] == "lesson:1.1" and image["mime"] == "image/png" and image["size"] == 108
+    assert ask(engine, type="notes.images")["images"] == [image]
+    got = ask(engine, type="notes.image.get", image_id=image["id"])["image"]
+    assert got["data"] == PNG and got["key"] == "lesson:1.1"
+    assert ask(engine, type="notes.image.delete", image_id=image["id"])["ok"]
+    assert ask(engine, type="notes.images")["images"] == []
+    assert ask(engine, type="notes.image.get", image_id=image["id"])["image"] is None
+
+
+def test_an_image_saved_again_with_its_id_is_not_duplicated(engine):
+    first = ask(engine, type="notes.image.save", key="general", mime="image/png", data=PNG, image_id="abcdefgh12")
+    again = ask(engine, type="notes.image.save", key="general", mime="image/png", data=PNG, image_id="abcdefgh12")
+    assert first["image"] == again["image"] and len(engine.progress.images_all()) == 1
+
+
+@pytest.mark.parametrize("extra", [
+    {"mime": "image/svg+xml", "data": PNG},
+    {"mime": "image/png", "data": "not base64!"},
+    {"mime": "image/png", "data": ""},
+    {"mime": "image/png", "data": base64.b64encode(b"x" * (340 * 1024 + 1)).decode("ascii")},
+    {"mime": "image/png", "data": PNG, "key": "other"},
+    {"mime": "image/png", "data": PNG, "image_id": "../x"},
+])
+def test_bad_images_are_refused(engine, extra):
+    reply = ask(engine, type="notes.image.save", **{"key": "general", **extra})
+    assert reply["ok"] is False and reply["error"]["kind"] == "protocol"
+    assert engine.progress.images_all() == []
+
+
+def test_a_note_holds_at_most_12_images(engine):
+    for _ in range(12):
+        assert ask(engine, type="notes.image.save", key="general", mime="image/png", data=PNG)["ok"]
+    reply = ask(engine, type="notes.image.save", key="general", mime="image/png", data=PNG)
+    assert reply["ok"] is False and "12" in reply["error"]["message"]
+
+
+def test_note_images_are_unavailable_in_hosted_mode(hosted):
+    for kind in ("notes.images", "notes.image.get", "notes.image.save", "notes.image.delete"):
+        reply = ask(hosted, type=kind, key="general", mime="image/png", data=PNG, image_id="abcdefgh12")
+        assert reply["ok"] is False and reply["error"]["kind"] == "unavailable"
+
+
+def test_note_images_follow_a_renumbered_lesson_and_survive_a_restart(tmp_path):
+    store = ProgressStore(tmp_path)
+    store.image_save("lesson:7.1", "image/png", PNG)
+    store._rename_lesson("7.1", "7.2")
+    store._db.commit()  # the renumbering runs inside the caller's transaction
+    store.close()
+    assert [image["key"] for image in ProgressStore(tmp_path).images_all()] == ["lesson:7.2"]
 
 
 # -- search ------------------------------------------------------------------------------------------

@@ -150,3 +150,69 @@ test("backup: the export carries the notes and the import restores them in local
   await clearNotes(page);
   expect(errors).toEqual([]);
 });
+
+// A 2x2 red PNG.
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==",
+  "base64",
+);
+
+test("note images: add, view, remove, paste in the drawer, and carried by the backup", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await clearNotes(page);
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  const general = page.locator(".note-card").first();
+  await general.locator("input[type=file]").setInputFiles({ name: "dot.png", mimeType: "image/png", buffer: PNG });
+  const thumbs = general.locator(".note-image img");
+  await expect(thumbs).toHaveCount(1);
+  await expect(thumbs.first()).toHaveAttribute("src", /^blob:/);
+
+  // Kept after a reload (engine or browser storage, whichever keeps the notes).
+  await page.reload();
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  await expect(page.locator(".note-card").first().locator(".note-image img")).toHaveCount(1);
+
+  // Full size in a dialog; Escape closes it.
+  await page.locator(".note-card").first().getByRole("button", { name: "View image 1 at full size" }).click();
+  await expect(page.locator(".note-image-dialog img")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".note-image-dialog")).toHaveCount(0);
+
+  // The backup carries the image, and importing it brings it back.
+  await page.getByRole("button", { name: "Back to tracks" }).click();
+  await page.getByRole("button", { name: /^Backup/ }).click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export progress" }).click();
+  const file = (await (await download).path())!;
+  const data = JSON.parse(readFileSync(file, "utf-8"));
+  expect(data.note_images).toHaveLength(1);
+  expect(data.note_images[0]).toMatchObject({ key: "general", mime: "image/png", data: PNG.toString("base64") });
+  await page.keyboard.press("Escape");
+  await clearNotes(page);
+  await page.getByRole("button", { name: /^Backup/ }).click();
+  await page.locator(".backup-dialog input[type=file]").setInputFiles(file);
+  await expect(page.locator(".backup-dialog [role=status]")).toContainText("Imported");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  await expect(page.locator(".note-card").first().locator(".note-image img")).toHaveCount(1);
+  await page.getByRole("button", { name: "Remove image 1" }).click();
+  await expect(page.locator(".note-image")).toHaveCount(0);
+  await page.getByRole("button", { name: "Back to tracks" }).click();
+
+  // Pasting a picture into the lesson note attaches it; pasting text still types text.
+  await openLessonBySearch(page, "interference", "1.4");
+  await openNotesDrawer(page);
+  await page.locator(".notes-drawer .note-field").evaluate((field, base64) => {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([bytes], "shot.png", { type: "image/png" }));
+    field.dispatchEvent(new ClipboardEvent("paste", { clipboardData: transfer, bubbles: true, cancelable: true }));
+  }, PNG.toString("base64"));
+  await expect(page.locator(".notes-drawer .note-image img")).toHaveCount(1);
+  await expect(page.locator(".notes-drawer .note-field")).toHaveValue("");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Tracks" }).click();
+  await clearNotes(page);
+  expect(errors).toEqual([]);
+});

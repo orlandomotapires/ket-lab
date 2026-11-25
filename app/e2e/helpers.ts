@@ -128,6 +128,8 @@ export async function clearNotes(page: Page): Promise<void> {
     changed = true;
   }
   if (changed) await expect(page.locator(".note-status")).toHaveText("Saved");
+  const removes = page.locator(".notes-page .note-image-remove");
+  while ((await removes.count()) > 0) await removes.first().click();
   await page.getByRole("button", { name: "Back to tracks" }).click();
   await expect(page.locator(".section-row").first()).toBeVisible();
 }

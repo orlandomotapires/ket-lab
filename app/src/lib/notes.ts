@@ -1,4 +1,5 @@
 import type { Note, NoteHit, Notes } from "../engine/types";
+import type { NoteImageData } from "./noteImages";
 
 /** Key of the free note. Lesson notes use "lesson:<id>". */
 export const GENERAL_NOTE = "general";
@@ -84,8 +85,13 @@ export function lessonKeys(catalog: { tracks: { sections: { id: string; key?: st
   return keys;
 }
 
-export function backupFile(notes: Notes, progressJson: string, keys: Record<string, string> = {}): string {
+export function backupFile(notes: Notes, progressJson: string, keys: Record<string, string> = {}, images: NoteImageData[] = []): string {
   const data = JSON.parse(progressJson) as Record<string, unknown>;
   // The stable key of each lesson lets an import after a renumbering land on the right lesson.
-  return JSON.stringify({ ...data, notes: clean(notes), ...(Object.keys(keys).length ? { keys } : {}) }, null, 2);
+  return JSON.stringify({
+    ...data,
+    notes: clean(notes),
+    ...(Object.keys(keys).length ? { keys } : {}),
+    ...(images.length ? { note_images: images } : {}),
+  }, null, 2);
 }

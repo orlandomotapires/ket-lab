@@ -403,8 +403,9 @@ function BackupDialog({ onClose }: { onClose: () => void }) {
         </div>
         <button
           className="btn"
-          onClick={() => {
-            saveTextFile(backupFile(notes, exportLocalProgress(progress), lessonKeys(catalog)), "ket-lab-progress.json");
+          onClick={async () => {
+            const images = await useStore.getState().exportNoteImages();
+            saveTextFile(backupFile(notes, exportLocalProgress(progress), lessonKeys(catalog), images), "ket-lab-progress.json");
             setStatus({ text: t("hub.backupExported"), error: false });
           }}
         >

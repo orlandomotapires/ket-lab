@@ -98,6 +98,8 @@ export interface CatalogSection {
   estimated_minutes?: number | null;
   /** What the learner will be able to do by the end of the lesson. */
   objectives?: string[];
+  /** Key ideas of the lesson: glossary terms, shown under "What you will learn". */
+  key_terms?: string[];
 }
 
 export interface GlossaryEntry {
@@ -215,6 +217,8 @@ export interface Lesson {
   mission: string;
   /** What the learner will be able to do by the end of the lesson. */
   objectives: string[];
+  /** Key ideas of the lesson: glossary terms, shown under "What you will learn". */
+  key_terms?: string[];
   /** Optional challenge, unlocked after the mission. */
   challenge?: { mission: string; hints: string[] };
   /** End-of-track project. */

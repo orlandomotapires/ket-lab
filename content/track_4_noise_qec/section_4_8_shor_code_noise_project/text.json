@@ -6,6 +6,12 @@
     "Count the error patterns that defeat the code and turn the count into an exact failure probability",
     "Compare the encoded qubit with a bare one and find the error rate where the two are equal"
   ],
+  "key_terms": [
+    "Shor code",
+    "logical qubit",
+    "syndrome",
+    "pseudo-threshold"
+  ],
   "mission": "Whether nine qubits beat one is a question of counting, and you will answer it exactly. Part 1: complete encode() and decode() as in lesson 4.4, so that qubit 0 returns to |ψ⟩ after an X, Y or Z error on any one of the nine qubits. Part 2: define logical_pauli(error), which takes a list of nine letters from I, X, Y, Z (error[q] acts on qubit q, applied between encoding and decoding) and returns the Pauli that is left on the logical qubit after majority-vote decoding. Part 3: define logical_failure(p), the probability that the logical Pauli is not I when every qubit independently suffers the depolarizing channel with probability p (I with probability 1 − p; X, Y, Z with probability p/3 each), and bare_failure(p) for one unprotected qubit. Part 4: store in p_star the smallest p > 0 at which logical_failure(p) = bare_failure(p), to within 0.003.",
   "prediction": {
     "question": "At small p, halving the physical error rate from p = 0.01 to p = 0.005 changes the logical failure probability of the Shor code by what factor?",

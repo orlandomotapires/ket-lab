@@ -6,6 +6,12 @@
     "Encode a qubit into three qubits so that a single phase flip can be located and undone",
     "Read the syndrome of a Z error from the X⊗X checks, and say why an X error gives syndrome 00"
   ],
+  "key_terms": [
+    "phase-flip code",
+    "stabilizer",
+    "code space",
+    "syndrome"
+  ],
   "mission": "The bit-flip code ignores phase flips, but the Hadamard gate turns one kind of error into the other. Protect qubit 0 against phase flips: encode it into three qubits (encode), then detect and correct the flipped qubit with two ancillas and no measurement of the data qubits (recover). The recovery must leave the data qubits in the code space. The logical state must survive a Z error on any one of the three qubits, and no error, for any input state.",
   "prediction": {
     "question": "An X error hits qubit 0 of the phase-flip code, which holds the logical state (|0_L⟩ + |1_L⟩)/√2. What does the code report, and what is the state afterwards?",

@@ -6,6 +6,11 @@
     "Decode both bits with a CNOT and a Hadamard gate and read them in the right order",
     "Say why neither half of the pair carries any information about the message by itself"
   ],
+  "key_terms": [
+    "superdense coding",
+    "Bell states",
+    "CNOT gate"
+  ],
   "mission": "Alice and Bob share a Bell pair: Alice holds qubit 1 and Bob holds qubit 0. Alice encodes the two-bit string `message` (the validator tries all four) by acting only on qubit 1, then sends that qubit to Bob, who decodes with gates that do not depend on the message. Reading |q1 q0⟩, the final state must be the message.",
   "hints": [
     "What does Alice and Bob's shared resource look like, and which two gates created it in lesson 1.5? Build it first.",

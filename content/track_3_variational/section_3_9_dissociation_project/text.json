@@ -6,6 +6,12 @@
     "Check every energy against the exact ground-state energy and chemical accuracy",
     "Estimate the equilibrium bond length from the lowest points of the computed curve"
   ],
+  "key_terms": [
+    "dissociation curve",
+    "ground state",
+    "chemical accuracy",
+    "ansatz"
+  ],
   "mission": "The energy of H₂ depends on the distance between the atoms, and the minimum of that curve is the bond length. Use hamiltonian(d) to build the Hamiltonian at several bond lengths d in angstrom. In distances put at least 5 values between 0.5 and 2.0, at least 3 of them between 0.5 and 1.0. At each one train the ansatz of lesson 3.2 (Hartree–Fock state and DoubleExcitation) from theta = 0 with at most 40 steps. Store the final angles in thetas, the energy history of each training in histories, the final energies in energies, and your estimate of the equilibrium bond length in r_eq. Every energy must be within chemical accuracy of the exact one, and r_eq within 0.05 Å of the exact minimum.",
   "prediction": {
     "question": "At a bond length of 2.0 Å the atoms are almost separated. Compared with 0.74 Å, how does the Hartree–Fock error against the exact energy change?",

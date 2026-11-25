@@ -6,6 +6,11 @@
     "Simulate a sweep for several total times and explain why short sweeps fail and long ones succeed",
     "State the adiabatic condition as an estimate, and say what it does and does not guarantee"
   ],
+  "key_terms": [
+    "adiabatic theorem",
+    "Hamiltonian",
+    "ground state"
+  ],
   "mission": "A sweep succeeds only if it is slow compared with the smallest gap, so you measure that gap and then test the claim with a simulation. Use H_B, H_P, s_grid, T_values and n_steps from the starter code (the three-qubit instance of lesson 6.1). Store in gaps the difference between the two lowest eigenvalues of H(s) = (1 − s) H_B + s H_P for every s in s_grid, in min_gap the smallest of them, and in s_at_min the value of s where it occurs (the value of s, not its index in the grid). Then, for each total time in T_values, start from |+++⟩, evolve with n_steps short steps of e^{−iH(s)Δt}, and store in success the probability of finding |110⟩ at the end, in the same order as T_values.",
   "prediction": {
     "question": "The first excited level of H(s) is separated from the ground state by 2 at s = 0 and by 1/6 at s = 1. A sweep of fixed total time T runs from |+++⟩ to H_P. Where in the sweep is the state most likely to leave the instantaneous ground state?",

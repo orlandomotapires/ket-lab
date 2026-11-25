@@ -85,3 +85,15 @@ def test_term_appears_in_its_lesson_or_earlier(library):
         if first is not None and ids.index(first) < ids.index(lesson) and False:
             late.append(entry["term"])
     assert not late
+
+
+def test_key_terms_are_glossary_terms(library):
+    """"What you will learn" lists each lesson's key terms, and each one opens its glossary entry."""
+    terms = {entry["term"] for entry in _terms()}
+    for lid in library.lesson_ids:
+        text = json.loads((library._lessons[lid] / "text.json").read_text(encoding="utf-8"))
+        key_terms = text.get("key_terms")
+        assert key_terms, f"{lid}: no key_terms"
+        unknown = [term for term in key_terms if term not in terms]
+        assert not unknown, f"{lid}: key terms missing from glossary.json: {unknown}"
+        assert library.lesson(lid)["key_terms"] == key_terms

@@ -6,6 +6,12 @@
     "Carry out an SPSA step by hand, with the slope along a random direction",
     "Pick an optimizer when every evaluation costs shots on hardware"
   ],
+  "key_terms": [
+    "parameter-shift rule",
+    "SPSA",
+    "COBYLA",
+    "shots"
+  ],
   "mission": "Evaluations are what you pay for on hardware, so this run has a budget. The variable cost(params) returns −F, minus the fidelity with |Φ⁺⟩ of a 4-angle ansatz, and cost.calls counts the evaluations. Minimize it with SPSA until the cost is −0.97 or lower, using at most 200 evaluations in total (the ones for recording the cost count too), and keep the last entry of energies equal to the final cost. Plain parameter-shift gradient descent does not fit this budget.",
   "prediction": {
     "question": "You have a budget of 1,000 circuit evaluations and an ansatz with 25 parameters. Ignoring the evaluations for recording the cost, how many steps can parameter-shift gradient descent and SPSA take?",

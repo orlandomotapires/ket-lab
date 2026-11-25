@@ -6,6 +6,13 @@
     "Say whether a pair of amplitudes is a valid state, and fix it if it is not",
     "Place a state such as 0.6|0⟩ + 0.8|1⟩ on the Bloch sphere using its angle θ"
   ],
+  "key_terms": [
+    "Bloch sphere",
+    "pure state",
+    "amplitude",
+    "X gate",
+    "rotation operators"
+  ],
   "mission": "A new qubit always starts in |0⟩. Apply a gate to qubit 0 so that it ends in |1⟩.",
   "hints": [
     "Which gate swaps |0⟩ and |1⟩? A classical bit has one, the NOT. The quantum version is one of the Pauli gates.",

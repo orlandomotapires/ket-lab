@@ -6,6 +6,12 @@
     "Build a Trotter step for the transverse-field Ising model and repeat it",
     "Choose the number of steps for a target fidelity, and predict how the error changes when it doubles"
   ],
+  "key_terms": [
+    "Hamiltonian",
+    "Trotterization",
+    "commutator",
+    "transverse-field Ising model"
+  ],
   "mission": "Simulate two qubits under H = J Z⊗Z + h (X⊗I + I⊗X) with J = 1, h = 0.8 and time t = 2, starting in |00⟩, to see how many Trotter steps the non-commuting terms cost. Build qc with n_steps repeated steps, each e^{-iJ Z⊗Z dt} followed by e^{-ih X dt} on each qubit, using only rzz and rx. Choose n_steps so that the final state has fidelity at least 0.99 with the exact state e^{-iHt}|00⟩. The circuit may have at most 90 gates.",
   "prediction": {
     "question": "With a first-order Trotter formula and n = 5 steps the infidelity 1 − F is about 0.022. What is it about for n = 10?",

@@ -6,6 +6,11 @@
     "Say how the circuit differs from QAOA and from thermal simulated annealing",
     "Predict what a wrong sign or a missing factor of 2 does to the final state"
   ],
+  "key_terms": [
+    "quantum annealing",
+    "simulated annealing",
+    "Hamiltonian"
+  ],
   "mission": "A real annealer runs in continuous time, but a gate-based device has to cut the anneal into steps. Build qc for the three-qubit instance of lessons 6.1 and 6.2 (h and J are defined in the starter): Hadamards on every qubit, then p Trotter steps, each a cost layer (rz and rzz) followed by a mixer layer (rx) with the schedule frozen at the midpoint of the step. Measuring the circuit must give 110 with probability at least 0.7. Use only h, rx, rz and rzz, at most 1000 gates. You may change T and p.",
   "prediction": {
     "question": "You write the mixer with the wrong sign, rx(+2(1 − s)dt) instead of rx(−2(1 − s)dt), and keep everything else, with T and p large enough that the correct circuit would reach 0.7. Where does the probability end up?",

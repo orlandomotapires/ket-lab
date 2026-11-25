@@ -6,6 +6,11 @@
     "Write the 4×4 matrix that flips one chosen qubit of a two-qubit register, in Qiskit's ordering",
     "Decide whether a two-qubit state is a product state or entangled"
   ],
+  "key_terms": [
+    "tensor product",
+    "product state",
+    "entanglement"
+  ],
   "mission": "Two qubits need one vector of four entries, and a gate on one of them needs a 4×4 matrix. Use Qiskit's ordering, with qubit 0 as the last factor. Define prod (qubit 1 in |+⟩ and qubit 0 in |0⟩), op_q0 and op_q1 (the 4×4 matrices of X acting on qubit 0 and on qubit 1), after (op_q0 applied to prod), three (the 8-entry state of three qubits all in |+⟩), and s1_product and s2_product (True or False: is s1, and is s2, a product state).",
   "prediction": {
     "question": "In Qiskit's ordering, the matrix np.kron(X, I) is applied to the state |00⟩, with both qubits in |0⟩. What state results?",

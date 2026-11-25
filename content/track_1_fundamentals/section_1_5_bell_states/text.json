@@ -6,6 +6,12 @@
     "Read a two-qubit label as |q₁q₀⟩ and prepare a state in which only qubit 1 is in superposition",
     "Decide whether a two-qubit state is a product state by comparing a₀₀a₁₁ with a₀₁a₁₀"
   ],
+  "key_terms": [
+    "Bell states",
+    "CNOT gate",
+    "product state",
+    "superposition"
+  ],
   "mission": "Prepare the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 0 and 1.",
   "hints": [
     "The two bits must be random and equal. Which qubit has to be in superposition first, and which gate can then make the other follow it?",

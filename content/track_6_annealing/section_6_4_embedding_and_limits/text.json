@@ -7,6 +7,11 @@
     "Find by brute force the chain strength above which the ground state keeps the chain intact, and decode the logical answer",
     "Say what limits annealing hardware in practice and what the evidence on speedups does and does not show"
   ],
+  "key_terms": [
+    "minor embedding",
+    "chain strength",
+    "ground state"
+  ],
   "mission": "The three-qubit problem of lesson 6.2 has a triangle of couplings, and the hardware here is four qubits on a square, 0–1–2–3–0. Write embed(F), which returns (fields, couplings) for chain strength F: fields is a list of four numbers, couplings a dict whose keys are pairs (i, j) with i < j (or a 4×4 upper triangular array). Logical qubit 2 becomes the chain of physical qubits 2 and 3, joined by −F Z₂Z₃. Put J_01 on edge 0–1, J_12 on edge 1–2 and J_02 on edge 3–0, h_0 and h_1 on qubits 0 and 1, and all of h_2 on physical qubit 2 (qubit 3 gets no field). For each F in F_values, find the lowest-energy physical state by brute force over the 16 states. Store chain_intact (a list of booleans), decoded (the logical spins (s0, s1, s2) read off the ground state, or None when its chain is broken) and F_min, the smallest F in F_values whose ground state has an intact chain and decodes to (+1, −1, −1). If two broken states tie for the lowest energy, either one is fine, since the chain is broken in both.",
   "prediction": {
     "question": "With the chain intact and F = 1, the embedded ground state decodes to the logical ground state, whose energy is −1.25. What energy does the embedded Hamiltonian give that physical state?",

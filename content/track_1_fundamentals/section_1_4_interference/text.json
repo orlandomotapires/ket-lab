@@ -6,6 +6,10 @@
     "Measure a qubit in the X basis by applying a Hadamard gate first",
     "Predict how the order of two gates, such as H and S, changes the final state"
   ],
+  "key_terms": [
+    "interference",
+    "Hadamard gate"
+  ],
   "mission": "Qubit 0 was prepared in |+⟩ or |−⟩, and you do not know which. Add gates and a measurement so that |+⟩ always gives 0 and |−⟩ always gives 1. This is a measurement in the X basis.",
   "hints": [
     "In the computational basis both |+⟩ and |−⟩ give 0 or 1 at random. What would have to change about the states, just before the measurement, for the two outcomes to differ?",

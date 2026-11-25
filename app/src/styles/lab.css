@@ -23,7 +23,7 @@
     "work state"
     "oracle oracle";
 }
-.lab .mission-bar {
+.lab .mission-area {
   grid-area: mission;
 }
 .lab .work-panel {
@@ -439,6 +439,33 @@
   margin-top: 10px;
 }
 
+/* The mission bar and its popovers ("Before you start", "Predict before you run"). The popovers
+   are positioned against this box, so they float over the panels below without moving them. */
+.mission-area {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mission-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: min(640px, 100%);
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  padding: 12px 14px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(16, 24, 40, 0.18));
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
 /* Mission bar: above the code, the text on the left and "Predict before you run" on the right. */
 .mission-bar {
   flex-direction: row;
@@ -487,9 +514,8 @@
   color: var(--success);
 }
 .primer {
-  margin: 10px 0 0;
-  padding: 10px 0 0;
-  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 0;
   list-style: none;
   display: grid;
   gap: 10px;
@@ -517,12 +543,8 @@
   font-size: 13px;
   color: var(--text-2);
 }
-.prediction-inline {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
-}
-.mission .prediction-inline p {
+.prediction-inline p {
+  margin: 0 0 8px;
   font-size: 14px;
 }
 .prediction-inline .card-note {
@@ -976,6 +998,7 @@
 }
 
 .mission code,
+.mission-popover code,
 .hints code,
 .objectives code,
 .card code {

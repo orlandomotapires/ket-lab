@@ -6,6 +6,11 @@
     "Check that an oracle flips the sign of exactly the solutions and leaves its ancillas in |0⟩",
     "Choose the number of Grover iterations for N = 8 and the number of solutions you found"
   ],
+  "key_terms": [
+    "oracle",
+    "ancilla",
+    "Grover iteration"
+  ],
   "mission": "Search for the settings that satisfy f(a, b, c) = (a OR b) AND (NOT a OR c) AND (NOT b OR NOT c), where a, b, c are qubits 0, 1, 2. Write oracle(qc), which flips the sign of exactly the satisfying states and leaves qubits 3 and 4 (ancillas) in |0⟩. Write diffuser(qc) on qubits 0 to 2, set iterations to the optimal number for N = 8 and M = 2, run the search on qc with run_shots, and store the bit strings found in the list solutions.",
   "hints": [
     "Before any circuit, evaluate f on the eight assignments on paper. How many pass? Remember that a result is written \"c b a\".",

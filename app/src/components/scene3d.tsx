@@ -107,8 +107,9 @@ function zoomAt(zoom: Zoom, factor: number, px: number, py: number, width: numbe
   return { factor: next, x: zoom.x + dx / before - dx / after, y: zoom.y + dy / before - dy / after };
 }
 
-/** Container with canvas, orthographic camera, drag rotation and zoom: pinch, Ctrl/⌘ + wheel
- *  (a trackpad pinch arrives as one) or the buttons. A plain wheel still scrolls the panel. */
+/** Container with canvas, orthographic camera, drag rotation and zoom: the mouse wheel, pinch
+ *  (a trackpad pinch arrives as Ctrl + wheel) or the buttons. Scrolling out at the fitted size
+ *  scrolls the panel. */
 let webgl2: boolean | null = null;
 /** Three.js needs WebGL 2. Some browsers turn it off (no GPU, policy, privacy settings). */
 function hasWebGL2(): boolean {
@@ -171,10 +172,17 @@ function InteractiveScene({ cols, rows, children }: { cols: number; rows: number
     const el = frameRef.current;
     if (!el) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey && !event.metaKey) return;
+      // Firefox can report whole lines (deltaMode 1): about 33 pixels each.
+      const deltaY = event.deltaMode === 1 ? event.deltaY * 33 : event.deltaY;
+      // A sideways scroll is not a zoom.
+      if (Math.abs(deltaY) < Math.abs(event.deltaX)) return;
+      // Scrolling out with the spheres already at their fitted size scrolls the panel instead,
+      // so the wheel never gets stuck over the scene.
+      const pinchGesture = event.ctrlKey || event.metaKey;
+      if (!pinchGesture && deltaY > 0 && zoom.factor <= MIN_ZOOM) return;
       event.preventDefault();
       // A mouse notch (deltaY about 100) zooms by about 1.35; a trackpad pinch sends many small deltas.
-      const delta = Math.max(-50, Math.min(50, event.deltaY));
+      const delta = Math.max(-50, Math.min(50, deltaY));
       zoomBy(Math.exp(-delta * 0.006), event.clientX, event.clientY);
     };
     el.addEventListener("wheel", onWheel, { passive: false });

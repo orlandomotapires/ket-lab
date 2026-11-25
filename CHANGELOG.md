@@ -8,19 +8,28 @@ Notable changes to the platform.
 - `scripts/run-docker.sh` starts Ket Lab with Docker in one command: it shows the download, runs the container in the background and says where to open it once it is ready. The README uses it.
 - **Before you start**, next to the mission: a course page and a paper (or a book) from the lesson's references, to read or watch before writing code.
 - Each Bloch arrow shows its state at the tip, as α|0⟩ + β|1⟩, or "mixed" when the qubit is entangled or noisy.
-- Previous and next lesson buttons beside the lesson name.
+- Previous and next lesson buttons right after "Tracks", in the same place for every lesson.
 - Drag handles between the code and the state, and between the code and the circuit. Double-click one to go back to the starting size.
 
 ### Changed
 - A new lab layout, on trial. The mission runs across the top, and below it the code and the state sit side by side at the same height. The theory text, hints and the solution offer are hidden in this layout for now.
 - Code and circuit share one panel: show either one, or both. The circuit starts hidden.
 - A correct answer to "Predict before you run" turns the button green, and the answer is remembered.
+- "Before you start" and "Predict before you run" open as popovers under the mission bar, over the code and the state, so the layout no longer moves. A click outside or Escape closes them.
+- "What you will learn" (the "i" by the lesson name) lists the lesson's key terms instead of sentences. Each term opens its glossary entry, and hovering one shows the definition. The terms are the new `key_terms` field in each lesson's `text.json`, and a test checks that each one is in the glossary.
+- The mouse wheel zooms the Bloch spheres and the Q-sphere in and out, around the pointer. Ctrl+wheel and pinch still work. Scrolling out once the spheres are back at their normal size scrolls the panel instead.
+- The About button in the top bar shows the Ket Lab mark instead of an "i", so on a lesson screen the only "i" is the one by the lesson name.
+- Inside a lesson, the search is a magnifier button to the left of Notes. A click, Ctrl+K or "/" opens the field in its place, and Escape or leaving it empty folds it back.
+- `deploy/local.yml` only builds from the local code (`docker compose -f deploy/local.yml up --build`, image `ket-lab:local`); the published image runs with `scripts/run-docker.sh`.
 - Under the Q-sphere you see entanglement and amplitudes; under the Bloch spheres, the Bloch vectors.
 - A reload keeps the lesson you were in: the address now carries it (`#lesson=1.2`).
 - Alt+1 and Alt+2 go to the code and the state (there is no theory panel to jump to).
 - Smaller corner radii everywhere.
 - The engine's start line has no token in single-user and public modes, where none is used.
 - A permanent `developer` branch sits between `main` and the work branches: branches merge into `developer`, and `developer` into `main`. CI runs when a change is pushed or merged into `developer` or `main`; other branches and pull requests get no automatic run (it took too long on every commit), and "Run workflow" in the Actions tab still runs it by hand. Dependabot opens its pull requests against `developer`.
+
+### Fixed
+- Typing in the search right after a lesson opened could close the list of results while the field still had the cursor: the editor takes focus for a moment as the lesson loads.
 
 ## 0.4.0
 

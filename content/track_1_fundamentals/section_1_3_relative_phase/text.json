@@ -7,6 +7,12 @@
     "Add up the rotations of Z, S and T to find the new relative phase of a qubit",
     "Undo a phase gate with an R_z rotation and explain why the global phase does not matter"
   ],
+  "key_terms": [
+    "relative phase",
+    "global phase",
+    "phase gate",
+    "rotation operators"
+  ],
   "mission": "Qubit 0 receives an unknown state and then the gates X, H, S, T, H and P(π/3). Undo the whole sequence, so that qubit 0 ends in its input state whatever that state was. Use an R_z rotation to undo P(π/3).",
   "hints": [
     "If you put on socks and then shoes, which comes off first? Start from the last gate of the sequence and work backwards.",

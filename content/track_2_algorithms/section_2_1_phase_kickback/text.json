@@ -6,6 +6,12 @@
     "Prepare the target in |−⟩ and the control in |+⟩ and see the sign land on the control",
     "Read an eigenvalue as the relative phase it leaves on the control"
   ],
+  "key_terms": [
+    "phase kickback",
+    "eigenstate",
+    "oracle",
+    "Deutsch's algorithm"
+  ],
   "mission": "The target will not change, the control will. Prepare the control (qubit 0) in |+⟩ and the target (qubit 1) in |−⟩, then apply a CNOT from qubit 0 to qubit 1.",
   "prediction": {
     "question": "Control in |+⟩, target in |−⟩, then a CNOT. You apply a Hadamard to the control and measure it. What do you get?",

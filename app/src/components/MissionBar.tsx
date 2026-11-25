@@ -1,9 +1,9 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { openExternal } from "../engine/client";
 import type { Reference } from "../engine/types";
 import { t } from "../strings";
 import { useStore } from "../state/store";
-import { BookIcon, CheckIcon, TargetIcon } from "./icons";
+import { BookIcon, CheckIcon, CrystalBallIcon, TargetIcon } from "./icons";
 import { MissionText, PredictionCard } from "./TheoryPanel";
 
 /** What to look at before starting, from the lesson's own (verified) references: the first course
@@ -62,17 +62,39 @@ function Primer({ items, id }: { items: Reference[]; id: string }) {
 }
 
 /** The mission, above the code and the state: its text on the left; on the right, "Before you start"
- *  (sources to read or watch first) and "Predict before you run". Each opens under the text, inside
- *  the same box, one at a time. Lab gives it a key per lesson. */
+ *  (sources to read or watch first) and "Predict before you run". Each opens as a popover just under
+ *  the bar, over the panels, so the layout does not move; one at a time. A click outside or Escape
+ *  closes it. Lab gives it a key per lesson. */
 export function MissionBar() {
   const lesson = useStore((s) => s.lesson);
   const lessonId = lesson?.id ?? null;
   const challengeMode = useStore((s) => s.challengeMode);
   const completed = useStore((s) => Boolean(s.lesson && ((!s.challengeMode && s.validation?.passed) || s.progress[s.lesson.id]?.completed)));
   const challengeDone = useStore((s) => Boolean(s.lesson && ((s.challengeMode && s.validation?.passed) || s.progress[`${s.lesson.id}:challenge`]?.completed)));
-  // One panel open at a time under the mission text: the primer or the prediction.
+  // One popover open at a time under the mission bar: the primer or the prediction.
   const [open, setOpen] = useState<"primer" | "predict" | null>(null);
   const toggle = (panel: "primer" | "predict") => setOpen(open === panel ? null : panel);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (root.current && !root.current.contains(event.target as Node)) setOpen(null);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(null);
+      // Back to the button that opened it, if focus was inside the popover.
+      if (root.current?.contains(document.activeElement)) {
+        root.current.querySelector<HTMLButtonElement>(`[data-panel="${open}"]`)?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
   const predictionId = useId();
   const [predicted, setPredicted] = useState<number | null>(() => (lessonId ? readPrediction(lessonId) : null));
   const primerId = useId();
@@ -92,52 +114,65 @@ export function MissionBar() {
   };
 
   return (
-    <section
-      className={`mission mission-bar${inChallenge ? " is-challenge" : ""}${done ? " is-done" : ""}`}
-      aria-labelledby="mission-title"
-    >
-      <div className="mission-main">
-        <h2 className="mission-title" id="mission-title">
-          {done ? <CheckIcon size={14} /> : <TargetIcon />}
-          {title}
-        </h2>
-        <MissionText key={inChallenge ? `${lesson.id}:c` : lesson.id} text={inChallenge && lesson.challenge ? lesson.challenge.mission : lesson.mission} />
-        {primer.length > 0 && open === "primer" && <Primer items={primer} id={primerId} />}
-        {prediction && open === "predict" && <PredictionCard prediction={prediction} inline id={predictionId} chosen={predicted} onChoose={choose} />}
-      </div>
-      <div className="mission-side">
-        {primer.length > 0 && (
-          <button
-            className={`btn btn-sm mission-toggle${open === "primer" ? " is-open" : ""}`}
-            aria-expanded={open === "primer"}
-            aria-controls={open === "primer" ? primerId : undefined}
-            onClick={() => toggle("primer")}
-          >
-            <BookIcon />
-            {t("mission.primer")}
-          </button>
-        )}
-        {prediction && (
-          <button
-            className={`btn btn-sm mission-toggle${open === "predict" ? " is-open" : ""}${predictedRight ? " is-correct" : ""}`}
-            aria-expanded={open === "predict"}
-            aria-controls={open === "predict" ? predictionId : undefined}
-            onClick={() => toggle("predict")}
-          >
-            {predictedRight && <CheckIcon size={13} />}
-            {t("theory.predict")}
-          </button>
-        )}
-        {inChallenge ? (
-          <button className="link small" onClick={leaveChallenge}>{t("theory.backToMission")}</button>
-        ) : (
-          completed && lesson.challenge && (
-            <button className="btn btn-sm btn-challenge" onClick={startChallenge}>
-              {challengeDone ? t("theory.challengeAgain") : t("theory.tryChallenge")}
+    <div className="mission-area" ref={root}>
+      <section
+        className={`mission mission-bar${inChallenge ? " is-challenge" : ""}${done ? " is-done" : ""}`}
+        aria-labelledby="mission-title"
+      >
+        <div className="mission-main">
+          <h2 className="mission-title" id="mission-title">
+            {done ? <CheckIcon size={14} /> : <TargetIcon />}
+            {title}
+          </h2>
+          <MissionText key={inChallenge ? `${lesson.id}:c` : lesson.id} text={inChallenge && lesson.challenge ? lesson.challenge.mission : lesson.mission} />
+        </div>
+        <div className="mission-side">
+          {primer.length > 0 && (
+            <button
+              className={`btn btn-sm mission-toggle${open === "primer" ? " is-open" : ""}`}
+              data-panel="primer"
+              aria-expanded={open === "primer"}
+              aria-controls={open === "primer" ? primerId : undefined}
+              onClick={() => toggle("primer")}
+            >
+              <BookIcon />
+              {t("mission.primer")}
             </button>
-          )
-        )}
-      </div>
-    </section>
+          )}
+          {prediction && (
+            <button
+              className={`btn btn-sm mission-toggle${open === "predict" ? " is-open" : ""}${predictedRight ? " is-correct" : ""}`}
+              data-panel="predict"
+              aria-expanded={open === "predict"}
+              aria-controls={open === "predict" ? predictionId : undefined}
+              onClick={() => toggle("predict")}
+            >
+              <CrystalBallIcon />
+              {predictedRight && <CheckIcon size={13} />}
+              {t("theory.predict")}
+            </button>
+          )}
+          {inChallenge ? (
+            <button className="link small" onClick={leaveChallenge}>{t("theory.backToMission")}</button>
+          ) : (
+            completed && lesson.challenge && (
+              <button className="btn btn-sm btn-challenge" onClick={startChallenge}>
+                {challengeDone ? t("theory.challengeAgain") : t("theory.tryChallenge")}
+              </button>
+            )
+          )}
+        </div>
+      </section>
+      {primer.length > 0 && open === "primer" && (
+        <div className="mission-popover">
+          <Primer items={primer} id={primerId} />
+        </div>
+      )}
+      {prediction && open === "predict" && (
+        <div className="mission-popover">
+          <PredictionCard prediction={prediction} inline id={predictionId} chosen={predicted} onChoose={choose} />
+        </div>
+      )}
+    </div>
   );
 }

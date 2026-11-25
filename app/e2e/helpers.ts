@@ -41,6 +41,9 @@ export async function openHub(page: Page, { tour = false } = {}): Promise<void> 
 
 /** Opens a lesson via the top bar search. */
 export async function openLessonBySearch(page: Page, query: string, lessonId: string): Promise<void> {
+  // Inside a lesson the search is a magnifier that opens the field.
+  const toggle = page.locator(".search-toggle");
+  if (await toggle.isVisible()) await toggle.click();
   await page.locator(".search input").fill(query);
   const result = page.locator(".search-result", { has: page.locator(".search-result-id", { hasText: lessonId }) });
   await result.first().click();
@@ -109,7 +112,7 @@ export async function pressButton(page: Page, name: string): Promise<void> {
 
 /** Opens the notes drawer of the open lesson from the top bar. */
 export async function openNotesDrawer(page: Page): Promise<void> {
-  await page.locator(".topbar").getByRole("button", { name: "Notes" }).click();
+  await page.locator(".topbar").getByRole("button", { name: /^Notes/ }).click();
   await expect(page.locator(".notes-drawer")).toBeVisible();
 }
 

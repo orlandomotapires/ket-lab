@@ -9,7 +9,7 @@ test("notes drawer: opens focused, saves by itself, closes with Escape and survi
   await openHub(page);
   await clearNotes(page);
   await openLessonBySearch(page, "interference", "1.4");
-  const button = page.locator(".topbar").getByRole("button", { name: "Notes" });
+  const button = page.locator(".topbar").getByRole("button", { name: /^Notes/ });
   await expect(button.locator(".note-dot")).toHaveCount(0);
   await openNotesDrawer(page);
   const field = page.locator(".notes-drawer .note-field");

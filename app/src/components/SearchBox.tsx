@@ -208,6 +208,8 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
         onFocus={() => setOpen(true)}
         onBlur={() =>
           window.setTimeout(() => {
+            // Focus may be back already (the editor takes it for a moment while a lesson loads).
+            if (document.activeElement === input.current) return;
             setOpen(false);
             // Compact: an empty field folds back into the magnifier.
             if (compact && !input.current?.value) setExpanded(false);

@@ -112,7 +112,7 @@ export async function pressButton(page: Page, name: string): Promise<void> {
 
 /** Opens the notes drawer of the open lesson from the top bar. */
 export async function openNotesDrawer(page: Page): Promise<void> {
-  await page.locator(".topbar").getByRole("button", { name: "Notes" }).click();
+  await page.locator(".topbar").getByRole("button", { name: /^Notes/ }).click();
   await expect(page.locator(".notes-drawer")).toBeVisible();
 }
 

@@ -187,7 +187,7 @@
   flex: none;
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: 2px;
   background: var(--surface-2);
   font: 600 12px/24px var(--font-mono);
   text-align: center;

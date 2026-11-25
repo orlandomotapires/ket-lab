@@ -34,7 +34,9 @@ for (const scheme of ["light", "dark"] as const) {
   });
 }
 
-test("the reading position is remembered per lesson", async ({ page }) => {
+// Skipped: the theory panel (theory text, hints, solution offer, recap, further reading) is hidden
+// in the mission-on-top layout. Turn back on when it returns.
+test.skip("the reading position is remembered per lesson", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await openHub(page);
   await openLessonBySearch(page, "entanglement", "1.5");

@@ -6,6 +6,13 @@
     "Work out Bob's qubit for each of Alice's four measurement results and the correction it needs",
     "Explain why teleportation does not copy the state and cannot carry information faster than light"
   ],
+  "key_terms": [
+    "quantum teleportation",
+    "no-cloning theorem",
+    "Bell states",
+    "reduced state",
+    "mixed state"
+  ],
   "mission": "Alice's qubit 0 holds an unknown state. Teleport it to Bob's qubit 2, so that qubit 2 ends in that state. Alice and Bob are far apart, so no gate may act on qubits 0 and 2 together.",
   "hints": [
     "Which resource do Alice and Bob need before anything is sent, and on which two qubits does it live? Lesson 1.5 shows how to make it.",

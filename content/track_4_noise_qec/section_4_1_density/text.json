@@ -6,6 +6,13 @@
     "Read the probability of a wrong answer and the purity off a density matrix",
     "Explain why an error in 40% of the runs does not mean a wrong answer in 40% of the runs"
   ],
+  "key_terms": [
+    "density operator",
+    "partial trace",
+    "purity",
+    "quantum channel",
+    "Kraus operators"
+  ],
   "mission": "An error that strikes in 40% of the runs does not spoil 40% of the answers, and this circuit shows it. H, T, T†, H returns |0⟩. Insert an error between T and T†: X with probability p_x, Z with probability p_z, nothing otherwise. Compute the final density matrix, and for p_x = p_z = 0.2 store in p_wrong the probability of measuring 1 and in purity the purity Tr(ρ²).",
   "prediction": {
     "question": "With p_x = p_z = 0.2, an error happens in 40% of the runs. In what fraction of the runs does the final measurement give 1?",

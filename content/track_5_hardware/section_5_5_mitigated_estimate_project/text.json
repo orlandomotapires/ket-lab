@@ -6,6 +6,11 @@
     "Build and fold a circuit for a device with three qubits on a line",
     "Report a result together with its statistical uncertainty"
   ],
+  "key_terms": [
+    "error mitigation",
+    "zero-noise extrapolation",
+    "noise model"
+  ],
   "mission": "An estimate from a noisy device is only worth something with a number for how far to trust it. The device has three qubits on a line (0-1-2) and run_device(gates, shots, seed) returns counts. Gates are tuples: (\"h\", q), (\"x\", q), (\"cx\", control, target), with cx between neighbors. Count keys write qubit 0 first. Estimate ⟨Z₀Z₂⟩ of the three-qubit GHZ state, whose exact value is 1. Define: ghz, the gate list of the GHZ circuit; fold(gates, scale), which returns gates followed by (reversed gates, gates) repeated (scale − 1)/2 times; shots (between 5000 and 200000); A, the 8×8 assignment matrix from calibrate(shots) with A[i, j] = P(read i | prepared j) and the index of a bitstring read as a binary number; raw, the unmitigated ⟨Z₀Z₂⟩ of ghz from run_device with seed 0; mitigated, the estimate from one run per scale (1, 3, 5, seed 0) after readout mitigation and extrapolation to zero noise; and sigma, the standard deviation of that estimate over repeated runs with different seeds. The mitigated error must be at most one fifth of the raw error, and sigma must agree with an independent estimate of the scatter within a factor of about 3.",
   "prediction": {
     "question": "Readout mitigation takes ⟨Z₀Z₂⟩ from about 0.80 to about 0.94. You double the shots from 20000 to 40000 and repeat. What happens to the remaining deficit of about 0.06?",

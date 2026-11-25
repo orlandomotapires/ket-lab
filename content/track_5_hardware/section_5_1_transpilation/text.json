@@ -7,6 +7,11 @@
     "Measure the cost of a transpiled circuit with count_ops() and depth()",
     "Reduce the cost by writing a logical circuit that matches the device connectivity"
   ],
+  "key_terms": [
+    "transpilation",
+    "coupling map",
+    "basis gates"
+  ],
   "mission": "A device has 4 qubits in a line (0 - 1 - 2 - 3) and runs only rz, sx, x and cx. Prepare the GHZ state (|0000⟩ + |1111⟩)/√2 and store in qc the transpiled circuit, with at most 3 two-qubit gates. Every cx in qc must act on neighboring qubits.",
   "prediction": {
     "question": "On the line 0 - 1 - 2 - 3, with logical qubit i placed on physical qubit i, a circuit holds one cx(0, 3) and nothing else. How many cx does the transpiled circuit have?",

@@ -6,6 +6,11 @@
     "Choose measurement angles for a shared Bell pair that win with probability at least 0.85",
     "Compute the exact winning probability from the outcome probabilities of the four question pairs"
   ],
+  "key_terms": [
+    "CHSH game",
+    "Tsirelson bound",
+    "Bell states"
+  ],
   "mission": "Alice and Bob share a Bell pair. A referee gives Alice a bit x and Bob a bit y; they answer bits a and b without communicating and win when a ⊕ b = x ∧ y. Choose the four angles in `alice_angle` and `bob_angle` (each player rotates with Ry before measuring) so that the average winning probability over the four question pairs is at least 0.85, and store it in `win_probability`.",
   "hints": [
     "With all angles 0, both players measure in the computational basis and always give a = b, which wins whenever x ∧ y = 0: 3 of the 4 question pairs, so the probability is 3/4. The angles must differ for the players to do better.",

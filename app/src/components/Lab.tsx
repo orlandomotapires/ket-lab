@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useStoredFlag, useStoredNumber } from "../lib/storedFlag";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 import { CircuitDiagram } from "./CircuitDiagram";
@@ -9,8 +10,9 @@ import { HardwareButton } from "./HardwareDialog";
 import { exampleCode, SANDBOX_EXAMPLES, type SandboxExample } from "../lib/examples";
 import { shareLink } from "../lib/share";
 import { NotesDrawer } from "./NotesDrawer";
+import { Splitter } from "./Splitter";
 import { OracleBar } from "./OracleBar";
-import { TheoryPanel } from "./TheoryPanel";
+import { MissionBar } from "./MissionBar";
 import { Timeline } from "./Timeline";
 import { Tour } from "./Tour";
 import { Visualizer } from "./Visualizer";
@@ -18,15 +20,9 @@ import { Visualizer } from "./Visualizer";
 export function Lab() {
   const lesson = useStore((s) => s.lesson);
   const key = lesson?.id ?? "sandbox";
-  // Lessons without a circuit (math kit) have no circuit panel.
-  const hasCircuit = lesson?.framework !== "python";
-  const code = useStore((s) => s.code);
-  const canCompose = composerSupported(code, lesson?.framework);
-  const [composing, setComposing] = useState(false);
   // Narrow screens: one panel at a time, chosen in the tabs (on wide screens the tabs disappear).
-  const panes: Pane[] = lesson ? ["theory", "code", "state"] : ["code", "state"];
-  const [chosen, setPane] = useState<Pane>(lesson ? "theory" : "code");
-  const pane = panes.includes(chosen) ? chosen : panes[0];
+  const panes: Pane[] = ["code", "state"];
+  const [pane, setPane] = useState<Pane>("code");
   const paneProps = (name: Pane) => ({
     className: `pane${pane === name ? " is-active" : ""}`,
     role: "tabpanel" as const,
@@ -35,6 +31,9 @@ export function Lab() {
   });
   const notesOpen = useStore((s) => s.notesOpen && lesson !== null);
   useLabShortcuts(panes, setPane);
+  // Width of the code column, in percent of the lab; the state column takes the rest.
+  const labRef = useRef<HTMLDivElement>(null);
+  const [split, setSplit] = useStoredNumber("ket-lab.lab.split", SPLIT);
 
   // Arrow keys move between the tabs (the tab in focus is the chosen one).
   const onTabKey = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -51,7 +50,11 @@ export function Lab() {
     document.getElementById(`pane-tab-${target}`)?.focus();
   };
   return (
-    <div className={`lab${lesson ? "" : " is-sandbox"}${notesOpen ? " has-notes" : ""}`}>
+    <div
+      ref={labRef}
+      className={`lab${lesson ? "" : " is-sandbox"}${notesOpen ? " has-notes" : ""}`}
+      style={{ "--split": `${split}%` } as CSSProperties}
+    >
       <div className="lab-tabs segmented" role="tablist" aria-label={t("lab.panes")} onKeyDown={onTabKey}>
         {panes.map((name) => (
           <button
@@ -67,47 +70,21 @@ export function Lab() {
           </button>
         ))}
       </div>
-      {lesson && (
-        <div {...paneProps("theory")}>
-          <TheoryPanel />
-        </div>
-      )}
+      {lesson && <MissionBar key={key} />}
       <div {...paneProps("code")}>
-      <div className="column">
-        <section className="panel editor-panel" aria-label={t("lab.codeAria")}>
-          <div className="panel-head">
-            <h2>{t("lab.code")}</h2>
-            <span className="grow" />
-            {!lesson && <ShareButton />}
-            {!lesson && <ExamplePicker />}
-          </div>
-          <SharedCodeNotice />
-          {/* The key recreates the editor when switching lessons (cursor and undo history). */}
-          <CodeEditor key={key} />
-        </section>
-        {hasCircuit && <section className="panel circuit-panel" aria-label={t("lab.circuit")}>
-          <div className="panel-head">
-            <h2>{t("lab.circuit")}</h2>
-            <span className="grow" />
-            {canCompose && (
-              <button
-                className="btn btn-ghost btn-sm"
-                aria-pressed={composing}
-                onClick={() => setComposing(!composing)}
-                title={t("composer.toggleHint")}
-              >
-                {composing ? t("composer.close") : t("composer.open")}
-              </button>
-            )}
-            <HardwareButton />
-            <ExportButton />
-          </div>
-          {composing && canCompose && <Composer />}
-          <CircuitDiagram />
-          <Timeline />
-        </section>}
+        <Workspace editorKey={key} />
       </div>
-      </div>
+      <Splitter
+        orientation="vertical"
+        className="column-splitter"
+        value={split}
+        min={28}
+        max={68}
+        initial={SPLIT}
+        onChange={setSplit}
+        label={t("lab.resizeColumns")}
+        container={() => labRef.current}
+      />
       <div {...paneProps("state")}>
         <Visualizer key={key} lesson={lesson} />
       </div>
@@ -118,20 +95,101 @@ export function Lab() {
   );
 }
 
-type Pane = "theory" | "code" | "state";
+/** Code and circuit share one panel: either one, or both splitting the space. The choice is remembered. */
+function Workspace({ editorKey }: { editorKey: string }) {
+  const lesson = useStore((s) => s.lesson);
+  // Lessons without a circuit (math kit) only have the code.
+  const hasCircuit = lesson?.framework !== "python";
+  const code = useStore((s) => s.code);
+  const canCompose = composerSupported(code, lesson?.framework);
+  const [composing, setComposing] = useState(false);
+  const [codeOn, setCodeOn] = useStoredFlag("ket-lab.lab.showCode", true);
+  const [circuitOn, setCircuitOn] = useStoredFlag("ket-lab.lab.showCircuit", false);
+  // With both open: the code's share of the height, in percent.
+  const [codeShare, setCodeShare] = useStoredNumber("ket-lab.lab.codeShare", CODE_SHARE);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const showCircuit = hasCircuit && circuitOn;
+  // At least one view stays open.
+  const showCode = codeOn || !showCircuit;
+  const toggle = (view: "code" | "circuit") => {
+    if (view === "code" && !(showCode && !showCircuit)) setCodeOn(!showCode);
+    if (view === "circuit" && !(showCircuit && !showCode)) setCircuitOn(!showCircuit);
+  };
+  return (
+    <section className="panel work-panel" aria-label={t("lab.workAria")}>
+      <div className="panel-head">
+        {hasCircuit ? (
+          <div className="segmented" role="group" aria-label={t("lab.workViews")}>
+            <button aria-pressed={showCode} onClick={() => toggle("code")}>{t("lab.code")}</button>
+            <button aria-pressed={showCircuit} onClick={() => toggle("circuit")}>{t("lab.circuit")}</button>
+          </div>
+        ) : (
+          <h2>{t("lab.code")}</h2>
+        )}
+        <span className="grow" />
+        {showCode && !lesson && <ShareButton />}
+        {showCode && !lesson && <ExamplePicker />}
+        {showCircuit && canCompose && (
+          <button
+            className="btn btn-ghost btn-sm"
+            aria-pressed={composing}
+            onClick={() => setComposing(!composing)}
+            title={t("composer.toggleHint")}
+          >
+            {composing ? t("composer.close") : t("composer.open")}
+          </button>
+        )}
+        {showCircuit && <HardwareButton />}
+        {showCircuit && <ExportButton />}
+      </div>
+      <div className="work-body" ref={bodyRef}>
+        {showCode && (
+          <div className="editor-panel" role="region" aria-label={t("lab.codeAria")} style={showCircuit ? { flexGrow: codeShare } : undefined}>
+            <SharedCodeNotice />
+            {/* The key recreates the editor when switching lessons (cursor and undo history). */}
+            <CodeEditor key={editorKey} />
+          </div>
+        )}
+        {showCode && showCircuit && (
+          <Splitter
+            orientation="horizontal"
+            value={codeShare}
+            min={20}
+            max={85}
+            initial={CODE_SHARE}
+            onChange={setCodeShare}
+            label={t("lab.resizeCode")}
+            container={() => bodyRef.current}
+          />
+        )}
+        {showCircuit && (
+          <div className="circuit-panel" role="region" aria-label={t("lab.circuit")} style={showCode ? { flexGrow: 100 - codeShare } : undefined}>
+            {composing && canCompose && <Composer />}
+            <CircuitDiagram />
+            <Timeline />
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
-const PANE_KEYS: Record<string, Pane> = { Digit1: "theory", Digit2: "code", Digit3: "state" };
+type Pane = "code" | "state";
+
+/** Starting sizes: the code column's width and, with the circuit open too, the code's height (percent). */
+const SPLIT = 45;
+const CODE_SHARE = 60;
+
+const PANE_KEYS: Record<string, Pane> = { Digit1: "code", Digit2: "state" };
 
 /** Moves the keyboard to a panel (on narrow screens, switching to its tab first). */
 function focusPane(name: Pane): void {
   const find = (): HTMLElement | null =>
-    name === "theory"
-      ? document.querySelector<HTMLElement>(".theory-scroll")
-      : name === "code"
-        ? document.querySelector<HTMLElement>(".editor textarea")
-        : (document.querySelector<HTMLElement>(".visualizer .panel-scroll") ??
-          document.querySelector<HTMLElement>('.visualizer [aria-pressed="true"]') ??
-          document.querySelector<HTMLElement>(".visualizer"));
+    name === "code"
+      ? (document.querySelector<HTMLElement>(".editor textarea") ?? document.querySelector<HTMLElement>(".work-panel [aria-pressed]"))
+      : (document.querySelector<HTMLElement>(".visualizer .panel-scroll") ??
+        document.querySelector<HTMLElement>('.visualizer [aria-pressed="true"]') ??
+        document.querySelector<HTMLElement>(".visualizer"));
   window.setTimeout(() => {
     const element = find();
     if (!element) return;

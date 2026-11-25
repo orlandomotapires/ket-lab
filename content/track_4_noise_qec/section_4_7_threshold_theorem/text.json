@@ -7,6 +7,12 @@
     "Work out how many levels and physical qubits a target error rate needs",
     "Say what fault tolerance adds to a code, and how the threshold of the theorem differs from the pseudo-threshold"
   ],
+  "key_terms": [
+    "threshold theorem",
+    "concatenation",
+    "pseudo-threshold",
+    "fault tolerance"
+  ],
   "mission": "Each level of a code feeds its own output to the next, and this exercise follows that for the three-qubit bit-flip code. One level, with perfect correction, maps a physical error probability p to f(p) = 3p² − 2p³. Write f(p), and concatenated(p, k), the error rate after k levels (f applied k times). Write generic_rate(p, c, k) = (c·p)^(2^k) / c. Write levels_needed(p, target), the smallest k with concatenated(p, k) ≤ target, or None if the error rate never gets that low. Set p_th to the pseudo-threshold of f, the fixed point with 0 < p < 1. For p = 0.01 and target = 1e-15, store the number of levels in k_needed and the number of physical qubits per logical qubit (3 per level, so 3^k) in qubits.",
   "prediction": {
     "question": "From p = 0.02, one level of the three-qubit code gives f(p) = 0.001184. What error rate does the second level give?",

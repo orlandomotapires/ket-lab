@@ -1,10 +1,12 @@
 name: CI
 
-# Branches are tested through their pull request (one run, not two); main on each push.
+# Runs when something lands on developer or main (a push or a merged pull request). Work goes
+# branch -> developer -> main. Other branches and pull requests get no automatic run; "Run
+# workflow" in the Actions tab runs it by hand on any branch.
 # A change that touches only the files below (README, docs, screenshots) runs nothing.
 on:
   push:
-    branches: [main]
+    branches: [developer, main]
     paths-ignore:
       - "README.md"
       - "CHANGELOG.md"
@@ -12,14 +14,7 @@ on:
       - "docs/**"
       - ".claude/**"
       - ".github/assets/**"
-  pull_request:
-    paths-ignore:
-      - "README.md"
-      - "CHANGELOG.md"
-      - "LICENSE"
-      - "docs/**"
-      - ".claude/**"
-      - ".github/assets/**"
+  workflow_dispatch:
 
 # A newer push to the same branch cancels the run in progress.
 concurrency:

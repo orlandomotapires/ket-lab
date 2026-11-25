@@ -1,10 +1,10 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { lessonNoteKey } from "../lib/notes";
 import { altKey } from "../lib/platform";
 import { t } from "../strings";
-import { useStore } from "../state/store";
+import { selectAdjacentLesson, useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
-import { ArrowLeftIcon, InfoIcon, LogoMark, MoonIcon, NoteIcon, SunIcon } from "./icons";
+import { ArrowLeftIcon, LogoMark, MoonIcon, NextIcon, NoteIcon, PrevIcon, SunIcon } from "./icons";
 import { LessonInfo } from "./LessonInfo";
 import { NOTES_BUTTON_ID } from "./NotesDrawer";
 import { ShortcutsDialog } from "./ShortcutsDialog";
@@ -28,13 +28,15 @@ export function TopBar() {
   const track = lesson && catalog?.tracks.find((item) => item.id === lesson.track);
 
   return (
-    <header className="topbar">
+    <header className={`topbar${view === "lab" && lesson ? " has-lesson" : ""}`}>
       <div className="topbar-left">
       {view === "lab" ? (
         <>
           <button className="btn btn-ghost btn-sm" onClick={backToHub}>
             <ArrowLeftIcon /> {t("topbar.tracks")}
           </button>
+          {/* Right after "Tracks", so the arrows stay in the same place whatever the lesson's title. */}
+          {lesson && <LessonStepper />}
           <span className="divider" />
           <nav className="crumbs" aria-label={t("topbar.location")}>
             {lesson ? (
@@ -46,7 +48,7 @@ export function TopBar() {
                   {lesson.title}
                 </strong>
                 {lesson.objectives.length > 0 && (
-                  <LessonInfo key={lesson.id} goals={lesson.objectives} minutes={lesson.estimated_minutes} focusable />
+                  <LessonInfo key={lesson.id} goals={lesson.objectives} terms={lesson.key_terms} minutes={lesson.estimated_minutes} focusable />
                 )}
               </>
             ) : (
@@ -62,7 +64,8 @@ export function TopBar() {
         </button>
       )}
       </div>
-      <SearchBox />
+      {/* In a lesson the search folds into a magnifier beside Notes, leaving room for the lesson name. */}
+      {!(view === "lab" && lesson) && <SearchBox />}
       <div className="topbar-right">
       {/* Only shows up when there is something to resolve; with the engine active, it takes no space in the bar. */}
       {connection !== "open" && (
@@ -71,6 +74,7 @@ export function TopBar() {
           {t(`topbar.engine.${connection}`)}
         </span>
       )}
+      {view === "lab" && lesson && <SearchBox compact />}
       {view === "lab" && lesson && (
         <button
           id={NOTES_BUTTON_ID}
@@ -87,12 +91,13 @@ export function TopBar() {
       )}
       {view === "lab" && <HelpMenu guide={Boolean(lesson)} />}
       <button
-        className="btn btn-ghost btn-icon btn-sm"
+        className="btn btn-ghost btn-icon btn-sm topbar-about"
         onClick={() => setAbout(true)}
         aria-label={t("about.open")}
         title={t("about.open")}
       >
-        <InfoIcon />
+        {/* The app's own mark, so it does not read as the lesson's "i" beside the title. */}
+        <LogoMark size={17} />
       </button>
       <button
         className="btn btn-ghost btn-icon btn-sm"
@@ -171,6 +176,33 @@ function HelpMenu({ guide }: { guide: boolean }) {
         </div>
       )}
       {shortcuts && <ShortcutsDialog onClose={() => setShortcuts(false)} />}
+    </div>
+  );
+}
+
+/** Previous and next lesson, right after "Tracks" (a fixed place, whatever the title). */
+function LessonStepper() {
+  const previous = useStore((s) => selectAdjacentLesson(s, -1));
+  const next = useStore((s) => selectAdjacentLesson(s, 1));
+  const openLesson = useStore((s) => s.openLesson);
+  const button = (target: { id: string; title: string } | null, key: "topbar.previousLesson" | "topbar.nextLesson", icon: ReactNode) => {
+    const label = target ? t(key, { id: target.id, title: target.title }) : t(`${key}None`);
+    return (
+      <button
+        className="btn btn-ghost btn-icon btn-sm"
+        disabled={!target}
+        aria-label={label}
+        title={label}
+        onClick={() => target && void openLesson(target.id)}
+      >
+        {icon}
+      </button>
+    );
+  };
+  return (
+    <div className="lesson-stepper" role="group" aria-label={t("topbar.lessonStepper")}>
+      {button(previous, "topbar.previousLesson", <PrevIcon />)}
+      {button(next, "topbar.nextLesson", <NextIcon />)}
     </div>
   );
 }

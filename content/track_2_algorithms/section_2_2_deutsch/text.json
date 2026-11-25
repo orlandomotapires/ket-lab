@@ -6,6 +6,12 @@
     "Use phase kickback to write (−1)^f(x) on the input qubit",
     "Decide with one query whether a one-bit function is constant or balanced"
   ],
+  "key_terms": [
+    "query",
+    "constant function",
+    "balanced function",
+    "phase kickback"
+  ],
   "mission": "Call oracle(qc) once so that qubit 0 ends in |0⟩ if the hidden one-bit function f is constant and in |1⟩ if it is balanced.",
   "prediction": {
     "question": "The auxiliary qubit is in |−⟩ and the input in |+⟩, but you leave out the final Hadamard and measure the input after the query. What do you get?",

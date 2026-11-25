@@ -6,6 +6,11 @@
     "Say how the size of the gradient and the number of shots needed to see it scale with the number of qubits",
     "Say why a cost on all qubits is harder to train than one on a few qubits"
   ],
+  "key_terms": [
+    "barren plateau",
+    "ansatz",
+    "shots"
+  ],
   "mission": "The gradients of random circuits shrink as the circuit grows. The ansatz has n layers on n qubits, each layer an R_Y(θ) on every qubit followed by a chain of CZ gates between neighbours, and the cost is the expectation of Z on all qubits at once. Complete gradient_variance(n, layers, samples) so that it returns the variance of ∂C/∂θ for the first angle (layer 0, qubit 0) over random angles in [0, 2π), and store the results for 2 to 6 qubits, 100 samples each, in variances. The variance for 6 qubits must be below 0.3 times the variance for 2 qubits.",
   "prediction": {
     "question": "For the product ansatz of the text (one R_Y per qubit, cost Z on all qubits), the gradient variance is 2⁻ⁿ. With n = 10, about how many shots per evaluation does it take before shot noise stops hiding a typical gradient?",

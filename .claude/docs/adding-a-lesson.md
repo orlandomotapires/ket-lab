@@ -2,12 +2,14 @@
 
 A lesson is a folder under `content/track_N_.../section_X_Y_name/`. The engine loads it at startup, so restart `npm run dev` to see a new or changed lesson. The quickest way to start is to copy a lesson of the same kind and change it.
 
+In the current lab layout (mission on top, since 23 Nov 2026) the learner sees the mission, "Before you start" and the prediction; `theory.md`, the hints and "Show solution" are not on screen for now. Keep writing them in full: the tests check them and they come back with the theory panel.
+
 ## Checklist
 
 1. **Catalog.** Add the lesson to `content/catalog.json` with its `id`, `title` and `summary`. The title must equal the one in the lesson's `text.json`.
 2. **Files** (below).
 3. **Text** written by the rules of the [writing guide](writing-guide.md).
-4. **References** in the manifest: at least one book or article and one course or tutorial, each with the exact place to read in `location`. Use only sources listed in [verified-references.md](../../docs/verified-references.md); to cite something new, verify it and add it there first.
+4. **References** in the manifest: at least one book or article and one course or tutorial, each with the exact place to read in `location`. The first course or tutorial and the first paper (or book, if there is no paper) are what "Before you start" shows above the code, so put the best first read first. Use only sources listed in [verified-references.md](../../docs/verified-references.md); to cite something new, verify it and add it there first.
 5. **Glossary.** New terms go into `content/glossary.json`, with the lesson that introduces them. Every term must appear in some theory.
 6. **Review.** Add one or two questions about the lesson to the track's `review.json`.
 7. **Prediction position.** The index of the correct option is `prediction_answer` in the manifest. A test keeps the three positions balanced over the platform, so check which position is least used.

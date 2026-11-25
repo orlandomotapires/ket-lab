@@ -6,6 +6,12 @@
     "Compute how much of one state lies along another, including the conjugation that makes it work",
     "Build the ± basis and use it to find the odds of a measurement in that basis"
   ],
+  "key_terms": [
+    "inner product",
+    "normalization",
+    "orthogonal",
+    "state vector"
+  ],
   "mission": "A state is measured in the ± basis, so you need its coefficients there. Work with the vectors in the editor. Define norm and v_hat (the length of v, and v scaled to length 1), inner and prob (the inner product of a with b, and its squared modulus), minus (the vector |−⟩ as an array: orthogonal to plus, of length 1, with a positive first entry), amp_plus and amp_minus (the coefficients of psi along plus and minus), and inner4 (the same inner product for the four-entry vectors phi_plus and q).",
   "prediction": {
     "question": "The state (0.6, 0.8i) gives outcome 0 with probability 0.36 when measured in the computational basis. It is now measured in the ± basis. What is the probability of finding |+⟩?",

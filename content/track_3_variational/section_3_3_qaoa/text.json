@@ -6,6 +6,13 @@
     "Build alternating cost and mixer layers and train their angles",
     "Compare the best ratio of one layer with two on the same graph"
   ],
+  "key_terms": [
+    "Max-Cut",
+    "quantum approximate optimization algorithm",
+    "cost Hamiltonian",
+    "mixer Hamiltonian",
+    "approximation ratio"
+  ],
   "mission": "Cutting more edges of this 5-vertex graph is a Max-Cut problem, and the circuit has to prepare a state whose expected cut is close to the best one. Build a QAOA circuit from Hadamards, cost layers (IsingZZ on every edge) and mixer layers (RX on every qubit), and optimize the angles until the approximation ratio of the state is above 0.85.",
   "prediction": {
     "question": "You find the best angles for one layer (p = 1) on this graph, then add a second layer and optimize all four angles again. What can you say about the best achievable ratio?",

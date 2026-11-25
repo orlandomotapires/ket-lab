@@ -6,6 +6,10 @@
     "Train a classifier and judge it on points it has not seen",
     "Recognize overfitting from the gap between training and test accuracy"
   ],
+  "key_terms": [
+    "variational quantum classifier",
+    "data re-uploading"
+  ],
   "mission": "No straight line separates the two concentric circles, so the classifier needs a curved boundary. Train a quantum classifier whose sign of ⟨Z⟩ on qubit 0 is the predicted class, with at least 92% accuracy on a test set that you do not see.",
   "prediction": {
     "question": "The data enter the circuit only once (LAYERS = 1), and everything else is trained as well as possible. What accuracy can you expect on the two circles?",

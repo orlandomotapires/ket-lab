@@ -31,12 +31,19 @@ export function collectErrors(page: Page): string[] {
 export async function openHub(page: Page, { tour = false } = {}): Promise<void> {
   // The first-lesson guide would cover buttons in the other tests; it has its own test.
   if (!tour) await page.addInitScript(() => localStorage.setItem("ket-lab.tour.v1", "1"));
+  // Most tests read the circuit, which starts closed: open it next to the code unless a test chose.
+  await page.addInitScript(() => {
+    if (localStorage.getItem("ket-lab.lab.showCircuit") === null) localStorage.setItem("ket-lab.lab.showCircuit", "1");
+  });
   await page.goto("/");
   await expect(page.locator(".section-row").first()).toBeVisible();
 }
 
 /** Opens a lesson via the top bar search. */
 export async function openLessonBySearch(page: Page, query: string, lessonId: string): Promise<void> {
+  // Inside a lesson the search is a magnifier that opens the field.
+  const toggle = page.locator(".search-toggle");
+  if (await toggle.isVisible()) await toggle.click();
   await page.locator(".search input").fill(query);
   const result = page.locator(".search-result", { has: page.locator(".search-result-id", { hasText: lessonId }) });
   await result.first().click();
@@ -105,7 +112,7 @@ export async function pressButton(page: Page, name: string): Promise<void> {
 
 /** Opens the notes drawer of the open lesson from the top bar. */
 export async function openNotesDrawer(page: Page): Promise<void> {
-  await page.locator(".topbar").getByRole("button", { name: "Notes" }).click();
+  await page.locator(".topbar").getByRole("button", { name: /^Notes/ }).click();
   await expect(page.locator(".notes-drawer")).toBeVisible();
 }
 

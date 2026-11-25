@@ -6,6 +6,13 @@
     "Prepare a Hartree–Fock state and rotate it toward the ground state with one angle",
     "Lower the energy by gradient descent until it is within chemical accuracy"
   ],
+  "key_terms": [
+    "variational principle",
+    "ground state",
+    "Hartree–Fock state",
+    "Jordan–Wigner",
+    "chemical accuracy"
+  ],
   "mission": "Get the H₂ ground-state energy to within chemical accuracy (1.6 mHa) of the exact value. Start the circuit from the Hartree–Fock state, apply a double excitation with angle theta, and lower the energy of that circuit by gradient descent on theta, recording the energy after each step. Click Run to train.",
   "prediction": {
     "question": "You compute the exact expectation value ⟨ψ|H|ψ⟩ of a normalized state your circuit prepares for H₂ at 0.74 Å, and get −1.20 Ha. The exact ground-state energy is −1.1373 Ha. What does this tell you?",

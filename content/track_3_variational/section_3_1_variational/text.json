@@ -6,6 +6,13 @@
     "Lower an expectation value step by step with gradient descent",
     "Say in advance where gradient descent will take the qubit for a simple cost"
   ],
+  "key_terms": [
+    "variational quantum eigensolver",
+    "ansatz",
+    "expectation value",
+    "parameter-shift rule",
+    "gradient descent"
+  ],
   "mission": "Training a circuit needs its gradient, and on hardware the circuit is a black box. Write parameter_shift(params, i), which returns the derivative of the cost with respect to params[i] using exactly two runs of the circuit, then use it in a gradient descent loop that brings ⟨Z⟩ close to −1 and records each step in history. Click Run to train.",
   "prediction": {
     "question": "The cost is ⟨Z⟩ after RX(θ₀) and RY(θ₁), and you start at θ = (0.3, 0.2), close to the maximum. With a learning rate of 0.4 and enough steps, where does gradient descent take the Bloch vector?",

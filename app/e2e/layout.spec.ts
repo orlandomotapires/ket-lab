@@ -9,26 +9,16 @@ const catalog = JSON.parse(
 );
 const ids: string[] = catalog.tracks.flatMap((track: { sections: { id: string }[] }) => track.sections.map((s) => s.id));
 
-/** The mission's first line and the hint button (when the lesson has hints) are inside the
- *  theory panel's visible area, without scrolling anything. */
+/** The mission's first line is inside the mission bar and the window, without scrolling anything. */
 async function expectMissionVisible(page: Page, label: string): Promise<void> {
   const viewport = page.viewportSize()!;
-  const scroll = (await page.locator(".theory-scroll").boundingBox())!;
+  const bar = (await page.locator(".mission-bar").boundingBox())!;
   const text = (await page.locator(".mission .mission-text").boundingBox())!;
-  const within = (box: { x: number; y: number; width: number; height: number }) =>
-    box.y >= scroll.y - 1 && box.y + Math.min(box.height, 22) <= Math.min(scroll.y + scroll.height, viewport.height) + 1;
-  expect(within(text), `${label}: first line of the mission is cut off`).toBe(true);
-  const hint = page.locator(".mission").getByRole("button", { name: /Show hint/ });
-  if ((await hint.count()) > 0) {
-    const box = (await hint.boundingBox())!;
-    expect(
-      box.y >= scroll.y - 1 && box.y + box.height <= Math.min(scroll.y + scroll.height, viewport.height) + 1,
-      `${label}: the hint button is cut off`,
-    ).toBe(true);
-  }
+  const within = text.y >= bar.y - 1 && text.y + Math.min(text.height, 22) <= Math.min(bar.y + bar.height, viewport.height) + 1;
+  expect(within, `${label}: first line of the mission is cut off`).toBe(true);
 }
 
-test("1366x768: every lesson shows its mission and the hint button without scrolling", async ({ page }) => {
+test("1366x768: every lesson shows its mission without scrolling", async ({ page }) => {
   test.setTimeout(10 * 60_000);
   const errors = collectErrors(page);
   await page.setViewportSize({ width: 1366, height: 768 });
@@ -44,7 +34,9 @@ test("1366x768: every lesson shows its mission and the hint button without scrol
   expect(errors).toEqual([]);
 });
 
-test("1366x768: with all hints open the mission and the page scroll stay put", async ({ page }) => {
+// Skipped: the theory panel (theory text, hints, solution offer, recap, further reading) is hidden
+// in the mission-on-top layout. Turn back on when it returns.
+test.skip("1366x768: with all hints open the mission and the page scroll stay put", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await openHub(page);
   await openLessonBySearch(page, "entanglement", "1.5");
@@ -61,7 +53,7 @@ test("1366x768: with all hints open the mission and the page scroll stay put", a
   expect(Math.abs(pinned.y - scroll.y)).toBeLessThanOrEqual(2);
 });
 
-test("390px: the mission is visible on the Theory tab and the bottom bar is one line", async ({ page }) => {
+test("390px: the mission is visible above the panels and the bottom bar is one line", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openHub(page);
   await openLessonBySearch(page, "entanglement", "1.5");
@@ -101,15 +93,15 @@ test("Check is the one main action, then Next lesson", async ({ page }) => {
   await expect(page.locator(".oracle-actions .btn-primary")).toHaveText("Next lesson");
 });
 
-test("objectives: an \"i\" next to the lesson name shows them on hover; the lesson reads them back at the end", async ({ page }) => {
+test("what you will learn: an \"i\" next to the lesson name lists key terms that open the glossary", async ({ page }) => {
   await openHub(page);
-  // Hub: the "i" in the next lesson's row, and the row describes the goals to screen readers.
+  // Hub: the "i" in the next lesson's row, and the row describes the terms to screen readers.
   const row = page.locator(".section-row.is-next");
   await expect(row).toHaveAttribute("aria-describedby", /^goals-/);
   await row.locator(".lesson-info").hover();
-  const pop = page.getByRole("tooltip");
+  const pop = page.locator(".lesson-info-pop");
   await expect(pop).toContainText("What you will learn");
-  await expect(pop.locator("li").first()).toBeVisible();
+  await expect(pop.locator(".lesson-info-term").first()).toBeVisible();
   await page.mouse.move(0, 0);
   await expect(pop).toHaveCount(0);
 
@@ -121,14 +113,20 @@ test("objectives: an \"i\" next to the lesson name shows them on hover; the less
   await expect(pop).toContainText(/About \d+ min/);
   await page.keyboard.press("Escape");
   await expect(pop).toHaveCount(0);
-  const recap = page.locator(".recap");
-  await expect(recap.locator("li").first()).toBeAttached();
-  const recapTop = (await recap.boundingBox())!.y;
-  const lastHeading = (await page.locator(".prose > h2").last().boundingBox())!.y;
-  expect(recapTop).toBeGreaterThan(lastHeading);
+
+  // Enter on the "i" moves to the first term; Enter on a term opens it in the glossary.
+  await info.focus();
+  await page.keyboard.press("Enter");
+  const term = pop.getByRole("button", { name: "Bell states: open in the glossary" });
+  await expect(term).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".glossary-entry.is-focus")).toContainText("Bell states");
+  await expect(pop).toHaveCount(0);
 });
 
-test("further reading: folded at the end, and the solved mission links to it", async ({ page }) => {
+// Skipped: the theory panel (theory text, hints, solution offer, recap, further reading) is hidden
+// in the mission-on-top layout. Turn back on when it returns.
+test.skip("further reading: folded at the end, and the solved mission links to it", async ({ page }) => {
   await openHub(page);
   await openLessonBySearch(page, "computational basis", "1.1");
   const toggle = page.getByRole("button", { name: /^Further reading \(\d+\)/ });
@@ -146,7 +144,7 @@ test("further reading: folded at the end, and the solved mission links to it", a
 });
 
 // Lesson 1.3: no other test completes it, so its challenge pill starts hidden.
-test("challenge mode hides the recap of the objectives; the hub shows the Challenge pill only after the mission", async ({ page }) => {
+test("challenge mode replaces the mission; the hub shows the Challenge pill only after the mission", async ({ page }) => {
   await openHub(page);
   const pill = page.locator(".section-row", { has: page.locator(".section-id", { hasText: /^1\.3$/ }) }).locator(".pill", { hasText: "Challenge" });
   await expect(pill).toHaveCount(0);
@@ -175,7 +173,9 @@ test("hub: clicking a track's header opens and closes its lessons", async ({ pag
   await expect(toggle).toHaveAttribute("aria-expanded", String(!startedOpen));
 });
 
-test("opened hints can be hidden and shown again, and stay counted", async ({ page }) => {
+// Skipped: the theory panel (theory text, hints, solution offer, recap, further reading) is hidden
+// in the mission-on-top layout. Turn back on when it returns.
+test.skip("opened hints can be hidden and shown again, and stay counted", async ({ page }) => {
   await openHub(page);
   await openLessonBySearch(page, "superposition", "1.2");
   await page.getByRole("button", { name: /Show hint 1/ }).click();
@@ -210,7 +210,7 @@ test("hub: the journey bar names the current track and jumps to a track", async 
   await expect(page.locator("#track-4")).toBeInViewport();
 });
 
-test("state view: zoom with the buttons or Ctrl+wheel, and back to the original zoom", async ({ page }) => {
+test("state view: zoom with the buttons, the wheel or Ctrl+wheel, and back to the original zoom", async ({ page }) => {
   await openHub(page);
   await openLessonBySearch(page, "computational basis", "1.1");
   const zoom = page.getByRole("group", { name: "Zoom" });
@@ -234,5 +234,11 @@ test("state view: zoom with the buttons or Ctrl+wheel, and back to the original 
   await page.keyboard.up("Control");
   await expect(reset).toBeVisible();
   await scene.dblclick();
+  await expect(reset).toHaveCount(0);
+
+  // The plain mouse wheel zooms too: in, then out back to the fitted size.
+  await page.mouse.wheel(0, -100);
+  await expect(reset).toBeVisible();
+  for (let i = 0; i < 4 && (await reset.count()) > 0; i++) await page.mouse.wheel(0, 100);
   await expect(reset).toHaveCount(0);
 });

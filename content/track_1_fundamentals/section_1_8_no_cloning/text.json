@@ -6,6 +6,12 @@
     "Compute the fidelity between the output of the copier and the ideal copy |+⟩|+⟩",
     "Use linearity to explain why no unitary operation copies every state"
   ],
+  "key_terms": [
+    "three-qubit bit-flip code",
+    "ancilla",
+    "fidelity",
+    "CNOT gate"
+  ],
   "mission": "Copy qubit 0 onto qubit 1 with a single CNOT, so that |0⟩ and |1⟩ are copied exactly. The input in the editor is |+⟩. Store in `copy_fidelity` the fidelity between the final state of your circuit and the ideal copy |+⟩|+⟩.",
   "hints": [
     "What is the simplest gate that makes qubit 1 equal to qubit 0 when qubit 0 is 0 or 1? Qubit 1 starts in |0⟩, so one gate does it: qc.cx(0, 1).",

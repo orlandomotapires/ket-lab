@@ -109,7 +109,7 @@
   display: flex;
   gap: 2px;
   padding: 2px;
-  border-radius: 8px;
+  border-radius: 3px;
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
@@ -121,7 +121,7 @@
   height: 28px;
   padding: 0 6px;
   border: none;
-  border-radius: 6px;
+  border-radius: 2px;
   background: none;
   color: var(--text-2);
   font: inherit;
@@ -150,6 +150,32 @@
 }
 .scene-label.is-axis {
   color: var(--faint);
+}
+/* The state written at the tip of the Bloch arrow: beside the tip, over a light backdrop. */
+.scene-label.state-equation {
+  color: var(--text);
+  font-size: 12.5px;
+}
+/* Right of the tip when the arrow is near vertical; above it, toward the middle, when it points sideways. */
+.state-equation-text {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  transform: translate(6px, -50%);
+}
+.state-equation-text[data-side="up-left"] {
+  transform: translate(calc(-100% + 4px), calc(-100% - 8px));
+}
+.state-equation-text[data-side="up-right"] {
+  transform: translate(-4px, calc(-100% - 8px));
+}
+.state-equation sup {
+  font-size: 0.75em;
+}
+.state-equation .is-mixed {
+  color: var(--muted);
+  font-style: italic;
 }
 .scene-label.is-caption {
   font-family: var(--font-ui);

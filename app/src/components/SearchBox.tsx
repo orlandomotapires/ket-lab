@@ -53,7 +53,20 @@ function isTyping(target: EventTarget | null): boolean {
   return !!element && (element.tagName === "INPUT" || element.tagName === "TEXTAREA" || element.isContentEditable);
 }
 
-export function SearchBox() {
+function SearchGlyph() {
+  return (
+    <svg className="search-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.5" />
+      <path d="m10.5 10.5 3.5 3.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Search over lessons, notes and glossary terms. `compact` (inside a lesson): only a magnifier
+ *  button, which opens the field in its place; leaving the field empty folds it back. */
+export function SearchBox({ compact = false }: { compact?: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+  const showField = !compact || expanded;
   const search = useStore((s) => s.search);
   const openLesson = useStore((s) => s.openLesson);
   const connection = useStore((s) => s.connection);
@@ -82,6 +95,7 @@ export function SearchBox() {
       if (shortcut) {
         event.preventDefault();
         event.stopPropagation();
+        setExpanded(true);
         input.current?.focus();
         input.current?.select();
       }
@@ -90,6 +104,11 @@ export function SearchBox() {
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   }, []);
+
+  // Compact: the field appears in place of the magnifier, with the cursor in it.
+  useEffect(() => {
+    if (compact && expanded) input.current?.focus();
+  }, [compact, expanded]);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -115,6 +134,7 @@ export function SearchBox() {
     if (!entry) return;
     setQuery("");
     setOpen(false);
+    setExpanded(false);
     input.current?.blur();
     if (entry.kind === "lesson") {
       void openLesson(entry.result.id);
@@ -141,17 +161,35 @@ export function SearchBox() {
     } else if (event.key === "Escape") {
       setOpen(false);
       input.current?.blur();
+      if (compact) {
+        setQuery("");
+        setExpanded(false);
+      }
     }
   };
 
   const showPanel = open && query.trim().length > 0;
 
+  if (!showField) {
+    return (
+      <div className="search is-compact" role="search">
+        <button
+          type="button"
+          className="btn btn-ghost btn-icon btn-sm search-toggle"
+          aria-label={t("search.label")}
+          title={`${t("search.label")} (${modKey}+K)`}
+          disabled={connection !== "open"}
+          onClick={() => setExpanded(true)}
+        >
+          <SearchGlyph />
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="search" role="search">
-      <svg className="search-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-        <circle cx="7" cy="7" r="4.5" />
-        <path d="m10.5 10.5 3.5 3.5" strokeLinecap="round" />
-      </svg>
+    <div className={`search${compact ? " is-compact is-expanded" : ""}`} role="search">
+      <SearchGlyph />
       <input
         ref={input}
         type="search"
@@ -168,10 +206,18 @@ export function SearchBox() {
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+        onBlur={() =>
+          window.setTimeout(() => {
+            // Focus may be back already (the editor takes it for a moment while a lesson loads).
+            if (document.activeElement === input.current) return;
+            setOpen(false);
+            // Compact: an empty field folds back into the magnifier.
+            if (compact && !input.current?.value) setExpanded(false);
+          }, 120)
+        }
         onKeyDown={onKeyDown}
       />
-      {!query && <kbd className="search-kbd">{modKey} K</kbd>}
+      {!query && !compact && <kbd className="search-kbd">{modKey} K</kbd>}
       {showPanel && (
         <div className="search-panel" id="search-results" role="listbox">
           {entries.length === 0 ? (

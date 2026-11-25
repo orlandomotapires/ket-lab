@@ -6,6 +6,13 @@
     "Find the phase a circuit gives to each basis state from the bits and their parity",
     "Rewrite a CNOT with Hadamard gates to swap its control and target"
   ],
+  "key_terms": [
+    "controlled operation",
+    "control qubit",
+    "CNOT gate",
+    "SWAP gate",
+    "phase gate"
+  ],
   "mission": "Hardware has no controlled-S gate, so build CS = diag(1, 1, 1, i) using only cx, t and tdg. It multiplies the amplitude of |11⟩ by i and leaves the others unchanged. The circuit must work for any input, including superpositions.",
   "hints": [
     "Think of the phase as a sum. Each T adds π/4 for every qubit that is 1. For which pairs of bits (a, b) must the total be π/2, and for which 0?",

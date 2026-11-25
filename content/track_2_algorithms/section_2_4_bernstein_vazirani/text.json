@@ -6,6 +6,11 @@
     "Read the string from the final state, with qubit 0 as its last character",
     "Say why a randomized classical program still needs n queries"
   ],
+  "key_terms": [
+    "Bernstein–Vazirani algorithm",
+    "oracle",
+    "query"
+  ],
   "mission": "Find the hidden 4-bit string s with a single call to oracle(qc): at the end, the input register (qubits 0 to 3) must be in |s⟩. Qubit 0 is the last character of s, so s = s3 s2 s1 s0 and the state label is |q3 q2 q1 q0⟩.",
   "prediction": {
     "question": "The oracle is f(x) = s·x ⊕ 1, with a constant bias added. What does the input register end in?",

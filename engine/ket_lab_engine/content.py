@@ -277,6 +277,7 @@ class ContentLibrary:
         lesson = {k: v for k, v in manifest.items() if k not in ("validation", "prediction_answer")}
         lesson.update({k: text[k] for k in ("title", "summary", "mission", "hints")})
         lesson["objectives"] = text.get("objectives", [])
+        lesson["key_terms"] = text.get("key_terms", [])
         if "challenge" in manifest and "challenge" in text:
             # Optional challenge, unlocked after the mission: only the text goes to the interface.
             lesson["challenge"] = {k: text["challenge"][k] for k in ("mission", "hints")}
@@ -427,7 +428,7 @@ class ContentLibrary:
         }
 
     def _section_flags(self, lesson_id: str) -> dict:
-        """End-of-track project, whether a challenge exists and the objectives, for the track map."""
+        """End-of-track project, whether a challenge exists, the objectives and key terms, for the track map."""
         if lesson_id not in self._lessons:
             return {}
         folder = self._lessons[lesson_id]
@@ -439,6 +440,7 @@ class ContentLibrary:
             "estimated_minutes": manifest.get("estimated_minutes"),
             # Shown on the home page, where the learner chooses what to study next.
             "objectives": text.get("objectives", []),
+            "key_terms": text.get("key_terms", []),
         }
 
     def _review_path(self, track_id) -> Path | None:

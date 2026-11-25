@@ -7,6 +7,13 @@
     "Say which errors a stabilizer code cannot detect, using its syndrome table",
     "Find a logical operator: a string that commutes with every generator but is not a product of them"
   ],
+  "key_terms": [
+    "stabilizer",
+    "logical operator",
+    "code distance",
+    "syndrome",
+    "Pauli string"
+  ],
   "mission": "The syndrome of an error is decided by commutation alone, and this lesson asks you to compute it. Pauli strings are written as text, for example \"ZZI\". Write commutes(a, b), which returns True when two Pauli strings of equal length commute. Write syndrome(error, stabilizers), which returns a tuple with one bit per generator: 0 if the error commutes with it, 1 if it anticommutes. Store in table the syndrome of each of the nine single-qubit errors (\"XII\", \"YII\", \"ZII\", \"IXI\", …) for the bit-flip code generators in STABILIZERS. Finally set logical_X and logical_Z to Pauli strings that act as X and Z on the encoded qubit.",
   "prediction": {
     "question": "Add XXX as a third generator to ZZI and IZZ. What happens?",

@@ -6,6 +6,11 @@
     "Turn a measured counting register into an estimate of θ",
     "Say how the probability spreads when θ is not a multiple of 1/2^t"
   ],
+  "key_terms": [
+    "phase estimation",
+    "order finding",
+    "eigenvalue"
+  ],
   "mission": "Estimate the phase θ of the operator U using 3 counting qubits, and store the estimate in the variable theta, a number between 0 and 1.",
   "prediction": {
     "question": "For U with θ = 3/8 you use 4 counting qubits instead of 3. What does the counting register give?",

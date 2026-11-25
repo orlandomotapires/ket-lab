@@ -28,7 +28,9 @@ test("glossary page: every term, a filter and the lesson that introduces each", 
   expect(errors).toEqual([]);
 });
 
-test("a term in the theory opens its glossary entry, and Back returns to the lesson as it was", async ({ page }) => {
+// Skipped: the theory panel (theory text, hints, solution offer, recap, further reading) is hidden
+// in the mission-on-top layout. Turn back on when it returns.
+test.skip("a term in the theory opens its glossary entry, and Back returns to the lesson as it was", async ({ page }) => {
   const errors = collectErrors(page);
   await openHub(page);
   await openLessonBySearch(page, "interference", "1.4");

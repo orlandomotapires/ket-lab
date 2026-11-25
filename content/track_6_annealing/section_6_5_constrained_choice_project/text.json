@@ -6,6 +6,11 @@
     "Find by enumeration the smallest penalty weight that makes the feasible optimum the ground state",
     "Anneal the resulting four-qubit Ising problem, compare a modest and an oversized penalty, and read the answer back as a choice of jobs"
   ],
+  "key_terms": [
+    "QUBO",
+    "penalty term",
+    "ground state"
+  ],
   "mission": "An annealer minimizes an energy and knows nothing about rules, so the rules have to be inside the energy. The starter defines four jobs with values v, the conflicting pairs, and the weights B = 6, A_used = 4 and A_big = 20. The cost of a choice x ∈ {0,1}⁴ is −Σ v_i x_i + A (Σ x_i − 2)² + B Σ x_i x_j over the conflicting pairs. Define Q and offset (A = A_used, Q upper triangular, so that xᵀQx + offset is the cost of all 16 choices); best_jobs and best_value, the feasible choice of two jobs without conflicts that has the largest total value; A_min, the smallest value in penalties for which that choice is the only state of lowest cost; h, J (upper triangular) and const, the Ising form of the same cost with s = 1 − 2x; success and success_big, the probability of the best choice after annealing H(s) = (1 − s) H_B + s H_P for each T in T_values, with A_used and with A_big, where H_P is divided by the largest absolute value among h and J; and jobs, the list of jobs selected by the most probable state at T = 80 with A_used. Qubit i carries job i, in Qiskit's order.",
   "prediction": {
     "question": "For this instance, what is the lowest value of the penalized cost if the weight is A = 1, and which choice has it?",

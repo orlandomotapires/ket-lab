@@ -6,6 +6,11 @@
     "Say what the QFT does to a basis state and where the information about x ends up",
     "Account for the reversed qubit order that the circuit produces without a swap"
   ],
+  "key_terms": [
+    "quantum Fourier transform",
+    "period",
+    "SWAP gate"
+  ],
   "mission": "Build the 3-qubit QFT after prepare_input(qc). It must work for any input state, not only |101⟩.",
   "prediction": {
     "question": "You apply the QFT to |100⟩ (x = 4). Relative to the amplitude of |000⟩, what is the phase of the amplitude of |001⟩?",

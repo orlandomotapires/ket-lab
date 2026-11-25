@@ -6,6 +6,12 @@
     "Tell the number of parameters of an ansatz apart from the number of directions in which its state can move",
     "Add an entangling gate to a rotation layer so that a circuit prepares a Bell state"
   ],
+  "key_terms": [
+    "hardware-efficient ansatz",
+    "Schmidt coefficients",
+    "entanglement",
+    "fidelity"
+  ],
   "mission": "The cost −F, where F is the fidelity with the Bell state |Φ⁺⟩, stalls at −0.5 with the starter ansatz R_Y ⊗ R_Y. Change the ansatz so that after training the circuit prepares |Φ⁺⟩ with fidelity at least 0.99, using at most 4 rotation angles (R_X, R_Y, R_Z) and one CNOT or CZ as the entangling gate, with one entry of params per angle.",
   "prediction": {
     "question": "An ansatz applies R_Y(θ₀) on qubit 0 and later, with no gate in between, a second R_Y(θ₂) on the same qubit. How many new independent directions does the reachable set gain from θ₂?",

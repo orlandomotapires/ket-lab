@@ -4,7 +4,7 @@ import { altKey } from "../lib/platform";
 import { t } from "../strings";
 import { selectAdjacentLesson, useStore } from "../state/store";
 import { toggleTheme, useTheme } from "../theme/theme";
-import { ArrowLeftIcon, InfoIcon, LogoMark, MoonIcon, NextIcon, NoteIcon, PrevIcon, SunIcon } from "./icons";
+import { ArrowLeftIcon, LogoMark, MoonIcon, NextIcon, NoteIcon, PrevIcon, SunIcon } from "./icons";
 import { LessonInfo } from "./LessonInfo";
 import { NOTES_BUTTON_ID } from "./NotesDrawer";
 import { ShortcutsDialog } from "./ShortcutsDialog";
@@ -91,12 +91,13 @@ export function TopBar() {
       )}
       {view === "lab" && <HelpMenu guide={Boolean(lesson)} />}
       <button
-        className="btn btn-ghost btn-icon btn-sm"
+        className="btn btn-ghost btn-icon btn-sm topbar-about"
         onClick={() => setAbout(true)}
         aria-label={t("about.open")}
         title={t("about.open")}
       >
-        <InfoIcon />
+        {/* The app's own mark, so it does not read as the lesson's "i" beside the title. */}
+        <LogoMark size={17} />
       </button>
       <button
         className="btn btn-ghost btn-icon btn-sm"

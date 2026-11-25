@@ -211,6 +211,9 @@ button {
   color: var(--accent);
   flex: none;
 }
+.topbar-about .brand-mark {
+  color: inherit;
+}
 .crumbs {
   display: flex;
   align-items: center;

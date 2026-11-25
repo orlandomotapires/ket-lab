@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
 import logging
 import os
 import re
@@ -24,6 +26,11 @@ MAX_CODE_CHARS = 100_000
 MAX_IMPORT_ENTRIES = 1000
 # "general" for the free note; "lesson:<lesson id>" for a lesson note.
 NOTE_KEY = re.compile(r"^(general|lesson:[A-Za-z0-9][A-Za-z0-9._-]{0,63})$")
+# Images attached to notes: the interface shrinks them before sending (one WebSocket message each).
+MAX_IMAGE_BYTES = 340 * 1024
+MAX_IMAGES_PER_NOTE = 12
+IMAGE_TYPES = frozenset({"image/png", "image/jpeg", "image/webp", "image/gif"})
+IMAGE_ID = re.compile(r"^[A-Za-z0-9_-]{8,40}$")
 BACKUP_VERSION = 2
 BACKUP_FILE = re.compile(r"^progress-(\d{8})\.sqlite3$")
 
@@ -188,6 +195,10 @@ class ProgressStore:
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS notes (key TEXT PRIMARY KEY, body TEXT NOT NULL, updated_at TEXT NOT NULL)"
         )
+        self._db.execute(
+            "CREATE TABLE IF NOT EXISTS note_images (id TEXT PRIMARY KEY, key TEXT NOT NULL, mime TEXT NOT NULL, "
+            "data BLOB NOT NULL, created_at TEXT NOT NULL)"
+        )
         version = self._db.execute("PRAGMA user_version").fetchone()[0]
         if version < 1:
             # Roadmap phase 2: Simon enters as 2.5 and Track 3 splits (3.5 and 3.6 become 4.1 and 4.2).
@@ -220,6 +231,8 @@ class ProgressStore:
         exists = self._db.execute("SELECT 1 FROM notes WHERE key = ?", (f"lesson:{new}",)).fetchone()
         if not exists:
             self._db.execute("UPDATE notes SET key = ? WHERE key = ?", (f"lesson:{new}", f"lesson:{old}"))
+        # Images are separate rows: they always follow the lesson (nothing is overwritten).
+        self._db.execute("UPDATE note_images SET key = ? WHERE key = ?", (f"lesson:{new}", f"lesson:{old}"))
 
     # -- progress ---------------------------------------------------------- #
 
@@ -453,8 +466,77 @@ class ProgressStore:
             changed += 1
         return changed
 
+    # -- note images ------------------------------------------------------------ #
+
+    def images_all(self) -> list[dict]:
+        """Every image's description (no data), oldest first."""
+        keys = self.keys
+        rows = self._db.execute(
+            "SELECT id, key, mime, length(data), created_at FROM note_images ORDER BY created_at, id"
+        ).fetchall()
+        return [
+            {"id": image_id, "key": keys.note_to_id(key), "mime": mime, "size": size, "created_at": created_at}
+            for image_id, key, mime, size, created_at in rows
+        ]
+
+    def image_get(self, image_id: object) -> dict | None:
+        row = self._db.execute(
+            "SELECT id, key, mime, data, created_at FROM note_images WHERE id = ?", (check_image_id(image_id),)
+        ).fetchone()
+        if row is None:
+            return None
+        image_id, key, mime, data, created_at = row
+        return {
+            "id": image_id, "key": self.keys.note_to_id(key), "mime": mime,
+            "data": base64.b64encode(data).decode("ascii"), "created_at": created_at,
+        }
+
+    def image_save(self, key: object, mime: object, data: object, image_id: object = None, created_at: object = None) -> dict:
+        """Stores an image (base64 `data`) under a note. An `image_id` that already exists is kept
+        as it is (importing the same backup twice adds nothing). Returns the image's description."""
+        stored_key = self.keys.note_to_key(check_note_key(key))
+        if mime not in IMAGE_TYPES:
+            raise ProgressError(messages.t("notes.image_type"))
+        if not isinstance(data, str) or len(data) > MAX_IMAGE_BYTES * 4 // 3 + 4:
+            raise ProgressError(messages.t("notes.image_too_big", limit=MAX_IMAGE_BYTES // 1024))
+        try:
+            raw = base64.b64decode(data, validate=True)
+        except (binascii.Error, ValueError):
+            raise ProgressError(messages.t("notes.image_bad")) from None
+        if not raw:
+            raise ProgressError(messages.t("notes.image_bad"))
+        if len(raw) > MAX_IMAGE_BYTES:
+            raise ProgressError(messages.t("notes.image_too_big", limit=MAX_IMAGE_BYTES // 1024))
+        image_id = check_image_id(image_id) if image_id is not None else _new_image_id()
+        if self._db.execute("SELECT 1 FROM note_images WHERE id = ?", (image_id,)).fetchone():
+            return next(image for image in self.images_all() if image["id"] == image_id)
+        count = self._db.execute("SELECT count(*) FROM note_images WHERE key = ?", (stored_key,)).fetchone()[0]
+        if count >= MAX_IMAGES_PER_NOTE:
+            raise ProgressError(messages.t("notes.too_many_images", limit=MAX_IMAGES_PER_NOTE))
+        stamp = created_at if isinstance(created_at, str) and 0 < len(created_at) <= 40 else _now_iso()
+        self._db.execute(
+            "INSERT INTO note_images (id, key, mime, data, created_at) VALUES (?, ?, ?, ?, ?)",
+            (image_id, stored_key, mime, raw, stamp),
+        )
+        self._db.commit()
+        return {"id": image_id, "key": self.keys.note_to_id(stored_key), "mime": mime, "size": len(raw), "created_at": stamp}
+
+    def image_delete(self, image_id: object) -> None:
+        self._db.execute("DELETE FROM note_images WHERE id = ?", (check_image_id(image_id),))
+        self._db.commit()
+
     def close(self) -> None:
         self._db.close()
+
+
+def check_image_id(image_id: object) -> str:
+    if not isinstance(image_id, str) or not IMAGE_ID.match(image_id):
+        raise ProgressError(messages.t("notes.image_bad_id"))
+    return image_id
+
+
+def _new_image_id() -> str:
+    return base64.urlsafe_b64encode(os.urandom(12)).decode("ascii")
 
 
 def check_note_key(key: object) -> str:

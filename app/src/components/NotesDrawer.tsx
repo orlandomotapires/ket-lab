@@ -3,6 +3,7 @@ import { lessonNoteKey } from "../lib/notes";
 import { t } from "../strings";
 import { useStore } from "../state/store";
 import { NoteField, NoteStatus } from "./NoteField";
+import { NoteWithImages } from "./NoteImages";
 
 export const NOTES_BUTTON_ID = "notes-button";
 
@@ -47,14 +48,15 @@ function Drawer({ lessonId, title }: { lessonId: string; title: string }) {
         </button>
       </div>
       <div className="notes-body">
-        <NoteField
-          ref={field}
-          key={lessonId}
-          noteKey={lessonNoteKey(lessonId)}
-          label={t("notes.fieldLabel", { id: lessonId, title })}
-          placeholder={t("notes.placeholder")}
-          className="is-drawer"
-        />
+        <NoteWithImages key={lessonId} noteKey={lessonNoteKey(lessonId)} label={lessonId} className="is-drawer">
+          <NoteField
+            ref={field}
+            noteKey={lessonNoteKey(lessonId)}
+            label={t("notes.fieldLabel", { id: lessonId, title })}
+            placeholder={t("notes.placeholder")}
+            className="is-drawer"
+          />
+        </NoteWithImages>
       </div>
     </aside>
   );

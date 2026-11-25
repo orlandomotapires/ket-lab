@@ -41,3 +41,22 @@ test("hosted mode: progress in the browser, with export and import", async ({ pa
   expect(await page.evaluate(() => localStorage.getItem("ket-lab.notes.v1"))).toContain("hosted note");
   expect(errors).toEqual([]);
 });
+
+test("hosted mode: note images stay in this browser and survive a reload", async ({ page }) => {
+  const errors = collectErrors(page);
+  await openHub(page);
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  const general = page.locator(".note-card").first();
+  const png = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==",
+    "base64",
+  );
+  await general.locator("input[type=file]").setInputFiles({ name: "dot.png", mimeType: "image/png", buffer: png });
+  await expect(general.locator(".note-image img")).toHaveCount(1);
+  await page.reload();
+  await page.getByRole("button", { name: /^Notes/ }).click();
+  await expect(page.locator(".note-card").first().locator(".note-image img")).toHaveAttribute("src", /^blob:/);
+  await page.getByRole("button", { name: "Remove image 1" }).click();
+  await expect(page.locator(".note-image")).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

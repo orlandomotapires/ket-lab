@@ -6,8 +6,8 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    # Pull requests go to developer, like every other change (branch -> developer -> main).
-    target-branch: developer
+    # Pull requests go to main, like every other change.
+    target-branch: main
     schedule:
       interval: monthly
     groups:

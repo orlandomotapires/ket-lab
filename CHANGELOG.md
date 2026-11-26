@@ -27,7 +27,7 @@ Notable changes to the platform.
 - Alt+1 and Alt+2 go to the code and the state (there is no theory panel to jump to).
 - Smaller corner radii everywhere.
 - The engine's start line has no token in single-user and public modes, where none is used.
-- A permanent `developer` branch sits between `main` and the work branches: branches merge into `developer`, and `developer` into `main`. CI runs when a change is pushed or merged into `developer` or `main`; other branches and pull requests get no automatic run (it took too long on every commit), and "Run workflow" in the Actions tab still runs it by hand. Dependabot opens its pull requests against `developer`.
+- CI runs when a change is pushed or merged into `main`; other branches and pull requests get no automatic run (it took too long on every commit), and "Run workflow" in the Actions tab still runs it by hand. Branches merge straight into `main` (a `developer` branch in between was tried and dropped).
 
 ### Fixed
 - Typing in the search right after a lesson opened could close the list of results while the field still had the cursor: the editor takes focus for a moment as the lesson loads.
